@@ -1,0 +1,87 @@
+{% extends 'products/base.html' %}
+
+{% block title %}Your Shopping Cart - Mere Store Online{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <h2 class="fw-bold text-secondary">🛒 Aapka Shopping Cart</h2>
+        <a href="{% url 'home' %}" class="btn btn-link text-success p-0 text-decoration-none">← Continue Shopping</a>
+    </div>
+</div>
+
+{% if cart_items %}
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 p-3">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Product Name</th>
+                            <th scope="col">Price</th>
+                            <th scope="col" class="text-center">Quantity</th>
+                            <th scope="col">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ item.product.name }}</div>
+                                <small class="text-muted">SKU: {{ item.product.sku }}</small>
+                            </td>
+                            <td>₹{{ item.product.price }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary fs-6">{{ item.quantity }}</span>
+                            </td>
+                            <td class="fw-bold text-success">₹{{ item.subtotal }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-end align-items-center mt-3 p-2 bg-light rounded">
+                <span class="fs-5 fw-bold me-3">Total Bill:</span>
+                <span class="fs-4 fw-bold text-success">₹{{ total_amount }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 p-4">
+            <h4 class="fw-bold text-secondary mb-3">Delivery Details</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Aapka Naam (Full Name)</label>
+                    <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Mobile Number</label>
+                    <input type="text" name="phone" class="form-control" placeholder="Enter 10-digit number" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Address (Ghar ka pata)</label>
+                    <textarea name="address" class="form-control" rows="3" placeholder="Flat, Street, Area, City" required></textarea>
+                </div>
+                <div class="alert alert-info py-2 mb-3 small">
+                    ℹ️ Abhi sirf <strong>Cash on Delivery (COD)</strong> available hai.
+                </div>
+                <button type="submit" class="btn btn-success w-100 py-2 fw-bold text-uppercase shadow-sm">
+                    Confirm Order (COD)
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col text-center my-5">
+        <div class="fs-1 text-muted mb-3">🛒</div>
+        <p class="fs-4 text-muted">Aapka cart bilkul khali hai!</p>
+        <a href="{% url 'home' %}" class="btn btn-success fw-bold px-4">Samaan Add Karein</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

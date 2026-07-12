@@ -1,0 +1,37 @@
+{% extends 'products/base.html' %}
+
+{% block title %}Order Successful - Mere Store Online{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center my-5">
+    <div class="col-md-7 text-center">
+        <div class="card shadow border-0 p-5 bg-white">
+            <div class="display-1 text-success mb-3">🎉</div>
+            <h1 class="fw-bold text-success mb-3">Order Placed Successfully!</h1>
+            <p class="text-muted fs-5">Thank you, <strong class="text-dark">{{ order.customer_name }}</strong>. Aapka order hume mil gaya hai.</p>
+            
+            <div class="row g-3 justify-content-center my-4 text-start">
+                <div class="col-sm-8 bg-light rounded p-3 border">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Order ID:</span>
+                        <span class="fw-bold">#{{ order.id }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total Amount:</span>
+                        <span class="fw-bold text-success">₹{{ order.total_amount }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Contact Number:</span>
+                        <span class="fw-bold">{{ order.phone }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-secondary small mb-4">Hum jald hi aapke diye gaye number par delivery ke liye contact karenge.</p>
+            <div>
+                <a href="{% url 'home' %}" class="btn btn-success px-4 fw-bold">Dukaan Par Wapas Jayein</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
