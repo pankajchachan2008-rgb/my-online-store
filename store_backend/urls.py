@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from products.views import product_list, add_to_cart, cart_detail
+# Hamare views se saare zaroori functions import kiye
+from products.views import product_list, add_to_cart, cart_detail, make_admin, trigger_import
 
 urlpatterns = [
     # 🔐 1. Django Admin Panel Route
@@ -16,10 +17,14 @@ urlpatterns = [
     
     # 📑 4. Shopping Cart Detail Page & Checkout Submit Form
     path('cart/', cart_detail, name='cart_detail'),
+    
+    # 🤫 5. Hidden Web Triggers (Bina Shell ke Live Server par kaam karne ke liye)
+    path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
+    path('secret-import-products-xyz/', trigger_import, name='secret_trigger_import'),
 ]
 
 # ==============================================================================
-# 🖼️ MEDIA URL ROUTING PATTERN (Added)
+# 🖼️ MEDIA URL ROUTING PATTERN
 # ==============================================================================
 # Yeh logic tabhi chalti hai jab settings me DEBUG=True ho (development environment).
 # Isse browser product photo ke media links ko successfully display kar pata hai.

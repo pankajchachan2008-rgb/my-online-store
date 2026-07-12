@@ -83,3 +83,23 @@ def cart_detail(request):
         'cart_items': cart_items,
         'total_amount': total_amount
     })
+
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+
+def make_admin(request):
+    # Check karein agar admin pehle se nahi bana hai
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser("admin", "admin@example.com", "Admin@123")
+        return HttpResponse("Live Admin Successfully Ban Gaya! Username: admin, Password: Admin@123")
+    return HttpResponse("Admin pehle se bana hua hai.")
+
+from django.core.management import call_command
+
+def trigger_import(request):
+    try:
+        # Yeh aapki banyi hui import command ko live server par chala dega
+        call_command('import_products')
+        return HttpResponse("Excel Products Successfully Import Ho Gaye! 🎉")
+    except Exception as e:
+        return HttpResponse(f"Error Aaya: {str(e)}")
