@@ -19,8 +19,7 @@ urlpatterns = [
     path('cart/', cart_detail, name='cart_detail'),
     
     # 🤫 5. Hidden Web Triggers (Bina Shell ke Live Server par kaam karne ke liye)
-    path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
-    path('secret-import-products-xyz/', trigger_import, name='secret_trigger_import'),
+    
 ]
 
 # ==============================================================================
