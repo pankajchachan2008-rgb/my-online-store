@@ -1,4 +1,5 @@
 import os
+import dj_database_url
 from pathlib import Path
 
 # Base directory setup
@@ -57,7 +58,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'store_backend.wsgi.application'
 
 
-# Database Configuration (Built-in SQLite)
+# Agar Render par live hai, toh PostgreSQL use hoga, warna computer me SQLite
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -65,6 +66,10 @@ DATABASES = {
     }
 }
 
+if 'DATABASE_URL' in os.environ:
+    DATABASES['default'] = dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
