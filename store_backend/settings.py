@@ -43,7 +43,8 @@ ROOT_URLCONF = 'store_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Niche wali line me humne Django ko sabhi folders me dhoondhne ko kaha hai
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'products' / 'templates'], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
