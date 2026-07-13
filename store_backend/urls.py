@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
-# Hamare views se saare functions import kiye
+# Hamare views se saare functions import kiye (Naye logout aur register ke sath)
 from products.views import (
     product_list, 
     add_to_cart, 
@@ -12,7 +12,9 @@ from products.views import (
     make_admin, 
     trigger_import, 
     about_page, 
-    contact_page
+    contact_page,
+    custom_logout,    # Naya custom logout
+    register_page     # Naya register page
 )
 
 urlpatterns = [
@@ -26,11 +28,14 @@ urlpatterns = [
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('cart/', cart_detail, name='cart_detail'),
     
-    # 📄 Naye Pages (About, Contact, Login, Logout)
+    # 📄 Naye Pages (About, Contact)
     path('about/', about_page, name='about'),
     path('contact/', contact_page, name='contact'),
+    
+    # 👤 Authentication (Login, Logout, Register)
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('logout/', custom_logout, name='logout'),
+    path('register/', register_page, name='register'),
     
     # 🤫 Hidden Web Triggers (Admin aur Excel ke liye)
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),

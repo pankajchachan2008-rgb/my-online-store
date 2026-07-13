@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 shadow p-4 bg-white rounded">
+            <h2 class="text-center mb-4">Create an Account</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success w-100 mt-3">Sign Up</button>
+            </form>
+            <p class="mt-3 text-center">Pehle se account hai? <a href="{% url 'login' %}">Login karein</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
