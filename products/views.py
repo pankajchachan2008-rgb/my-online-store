@@ -103,3 +103,9 @@ def trigger_import(request):
         return HttpResponse("Excel Products Successfully Import Ho Gaye! 🎉")
     except Exception as e:
         return HttpResponse(f"Error Aaya: {str(e)}")
+
+def about_page(request):
+    return render(request, 'about.html')
+
+def contact_page(request):
+    return render(request, 'contact.html')
