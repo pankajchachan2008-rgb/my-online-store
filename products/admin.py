@@ -25,7 +25,7 @@ class ProductAdmin(admin.ModelAdmin):
 # 🎟️ Coupon Custom View in Admin (Jo pehle missing tha)
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
-    list_display = ('code', 'mobile_number', 'discount_percentage', 'is_used', 'created_at')
+    list_display = ['code', 'mobile_number', 'discount_percentage', 'is_used']
     list_filter = ('is_used', 'discount_percentage')
     search_fields = ('mobile_number', 'code')
 
