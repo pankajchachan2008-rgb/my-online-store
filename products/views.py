@@ -33,21 +33,28 @@ def add_to_cart(request, product_id):
     messages.success(request, f"{product.name} cart me add ho gaya hai!")
     return redirect('home')
 
-# 📊 3. Cart Detail View (Calculates Items and Totals)
+# 📊 3. Cart Detail View (With Safe Subscript Check)
 def cart_detail(request):
     cart = request.session.get('cart', {})
     cart_items = []
     cart_total = 0
     
-    for pid, item in cart.items():
-        product = get_object_or_404(Product, id=int(pid))
-        total_price = item['price'] * item['quantity']
-        cart_total += total_price
-        cart_items.append({
-            'product': product,
-            'quantity': item['quantity'],
-            'total_price': total_price
-        })
+    # Agar data structure corrupt ho toh use handle karne ke liye safe dynamic loop
+    for pid, item in list(cart.items()):
+        # Check agar item ek dictionary hai ya nahi (int object check handle karne ke liye)
+        if isinstance(item, dict) and 'price' in item and 'quantity' in item:
+            product = get_object_or_404(Product, id=int(pid))
+            total_price = item['price'] * item['quantity']
+            cart_total += total_price
+            cart_items.append({
+                'product': product,
+                'quantity': item['quantity'],
+                'total_price': total_price
+            })
+        else:
+            # Agar koi purana format integer ya kharab data hai, toh use clear kar dein
+            cart.pop(pid, None)
+            request.session['cart'] = cart
         
     return render(request, 'products/cart_detail.html', {
         'cart_items': cart_items,
