@@ -3,9 +3,17 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+# 1. Product Categories
+CATEGORY_CHOICES = (
+    ('Grocery', 'Grocery'),
+    ('Cosmetics', 'Cosmetics'),
+    ('Electronics', 'Electronics'),
+)
+
 class Product(models.Model):
     sku = models.CharField(max_length=50, unique=True, null=True, blank=True)
     name = models.CharField(max_length=200)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='Grocery')
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='products/', blank=True, null=True)
@@ -23,13 +31,20 @@ class Coupon(models.Model):
         return self.code
 
 class Order(models.Model):
+    STATUS_CHOICES = (
+        ('Processing', 'Processing'),
+        ('Out for Delivery', 'Out for Delivery'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
+    )
+    
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     customer_name = models.CharField(max_length=100)
     mobile_number = models.CharField(max_length=15)
     address = models.TextField()
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     applied_coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
-    status = models.CharField(max_length=50, default='Pending')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Processing')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -52,6 +67,7 @@ class CustomerProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} Profile"
 
+# 🔄 Signals for Profile Creation (Admin Crash Proof)
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created and not instance.is_superuser and not instance.is_staff:

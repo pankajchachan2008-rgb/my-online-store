@@ -209,3 +209,18 @@ def sync_products_from_erp_api(request):
                 defaults={'name': item.get('name'), 'description': item.get('description', ''), 'price': item.get('price', 0.00)}
             )
     return Response({'message': 'Product sync process successfully executed'})
+
+def product_list(request):
+    category = request.GET.get('category')
+    sort = request.GET.get('sort')
+    products = Product.objects.all()
+
+    if category:
+        products = products.filter(category=category)
+    
+    if sort == 'low_to_high':
+        products = products.order_by('price')
+    elif sort == 'high_to_low':
+        products = products.order_by('-price')
+        
+    return render(request, 'products/product_list.html', {'products': products})
