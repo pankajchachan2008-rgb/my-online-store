@@ -187,7 +187,8 @@ from .serializers import OrderSerializer, ProductSerializer
 # 📡 1. Desktop ERP yahan se saare Pending Orders uthayega
 @api_view(['GET'])
 def get_pending_orders_api(request):
-    orders = Order.objects.filter(status='Pending').order_spacing(created_at='-id')
+    # .order_spacing badal kar .order_by kar dein
+    orders = Order.objects.filter(status='Pending').order_by('-id')
     serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
 

@@ -3,11 +3,11 @@ from .models import Order, OrderItem, Product
 
 # 🛒 1. Order Items Serializer
 class OrderItemSerializer(serializers.ModelSerializer):
-    class Model:
+    class Meta:  # <-- YAHAN 'Meta' HONA CHAHIYE (M capital)
         model = OrderItem
         fields = ['product_name', 'price', 'quantity']
 
-# 📦 2. Main Order Serializer (ERP integration ke liye)
+# 📦 2. Main Order Serializer
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     coupon_code = serializers.CharField(source='applied_coupon.code', read_only=True)
@@ -16,7 +16,7 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['id', 'customer_name', 'mobile_number', 'address', 'total_amount', 'status', 'coupon_code', 'created_at', 'items']
 
-# 🏷️ 3. Product Serializer (ERP se website par bulk updates bhejne ke liye)
+# 🏷️ 3. Product Serializer
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
