@@ -8,18 +8,18 @@
                 {% csrf_token %}
                 <div class="mb-3">
                     <label class="form-label fw-medium">Customer Name</label>
-                    <input type="text" name="name" class="form-control py-2" required>
+                    <input type="text" name="name" class="form-control py-2" value="{{ initial_data.name|default:'' }}" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label fw-medium">Mobile Number (Verification Ke Liye)</label>
-                    <input type="text" id="id_mobile_number" name="mobile_number" class="form-control py-2" placeholder="10-digit number enter karein" required>
+                    <label class="form-label fw-medium">Mobile Number</label>
+                    <input type="text" id="id_mobile_number" name="mobile_number" class="form-control py-2" value="{{ initial_data.mobile|default:'' }}" placeholder="10-digit number enter karein" required>
                     <div id="coupon-status" class="mt-2 fw-semibold"></div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-medium">Complete Address</label>
-                    <textarea name="address" class="form-control" rows="3" required></textarea>
+                    <textarea name="address" class="form-control" rows="3" required>{{ initial_data.address|default:'' }}</textarea>
                 </div>
-                <button type="submit" class="btn-premium-primary w-100 py-3 fs-5 mt-3 rounded-pill">Place Order (Cash on Delivery) 📦</button>
+                <button type="submit" class="btn btn-success w-100 py-3 fs-5 mt-3 rounded-pill" style="background-color: #0d9488; border: none;">Place Order (Cash on Delivery) 📦</button>
             </form>
         </div>
 
@@ -64,7 +64,7 @@
                     discountVal.innerText = disc.toFixed(2);
                     finalTotalSpan.innerText = (baseTotal - disc).toFixed(2);
                 } else {
-                    statusDiv.innerHTML = '<span class="text-muted">Is number par koi unused coupon nahi mila. Normal bill applicable.</span>';
+                    statusDiv.innerHTML = '<span class="text-muted">Is number par koi unused coupon nahi mila.</span>';
                     discountRow.classList.add("d-none");
                     finalTotalSpan.innerText = baseTotal;
                 }

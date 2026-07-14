@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # Aapka custom app
+    'rest_framework',
     'products',
 ]
 
