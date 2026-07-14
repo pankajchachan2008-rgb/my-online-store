@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
-# Views components functions standard extraction imports
+# Views functions imports
 from products.views import (
     product_list, 
     add_to_cart, 
@@ -16,7 +16,12 @@ from products.views import (
     custom_logout,
     register_page,
     make_admin, 
-    trigger_import
+    trigger_import,
+    
+    # 📡 ERP Integration API Views
+    get_pending_orders_api, 
+    update_order_status_api, 
+    sync_products_from_erp_api
 )
 
 urlpatterns = [
@@ -41,9 +46,14 @@ urlpatterns = [
     path('logout/', custom_logout, name='logout'),
     path('register/', register_page, name='register'),
     
-    # 🤫 Custom Corporate Backend Core Controls 
+    # 🤫 Custom Corporate Backend Core Controls
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
     path('secret-import-products-xyz/', trigger_import, name='secret_trigger_import'),
+    
+    # 📡 CORPORATE ERP PIPELINE API ENDPOINTS
+    path('api/orders/pending/', get_pending_orders_api, name='api_pending_orders'),
+    path('api/orders/update/<int:order_id>/', update_order_status_api, name='api_update_order'),
+    path('api/products/sync/', sync_products_from_erp_api, name='api_sync_products'),
 ]
 
 # Media pipeline engine asset management attachment

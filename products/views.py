@@ -178,3 +178,50 @@ def make_admin(request):
 
 def trigger_import(request):
     return render(request, 'products/import_trigger.html')
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import OrderSerializer, ProductSerializer
+
+# 📡 1. Desktop ERP yahan se saare Pending Orders uthayega
+@api_view(['GET'])
+def get_pending_orders_api(request):
+    orders = Order.objects.filter(status='Pending').order_spacing(created_at='-id')
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data)
+
+# 🔄 2. Order Process hone par ERP status update karega (e.g., Completed)
+@api_view(['POST'])
+def update_order_status_api(request, order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order nahi mila'}, status=status.HTTP_404_NOT_FOUND)
+        
+    new_status = request.data.get('status')
+    if new_status:
+        order.status = new_status
+        order.save()
+        return Response({'message': f'Order status successfully updated to {new_status}'})
+    return Response({'error': 'Invalid status data'}, status=status.HTTP_400_BAD_REQUEST)
+
+# 📥 3. Desktop ERP se website par product catalog bulk sync karne ke liye
+@api_view(['POST'])
+def sync_products_from_erp_api(request):
+    product_data = request.data # Expecting a list of products
+    if not isinstance(product_data, list):
+        return Response({'error': 'Data list format me hona chahiye'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    for item in product_data:
+        sku = item.get('sku')
+        if sku:
+            Product.objects.update_or_create(
+                sku=sku,
+                defaults={
+                    'name': item.get('name'),
+                    'description': item.get('description', ''),
+                    'price': item.get('price', 0.00)
+                }
+            )
+    return Response({'message': 'Product sync process successfully executed'})
