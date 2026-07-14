@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-7 shadow p-4 bg-white rounded-4">
+            <h3 class="fw-bold mb-4">Delivery & Billing Details</h3>
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Customer Name</label>
+                    <input type="text" name="name" class="form-control py-2" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Mobile Number (Verification Ke Liye)</label>
+                    <input type="text" id="id_mobile_number" name="mobile_number" class="form-control py-2" placeholder="10-digit number enter karein" required>
+                    <div id="coupon-status" class="mt-2 fw-semibold"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Complete Address</label>
+                    <textarea name="address" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn-premium-primary w-100 py-3 fs-5 mt-3 rounded-pill">Place Order (Cash on Delivery) 📦</button>
+            </form>
+        </div>
+
+        <div class="col-md-5 mt-4 mt-md-0">
+            <div class="card border-0 shadow rounded-4 bg-light p-4">
+                <h4 class="fw-bold mb-3">Order Summary</h4>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span class="fw-bold">Anumiti ₹{{ cart_total }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 text-danger d-none" id="discount-row">
+                    <span>Auto-Applied Coupon:</span>
+                    <span class="fw-bold">-₹<span id="discount-val">0</span></span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between fs-4 fw-bold text-dark">
+                    <span>Total Bill:</span>
+                    <span class="text-success">₹<span id="final-total">{{ cart_total }}</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("id_mobile_number").addEventListener("input", function() {
+        let mobile = this.value;
+        let statusDiv = document.getElementById("coupon-status");
+        let discountRow = document.getElementById("discount-row");
+        let discountVal = document.getElementById("discount-val");
+        let finalTotalSpan = document.getElementById("final-total");
+        let baseTotal = {{ cart_total }};
+
+        if(mobile.length === 10) {
+            fetch(`/check-coupon-ajax/?mobile=${mobile}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'found') {
+                    statusDiv.innerHTML = `<span class="text-success">🎉 Welcome Back! Aapka ${data.discount}% OFF Coupon (${data.code}) auto-apply ho gaya hai!</span>`;
+                    discountRow.classList.remove("d-none");
+                    let disc = (baseTotal * data.discount) / 100;
+                    discountVal.innerText = disc.toFixed(2);
+                    finalTotalSpan.innerText = (baseTotal - disc).toFixed(2);
+                } else {
+                    statusDiv.innerHTML = '<span class="text-muted">Is number par koi unused coupon nahi mila. Normal bill applicable.</span>';
+                    discountRow.classList.add("d-none");
+                    finalTotalSpan.innerText = baseTotal;
+                }
+            });
+        } else {
+            statusDiv.innerHTML = '';
+            discountRow.classList.add("d-none");
+            finalTotalSpan.innerText = baseTotal;
+        }
+    });
+</script>
+{% endblock %}
