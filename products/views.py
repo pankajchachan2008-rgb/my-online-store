@@ -21,7 +21,15 @@ def add_to_cart(request, product_id):
     
     product_id_str = str(product_id)
     if product_id_str in cart:
-        cart[product_id_str]['quantity'] += 1
+        # Fail-safe check: Agar cart corrupted ya old structure int type ho, toh clean reset karein
+        if isinstance(cart[product_id_str], dict):
+            cart[product_id_str]['quantity'] += 1
+        else:
+            cart[product_id_str] = {
+                'name': product.name,
+                'price': float(product.price),
+                'quantity': 1
+            }
     else:
         cart[product_id_str] = {
             'name': product.name,
@@ -39,9 +47,8 @@ def cart_detail(request):
     cart_items = []
     cart_total = 0
     
-    # Agar data structure corrupt ho toh use handle karne ke liye safe dynamic loop
+    # Data corruption issue ('int object not subscriptable') ko bypass karne ke liye safe check
     for pid, item in list(cart.items()):
-        # Check agar item ek dictionary hai ya nahi (int object check handle karne ke liye)
         if isinstance(item, dict) and 'price' in item and 'quantity' in item:
             product = get_object_or_404(Product, id=int(pid))
             total_price = item['price'] * item['quantity']
@@ -52,7 +59,7 @@ def cart_detail(request):
                 'total_price': total_price
             })
         else:
-            # Agar koi purana format integer ya kharab data hai, toh use clear kar dein
+            # Bad or corrupted session values ko filter karke automatic remove kar dena
             cart.pop(pid, None)
             request.session['cart'] = cart
         
@@ -69,8 +76,9 @@ def checkout_page(request):
         return redirect('home')
         
     cart_total = 0
-    for pid, item in cart.items():
-        cart_total += item['price'] * item['quantity']
+    for pid, item in list(cart.items()):
+        if isinstance(item, dict) and 'price' in item:
+            cart_total += item['price'] * item['quantity']
         
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -87,7 +95,7 @@ def checkout_page(request):
             active_coupon.is_used = True
             active_coupon.save()
 
-        # 📦 Order create karna (ERP ke data consumption ke liye)
+        # 📦 Order create karna (ERP pipelines connectivity ready)
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             customer_name=name,
@@ -98,16 +106,17 @@ def checkout_page(request):
             status='Pending'
         )
         
-        # 🛒 Individual items ko map karke pipeline me daalna
+        # 🛒 Individual items ko OrderItem model map pipeline me feed karna
         for pid, item in cart.items():
-            OrderItem.objects.create(
-                order=order,
-                product_name=item['name'],
-                price=item['price'],
-                quantity=item['quantity']
-            )
+            if isinstance(item, dict):
+                OrderItem.objects.create(
+                    order=order,
+                    product_name=item['name'],
+                    price=item['price'],
+                    quantity=item['quantity']
+                )
             
-        # 🎁 Next time promotion generation structure
+        # 🎁 Gamified promotion card engine rules
         new_coupon = None
         if final_total >= 999:
             new_code = f"CGS10-{order.id}"
@@ -116,15 +125,16 @@ def checkout_page(request):
             new_code = f"CGS08-{order.id}"
             new_coupon = Coupon.objects.create(code=new_code, mobile_number=mobile, discount_percentage=8)
 
-        # Session cart ko drop karna billing cycle hone par
+        # Clear session after successful database commit
         request.session['cart'] = {}
         
-        # Trigger dynamic simple inline summary for customer acknowledgment
+        # FIX: Sahi location nested path par map kiya hai (products/)
         return render(request, 'products/order_success.html', {
             'order': order, 
             'new_coupon': new_coupon
         })
 
+    # FIX: Sahi location nested path par map kiya hai (products/)
     return render(request, 'products/checkout.html', {'cart_total': cart_total})
 
 # 🔍 5. AJAX Endpoint to scan active coupon backend records instantly
@@ -139,14 +149,14 @@ def check_coupon_ajax(request):
         })
     return JsonResponse({'status': 'not_found'})
 
-# 📄 6. Static Pages Views
+# 📄 6. Static Pages Views (Sahi Nested Paths Fixed)
 def about_page(request):
     return render(request, 'products/about.html')
 
 def contact_page(request):
     return render(request, 'products/contact.html')
 
-# 👤 7. Custom Safe Authentication System
+# 👤 7. Custom Safe Authentication System (Sahi Nested Paths Fixed)
 def custom_logout(request):
     logout(request)
     return redirect('home')
@@ -164,9 +174,7 @@ def register_page(request):
 
 # 🤫 8. Hidden ERP / Superuser Automation Actions
 def make_admin(request):
-    # Aapka dynamic inline logic configuration code
     return render(request, 'products/admin_trigger.html')
 
 def trigger_import(request):
-    # Bulk import engine runtime script execution code
     return render(request, 'products/import_trigger.html')
