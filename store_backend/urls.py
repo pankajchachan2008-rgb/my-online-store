@@ -14,7 +14,7 @@ from products.views import (
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('secret-cgs-main/', admin.site.urls),
     path('', product_list, name='home'),
     
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),

@@ -9,10 +9,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-your-custom-secret-key-change-this-in-production'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Isko False karna sabse zaroori hai
+DEBUG = False
 
-ALLOWED_HOSTS = ['*'] # Local aur temporary server hosting ke liye open hai
-
+# Yahan apna domain aur Render ka default URL daalein
+ALLOWED_HOSTS = ['cgsmart.in', 'www.cgsmart.in', 'aapka-render-app-name.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
@@ -116,3 +117,13 @@ X_FRAME_OPTIONS = 'DENY'
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 LOGIN_REDIRECT_URL = '/'
+
+# 🔒 PRODUCTION SECURITY SETTINGS
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Render server proxy configuration for HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
