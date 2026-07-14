@@ -1,87 +1,122 @@
-{% extends 'products/base.html' %}
-
-{% block title %}Your Shopping Cart - Mere Store Online{% endblock %}
-
+{% extends 'base.html' %}
 {% block content %}
-<div class="row">
-    <div class="col-12 mb-4">
-        <h2 class="fw-bold text-secondary">🛒 Aapka Shopping Cart</h2>
-        <a href="{% url 'home' %}" class="btn btn-link text-success p-0 text-decoration-none">← Continue Shopping</a>
+<div class="container mt-2 mb-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">🛒 Aapka Cart</h2>
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-4">← Shopping Jari Rakhein</a>
     </div>
-</div>
 
-{% if cart_items %}
-<div class="row g-4">
-    <div class="col-lg-8">
-        <div class="card shadow-sm border-0 p-3">
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead class="table-light">
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-10">
+
+            <div id="upsell-alert" class="alert alert-warning text-center rounded-4 shadow-sm fw-semibold border-warning d-none" style="font-size: 1rem;">
+                ✨ Sirf <strong class="text-danger">₹<span id="amount-needed"></span></strong> ka samaan aur add karein aur apne next order ke liye <strong class="text-dark">8% Discount Scratch Card</strong> jeetein!
+            </div>
+
+            <div id="scratch-box" class="card border-0 shadow-lg rounded-4 d-none overflow-hidden" style="background: linear-gradient(135deg, #0f172a, #0d9488);">
+                <div class="card-body text-center p-4">
+                    <h4 class="fw-bold text-white mb-2">🎉 Badhai Ho! Aapne ek Scratch Card Jeeta Hai!</h4>
+                    <p class="text-white-50 mb-4 small">Niche diye gaye card par click karke scratch karein aur apna Next Order Discount Code payein.</p>
+
+                    <div class="mx-auto position-relative" style="width: 300px; height: 90px; cursor: pointer;" onclick="revealCard()">
+                        <div class="bg-white rounded-3 w-100 h-100 d-flex align-items-center justify-content-center border border-3 border-warning shadow-inner">
+                            <h4 id="coupon-code" class="fw-bold text-dark m-0" style="letter-spacing: 1px;"></h4>
+                        </div>
+                        <div id="scratch-cover" class="position-absolute top-0 start-0 w-100 h-100 rounded-3 d-flex align-items-center justify-content-center text-dark fw-bold shadow" style="background: repeating-linear-gradient(45deg, #e2e8f0, #e2e8f0 10px, #cbd5e1 10px, #cbd5e1 20px); transition: opacity 0.6s ease; font-size: 1.2rem;">
+                            🪙 Tap to Scratch
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-body p-0 table-responsive">
+            {% if cart_items %}
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
                         <tr>
-                            <th scope="col">Product Name</th>
-                            <th scope="col">Price</th>
-                            <th scope="col" class="text-center">Quantity</th>
-                            <th scope="col">Subtotal</th>
+                            <th scope="col" class="ps-4 py-3 text-muted fw-semibold">Product</th>
+                            <th scope="col" class="py-3 text-muted fw-semibold">Price</th>
+                            <th scope="col" class="py-3 text-muted fw-semibold">Quantity</th>
+                            <th scope="col" class="py-3 text-muted fw-semibold">Total</th>
+                            <th scope="col" class="pe-4 py-3 text-end text-muted fw-semibold">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in cart_items %}
                         <tr>
-                            <td>
-                                <div class="fw-bold">{{ item.product.name }}</div>
-                                <small class="text-muted">SKU: {{ item.product.sku }}</small>
+                            <td class="ps-4 py-3 fw-medium text-dark">{{ item.product.name }}</td>
+                            <td class="py-3">₹{{ item.product.price }}</td>
+                            <td class="py-3 fw-bold">{{ item.quantity }}</td>
+                            <td class="py-3 fw-bold text-success">₹{{ item.total_price }}</td>
+                            <td class="pe-4 py-3 text-end">
+                                <a href="#" class="btn btn-sm btn-outline-danger rounded-3">Remove</a>
                             </td>
-                            <td>₹{{ item.product.price }}</td>
-                            <td class="text-center">
-                                <span class="badge bg-secondary fs-6">{{ item.quantity }}</span>
-                            </td>
-                            <td class="fw-bold text-success">₹{{ item.subtotal }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
-            <div class="d-flex justify-content-end align-items-center mt-3 p-2 bg-light rounded">
-                <span class="fs-5 fw-bold me-3">Total Bill:</span>
-                <span class="fs-4 fw-bold text-success">₹{{ total_amount }}</span>
+            {% else %}
+                <div class="text-center py-5">
+                    <span style="font-size: 4rem; opacity: 0.5;">🛒</span>
+                    <h4 class="mt-3 text-muted fw-bold">Aapka Cart Khali Hai</h4>
+                    <p class="text-muted">Ache offers ka fayda uthane ke liye samaan add karein!</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if cart_items %}
+        <div class="card-footer bg-white p-4 border-top">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <span class="text-muted fw-semibold d-block" style="font-size: 0.9rem;">Total Amount</span>
+                    <h3 class="fw-bold text-dark m-0">₹{{ cart_total }}</h3>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="btn btn-premium-primary px-5 py-3 rounded-pill fs-5 shadow-sm">
+                        Proceed to Checkout 🚀
+                    </a>
+                </div>
             </div>
         </div>
+        {% endif %}
     </div>
 
-    <div class="col-lg-4">
-        <div class="card shadow-sm border-0 p-4">
-            <h4 class="fw-bold text-secondary mb-3">Delivery Details</h4>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Aapka Naam (Full Name)</label>
-                    <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Mobile Number</label>
-                    <input type="text" name="phone" class="form-control" placeholder="Enter 10-digit number" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Address (Ghar ka pata)</label>
-                    <textarea name="address" class="form-control" rows="3" placeholder="Flat, Street, Area, City" required></textarea>
-                </div>
-                <div class="alert alert-info py-2 mb-3 small">
-                    ℹ️ Abhi sirf <strong>Cash on Delivery (COD)</strong> available hai.
-                </div>
-                <button type="submit" class="btn btn-success w-100 py-2 fw-bold text-uppercase shadow-sm">
-                    Confirm Order (COD)
-                </button>
-            </form>
-        </div>
-    </div>
 </div>
-{% else %}
-<div class="row">
-    <div class="col text-center my-5">
-        <div class="fs-1 text-muted mb-3">🛒</div>
-        <p class="fs-4 text-muted">Aapka cart bilkul khali hai!</p>
-        <a href="{% url 'home' %}" class="btn btn-success fw-bold px-4">Samaan Add Karein</a>
-    </div>
-</div>
-{% endif %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Django se Total Amount variable yahan aayega
+        let cartTotal = {{ cart_total|default:0 }}; 
+        
+        // UI Elements
+        const upsellAlert = document.getElementById("upsell-alert");
+        const scratchBox = document.getElementById("scratch-box");
+        const couponCode = document.getElementById("coupon-code");
+        const amountNeeded = document.getElementById("amount-needed");
+
+        // Discount Logic
+        if (cartTotal >= 999) {
+            scratchBox.classList.remove("d-none");
+            couponCode.innerHTML = "🎁 CGSMART10 <br><small class='text-muted fs-6'>(10% OFF NEXT ORDER)</small>";
+        } else if (cartTotal >= 699) {
+            scratchBox.classList.remove("d-none");
+            couponCode.innerHTML = "🎉 CGSMART08 <br><small class='text-muted fs-6'>(8% OFF NEXT ORDER)</small>";
+        } else if (cartTotal > 0) {
+            upsellAlert.classList.remove("d-none");
+            amountNeeded.innerText = (699 - cartTotal).toFixed(2);
+        }
+    });
+
+    // Animation Function
+    function revealCard() {
+        const cover = document.getElementById("scratch-cover");
+        cover.style.opacity = "0";
+        setTimeout(() => { cover.style.display = "none"; }, 600);
+    }
+</script>
 {% endblock %}
