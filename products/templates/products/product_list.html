@@ -3,7 +3,7 @@
 
 <div class="row mb-5 align-items-center bg-white rounded-4 p-5 shadow-sm border-start border-4 border-info" style="border-left-color: #0d9488 !important;">
     <div class="col-md-7">
-        <span class="badge bg-light text-success mb-2 px-3 py-2 rounded-pill fw-semibold">Welcome to Chachan General Store</span>
+        <span class="badge bg-light text-success mb-2 px-3 py-2 rounded-pill fw-semibold">Welcome to Corporate Store</span>
         <h1 class="display-5 fw-bold text-dark mb-3">Premium Quality,<br>Bhi Bulk Rates Me.</h1>
         <p class="lead text-muted">Chachan General Store ki online branch. Ghar baithe behtareen quality ka samaan sabse saste aur wholesale daamo par mangwayein.</p>
     </div>
@@ -30,12 +30,6 @@
                  onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.1)';"
                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.05)';">
                 
-                <div class="position-absolute top-0 end-0 m-2" style="z-index: 2;">
-                    <span class="badge bg-danger rounded-pill shadow px-3 py-2" style="font-size: 0.8rem; font-weight: 600; border: 1.5px solid white;">
-                        🔥 15% OFF
-                    </span>
-                </div>
-
                 <span class="position-absolute top-0 start-0 m-3 badge bg-dark bg-opacity-75 rounded-pill px-3 py-2" style="font-size: 0.75rem; z-index: 2;">
                     In Stock
                 </span>
@@ -52,19 +46,13 @@
                     <span class="text-uppercase text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">Code: {{ product.sku }}</span>
                     <h5 class="card-title fw-bold text-dark mb-2" style="font-size: 1.1rem; line-height: 1.4;">{{ product.name }}</h5>
                     
-                    <div class="mb-2">
-                        <span class="bg-warning bg-opacity-25 text-dark px-2 py-1 rounded d-inline-block border border-warning border-opacity-50" style="font-size: 0.75rem; font-weight: 600;">
-                            ✨ Scheme: Buy 1 Get 1 Free
-                        </span>
-                    </div>
-
                     <p class="card-text text-muted flex-grow-1 mt-1" style="font-size: 0.88rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                         {{ product.description|default:"Premium quality grocery and household selection item." }}
                     </p>
                     
                     <div class="d-flex align-items-center justify-content-between mt-3 pt-3 border-top border-light">
                         <div>
-                            <span class="text-muted text-decoration-line-through" style="font-size: 0.8rem; display: block;">MRP: ₹{{ product.price|add:"50" }}</span>
+                            <span class="text-muted" style="font-size: 0.75rem; display: block;">Price</span>
                             <span class="fw-bold text-dark" style="font-size: 1.3rem;">₹{{ product.price }}</span>
                         </div>
                         <a href="{% url 'add_to_cart' product.id %}" class="btn-premium-outline btn-sm py-2 px-3 text-nowrap">
