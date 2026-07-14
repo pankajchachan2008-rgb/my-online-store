@@ -127,13 +127,18 @@ def checkout_page(request):
 # 👤 5. Profile Page (Order History & Settings)
 @login_required
 def profile_page(request):
+    # Agar admin hai, toh use profile dikhane ki zaroorat nahi
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect('home')
+        
+    # Sirf normal user ke liye profile fetch karein
     profile, created = CustomerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
         profile.mobile_number = request.POST.get('mobile_number')
         profile.default_address = request.POST.get('address')
         profile.save()
-        messages.success(request, "Aapki profile details update ho chuki hain!")
+        messages.success(request, "Aapki profile update ho gayi!")
         return redirect('profile')
 
     recent_orders = Order.objects.filter(user=request.user).order_by('-created_at')[:10]
