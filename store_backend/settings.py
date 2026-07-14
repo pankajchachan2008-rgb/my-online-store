@@ -13,7 +13,10 @@ SECRET_KEY = 'django-insecure-your-custom-secret-key-change-this-in-production'
 DEBUG = False
 
 # Yahan apna domain aur Render ka default URL daalein
-ALLOWED_HOSTS = ['cgsmart.in', 'www.cgsmart.in', 'aapka-render-app-name.onrender.com']
+ALLOWED_HOSTS = ['cgsmart.in', 'www.cgsmart.in', '*'] 
+
+# YEH NAYI LINE JODEIN (Aapke domain par secure login allow karne ke liye)
+CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in']
 
 # Application definition
 INSTALLED_APPS = [
@@ -94,6 +97,7 @@ USE_TZ = True
 # Static Files Setup (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+TATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
