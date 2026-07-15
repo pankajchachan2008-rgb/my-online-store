@@ -36,7 +36,7 @@
                                 <th>Date</th>
                                 <th>Amount</th>
                                 <th>Status</th>
-                            </tr>
+                                <th>Invoice</th> </tr>
                         </thead>
                         <tbody>
                             {% for order in orders %}
@@ -55,10 +55,15 @@
                                         <span class="badge bg-danger px-3 py-2 rounded-pill">❌ {{ order.status }}</span>
                                     {% endif %}
                                 </td>
+                                <td>
+                                    <a href="{% url 'download_invoice' order.id %}" class="btn btn-sm btn-outline-primary rounded-pill fw-bold" target="_blank">
+                                        📥 PDF Bill
+                                    </a>
+                                </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4" class="text-center text-muted py-4">Aapne abhi tak koi order place nahi kiya hai.</td>
+                                <td colspan="5" class="text-center text-muted py-4">Aapne abhi tak koi order place nahi kiya hai.</td>
                             </tr>
                             {% endfor %}
                         </tbody>

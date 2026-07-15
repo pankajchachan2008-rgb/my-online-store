@@ -8,7 +8,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Product, Coupon, Order, OrderItem, CustomerProfile
-from .serializers import OrderSerializer, ProductSerializer
+from .serializers import OrderSerializer, ProductSerializerfrom django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+
 
 # 🏠 1. Homepage View (Combined with Search, Category, and Sorting)
 def product_list(request):
@@ -231,3 +234,27 @@ def sync_products_from_erp_api(request):
                 defaults={'name': item.get('name'), 'description': item.get('description', ''), 'price': item.get('price', 0.00)}
             )
     return Response({'message': 'Product sync process successfully executed'})
+
+# 📄 Download Smart PDF Invoice
+def download_invoice(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    
+    # Template jise PDF mein convert karna hai
+    template_path = 'products/invoice_pdf.html'
+    context = {'order': order}
+    
+    # Response ko PDF format mein set karein
+    response = HttpResponse(content_type='application/pdf')
+    # Attachment property browser ko file download karne ka signal deti hai
+    response['Content-Disposition'] = f'attachment; filename="CGSmart_Invoice_{order.id}.pdf"'
+    
+    # HTML ko render karein
+    template = get_template(template_path)
+    html = template.render(context)
+    
+    # PDF Create karein
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    
+    if pisa_status.err:
+        return HttpResponse('Invoice generate karne mein error aayi: <pre>' + html + '</pre>')
+    return response

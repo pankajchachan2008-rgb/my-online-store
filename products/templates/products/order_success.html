@@ -28,8 +28,12 @@
             </div>
 
             <p class="text-secondary small mb-4">Hum jald hi aapke diye gaye number par delivery ke liye contact karenge.</p>
-            <div>
-                <a href="{% url 'home' %}" class="btn btn-success px-4 fw-bold">Dukaan Par Wapas Jayein</a>
+            
+            <div class="d-flex gap-3 justify-content-center mt-3">
+                <a href="{% url 'home' %}" class="btn btn-outline-success px-4 fw-bold">Dukaan Par Wapas Jayein</a>
+                <a href="{% url 'download_invoice' order.id %}" class="btn btn-success px-4 fw-bold" target="_blank">
+                    📥 Download Invoice
+                </a>
             </div>
         </div>
     </div>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Invoice #{{ order.id }}</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #333333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .store-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .store-details {
+            font-size: 10px;
+            color: #7f8c8d;
+        }
+        .invoice-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .details-table {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .details-table td {
+            vertical-align: top;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .items-table th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        .items-table td {
+            border-bottom: 1px solid #dddddd;
+            padding: 8px;
+        }
+        .totals {
+            text-align: right;
+            font-size: 14px;
+        }
+        .totals-row {
+            margin-bottom: 5px;
+        }
+        .grand-total {
+            font-size: 16px;
+            font-weight: bold;
+            color: #27ae60;
+            border-top: 2px solid #2c3e50;
+            padding-top: 5px;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10px;
+            color: #95a5a6;
+        }
+        /* xhtml2pdf native barcode generation */
+        .barcode {
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="store-name">CG SMART</div>
+        <div class="store-details">India's Premier Online Store<br>Email: support@cgsmart.in</div>
+    </div>
+
+    <div class="invoice-title">
+        TAX INVOICE
+    </div>
+
+    <table class="details-table">
+        <tr>
+            <td width="50%">
+                <strong>Billed To:</strong><br>
+                {{ order.customer_name }}<br>
+                {{ order.address }}<br>
+                Phone: {{ order.mobile_number }}
+            </td>
+            <td width="50%" style="text-align: right;">
+                <strong>Invoice No:</strong> #CGS-{{ order.id }}<br>
+                <strong>Date:</strong> {{ order.created_at|date:"d M Y" }}<br>
+                <strong>Status:</strong> {{ order.status }}
+            </td>
+        </tr>
+    </table>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Item Description</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.orderitem_set.all %}
+            <tr>
+                <td>{{ item.product_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.price }}</td>
+                <td>₹{% widthratio item.price 1 item.quantity %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="totals">
+        {% if order.applied_coupon %}
+        <div class="totals-row">
+            Subtotal: <strong>₹{{ order.total_amount }}</strong> 
+            <em>(Discount Applied: {{ order.applied_coupon.discount_percentage }}%)</em>
+        </div>
+        {% endif %}
+        <div class="totals-row grand-total">
+            Grand Total: ₹{{ order.total_amount }}
+        </div>
+    </div>
+
+    <div class="barcode">
+        <pdf:barcode value="CGS-{{ order.id }}" type="code128" barwidth="1.2" barheight="30" />
+        <br><span style="font-size: 8px;">Scan for ERP record</span>
+    </div>
+
+    <div class="footer">
+        Thank you for shopping with CG Smart!<br>
+        This is a computer-generated document and does not require physical signature.
+    </div>
+
+</body>
+</html>

@@ -10,7 +10,8 @@ from products.views import (
     check_coupon_ajax, about_page, contact_page,
     custom_logout, register_page, profile_page,
     make_admin, trigger_import,
-    get_pending_orders_api, update_order_status_api, sync_products_from_erp_api
+    get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
+    download_invoice  # 👈 Naya import add kiya gaya hai
 )
 
 urlpatterns = [
@@ -33,9 +34,13 @@ urlpatterns = [
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
     path('secret-import-products-xyz/', trigger_import, name='secret_trigger_import'),
     
+    # API Endpoints
     path('api/orders/pending/', get_pending_orders_api, name='api_pending_orders'),
     path('api/orders/update/<int:order_id>/', update_order_status_api, name='api_update_order'),
     path('api/products/sync/', sync_products_from_erp_api, name='api_sync_products'),
+
+    # 📄 Naya Invoice Download URL
+    path('invoice/<int:order_id>/download/', download_invoice, name='download_invoice'),
 ]
 
 if settings.DEBUG:
