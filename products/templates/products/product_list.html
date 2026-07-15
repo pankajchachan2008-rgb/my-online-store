@@ -4,70 +4,70 @@
 <div class="row mb-5 align-items-center bg-white rounded-4 p-5 shadow-sm border-start border-4 border-info" style="border-left-color: #0d9488 !important;">
     <div class="col-md-7">
         <span class="badge bg-light text-success mb-2 px-3 py-2 rounded-pill fw-semibold">Welcome to Chachan General Store</span>
-        <h1 class="display-5 fw-bold text-dark mb-3">Premium Quality,<br>Bhi Bulk Rates Me.</h1>
-        <p class="lead text-muted">Chachan General Store ki online branch. Ghar baithe behtareen quality ka samaan sabse saste aur wholesale daamo par mangwayein.</p>
+        <h1 class="display-5 fw-bold text-dark mb-3">Premium Quality,<br>Bulk Rates Me.</h1>
+        <p class="lead text-muted">Ghar baithe behtareen quality ka samaan sabse saste daamo par mangwayein.</p>
     </div>
     <div class="col-md-5 text-center d-none d-md-block">
         <span style="font-size: 6rem;">📦</span>
     </div>
 </div>
 
-<div class="row mb-4 justify-content-center">
-    <div class="col-md-8 text-center">
-        <h3 class="fw-semibold text-dark mb-4">Hamare Products</h3>
-        <form method="GET" action="" class="d-flex shadow-sm rounded-3 overflow-hidden bg-white p-1 border">
-            <input type="text" name="search" class="form-control border-0 px-4 py-3" placeholder="Product ka naam search karein..." value="{{ request.GET.search }}">
-            <button type="submit" class="btn-premium-primary px-4">Search</button>
-        </form>
-    </div>
-</div>
-
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mt-2">
-    {% for product in products %}
-        <div class="col">
-            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative" 
-                 style="transition: all 0.3s ease; background: #ffffff;"
-                 onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 24px rgba(0,0,0,0.1)';"
-                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.05)';">
-                
-                <span class="position-absolute top-0 start-0 m-3 badge bg-dark bg-opacity-75 rounded-pill px-3 py-2" style="font-size: 0.75rem; z-index: 2;">
-                    In Stock
-                </span>
-
-                <div style="height: 200px; background-color: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" class="w-100 h-100" style="object-fit: cover;" alt="{{ product.name }}">
-                    {% else %}
-                        <span style="font-size: 3.5rem; opacity: 0.4;">🛒</span>
-                    {% endif %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm p-4 rounded-4 mb-4">
+            <h5 class="fw-bold mb-3">Filters</h5>
+            
+            <div class="mb-4">
+                <p class="fw-medium text-muted mb-2">Category</p>
+                <div class="list-group list-group-flush">
+                    <a href="?" class="list-group-item list-group-item-action border-0 {% if not request.GET.category %}fw-bold text-primary{% endif %}">All Categories</a>
+                    <a href="?category=Grocery{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="list-group-item list-group-item-action border-0 {% if request.GET.category == 'Grocery' %}fw-bold text-primary{% endif %}">Grocery</a>
+                    <a href="?category=Cosmetics{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="list-group-item list-group-item-action border-0 {% if request.GET.category == 'Cosmetics' %}fw-bold text-primary{% endif %}">Cosmetics</a>
+                    <a href="?category=Electronics{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="list-group-item list-group-item-action border-0 {% if request.GET.category == 'Electronics' %}fw-bold text-primary{% endif %}">Electronics</a>
                 </div>
+            </div>
 
-                <div class="card-body d-flex flex-column p-4">
-                    <span class="text-uppercase text-muted fw-bold mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">Code: {{ product.sku }}</span>
-                    <h5 class="card-title fw-bold text-dark mb-2" style="font-size: 1.1rem; line-height: 1.4;">{{ product.name }}</h5>
-                    
-                    <p class="card-text text-muted flex-grow-1 mt-1" style="font-size: 0.88rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                        {{ product.description|default:"Premium quality grocery and household selection item." }}
-                    </p>
-                    
-                    <div class="d-flex align-items-center justify-content-between mt-3 pt-3 border-top border-light">
-                        <div>
-                            <span class="text-muted" style="font-size: 0.75rem; display: block;">Price</span>
-                            <span class="fw-bold text-dark" style="font-size: 1.3rem;">₹{{ product.price }}</span>
-                        </div>
-                        <a href="{% url 'add_to_cart' product.id %}" class="btn-premium-outline btn-sm py-2 px-3 text-nowrap">
-                            + Add to Cart
-                        </a>
-                    </div>
+            <div>
+                <p class="fw-medium text-muted mb-2">Sort By Price</p>
+                <div class="list-group list-group-flush">
+                    <a href="?sort=low_to_high{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="list-group-item list-group-item-action border-0">Low to High</a>
+                    <a href="?sort=high_to_low{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="list-group-item list-group-item-action border-0">High to Low</a>
                 </div>
             </div>
         </div>
-    {% empty %}
-        <div class="col-12 text-center py-5">
-            <span style="font-size: 3rem;">🔍</span>
-            <p class="text-muted mt-3">Aapki khoj ke mutabiq koi product nahi mila.</p>
-            <a href="{% url 'home' %}" class="btn-premium-primary mt-2">Saare Products Dekhein</a>
+    </div>
+
+    <div class="col-md-9">
+        <form method="GET" action="" class="d-flex shadow-sm rounded-3 overflow-hidden bg-white p-1 border mb-4">
+            <input type="text" name="search" class="form-control border-0 px-4 py-3" placeholder="Product search karein..." value="{{ request.GET.search }}">
+            <button type="submit" class="btn-premium-primary px-4">Search</button>
+        </form>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for product in products %}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                        <div style="height: 200px; background-color: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="w-100 h-100" style="object-fit: cover;" alt="{{ product.name }}">
+                            {% else %}
+                                <span style="font-size: 3.5rem; opacity: 0.4;">🛒</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body d-flex flex-column p-4">
+                            <span class="badge bg-light text-primary mb-2 align-self-start">{{ product.category }}</span>
+                            <h5 class="card-title fw-bold text-dark">{{ product.name }}</h5>
+                            <p class="fw-bold text-dark fs-4">₹{{ product.price }}</p>
+                            <a href="{% url 'add_to_cart' product.id %}" class="btn-premium-outline w-100 rounded-pill mt-auto">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">Koi product nahi mila.</p>
+                </div>
+            {% endfor %}
         </div>
-    {% endfor %}
+    </div>
 </div>
 {% endblock %}

@@ -10,14 +10,36 @@ from rest_framework import status
 from .models import Product, Coupon, Order, OrderItem, CustomerProfile
 from .serializers import OrderSerializer, ProductSerializer
 
-# 🏠 1. Homepage View
+# 🏠 1. Homepage View (Combined with Search, Category, and Sorting)
 def product_list(request):
-    search_query = request.GET.get('search', '')
+    search_query = request.GET.get('search', '').strip()
+    category = request.GET.get('category')
+    sort = request.GET.get('sort')
+    
+    # Base Queryset
+    products = Product.objects.all()
+
+    # A. Search Filter
     if search_query:
-        products = Product.objects.filter(name__icontains=search_query)
+        products = products.filter(name__icontains=search_query)
+        
+    # B. Category Filter
+    if category:
+        products = products.filter(category=category)
+    
+    # C. Price Sorting Logic
+    if sort == 'low_to_high':
+        products = products.order_by('price')
+    elif sort == 'high_to_low':
+        products = products.order_by('-price')
     else:
-        products = Product.objects.all()
-    return render(request, 'products/product_list.html', {'products': products})
+        # Default: Latest products first
+        products = products.order_by('-id')
+        
+    return render(request, 'products/product_list.html', {
+        'products': products, 
+        'active_category': category
+    })
 
 # 🛒 2. Add to Cart
 def add_to_cart(request, product_id):
@@ -209,18 +231,3 @@ def sync_products_from_erp_api(request):
                 defaults={'name': item.get('name'), 'description': item.get('description', ''), 'price': item.get('price', 0.00)}
             )
     return Response({'message': 'Product sync process successfully executed'})
-
-def product_list(request):
-    category = request.GET.get('category')
-    sort = request.GET.get('sort')
-    products = Product.objects.all()
-
-    if category:
-        products = products.filter(category=category)
-    
-    if sort == 'low_to_high':
-        products = products.order_by('price')
-    elif sort == 'high_to_low':
-        products = products.order_by('-price')
-        
-    return render(request, 'products/product_list.html', {'products': products})

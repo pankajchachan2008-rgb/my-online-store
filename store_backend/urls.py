@@ -28,7 +28,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', custom_logout, name='logout'),
     path('register/', register_page, name='register'),
-    path('profile/', profile_page, name='profile'),  # 👤 Profile URL added
+    path('profile/', profile_page, name='profile'),
     
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
     path('secret-import-products-xyz/', trigger_import, name='secret_trigger_import'),
