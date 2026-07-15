@@ -121,3 +121,32 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
+
+# =====================================================================
+#                 🔒 ADVANCED SECURITY HARDENING SETTINGS
+# =====================================================================
+
+# 1. Strict SSL Redirect & HTTPS Enforcement
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# 2. HSTS (HTTP Strict Transport Security) - Only allow HTTPS connection
+SECURE_HSTS_SECONDS = 31536000  # 1 Year (Corporate Standard)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# 3. Session & Cookie Security (Prevents session/cookie hijacking)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# 4. Browser Protection Headers
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'  # Clickjacking Protection
+
+# 5. Prevent exposing Server Details
+SECURE_REFERRER_POLICY = "same-origin"
