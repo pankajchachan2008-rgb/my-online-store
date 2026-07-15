@@ -8,7 +8,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Product, Coupon, Order, OrderItem, CustomerProfile
-from .serializers import OrderSerializer, ProductSerializerfrom django.http import HttpResponse
+from .serializers import OrderSerializer, ProductSerializer
+from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 
