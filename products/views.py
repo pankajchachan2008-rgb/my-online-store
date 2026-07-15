@@ -236,24 +236,25 @@ def sync_products_from_erp_api(request):
             )
     return Response({'message': 'Product sync process successfully executed'})
 
-# 📄 Download Smart PDF Invoice
+# 📄 Download Smart PDF Invoice (Fixed Data Issue)
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     
-    # Template jise PDF mein convert karna hai
-    template_path = 'products/invoice_pdf.html'
-    context = {'order': order}
+    # 🌟 FIX: Items ko alag se database se nikal kar bhej rahe hain
+    items = OrderItem.objects.filter(order=order)
     
-    # Response ko PDF format mein set karein
+    template_path = 'products/invoice_pdf.html'
+    context = {
+        'order': order,
+        'items': items  # 👈 Data ab directly template ko mil jayega
+    }
+    
     response = HttpResponse(content_type='application/pdf')
-    # Attachment property browser ko file download karne ka signal deti hai
     response['Content-Disposition'] = f'attachment; filename="CGSmart_Invoice_{order.id}.pdf"'
     
-    # HTML ko render karein
     template = get_template(template_path)
     html = template.render(context)
     
-    # PDF Create karein
     pisa_status = pisa.CreatePDF(html, dest=response)
     
     if pisa_status.err:

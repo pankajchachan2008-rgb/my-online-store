@@ -6,47 +6,33 @@
     <style>
         @page {
             size: a4 portrait;
-            margin: 2cm;
+            margin: 1.5cm;
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
-            font-size: 12px;
             color: #333333;
+            font-size: 13px;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .store-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .store-details {
-            font-size: 10px;
-            color: #7f8c8d;
-        }
-        .invoice-title {
-            font-size: 18px;
-            font-weight: bold;
-            text-align: right;
-            margin-bottom: 20px;
-        }
-        .details-table {
+        /* Strict PDF-friendly Table CSS */
+        table {
             width: 100%;
-            margin-bottom: 30px;
         }
-        .details-table td {
-            vertical-align: top;
+        .header-table {
+            margin-bottom: 25px;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+        }
+        .billing-table {
+            margin-bottom: 30px;
         }
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .items-table th {
             background-color: #2c3e50;
-            color: white;
+            color: #ffffff;
             padding: 8px;
             text-align: left;
             font-weight: bold;
@@ -55,56 +41,52 @@
             border-bottom: 1px solid #dddddd;
             padding: 8px;
         }
-        .totals {
+        .totals-table {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .totals-table td {
+            padding: 5px;
             text-align: right;
-            font-size: 14px;
-        }
-        .totals-row {
-            margin-bottom: 5px;
-        }
-        .grand-total {
-            font-size: 16px;
-            font-weight: bold;
-            color: #27ae60;
-            border-top: 2px solid #2c3e50;
-            padding-top: 5px;
         }
         .footer {
-            margin-top: 50px;
+            margin-top: 40px;
             text-align: center;
-            font-size: 10px;
-            color: #95a5a6;
-        }
-        /* xhtml2pdf native barcode generation */
-        .barcode {
-            margin-top: 20px;
-            text-align: right;
+            font-size: 11px;
+            color: #7f8c8d;
+            border-top: 1px solid #eeeeee;
+            padding-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="store-name">CG SMART</div>
-        <div class="store-details">India's Premier Online Store<br>Email: support@cgsmart.in</div>
-    </div>
-
-    <div class="invoice-title">
-        TAX INVOICE
-    </div>
-
-    <table class="details-table">
+    <table class="header-table">
         <tr>
-            <td width="50%">
-                <strong>Billed To:</strong><br>
-                {{ order.customer_name }}<br>
-                {{ order.address }}<br>
-                Phone: {{ order.mobile_number }}
+            <td style="width: 50%;">
+                <h1 style="color: #2c3e50; margin: 0; font-size: 28px;">CG SMART</h1>
+                <p style="margin: 2px 0; color: #7f8c8d; font-size: 12px;">India's Premier Online Store</p>
+                <p style="margin: 2px 0; color: #7f8c8d; font-size: 12px;">support@cgsmart.in</p>
             </td>
-            <td width="50%" style="text-align: right;">
-                <strong>Invoice No:</strong> #CGS-{{ order.id }}<br>
-                <strong>Date:</strong> {{ order.created_at|date:"d M Y" }}<br>
-                <strong>Status:</strong> {{ order.status }}
+            <td style="width: 50%; text-align: right; vertical-align: top;">
+                <h2 style="color: #2c3e50; margin: 0; font-size: 20px;">TAX INVOICE</h2>
+                <p style="margin: 2px 0;"><strong>Invoice No:</strong> #CGS-{{ order.id }}</p>
+                <p style="margin: 2px 0;"><strong>Date:</strong> {{ order.created_at|date:"d M Y" }}</p>
+            </td>
+        </tr>
+    </table>
+
+    <table class="billing-table">
+        <tr>
+            <td style="width: 60%; vertical-align: top;">
+                <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #2c3e50;">Billed To:</h3>
+                <strong>{{ order.customer_name }}</strong><br>
+                {{ order.address }}<br>
+                <strong>Phone:</strong> {{ order.phone|default:order.mobile_number }}
+            </td>
+            <td style="width: 40%; text-align: right; vertical-align: top;">
+                <pdf:barcode value="CGS-{{ order.id }}" type="code128" barwidth="1.2" barheight="40"></pdf:barcode>
+                <br><span style="font-size: 10px; color: #7f8c8d;">Scan for ERP record</span>
             </td>
         </tr>
     </table>
@@ -112,44 +94,52 @@
     <table class="items-table">
         <thead>
             <tr>
-                <th>Item Description</th>
-                <th>Qty</th>
-                <th>Unit Price</th>
-                <th>Total</th>
+                <th style="width: 50%;">Item Description</th>
+                <th style="width: 15%;">Qty</th>
+                <th style="width: 15%;">Unit Price</th>
+                <th style="width: 20%; text-align: right;">Total</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in order.orderitem_set.all %}
+            {% for item in items %}
             <tr>
                 <td>{{ item.product_name }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>₹{{ item.price }}</td>
-                <td>₹{% widthratio item.price 1 item.quantity %}</td>
+                <td style="text-align: right;">₹{% widthratio item.price 1 item.quantity %}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center;">No items found in this order.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <div class="totals">
+    <table class="totals-table">
         {% if order.applied_coupon %}
-        <div class="totals-row">
-            Subtotal: <strong>₹{{ order.total_amount }}</strong> 
-            <em>(Discount Applied: {{ order.applied_coupon.discount_percentage }}%)</em>
-        </div>
+        <tr>
+            <td style="width: 75%;">Subtotal:</td>
+            <td style="width: 25%;"><strong>₹{{ order.total_amount }}</strong></td>
+        </tr>
+        <tr>
+            <td style="width: 75%; color: #e67e22;">Discount Applied ({{ order.applied_coupon.discount_percentage }}%):</td>
+            <td style="width: 25%; color: #e67e22;">Included</td>
+        </tr>
         {% endif %}
-        <div class="totals-row grand-total">
-            Grand Total: ₹{{ order.total_amount }}
-        </div>
-    </div>
-
-    <div class="barcode">
-        <pdf:barcode value="CGS-{{ order.id }}" type="code128" barwidth="1.2" barheight="30" />
-        <br><span style="font-size: 8px;">Scan for ERP record</span>
-    </div>
+        <tr>
+            <td style="width: 75%; border-top: 2px solid #2c3e50; padding-top: 10px;">
+                <strong style="font-size: 16px; color: #27ae60;">Grand Total:</strong>
+            </td>
+            <td style="width: 25%; border-top: 2px solid #2c3e50; padding-top: 10px;">
+                <strong style="font-size: 16px; color: #27ae60;">₹{{ order.total_amount }}</strong>
+            </td>
+        </tr>
+    </table>
 
     <div class="footer">
         Thank you for shopping with CG Smart!<br>
-        This is a computer-generated document and does not require physical signature.
+        This is a computer-generated document and does not require a physical signature.
     </div>
 
 </body>
