@@ -150,3 +150,6 @@ X_FRAME_OPTIONS = 'DENY'  # Clickjacking Protection
 
 # 5. Prevent exposing Server Details
 SECURE_REFERRER_POLICY = "same-origin"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

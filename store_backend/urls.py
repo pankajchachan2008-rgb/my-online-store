@@ -1,7 +1,8 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path  # 👈 re_path add kiya gaya hai
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve  # 👈 serve add kiya gaya hai
 from django.contrib.auth import views as auth_views
 
 # Views functions imports
@@ -11,7 +12,7 @@ from products.views import (
     custom_logout, register_page, profile_page,
     make_admin, trigger_import,
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
-    download_invoice  # 👈 Naya import add kiya gaya hai
+    download_invoice
 )
 
 urlpatterns = [
@@ -41,7 +42,7 @@ urlpatterns = [
 
     # 📄 Naya Invoice Download URL
     path('invoice/<int:order_id>/download/', download_invoice, name='download_invoice'),
+    
+    # 🌟 FIX: Live server (Render) par Banners aur Images serve karne ka code
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
