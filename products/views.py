@@ -7,29 +7,37 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Product, Coupon, Order, OrderItem, CustomerProfile
+# 👇 NAYA UPDATE: Yahan Category ko import kiya gaya hai
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile
 from .serializers import OrderSerializer, ProductSerializer
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 
 
-# 🏠 1. Homepage View (Combined with Search, Category, and Sorting)
+# 🏠 1. Homepage View (Premium & Dynamic Categories)
 def product_list(request):
     search_query = request.GET.get('search', '').strip()
-    category = request.GET.get('category')
+    category_id = request.GET.get('category')
     sort = request.GET.get('sort')
     
-    # Base Queryset
+    # Sabhi categories fetch karein button banane ke liye
+    categories = Category.objects.all()
     products = Product.objects.all()
 
     # A. Search Filter
     if search_query:
         products = products.filter(name__icontains=search_query)
         
-    # B. Category Filter
-    if category:
-        products = products.filter(category=category)
+    # B. Dynamic Category Filter (ID ke base par)
+    if category_id:
+        try:
+            products = products.filter(category_id=category_id)
+            active_category = int(category_id)
+        except ValueError:
+            active_category = None
+    else:
+        active_category = None
     
     # C. Price Sorting Logic
     if sort == 'low_to_high':
@@ -37,12 +45,14 @@ def product_list(request):
     elif sort == 'high_to_low':
         products = products.order_by('-price')
     else:
-        # Default: Latest products first
         products = products.order_by('-id')
         
     return render(request, 'products/product_list.html', {
         'products': products, 
-        'active_category': category
+        'categories': categories,
+        'active_category': active_category,
+        'search_query': search_query,
+        'current_sort': sort
     })
 
 # 🛒 2. Add to Cart
@@ -150,14 +160,12 @@ def checkout_page(request):
 
     return render(request, 'products/checkout.html', {'cart_total': cart_total, 'initial_data': initial_data})
 
-# 👤 5. Profile Page (Order History & Settings)
+# 👤 5. Profile Page
 @login_required
 def profile_page(request):
-    # Agar admin hai, toh use profile dikhane ki zaroorat nahi
     if request.user.is_staff or request.user.is_superuser:
         return redirect('home')
         
-    # Sirf normal user ke liye profile fetch karein
     profile, created = CustomerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
@@ -236,18 +244,13 @@ def sync_products_from_erp_api(request):
             )
     return Response({'message': 'Product sync process successfully executed'})
 
-# 📄 Download Smart PDF Invoice (Fixed Data Issue)
+# 📄 Download Smart PDF Invoice
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    
-    # 🌟 FIX: Items ko alag se database se nikal kar bhej rahe hain
     items = OrderItem.objects.filter(order=order)
     
     template_path = 'products/invoice_pdf.html'
-    context = {
-        'order': order,
-        'items': items  # 👈 Data ab directly template ko mil jayega
-    }
+    context = {'order': order, 'items': items}
     
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="CGSmart_Invoice_{order.id}.pdf"'
