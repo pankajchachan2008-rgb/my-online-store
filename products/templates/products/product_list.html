@@ -5,22 +5,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    /* 🌿 Earthy & Minimalist Base */
+    /* 🌿 Updated: Darker Peach/Beige Background */
     body { 
         font-family: 'Jost', sans-serif; 
-        background-color: #FDF1E7; /* Soft peach/beige from screenshot */
+        background-color: #F5DCC4; /* Darker Peach Tone */
         color: #000000;
     }
     
-    /* 🌟 Solid Hero Banner */
-    .hero-banner {
-        background-color: #F5DCC4; /* Slightly darker earthy tone */
-        border: 2px solid #000000; /* Sharp black borders */
-        padding: 40px; 
+    /* 🖼️ Permanent Banner Style */
+    .banner-container {
+        border: 2px solid #000000;
         margin-bottom: 30px;
-        position: relative; 
+        background: #000;
+        overflow: hidden;
     }
-    
+    .banner-media {
+        width: 100%;
+        display: block;
+        object-fit: contain;
+    }
+
     /* 🔍 Minimalist Search Bar */
     .search-box {
         background: transparent;
@@ -45,7 +49,7 @@
     }
     .btn-search:hover { background: #333333; color: white; }
 
-    /* 🏷️ Boxy Category Sidebar/Links */
+    /* 🏷️ Boxy Category Sidebar */
     .sidebar {
         background: transparent;
         border: 2px solid #000000;
@@ -74,32 +78,14 @@
         text-transform: uppercase;
         font-size: 0.9rem;
     }
-    .cat-link:hover {
-        background: #F5DCC4;
-    }
-    .cat-link.active {
-        background: #000000;
-        color: #FFFFFF;
-    }
+    .cat-link:hover { background: #EBC5A2; }
+    .cat-link.active { background: #000000; color: #FFFFFF; }
 
-    /* 🖼️ Animated Banner Area */
-    .banner-container {
-        border: 2px solid #000000;
-        margin-bottom: 30px;
-        background: #000;
-    }
-    .banner-media {
-        width: 100%;
-        max-height: 350px;
-        object-fit: cover;
-        display: block;
-    }
-
-    /* 📦 Flat Product Cards (Screenshot Style) */
+    /* 📦 Product Cards */
     .product-card {
-        background: transparent;
+        background: #FFFBF7; /* Light card background for contrast */
         border: 2px solid #000000;
-        border-radius: 0; /* No rounded corners, exactly like screenshot */
+        border-radius: 0;
         padding: 0;
         height: 100%;
         display: flex;
@@ -114,19 +100,9 @@
         justify-content: center;
         padding: 10px;
     }
-    .img-box img {
-        max-height: 100%;
-        max-width: 100%;
-        object-fit: contain;
-    }
+    .img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
+    .price-tag { font-weight: 700; font-size: 1.4rem; color: #000000; }
     
-    .price-tag {
-        font-weight: 700;
-        font-size: 1.4rem;
-        color: #000000;
-    }
-    
-    /* 🛒 Giant Solid Black Add To Cart Button */
     .btn-cart {
         background: #000000;
         color: #FFFFFF;
@@ -140,111 +116,55 @@
         transition: 0.2s;
         margin-top: 15px;
     }
-    .btn-cart:hover {
-        background: #333333;
-        color: white;
-    }
+    .btn-cart:hover { background: #333333; color: white; }
 </style>
 
 <div class="container-fluid px-4 my-4" style="max-width: 1400px;">
     <div class="row g-4">
         
+        <!-- SIDEBAR -->
         <div class="col-lg-3 d-none d-lg-block">
             <div class="sidebar">
                 <h5 class="sidebar-title">Categories</h5>
-                
-                <a href="?{% if search_query %}search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
-                   class="cat-link {% if not active_category %}active{% endif %}">
-                   All Products
-                </a>
-                
+                <a href="?" class="cat-link {% if not active_category %}active{% endif %}">All Products</a>
                 {% for cat in categories %}
-                    <a href="?category={{ cat.id }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
-                       class="cat-link {% if active_category == cat.id %}active{% endif %}">
-                        {{ cat.name }}
-                    </a>
+                    <a href="?category={{ cat.id }}" class="cat-link {% if active_category == cat.id %}active{% endif %}">{{ cat.name }}</a>
                 {% endfor %}
             </div>
         </div>
 
         <div class="col-lg-9">
-            
-            {% if banners %}
-                <div id="bannerCarousel" class="carousel slide banner-container" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        {% for banner in banners %}
-                            <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="4000">
-                                {% if ".mp4" in banner.animated_file.url or ".webm" in banner.animated_file.url %}
-                                    <video class="banner-media" autoplay loop muted playsinline>
-                                        <source src="{{ banner.animated_file.url }}" type="video/mp4">
-                                    </video>
-                                {% else %}
-                                    <img src="{{ banner.animated_file.url }}" class="banner-media" alt="{{ banner.title }}">
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            {% else %}
-                <div class="hero-banner d-flex align-items-center justify-content-between">
-                    <div>
-                        <h1 class="fw-bold mb-2 text-dark text-uppercase" style="letter-spacing: -1px; font-size: 3rem;">Premium Quality.<br>Everyday Deals.</h1>
-                        <p class="fs-5 text-dark fw-medium mb-0">Shop our exclusive range of curated products.</p>
-                    </div>
-                </div>
-            {% endif %}
+            <!-- 🖼️ Permanent Static Banner -->
+            <div class="banner-container">
+                <img src="{% static 'main_banner.png' %}" class="banner-media" alt="Chachan General Store">
+            </div>
 
+            <!-- SEARCH & SORT -->
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
                 <form method="GET" action="" class="search-box w-100" style="max-width: 500px;">
-                    {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
-                    {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}">{% endif %}
                     <input type="text" name="search" class="form-control search-input" placeholder="SEARCH PRODUCTS..." value="{{ search_query }}">
                     <button type="submit" class="btn btn-search">Search</button>
                 </form>
-
                 <div class="dropdown">
-                    <button class="btn btn-search dropdown-toggle" type="button" data-bs-toggle="dropdown" style="background: transparent; color: #000; border: 2px solid #000;">
-                        SORT BY PRICE
-                    </button>
+                    <button class="btn btn-search dropdown-toggle" type="button" data-bs-toggle="dropdown" style="background: transparent; color: #000; border: 2px solid #000;">SORT BY</button>
                     <ul class="dropdown-menu border-2 border-dark rounded-0 mt-1">
-                        <li><a class="dropdown-item fw-bold" href="?sort=low_to_high{% if active_category %}&category={{ active_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">LOW TO HIGH</a></li>
-                        <li><a class="dropdown-item fw-bold" href="?sort=high_to_low{% if active_category %}&category={{ active_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">HIGH TO LOW</a></li>
-                        <li><hr class="dropdown-divider border-dark"></li>
-                        <li><a class="dropdown-item fw-bold" href="?{% if active_category %}category={{ active_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">LATEST FIRST</a></li>
+                        <li><a class="dropdown-item fw-bold" href="?sort=low_to_high">LOW TO HIGH</a></li>
+                        <li><a class="dropdown-item fw-bold" href="?sort=high_to_low">HIGH TO LOW</a></li>
                     </ul>
                 </div>
             </div>
 
-            <div class="d-lg-none mb-4">
-                <div class="dropdown w-100">
-                    <button class="btn w-100 dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" style="background: #000; color: #fff; border-radius: 0; padding: 15px; text-transform: uppercase;">
-                        SELECT CATEGORY
-                    </button>
-                    <ul class="dropdown-menu w-100 rounded-0 border-2 border-dark mt-1">
-                        <li><a class="dropdown-item fw-bold py-2 border-bottom border-dark" href="?">ALL PRODUCTS</a></li>
-                        {% for cat in categories %}
-                            <li><a class="dropdown-item fw-bold py-2 border-bottom border-dark" href="?category={{ cat.id }}">{{ cat.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-
+            <!-- PRODUCTS GRID -->
             <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 mb-5">
                 {% for product in products %}
                 <div class="col">
                     <div class="product-card">
                         <div class="img-box">
-                            {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                            {% else %}
-                                <span style="font-size: 3rem; opacity: 0.1;">📦</span>
-                            {% endif %}
+                            {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}<span style="font-size: 3rem; opacity: 0.1;">📦</span>{% endif %}
                         </div>
                         <div class="p-3 d-flex flex-column flex-grow-1">
-                            {% if product.category %}
-                                <small class="text-uppercase fw-bold mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">{{ product.category.name }}</small>
-                            {% endif %}
-                            <h6 class="fw-bold text-dark mb-3 text-truncate" style="font-size: 1.1rem;" title="{{ product.name }}">{{ product.name }}</h6>
+                            <h6 class="fw-bold text-dark mb-3 text-truncate" style="font-size: 1.1rem;">{{ product.name }}</h6>
                             <div class="mt-auto d-flex flex-column">
                                 <span class="price-tag">₹{{ product.price }}</span>
                                 <a href="{% url 'add_to_cart' product.id %}" class="btn btn-cart w-100 text-center text-decoration-none">Add To Cart</a>
@@ -252,14 +172,8 @@
                         </div>
                     </div>
                 </div>
-                {% empty %}
-                <div class="col-12 text-center py-5 border border-2 border-dark mt-4" style="background: transparent;">
-                    <div class="display-1 text-dark mb-3" style="opacity: 0.5;">🛒</div>
-                    <h3 class="fw-bold text-uppercase" style="color: #000;">No products available</h3>
-                </div>
                 {% endfor %}
             </div>
-
         </div>
     </div>
 </div>
