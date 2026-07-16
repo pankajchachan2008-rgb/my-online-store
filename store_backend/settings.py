@@ -151,5 +151,8 @@ X_FRAME_OPTIONS = 'DENY'  # Clickjacking Protection
 # 5. Prevent exposing Server Details
 SECURE_REFERRER_POLICY = "same-origin"
 
+import os
+
+# Media files (User uploaded files) configuration
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
