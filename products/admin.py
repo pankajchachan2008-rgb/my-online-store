@@ -1,15 +1,16 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-# 👇 FIX 1: Category ko yahan import line mein add kar diya gaya hai
-from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile
+# 👇 FIX: Yahan Banner ko import list mein add kar diya gaya hai
+from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile, Banner
 
-# 🌟 Category, OrderItem, aur CustomerProfile ko normally register karein
+# 🌟 Category, OrderItem, CustomerProfile, aur Banner ko normally register karein
 admin.site.register(Category)
 admin.site.register(OrderItem)
 admin.site.register(CustomerProfile)
+admin.site.register(Banner)  # 👈 Banner ab Admin Panel mein show hoga
 
-# 👇 FIX 2: Jo models niche @admin.register() se custom design ho rahe hain, 
+# 👇 Jo models niche @admin.register() se custom design ho rahe hain, 
 # unhe upar wale simple register se hata diya gaya hai.
 
 # 1. Product Admin
