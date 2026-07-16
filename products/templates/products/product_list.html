@@ -8,76 +8,115 @@
     /* 🌿 Updated: Darker Peach/Beige Background */
     body { 
         font-family: 'Jost', sans-serif; 
-        background-color: #F5DCC4; 
+        background-color: #5dd4bc; /* Darker Peach Tone */
         color: #000000;
     }
     
-    /* 🖼️ Fixed: Banner Size Optimized */
+    /* 🖼️ Permanent Banner Style */
     .banner-container {
         border: 2px solid #000000;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
         background: #000;
         overflow: hidden;
     }
     .banner-media {
         width: 100%;
-        max-height: 250px; /* Banner size reduced */
-        object-fit: cover;
         display: block;
+        object-fit: contain;
     }
 
-    /* 🏷️ Professional Product Card Styles (25% Reduced & Clean) */
-    .product-card {
-        background: #FFFBF7;
+    /* 🔍 Minimalist Search Bar */
+    .search-box {
+        background: transparent;
         border: 2px solid #000000;
-        height: 100%;
         display: flex;
-        flex-direction: column;
-        padding: 8px; /* Compact padding */
     }
-    .img-box {
-        background: #FFFFFF;
-        border: 1px solid #000;
-        height: 160px; /* Reduced box height */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 10px;
+    .search-input {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent;
+        font-weight: 500;
+        border-radius: 0;
     }
-    .img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
-    
-    .product-name {
-        font-weight: 700;
-        font-size: 0.9rem; /* Professional sizing */
-        line-height: 1.2;
-        height: 2.4rem; 
-        overflow: hidden;
-        margin-bottom: 4px;
-    }
-    .product-desc {
-        font-size: 0.75rem;
-        color: #555;
-        height: 1.8rem;
-        margin-bottom: 8px;
-        overflow: hidden;
-    }
-    .price-tag { 
-        font-weight: 800; 
-        font-size: 1.1rem; /* 25% Reduced */
-        color: #000000; 
-    }
-    .btn-cart {
+    .btn-search {
         background: #000000;
         color: #FFFFFF;
         font-weight: 600;
-        font-size: 0.8rem; /* 25% Reduced button size */
-        padding: 6px; 
+        text-transform: uppercase;
         border-radius: 0;
-        border: none;
-        margin-top: 8px;
+        padding: 10px 25px;
         transition: 0.2s;
     }
-    .btn-cart:hover { background: #333333; }
+    .btn-search:hover { background: #333333; color: white; }
+
+    /* 🏷️ Boxy Category Sidebar */
+    .sidebar {
+        background: transparent;
+        border: 2px solid #000000;
+        padding: 20px;
+        position: sticky;
+        top: 20px;
+    }
+    .sidebar-title {
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #000000;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+    }
+    .cat-link {
+        display: block;
+        padding: 10px 15px;
+        color: #000000;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1px solid #000000;
+        margin-bottom: 8px;
+        background: transparent;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+    .cat-link:hover { background: #EBC5A2; }
+    .cat-link.active { background: #000000; color: #FFFFFF; }
+
+    /* 📦 Product Cards */
+    .product-card {
+        background: #FFFBF7; /* Light card background for contrast */
+        border: 2px solid #000000;
+        border-radius: 0;
+        padding: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .img-box {
+        background: #FFFFFF;
+        border-bottom: 2px solid #000000;
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+    }
+    .img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
+    .price-tag { font-weight: 700; font-size: 1.4rem; color: #000000; }
+    
+    .btn-cart {
+        background: #000000;
+        color: #FFFFFF;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        border-radius: 0;
+        border: none;
+        padding: 15px;
+        font-size: 1rem;
+        transition: 0.2s;
+        margin-top: 15px;
+    }
+    .btn-cart:hover { background: #333333; color: white; }
 </style>
 
 <div class="container-fluid px-4 my-4" style="max-width: 1400px;">
@@ -106,23 +145,29 @@
                     <input type="text" name="search" class="form-control search-input" placeholder="SEARCH PRODUCTS..." value="{{ search_query }}">
                     <button type="submit" class="btn btn-search">Search</button>
                 </form>
+                <div class="dropdown">
+                    <button class="btn btn-search dropdown-toggle" type="button" data-bs-toggle="dropdown" style="background: transparent; color: #000; border: 2px solid #000;">SORT BY</button>
+                    <ul class="dropdown-menu border-2 border-dark rounded-0 mt-1">
+                        <li><a class="dropdown-item fw-bold" href="?sort=low_to_high">LOW TO HIGH</a></li>
+                        <li><a class="dropdown-item fw-bold" href="?sort=high_to_low">HIGH TO LOW</a></li>
+                    </ul>
+                </div>
             </div>
 
             <!-- PRODUCTS GRID -->
-            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 mb-5">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 mb-5">
                 {% for product in products %}
                 <div class="col">
                     <div class="product-card">
                         <div class="img-box">
                             {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">
-                            {% else %}<span style="font-size: 2rem; opacity: 0.1;">📦</span>{% endif %}
+                            {% else %}<span style="font-size: 3rem; opacity: 0.1;">📦</span>{% endif %}
                         </div>
-                        <div class="d-flex flex-column flex-grow-1 px-1">
-                            <div class="product-name">{{ product.name }}</div>
-                            <div class="product-desc">{{ product.description|default:"Premium quality product."|truncatechars:40 }}</div>
-                            <div class="mt-auto">
-                                <div class="price-tag">₹{{ product.price }}</div>
-                                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-cart w-100">ADD TO CART</a>
+                        <div class="p-3 d-flex flex-column flex-grow-1">
+                            <h6 class="fw-bold text-dark mb-3 text-truncate" style="font-size: 1.1rem;">{{ product.name }}</h6>
+                            <div class="mt-auto d-flex flex-column">
+                                <span class="price-tag">₹{{ product.price }}</span>
+                                <a href="{% url 'add_to_cart' product.id %}" class="btn btn-cart w-100 text-center text-decoration-none">Add To Cart</a>
                             </div>
                         </div>
                     </div>
