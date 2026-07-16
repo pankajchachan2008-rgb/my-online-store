@@ -1,12 +1,21 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Product, Coupon, Order, OrderItem, CustomerProfile
+# 👇 FIX 1: Category ko yahan import line mein add kar diya gaya hai
+from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile
+
+# 🌟 Category, OrderItem, aur CustomerProfile ko normally register karein
+admin.site.register(Category)
+admin.site.register(OrderItem)
+admin.site.register(CustomerProfile)
+
+# 👇 FIX 2: Jo models niche @admin.register() se custom design ho rahe hain, 
+# unhe upar wale simple register se hata diya gaya hai.
 
 # 1. Product Admin
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('sku', 'name', 'price') # 'stock_status' hataya kyunki stock model me nahi hai
+    list_display = ('sku', 'name', 'price') 
 
 # 2. Coupon Admin
 @admin.register(Coupon)
