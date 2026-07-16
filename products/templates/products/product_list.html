@@ -2,219 +2,270 @@
 {% load static %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-    /* 🌸 Softness & Typography Foundation */
+    /* 🌟 Rich Background & Typography */
     body { 
-        font-family: 'Outfit', sans-serif; 
-        background-color: #FAFBFC; /* Very soft off-white */
-        color: #2D3748;
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        background: #f4f7f6;
+        background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,0.05) 0, transparent 50%), 
+                          radial-gradient(at 50% 0%, hsla(225,39%,30%,0.05) 0, transparent 50%), 
+                          radial-gradient(at 100% 0%, hsla(339,49%,30%,0.05) 0, transparent 50%);
+        color: #1a1a2e;
     }
-    
-    /* 🌟 Soft Premium Hero Banner */
-    .hero-banner {
-        background: linear-gradient(120deg, #E2E8F0 0%, #EDF2F7 100%);
-        border-radius: 28px; 
-        padding: 40px; 
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(226, 232, 240, 0.4); 
-        position: relative; 
+
+    /* 🏷️ Vertical Category Sidebar (Glassmorphism effect) */
+    .sidebar {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 20px;
+        padding: 25px;
+        position: sticky;
+        top: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+    .sidebar-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        color: #4a4e69;
+        margin-bottom: 20px;
+    }
+    .cat-link {
+        display: block;
+        padding: 12px 18px;
+        color: #22223b;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        margin-bottom: 8px;
+        background: white;
+        border: 1px solid transparent;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.01);
+    }
+    .cat-link:hover {
+        transform: translateX(5px);
+        border-color: #c9ada7;
+    }
+    .cat-link.active {
+        background: #1a1a2e;
+        color: white;
+        box-shadow: 0 8px 20px rgba(26, 26, 46, 0.2);
+    }
+
+    /* 🖼️ Animated Banner Area */
+    .banner-container {
+        border-radius: 24px;
         overflow: hidden;
-        border: 1px solid #F7FAFC;
+        margin-bottom: 30px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        background: white;
+        position: relative;
     }
-    
-    /* 🔍 Minimalist Search Bar */
-    .search-box {
-        background: #FFFFFF;
+    .banner-media {
+        width: 100%;
+        max-height: 350px;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* 🔍 Search & Sort Top Bar */
+    .controls-bar {
+        background: white;
         border-radius: 16px;
-        padding: 5px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-        border: 1px solid #EDF2F7;
+        padding: 15px 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        margin-bottom: 30px;
     }
     .search-input {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent;
+        background: #f8f9fa;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
         font-weight: 500;
     }
-    .btn-search {
-        background: #2D3748;
+    .search-input:focus {
+        box-shadow: 0 0 0 3px rgba(26,26,46,0.1);
+        background: white;
+    }
+    .btn-dark-custom {
+        background: #1a1a2e;
         color: white;
-        border-radius: 12px;
-        font-weight: 500;
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 10px 25px;
         transition: 0.3s;
     }
-    .btn-search:hover { background: #1A202C; color: white; }
+    .btn-dark-custom:hover {
+        background: #e63946;
+        color: white;
+    }
 
-    /* 🏷️ FIXED: Smooth Category Scroll */
-    .category-container {
-        width: 100%;
-        overflow-x: auto;
-        /* Smooth scrolling on touch devices */
-        -webkit-overflow-scrolling: touch; 
-        scrollbar-width: none; /* Firefox */
-        padding-bottom: 15px;
+    /* 📦 Rich Product Cards */
+    .product-card {
+        background: white;
+        border: none;
+        border-radius: 20px;
+        padding: 15px;
+        height: 100%;
+        transition: all 0.4s ease;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.04);
+        position: relative;
+    }
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    }
+    .img-box {
+        background: #f8f9fa;
+        border-radius: 16px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
         margin-bottom: 15px;
     }
-    .category-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
-    
-    .category-scroll-inner {
-        display: flex;
-        flex-wrap: nowrap; /* CRITICAL: Prevents wrapping */
-        gap: 12px;
+    .img-box img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        transition: 0.5s;
     }
-    
-    .cat-pill { 
-        flex-shrink: 0; /* CRITICAL: Keeps size intact while scrolling */
-        background: #FFFFFF; 
-        border: 1px solid #E2E8F0; 
-        color: #718096; 
-        border-radius: 50px; 
-        padding: 10px 24px; 
-        font-weight: 500; 
-        font-size: 0.95rem;
-        text-decoration: none; 
-        transition: all 0.3s ease; 
-        box-shadow: 0 2px 10px rgba(0,0,0,0.01);
+    .product-card:hover .img-box img {
+        transform: scale(1.1);
     }
-    .cat-pill:hover { 
-        border-color: #A0AEC0; 
-        color: #2D3748; 
+    .price-tag {
+        font-weight: 800;
+        font-size: 1.3rem;
+        color: #e63946;
     }
-    .cat-pill.active { 
-        background: #2D3748; /* Luxury dark grey */
-        border-color: #2D3748; 
-        color: #FFFFFF; 
-        box-shadow: 0 8px 15px rgba(45, 55, 72, 0.2); 
+    .btn-cart {
+        background: #f1faee;
+        color: #1d3557;
+        font-weight: 700;
+        border-radius: 12px;
+        border: none;
+        padding: 10px;
+        transition: 0.3s;
     }
-    
-    /* 📦 Soft Product Cards */
-    .product-card { 
-        background: #FFFFFF;
-        border: 1px solid #F0F4F8; 
-        border-radius: 24px; 
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
-        height: 100%; 
-        overflow: hidden;
-    }
-    .product-card:hover { 
-        transform: translateY(-10px); 
-        box-shadow: 0 20px 40px rgba(0,0,0,0.06); 
-    }
-    .product-img-wrapper { 
-        height: 220px; 
-        background: #F7FAFC; /* Very soft grey background for image */
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        padding: 20px;
-    }
-    .product-img { 
-        max-height: 100%; 
-        max-width: 100%; 
-        object-fit: contain; 
-        transition: transform 0.6s ease; 
-    }
-    .product-card:hover .product-img { transform: scale(1.05); }
-    
-    .btn-add-cart { 
-        background: #F7FAFC; 
-        color: #2D3748; 
-        border-radius: 14px; 
-        font-weight: 600; 
-        border: 1px solid #E2E8F0; 
-        transition: all 0.3s; 
-        padding: 12px; 
-    }
-    .product-card:hover .btn-add-cart { 
-        background: #38B2AC; /* Soft premium teal on hover */
-        color: white; 
-        border-color: #38B2AC; 
+    .btn-cart:hover {
+        background: #1d3557;
+        color: white;
     }
 </style>
 
-<div class="container my-4">
-    
-    <div class="hero-banner d-flex align-items-center justify-content-between">
-        <div style="z-index: 2;">
-            <span class="badge bg-white text-secondary mb-3 p-2 px-3 rounded-pill shadow-sm" style="font-weight: 500;">✨ Welcome to CG Smart</span>
-            <h1 class="fw-bold mb-2 display-6 text-dark" style="letter-spacing: -0.5px;">Premium Quality.<br>Gentle Prices.</h1>
-            <p class="fs-6 text-muted mb-0" style="max-width: 400px;">Explore our curated collection of daily essentials and top-tier products.</p>
-        </div>
-        <div class="d-none d-md-block" style="font-size: 6rem; opacity: 0.8;">🛍️</div>
-    </div>
-
-    <div class="row mb-4 align-items-center g-3">
-        <div class="col-md-8">
-            <form method="GET" action="" class="search-box d-flex w-100">
-                {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
-                {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}">{% endif %}
-                <input type="text" name="search" class="form-control search-input px-3 py-2" placeholder="What are you looking for today?" value="{{ search_query }}">
-                <button type="submit" class="btn btn-search px-4">Search</button>
-            </form>
-        </div>
-        <div class="col-md-4">
-            <div class="dropdown w-100">
-                <button class="btn btn-white border w-100 py-2 rounded-4 fw-medium text-secondary shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" style="background: white;">
-                    Sort by Price
-                </button>
-                <ul class="dropdown-menu shadow-lg rounded-4 border-0 mt-2 w-100 p-2">
-                    <li><a class="dropdown-item py-2 rounded-3" href="?sort=low_to_high{% if active_category %}&category={{ active_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Low to High</a></li>
-                    <li><a class="dropdown-item py-2 rounded-3" href="?sort=high_to_low{% if active_category %}&category={{ active_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">High to Low</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item py-2 rounded-3 text-dark fw-bold" href="?{% if active_category %}category={{ active_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Latest Arrivals</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="category-container">
-        <div class="category-scroll-inner">
-            <a href="?{% if search_query %}search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
-               class="cat-pill {% if not active_category %}active{% endif %}">
-               All Products
-            </a>
-            
-            {% for cat in categories %}
-                <a href="?category={{ cat.id }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
-                   class="cat-pill {% if active_category == cat.id %}active{% endif %}">
-                    {{ cat.name }}
+<div class="container-fluid px-4 my-4" style="max-width: 1400px;">
+    <div class="row g-4">
+        
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="sidebar">
+                <h5 class="sidebar-title">Explore Categories</h5>
+                
+                <a href="?{% if search_query %}search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
+                   class="cat-link {% if not active_category %}active{% endif %}">
+                   ⚡ All Products
                 </a>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
-        {% for product in products %}
-        <div class="col">
-            <div class="card product-card">
-                <div class="product-img-wrapper">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
-                    {% else %}
-                        <span style="font-size: 3rem; opacity: 0.1;">📦</span>
-                    {% endif %}
-                </div>
-                <div class="card-body d-flex flex-column p-4">
-                    {% if product.category %}
-                        <span class="text-uppercase mb-2" style="font-size: 0.75rem; font-weight: 600; color: #A0AEC0; letter-spacing: 1px;">{{ product.category.name }}</span>
-                    {% endif %}
-                    <h6 class="fw-bold text-dark mb-1 text-truncate" title="{{ product.name }}">{{ product.name }}</h6>
-                    <p class="fw-bold fs-5 mb-4" style="color: #38B2AC;">₹{{ product.price }}</p>
-                    <a href="{% url 'add_to_cart' product.id %}" class="btn btn-add-cart w-100 mt-auto">Add to Cart</a>
-                </div>
+                
+                {% for cat in categories %}
+                    <a href="?category={{ cat.id }}{% if search_query %}&search={{ search_query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}" 
+                       class="cat-link {% if active_category == cat.id %}active{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                {% endfor %}
             </div>
         </div>
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <div class="display-1 text-muted mb-3" style="opacity: 0.3;">✨</div>
-            <h4 class="text-secondary fw-bold">Nothing found here</h4>
-            <p class="text-muted">Try exploring a different category or search term.</p>
+
+        <div class="col-lg-9">
+            
+            {% if banners %}
+                <div id="bannerCarousel" class="carousel slide banner-container" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for banner in banners %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="4000">
+                                {% if ".mp4" in banner.animated_file.url or ".webm" in banner.animated_file.url %}
+                                    <video class="banner-media" autoplay loop muted playsinline>
+                                        <source src="{{ banner.animated_file.url }}" type="video/mp4">
+                                    </video>
+                                {% else %}
+                                    <img src="{{ banner.animated_file.url }}" class="banner-media" alt="{{ banner.title }}">
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="controls-bar d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <form method="GET" action="" class="d-flex w-100" style="max-width: 500px;">
+                    {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
+                    {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}">{% endif %}
+                    <input type="text" name="search" class="form-control search-input me-2" placeholder="Search premium items..." value="{{ search_query }}">
+                    <button type="submit" class="btn btn-dark-custom shadow-sm">Search</button>
+                </form>
+
+                <div class="dropdown">
+                    <button class="btn btn-light border fw-bold px-4 py-2 rounded-3 dropdown-toggle shadow-sm" type="button" data-bs-toggle="dropdown">
+                        Sort items by Price
+                    </button>
+                    <ul class="dropdown-menu shadow-lg border-0 rounded-4 mt-2">
+                        <li><a class="dropdown-item py-2 fw-medium" href="?sort=low_to_high{% if active_category %}&category={{ active_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Lowest Price</a></li>
+                        <li><a class="dropdown-item py-2 fw-medium" href="?sort=high_to_low{% if active_category %}&category={{ active_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Highest Price</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item py-2 fw-bold text-danger" href="?{% if active_category %}category={{ active_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Clear Sorting</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="d-lg-none mb-4">
+                <div class="dropdown w-100">
+                    <button class="btn btn-dark w-100 py-3 rounded-3 dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown">
+                        📁 Select Category
+                    </button>
+                    <ul class="dropdown-menu w-100 border-0 shadow-lg">
+                        <li><a class="dropdown-item py-3 border-bottom" href="?">All Products</a></li>
+                        {% for cat in categories %}
+                            <li><a class="dropdown-item py-3 border-bottom" href="?category={{ cat.id }}">{{ cat.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 mb-5">
+                {% for product in products %}
+                <div class="col">
+                    <div class="product-card d-flex flex-column">
+                        <div class="img-box">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <span style="font-size: 3rem; opacity: 0.1;">🛍️</span>
+                            {% endif %}
+                        </div>
+                        {% if product.category %}
+                            <small class="text-uppercase fw-bold text-muted mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">{{ product.category.name }}</small>
+                        {% endif %}
+                        <h6 class="fw-bold text-dark mb-2 text-truncate" title="{{ product.name }}">{{ product.name }}</h6>
+                        <div class="mt-auto d-flex flex-column gap-3">
+                            <span class="price-tag">₹{{ product.price }}</span>
+                            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-cart w-100">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5 mt-4" style="background: white; border-radius: 20px;">
+                    <div class="display-1 text-muted mb-3" style="opacity: 0.2;">🛒</div>
+                    <h3 class="fw-bold" style="color: #1a1a2e;">No products available</h3>
+                    <p class="text-muted">Is category mein abhi tak koi item upload nahi kiya gaya hai.</p>
+                </div>
+                {% endfor %}
+            </div>
+
         </div>
-        {% endfor %}
     </div>
-    
 </div>
 {% endblock %}

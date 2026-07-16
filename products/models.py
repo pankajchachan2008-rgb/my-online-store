@@ -86,3 +86,14 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, 'customerprofile'):
         instance.customerprofile.save()
+
+# 🌟 7. Animated Banner Model
+class Banner(models.Model):
+    title = models.CharField(max_length=200, help_text="Festival ya Offer ka naam")
+    # FileField ka use kar rahe hain taaki GIF ya short MP4/WebM bhi upload ho sake
+    animated_file = models.FileField(upload_to='banners/', help_text="Upload GIF or animated video")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

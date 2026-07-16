@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 # 👇 NAYA UPDATE: Yahan Category ko import kiya gaya hai
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner
 from .serializers import OrderSerializer, ProductSerializer
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -21,15 +21,14 @@ def product_list(request):
     category_id = request.GET.get('category')
     sort = request.GET.get('sort')
     
-    # Sabhi categories fetch karein button banane ke liye
     categories = Category.objects.all()
     products = Product.objects.all()
+    # 👇 NAYA: Active Banners ko fetch karna
+    banners = Banner.objects.filter(is_active=True).order_by('-id')
 
-    # A. Search Filter
     if search_query:
         products = products.filter(name__icontains=search_query)
         
-    # B. Dynamic Category Filter (ID ke base par)
     if category_id:
         try:
             products = products.filter(category_id=category_id)
@@ -39,7 +38,6 @@ def product_list(request):
     else:
         active_category = None
     
-    # C. Price Sorting Logic
     if sort == 'low_to_high':
         products = products.order_by('price')
     elif sort == 'high_to_low':
@@ -50,6 +48,7 @@ def product_list(request):
     return render(request, 'products/product_list.html', {
         'products': products, 
         'categories': categories,
+        'banners': banners, # 👈 Template ko banners bhej rahe hain
         'active_category': active_category,
         'search_query': search_query,
         'current_sort': sort
