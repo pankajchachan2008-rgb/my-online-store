@@ -10,6 +10,7 @@ from products.views import (
     product_list, add_to_cart, cart_detail, checkout_page,
     check_coupon_ajax, about_page, contact_page,
     custom_logout, register_page, profile_page,
+    delete_account, # 👈 Yeh yahan hona chahiye
     make_admin, trigger_import,
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
     download_invoice,
@@ -32,8 +33,9 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', custom_logout, name='logout'),
     path('register/', register_page, name='register'),
-    path('profile/delete/', products.views.delete_account, name='delete_account'),
-    path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html', success_url='/profile/'), name='password_change'),    
+    path('profile/', profile_page, name='profile'),
+    path('profile/delete/', delete_account, name='delete_account'), # 👈 Sahi format
+    path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html', success_url='/profile/'), name='password_change'),
     
     # 🔧 Admin & Sync
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
