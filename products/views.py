@@ -15,6 +15,12 @@ from django.utils.http import urlencode
 from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner
 from .serializers import OrderSerializer, ProductSerializer
 
+import random
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+
 # 🏠 1. Homepage View (Premium & Dynamic Categories)
 def product_list(request):
     search_query = request.GET.get('search', '').strip()
@@ -345,3 +351,51 @@ def import_products_csv(request):
         return redirect('home')
         
     return render(request, 'products/import_csv.html')
+
+# ✉️ 1. OTP Request Function
+def login_request_otp(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            # 6-digit OTP generate karna
+            otp = str(random.randint(100000, 999999))
+            
+            # OTP aur Email ko session me save karna
+            request.session['login_otp'] = otp
+            request.session['login_email'] = email
+            
+            # Email bhejna
+            subject = 'Aapka Login OTP - Chachan General Store'
+            message = f'Namaste {user.first_name or user.username},\n\nAapka login OTP hai: {otp}\nYeh OTP 10 minute ke liye valid hai.\n\nThank You!'
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
+            
+            messages.success(request, f"OTP {email} par bhej diya gaya hai!")
+            return redirect('login_verify_otp')
+            
+        except User.DoesNotExist:
+            messages.error(request, "Yeh email humare system mein register nahi hai. Kripya sahi email dalein.")
+            
+    return render(request, 'registration/login_request.html')
+
+# 🔐 2. OTP Verify Function
+def login_verify_otp(request):
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        saved_otp = request.session.get('login_otp')
+        saved_email = request.session.get('login_email')
+        
+        if entered_otp == saved_otp:
+            user = User.objects.get(email=saved_email)
+            login(request, user) # User ko secure tarike se login karwana
+            
+            # Security ke liye session se OTP hata dena
+            del request.session['login_otp']
+            del request.session['login_email']
+            
+            messages.success(request, f"Welcome back, {user.username}! Login successful.")
+            return redirect('home')
+        else:
+            messages.error(request, "❌ Galat OTP! Kripya dobara check karein.")
+            
+    return render(request, 'registration/login_verify.html')

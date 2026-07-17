@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5 mb-5" style="max-width: 400px;">
+    <div class="card p-4 border-dark rounded-0 shadow">
+        <h3 class="text-center fw-bold mb-4">Secure Login</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label fw-bold">Email Address</label>
+                <input type="email" name="email" class="form-control rounded-0 border-dark" required placeholder="admin@example.com">
+            </div>
+            <button type="submit" class="btn btn-dark w-100 rounded-0 fw-bold">Send OTP</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
