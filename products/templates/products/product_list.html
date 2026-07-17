@@ -8,7 +8,7 @@
     /* 🌿 Premium Soft Minimalist Background */
     body { 
         font-family: 'Jost', sans-serif; 
-        background-color: #FAF4EF; /* Luxury Soft Beige */
+        background-color: #FAF4EF; 
         color: #111111;
     }
     
@@ -21,7 +21,7 @@
     }
     .banner-media {
         width: 100%;
-        max-height: 280px; /* Controlled height */
+        max-height: 280px;
         display: block;
         object-fit: cover;
     }
@@ -96,13 +96,13 @@
         transition: all 0.3s ease;
     }
     .product-card:hover {
-        box-shadow: 4px 4px 0px #000000; /* Neo-brutalism premium shadow */
+        box-shadow: 4px 4px 0px #000000;
         transform: translateY(-2px);
     }
     .img-box {
         background: #FFFFFF;
         border-bottom: 1px solid #EEEEEE;
-        height: 180px; /* Reduced for better proportion */
+        height: 180px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -115,12 +115,19 @@
         font-size: 0.95rem;
         color: #111;
         display: -webkit-box;
-        -webkit-line-clamp: 2; /* Smart 2-line truncation */
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
         height: 2.7rem;
         line-height: 1.4;
-        margin-bottom: 5px;
+        margin-bottom: 2px;
+    }
+    .product-desc {
+        font-size: 0.75rem;
+        color: #777;
+        margin-bottom: 8px;
+        height: 1.2rem;
+        overflow: hidden;
     }
     
     .price-tag { 
@@ -138,9 +145,9 @@
         border-radius: 0;
         border: none;
         padding: 10px;
-        font-size: 0.8rem; /* Optimized size */
+        font-size: 0.8rem;
         transition: 0.3s ease;
-        margin-top: 12px;
+        margin-top: 5px;
     }
     .btn-cart:hover { background: #333333; color: white; }
 </style>
@@ -186,11 +193,16 @@
                 <div class="col">
                     <div class="product-card">
                         <div class="img-box">
-                            {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">
-                            {% else %}<span style="font-size: 2rem; opacity: 0.1;">📦</span>{% endif %}
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                                <!-- Auto-generated Virtual Image -->
+                                <img src="https://placehold.co/300x200/000000/FFFFFF?text={{ product.name|urlencode }}" alt="{{ product.name }}">
+                            {% endif %}
                         </div>
                         <div class="p-3 d-flex flex-column flex-grow-1">
                             <div class="product-name" title="{{ product.name }}">{{ product.name }}</div>
+                            <div class="product-desc">{{ product.description|default:"Premium Quality Essential"|truncatechars:35 }}</div>
                             <div class="mt-auto d-flex flex-column">
                                 <span class="price-tag">₹{{ product.price }}</span>
                                 <a href="{% url 'add_to_cart' product.id %}" class="btn btn-cart w-100 text-center text-decoration-none">Add To Cart</a>
