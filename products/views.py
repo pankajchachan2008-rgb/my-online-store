@@ -223,12 +223,18 @@ def customer_signup(request):
         
     return render(request, 'registration/signup.html')
 
-# ✉️ 9. OTP LOGIN REQUEST
+# ✉️ 9. OTP LOGIN REQUEST (With Smart Error Catcher)
 def login_request_otp(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         try:
-            user = User.objects.get(email=email)
+            # .get() ki jagah .filter().first() use kiya, taaki agar duplicate email ho toh crash na ho
+            user = User.objects.filter(email=email).first()
+            
+            if not user:
+                messages.error(request, "Yeh email humare system mein register nahi hai. Kripya naya account banayein.")
+                return redirect('login')
+
             otp = str(random.randint(100000, 999999))
             
             request.session['login_otp'] = otp
@@ -236,13 +242,20 @@ def login_request_otp(request):
             
             subject = 'Aapka Login OTP - Chachan General Store'
             message = f'Namaste {user.first_name or user.username},\n\nAapka login OTP hai: {otp}\nYeh OTP 10 minute ke liye valid hai.\n\nThank You!'
-            send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
             
-            messages.success(request, f"OTP {email} par bhej diya gaya hai!")
-            return redirect('login_verify_otp')
-            
-        except User.DoesNotExist:
-            messages.error(request, "Yeh email humare system mein register nahi hai. Kripya naya account banayein.")
+            # Yahan humne Email bhejne wale code par ek 'Kavach' (Try-Except) laga diya hai
+            try:
+                send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
+                messages.success(request, f"OTP {email} par bhej diya gaya hai!")
+                return redirect('login_verify_otp')
+            except Exception as mail_error:
+                # Agar Gmail fail hoga, toh website crash nahi hogi, balki error screen par likhi aayegi
+                messages.error(request, f"Gmail Error: {str(mail_error)}")
+                return redirect('login')
+                
+        except Exception as general_error:
+            messages.error(request, f"System Error: {str(general_error)}")
+            return redirect('login')
             
     return render(request, 'registration/login_request.html')
 
