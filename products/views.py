@@ -2,6 +2,7 @@ import csv
 import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, login
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -202,85 +203,19 @@ def custom_logout(request):
 def make_admin(request): return render(request, 'products/admin_trigger.html')
 def trigger_import(request): return render(request, 'products/import_trigger.html')
 
-# 🚀 8. PASSWORD-LESS SIGN UP (MODERN)
-def customer_signup(request):
+# 🚀 8. STANDARD USERNAME/PASSWORD REGISTRATION
+def register_page(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Yeh email pehle se register hai. Kripya Login karein.")
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Account successfully ban gaya hai! Ab aap username aur password se login kar sakte hain.')
             return redirect('login')
-            
-        username = email.split('@')[0] + str(random.randint(100, 999))
-        user = User.objects.create_user(username=username, email=email)
-        user.first_name = name
-        user.set_unusable_password() 
-        user.save()
-        
-        messages.success(request, f"Welcome {name}! Aapka account ban gaya hai. Ab aap OTP ke zariye secure login kar sakte hain.")
-        return redirect('login')
-        
-    return render(request, 'registration/signup.html')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
 
-# ✉️ 9. OTP LOGIN REQUEST (With Smart Error Catcher)
-def login_request_otp(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        try:
-            # .get() ki jagah .filter().first() use kiya, taaki agar duplicate email ho toh crash na ho
-            user = User.objects.filter(email=email).first()
-            
-            if not user:
-                messages.error(request, "Yeh email humare system mein register nahi hai. Kripya naya account banayein.")
-                return redirect('login')
-
-            otp = str(random.randint(100000, 999999))
-            
-            request.session['login_otp'] = otp
-            request.session['login_email'] = email
-            
-            subject = 'Aapka Login OTP - Chachan General Store'
-            message = f'Namaste {user.first_name or user.username},\n\nAapka login OTP hai: {otp}\nYeh OTP 10 minute ke liye valid hai.\n\nThank You!'
-            
-            # Yahan humne Email bhejne wale code par ek 'Kavach' (Try-Except) laga diya hai
-            try:
-                send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
-                messages.success(request, f"OTP {email} par bhej diya gaya hai!")
-                return redirect('login_verify_otp')
-            except Exception as mail_error:
-                # Agar Gmail fail hoga, toh website crash nahi hogi, balki error screen par likhi aayegi
-                messages.error(request, f"Gmail Error: {str(mail_error)}")
-                return redirect('login')
-                
-        except Exception as general_error:
-            messages.error(request, f"System Error: {str(general_error)}")
-            return redirect('login')
-            
-    return render(request, 'registration/login_request.html')
-
-# 🔐 10. OTP VERIFY
-def login_verify_otp(request):
-    if request.method == 'POST':
-        entered_otp = request.POST.get('otp')
-        saved_otp = request.session.get('login_otp')
-        saved_email = request.session.get('login_email')
-        
-        if entered_otp == saved_otp:
-            user = User.objects.get(email=saved_email)
-            login(request, user)
-            
-            del request.session['login_otp']
-            del request.session['login_email']
-            
-            messages.success(request, f"Welcome back, {user.first_name or user.username}! Login successful.")
-            return redirect('home')
-        else:
-            messages.error(request, "❌ Galat OTP! Kripya dobara check karein.")
-            
-    return render(request, 'registration/login_verify.html')
-
-# 📡 11. ERP API Endpoints
+# 📡 9. ERP API Endpoints
 @api_view(['GET'])
 def get_pending_orders_api(request):
     orders = Order.objects.filter(status='Pending').order_by('-id')
@@ -316,7 +251,7 @@ def sync_products_from_erp_api(request):
             )
     return Response({'message': 'Product sync process successfully executed'})
 
-# 📄 12. Download Smart PDF Invoice
+# 📄 10. Download Smart PDF Invoice
 @login_required(login_url='/login/')
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -337,7 +272,7 @@ def download_invoice(request, order_id):
         return HttpResponse('Invoice generate karne mein error aayi: <pre>' + html + '</pre>')
     return response
 
-# 📥 13. EXPORT: Download products to Excel (CSV)
+# 📥 11. EXPORT: Download products to Excel (CSV)
 @login_required(login_url='/login/')
 def export_products_csv(request):
     if not request.user.is_superuser:
@@ -358,7 +293,7 @@ def export_products_csv(request):
         
     return response
 
-# 📤 14. IMPORT: Upload updated Excel (CSV)
+# 📤 12. IMPORT: Upload updated Excel (CSV)
 @login_required(login_url='/login/')
 def import_products_csv(request):
     if not request.user.is_superuser:

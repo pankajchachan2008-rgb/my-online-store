@@ -9,12 +9,11 @@ from django.contrib.auth import views as auth_views
 from products.views import (
     product_list, add_to_cart, cart_detail, checkout_page,
     check_coupon_ajax, about_page, contact_page,
-    custom_logout, customer_signup, profile_page,
+    custom_logout, register_page, profile_page,
     make_admin, trigger_import,
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
     download_invoice,
-    export_products_csv, import_products_csv,
-    login_request_otp, login_verify_otp
+    export_products_csv, import_products_csv
 )
 
 urlpatterns = [
@@ -29,11 +28,10 @@ urlpatterns = [
     path('about/', about_page, name='about'),
     path('contact/', contact_page, name='contact'),
     
-    # 🔐 Auth URLs
-    path('login/', login_request_otp, name='login'),
-    path('login/verify/', login_verify_otp, name='login_verify_otp'),
+    # 🔐 Standard Auth URLs
+    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', custom_logout, name='logout'),
-    path('signup/', customer_signup, name='signup'),
+    path('register/', register_page, name='register'),
     path('profile/', profile_page, name='profile'),
     
     # 🔧 Admin & Sync
