@@ -269,13 +269,18 @@ def download_invoice(request, order_id):
         return HttpResponse('Invoice generate karne mein error aayi: <pre>' + html + '</pre>')
     return response
 
-# 📥 10. EXPORT: Download products to Excel (CSV)
+# 📥 10. EXPORT: Download products to Excel (CSV) - SECURED
+@login_required
 def export_products_csv(request):
+    # SECURITY CHECK: Sirf Admin (Superuser) hi download kar sakta hai
+    if not request.user.is_superuser:
+        messages.error(request, "⛔ Access Denied! Sirf Admin is page ko access kar sakta hai.")
+        return redirect('home')
+
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="Bulk_Update_Products.csv"'
     writer = csv.writer(response)
     
-    # Columns setup (Category ID se error nahi aayegi)
     writer.writerow(['ID', 'Name', 'Category_ID', 'Category_Name', 'Price', 'Weight', 'Description'])
     
     products = Product.objects.all()
@@ -286,8 +291,14 @@ def export_products_csv(request):
         
     return response
 
-# 📤 11. IMPORT: Upload updated Excel (CSV) back to site
+# 📤 11. IMPORT: Upload updated Excel (CSV) back to site - SECURED
+@login_required
 def import_products_csv(request):
+    # SECURITY CHECK: Sirf Admin (Superuser) hi upload kar sakta hai
+    if not request.user.is_superuser:
+        messages.error(request, "⛔ Access Denied! Sirf Admin is page ko access kar sakta hai.")
+        return redirect('home')
+
     if request.method == 'POST' and request.FILES.get('csv_file'):
         csv_file = request.FILES['csv_file']
         
@@ -321,7 +332,7 @@ def import_products_csv(request):
                         category = Category.objects.get(id=cat_id)
                         product.category = category
                     except Category.DoesNotExist:
-                        pass # Ignore galat category ID
+                        pass 
                         
                 product.save()
                 success_count += 1
