@@ -32,7 +32,8 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', custom_logout, name='logout'),
     path('register/', register_page, name='register'),
-    path('profile/', profile_page, name='profile'),
+    path('profile/delete/', products.views.delete_account, name='delete_account'),
+    path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration
     
     # 🔧 Admin & Sync
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),

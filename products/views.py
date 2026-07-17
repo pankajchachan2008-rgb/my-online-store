@@ -166,7 +166,7 @@ def checkout_page(request):
 
     return render(request, 'products/checkout.html', {'cart_total': cart_total, 'initial_data': initial_data})
 
-# 👤 5. Profile Page
+# 👤 5. Premium Profile Page
 @login_required(login_url='/login/')
 def profile_page(request):
     if request.user.is_staff or request.user.is_superuser:
@@ -175,14 +175,31 @@ def profile_page(request):
     profile, created = CustomerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
-        profile.mobile_number = request.POST.get('mobile_number')
-        profile.default_address = request.POST.get('address')
+        # Dono User aur Profile update karna
+        request.user.first_name = request.POST.get('first_name', '')
+        request.user.email = request.POST.get('email', '')
+        request.user.save()
+        
+        profile.mobile_number = request.POST.get('mobile_number', '')
+        profile.default_address = request.POST.get('address', '')
         profile.save()
-        messages.success(request, "Aapki profile update ho gayi!")
+        
+        messages.success(request, "✅ Aapki profile successfully update ho gayi hai!")
         return redirect('profile')
 
-    recent_orders = Order.objects.filter(user=request.user).order_by('-created_at')[:10]
+    recent_orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'products/profile.html', {'profile': profile, 'orders': recent_orders})
+
+# 🗑️ Naya Feature: Delete Account
+@login_required(login_url='/login/')
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, "Aapka account hamesha ke liye delete kar diya gaya hai.")
+        return redirect('home')
+    return redirect('profile')
 
 # 🔍 6. AJAX Coupon Check
 def check_coupon_ajax(request):
