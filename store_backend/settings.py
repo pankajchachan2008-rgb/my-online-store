@@ -163,4 +163,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'pankajchachan2026@gmail.com' # 👈 Apna official Gmail yahan dalein
-EMAIL_HOST_PASSWORD = 'qovg axoy tqwl rtaz' # 👈 Yahan Gmail ka "App Password" dalega (Normal password nahi)
+EMAIL_HOST_PASSWORD = 'qovgaxoytqwlrtaz' # 👈 Yahan Gmail ka "App Password" dalega (Normal password nahi)
