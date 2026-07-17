@@ -1,19 +1,19 @@
+import csv
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-# 👇 NAYA UPDATE: Yahan Category ko import kiya gaya hai
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner
-from .serializers import OrderSerializer, ProductSerializer
-from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from django.utils.http import urlencode
 
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner
+from .serializers import OrderSerializer, ProductSerializer
 
 # 🏠 1. Homepage View (Premium & Dynamic Categories)
 def product_list(request):
@@ -23,7 +23,6 @@ def product_list(request):
     
     categories = Category.objects.all()
     products = Product.objects.all()
-    # 👇 NAYA: Active Banners ko fetch karna
     banners = Banner.objects.filter(is_active=True).order_by('-id')
 
     if search_query:
@@ -48,7 +47,7 @@ def product_list(request):
     return render(request, 'products/product_list.html', {
         'products': products, 
         'categories': categories,
-        'banners': banners, # 👈 Template ko banners bhej rahe hain
+        'banners': banners,
         'active_category': active_category,
         'search_query': search_query,
         'current_sort': sort
@@ -92,7 +91,7 @@ def cart_detail(request):
         
     return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
-# 💳 4. Checkout Page with Smart Auto-fill
+# 💳 4. Checkout Page with Smart Auto-fill & WhatsApp Alert
 def checkout_page(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -118,7 +117,7 @@ def checkout_page(request):
             active_coupon.is_used = True
             active_coupon.save()
 
-        # 🌟 SMART PROFILE UPDATE
+        # SMART PROFILE UPDATE
         if request.user.is_authenticated:
             profile, created = CustomerProfile.objects.get_or_create(user=request.user)
             if not profile.default_address:
@@ -144,10 +143,17 @@ def checkout_page(request):
         elif final_total >= 699:
             new_coupon = Coupon.objects.create(code=f"CGS08-{order.id}", mobile_number=mobile, discount_percentage=8)
 
-        request.session['cart'] = {}
-        return render(request, 'products/order_success.html', {'order': order, 'new_coupon': new_coupon})
+        # 🌟 WhatsApp Message Generation
+        wa_message = f"📢 *Naya Order!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n*Total:* ₹{final_total}"
 
-    # 🌟 SMART AUTO-FILL
+        request.session['cart'] = {}
+        return render(request, 'products/order_success.html', {
+            'order': order, 
+            'new_coupon': new_coupon, 
+            'wa_message': wa_message
+        })
+
+    # SMART AUTO-FILL
     initial_data = {}
     if request.user.is_authenticated:
         profile, created = CustomerProfile.objects.get_or_create(user=request.user)
@@ -262,3 +268,69 @@ def download_invoice(request, order_id):
     if pisa_status.err:
         return HttpResponse('Invoice generate karne mein error aayi: <pre>' + html + '</pre>')
     return response
+
+# 📥 10. EXPORT: Download products to Excel (CSV)
+def export_products_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Bulk_Update_Products.csv"'
+    writer = csv.writer(response)
+    
+    # Columns setup (Category ID se error nahi aayegi)
+    writer.writerow(['ID', 'Name', 'Category_ID', 'Category_Name', 'Price', 'Weight', 'Description'])
+    
+    products = Product.objects.all()
+    for p in products:
+        cat_id = p.category.id if p.category else ''
+        cat_name = p.category.name if p.category else 'Uncategorized'
+        writer.writerow([p.id, p.name, cat_id, cat_name, p.price, getattr(p, 'weight', ''), p.description])
+        
+    return response
+
+# 📤 11. IMPORT: Upload updated Excel (CSV) back to site
+def import_products_csv(request):
+    if request.method == 'POST' and request.FILES.get('csv_file'):
+        csv_file = request.FILES['csv_file']
+        
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, "❌ Error: Sirf .csv file hi upload karein!")
+            return redirect('import_products')
+            
+        decoded_file = csv_file.read().decode('utf-8').splitlines()
+        reader = csv.DictReader(decoded_file)
+        
+        success_count = 0
+        error_count = 0
+        
+        for row in reader:
+            try:
+                product_id = row.get('ID')
+                if not product_id:
+                    continue
+                    
+                product = Product.objects.get(id=product_id)
+                
+                if row.get('Price'):
+                    product.price = row['Price']
+                    
+                if row.get('Weight'):
+                    product.weight = row['Weight']
+                    
+                cat_id = row.get('Category_ID')
+                if cat_id:
+                    try:
+                        category = Category.objects.get(id=cat_id)
+                        product.category = category
+                    except Category.DoesNotExist:
+                        pass # Ignore galat category ID
+                        
+                product.save()
+                success_count += 1
+            except Product.DoesNotExist:
+                error_count += 1
+            except Exception as e:
+                error_count += 1
+                
+        messages.success(request, f"✅ Bulk Update Complete! {success_count} products update hue. {error_count} errors ko skip kiya gaya.")
+        return redirect('home')
+        
+    return render(request, 'products/import_csv.html')

@@ -1,8 +1,8 @@
 from django.contrib import admin
-from django.urls import path, re_path  # 👈 re_path add kiya gaya hai
+from django.urls import path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.static import serve  # 👈 serve add kiya gaya hai
+from django.views.static import serve
 from django.contrib.auth import views as auth_views
 
 # Views functions imports
@@ -12,7 +12,8 @@ from products.views import (
     custom_logout, register_page, profile_page,
     make_admin, trigger_import,
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
-    download_invoice
+    download_invoice,
+    export_products_csv, import_products_csv  # 👈 Naye import
 )
 
 urlpatterns = [
@@ -35,6 +36,10 @@ urlpatterns = [
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
     path('secret-import-products-xyz/', trigger_import, name='secret_trigger_import'),
     
+    # 📥 📤 Naye CSV Export/Import URLs
+    path('export-products/', export_products_csv, name='export_products'),
+    path('import-products/', import_products_csv, name='import_products'),
+
     # API Endpoints
     path('api/orders/pending/', get_pending_orders_api, name='api_pending_orders'),
     path('api/orders/update/<int:order_id>/', update_order_status_api, name='api_update_order'),
