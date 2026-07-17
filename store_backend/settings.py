@@ -13,7 +13,8 @@ DEBUG = True
 
 # Allowed hosts and trusted corporate endpoints
 ALLOWED_HOSTS = ['cgsmart.in', 'www.cgsmart.in', '.onrender.com', '*']
-CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in']
+# Ab Render ke domain ko bhi permission mil jayegi
+CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in', 'https://*.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
