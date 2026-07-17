@@ -33,7 +33,7 @@ urlpatterns = [
     path('logout/', custom_logout, name='logout'),
     path('register/', register_page, name='register'),
     path('profile/delete/', products.views.delete_account, name='delete_account'),
-    path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration
+    path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html', success_url='/profile/'), name='password_change'),    
     
     # 🔧 Admin & Sync
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
