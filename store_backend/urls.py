@@ -4,17 +4,17 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from django.contrib.auth import views as auth_views
-from products.views import login_request_otp, login_verify_otp
 
 # Views functions imports
 from products.views import (
     product_list, add_to_cart, cart_detail, checkout_page,
     check_coupon_ajax, about_page, contact_page,
-    custom_logout, register_page, profile_page,
+    custom_logout, customer_signup, profile_page,
     make_admin, trigger_import,
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
     download_invoice,
-    export_products_csv, import_products_csv  # 👈 Naye import
+    export_products_csv, import_products_csv,
+    login_request_otp, login_verify_otp
 )
 
 urlpatterns = [
@@ -29,27 +29,27 @@ urlpatterns = [
     path('about/', about_page, name='about'),
     path('contact/', contact_page, name='contact'),
     
+    # 🔐 Auth URLs
     path('login/', login_request_otp, name='login'),
     path('login/verify/', login_verify_otp, name='login_verify_otp'),
     path('logout/', custom_logout, name='logout'),
-    path('register/', register_page, name='register'),
+    path('signup/', customer_signup, name='signup'),
     path('profile/', profile_page, name='profile'),
     
+    # 🔧 Admin & Sync
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
     path('secret-import-products-xyz/', trigger_import, name='secret_trigger_import'),
-    
-    # 📥 📤 Naye CSV Export/Import URLs
     path('export-products/', export_products_csv, name='export_products'),
     path('import-products/', import_products_csv, name='import_products'),
 
-    # API Endpoints
+    # 📡 API Endpoints
     path('api/orders/pending/', get_pending_orders_api, name='api_pending_orders'),
     path('api/orders/update/<int:order_id>/', update_order_status_api, name='api_update_order'),
     path('api/products/sync/', sync_products_from_erp_api, name='api_sync_products'),
 
-    # 📄 Naya Invoice Download URL
+    # 📄 Invoices
     path('invoice/<int:order_id>/download/', download_invoice, name='download_invoice'),
     
-    # 🌟 FIX: Live server (Render) par Banners aur Images serve karne ka code
+    # 🌟 Static & Media for Render Live Server
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

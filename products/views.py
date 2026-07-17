@@ -1,7 +1,7 @@
 import csv
+import random
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import logout
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import logout, login
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -11,17 +11,14 @@ from rest_framework import status
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.utils.http import urlencode
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth.models import User
 
 from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner
 from .serializers import OrderSerializer, ProductSerializer
 
-import random
-from django.core.mail import send_mail
-from django.conf import settings
-from django.contrib.auth import login
-from django.contrib.auth.models import User
-
-# 🏠 1. Homepage View (Premium & Dynamic Categories)
+# 🏠 1. Homepage View
 def product_list(request):
     search_query = request.GET.get('search', '').strip()
     category_id = request.GET.get('category')
@@ -97,7 +94,7 @@ def cart_detail(request):
         
     return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
-# 💳 4. Checkout Page with Smart Auto-fill & WhatsApp Alert
+# 💳 4. Checkout Page
 def checkout_page(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -123,7 +120,6 @@ def checkout_page(request):
             active_coupon.is_used = True
             active_coupon.save()
 
-        # SMART PROFILE UPDATE
         if request.user.is_authenticated:
             profile, created = CustomerProfile.objects.get_or_create(user=request.user)
             if not profile.default_address:
@@ -149,7 +145,6 @@ def checkout_page(request):
         elif final_total >= 699:
             new_coupon = Coupon.objects.create(code=f"CGS08-{order.id}", mobile_number=mobile, discount_percentage=8)
 
-        # 🌟 WhatsApp Message Generation
         wa_message = f"📢 *Naya Order!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n*Total:* ₹{final_total}"
 
         request.session['cart'] = {}
@@ -159,7 +154,6 @@ def checkout_page(request):
             'wa_message': wa_message
         })
 
-    # SMART AUTO-FILL
     initial_data = {}
     if request.user.is_authenticated:
         profile, created = CustomerProfile.objects.get_or_create(user=request.user)
@@ -172,7 +166,7 @@ def checkout_page(request):
     return render(request, 'products/checkout.html', {'cart_total': cart_total, 'initial_data': initial_data})
 
 # 👤 5. Profile Page
-@login_required
+@login_required(login_url='/login/')
 def profile_page(request):
     if request.user.is_staff or request.user.is_superuser:
         return redirect('home')
@@ -197,7 +191,7 @@ def check_coupon_ajax(request):
         return JsonResponse({'status': 'found', 'discount': coupon.discount_percentage, 'code': coupon.code})
     return JsonResponse({'status': 'not_found'})
 
-# 📄 7. Static & Auth Pages
+# 📄 7. Static Pages
 def about_page(request): return render(request, 'products/about.html')
 def contact_page(request): return render(request, 'products/contact.html')
 
@@ -205,21 +199,75 @@ def custom_logout(request):
     logout(request)
     return redirect('home')
 
-def register_page(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Account successfully ban gaya hai! Ab aap login kar sakte hain.')
-            return redirect('login')
-    else:
-        form = UserCreationForm()
-    return render(request, 'products/register.html', {'form': form})
-
 def make_admin(request): return render(request, 'products/admin_trigger.html')
 def trigger_import(request): return render(request, 'products/import_trigger.html')
 
-# 📡 8. ERP API Endpoints
+# 🚀 8. PASSWORD-LESS SIGN UP (MODERN)
+def customer_signup(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Yeh email pehle se register hai. Kripya Login karein.")
+            return redirect('login')
+            
+        username = email.split('@')[0] + str(random.randint(100, 999))
+        user = User.objects.create_user(username=username, email=email)
+        user.first_name = name
+        user.set_unusable_password() 
+        user.save()
+        
+        messages.success(request, f"Welcome {name}! Aapka account ban gaya hai. Ab aap OTP ke zariye secure login kar sakte hain.")
+        return redirect('login')
+        
+    return render(request, 'registration/signup.html')
+
+# ✉️ 9. OTP LOGIN REQUEST
+def login_request_otp(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            otp = str(random.randint(100000, 999999))
+            
+            request.session['login_otp'] = otp
+            request.session['login_email'] = email
+            
+            subject = 'Aapka Login OTP - Chachan General Store'
+            message = f'Namaste {user.first_name or user.username},\n\nAapka login OTP hai: {otp}\nYeh OTP 10 minute ke liye valid hai.\n\nThank You!'
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
+            
+            messages.success(request, f"OTP {email} par bhej diya gaya hai!")
+            return redirect('login_verify_otp')
+            
+        except User.DoesNotExist:
+            messages.error(request, "Yeh email humare system mein register nahi hai. Kripya naya account banayein.")
+            
+    return render(request, 'registration/login_request.html')
+
+# 🔐 10. OTP VERIFY
+def login_verify_otp(request):
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        saved_otp = request.session.get('login_otp')
+        saved_email = request.session.get('login_email')
+        
+        if entered_otp == saved_otp:
+            user = User.objects.get(email=saved_email)
+            login(request, user)
+            
+            del request.session['login_otp']
+            del request.session['login_email']
+            
+            messages.success(request, f"Welcome back, {user.first_name or user.username}! Login successful.")
+            return redirect('home')
+        else:
+            messages.error(request, "❌ Galat OTP! Kripya dobara check karein.")
+            
+    return render(request, 'registration/login_verify.html')
+
+# 📡 11. ERP API Endpoints
 @api_view(['GET'])
 def get_pending_orders_api(request):
     orders = Order.objects.filter(status='Pending').order_by('-id')
@@ -255,7 +303,8 @@ def sync_products_from_erp_api(request):
             )
     return Response({'message': 'Product sync process successfully executed'})
 
-# 📄 Download Smart PDF Invoice
+# 📄 12. Download Smart PDF Invoice
+@login_required(login_url='/login/')
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     items = OrderItem.objects.filter(order=order)
@@ -275,10 +324,9 @@ def download_invoice(request, order_id):
         return HttpResponse('Invoice generate karne mein error aayi: <pre>' + html + '</pre>')
     return response
 
-# 📥 10. EXPORT: Download products to Excel (CSV) - SECURED
-@login_required
+# 📥 13. EXPORT: Download products to Excel (CSV)
+@login_required(login_url='/login/')
 def export_products_csv(request):
-    # SECURITY CHECK: Sirf Admin (Superuser) hi download kar sakta hai
     if not request.user.is_superuser:
         messages.error(request, "⛔ Access Denied! Sirf Admin is page ko access kar sakta hai.")
         return redirect('home')
@@ -297,10 +345,9 @@ def export_products_csv(request):
         
     return response
 
-# 📤 11. IMPORT: Upload updated Excel (CSV) back to site - SECURED
-@login_required
+# 📤 14. IMPORT: Upload updated Excel (CSV)
+@login_required(login_url='/login/')
 def import_products_csv(request):
-    # SECURITY CHECK: Sirf Admin (Superuser) hi upload kar sakta hai
     if not request.user.is_superuser:
         messages.error(request, "⛔ Access Denied! Sirf Admin is page ko access kar sakta hai.")
         return redirect('home')
@@ -351,51 +398,3 @@ def import_products_csv(request):
         return redirect('home')
         
     return render(request, 'products/import_csv.html')
-
-# ✉️ 1. OTP Request Function
-def login_request_otp(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        try:
-            user = User.objects.get(email=email)
-            # 6-digit OTP generate karna
-            otp = str(random.randint(100000, 999999))
-            
-            # OTP aur Email ko session me save karna
-            request.session['login_otp'] = otp
-            request.session['login_email'] = email
-            
-            # Email bhejna
-            subject = 'Aapka Login OTP - Chachan General Store'
-            message = f'Namaste {user.first_name or user.username},\n\nAapka login OTP hai: {otp}\nYeh OTP 10 minute ke liye valid hai.\n\nThank You!'
-            send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
-            
-            messages.success(request, f"OTP {email} par bhej diya gaya hai!")
-            return redirect('login_verify_otp')
-            
-        except User.DoesNotExist:
-            messages.error(request, "Yeh email humare system mein register nahi hai. Kripya sahi email dalein.")
-            
-    return render(request, 'registration/login_request.html')
-
-# 🔐 2. OTP Verify Function
-def login_verify_otp(request):
-    if request.method == 'POST':
-        entered_otp = request.POST.get('otp')
-        saved_otp = request.session.get('login_otp')
-        saved_email = request.session.get('login_email')
-        
-        if entered_otp == saved_otp:
-            user = User.objects.get(email=saved_email)
-            login(request, user) # User ko secure tarike se login karwana
-            
-            # Security ke liye session se OTP hata dena
-            del request.session['login_otp']
-            del request.session['login_email']
-            
-            messages.success(request, f"Welcome back, {user.username}! Login successful.")
-            return redirect('home')
-        else:
-            messages.error(request, "❌ Galat OTP! Kripya dobara check karein.")
-            
-    return render(request, 'registration/login_verify.html')

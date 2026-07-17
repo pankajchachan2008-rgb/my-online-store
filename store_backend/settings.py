@@ -23,8 +23,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Third-Party & Business Apps
     'rest_framework',
     'products',
 ]
@@ -87,14 +85,11 @@ TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
-# ... (Baaki sab same rakhein, bas static settings yahan se replace karein) ...
-
 # Static & Media Files Setup
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Modern Django 5.x way for static files
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -107,35 +102,23 @@ STORAGES = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# ... (Security settings wahi rahein jo aapne likhi hain) ...
-
 # Authentication Redirections
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# Production Security Hardening & HTTPS Proxy Handlers
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'DENY'
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-
 # =====================================================================
 #                 🔒 ADVANCED SECURITY HARDENING SETTINGS
 # =====================================================================
-
-# 1. Strict SSL Redirect & HTTPS Enforcement
+# Strict SSL Redirect & HTTPS Enforcement (Render Live Ke Liye)
 SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# 2. HSTS (HTTP Strict Transport Security) - Only allow HTTPS connection
-SECURE_HSTS_SECONDS = 31536000  # 1 Year (Corporate Standard)
+# HSTS (HTTP Strict Transport Security)
+SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# 3. Session & Cookie Security (Prevents session/cookie hijacking)
+# Session & Cookie Security
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
@@ -143,24 +126,18 @@ CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
 
-# 4. Browser Protection Headers
+# Browser Protection Headers
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'DENY'  # Clickjacking Protection
-
-# 5. Prevent exposing Server Details
+X_FRAME_OPTIONS = 'DENY'
 SECURE_REFERRER_POLICY = "same-origin"
 
-import os
-
-# Media files (User uploaded files) configuration
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# EMAIL CONFIGURATION
+# =====================================================================
+#                 📧 EMAIL OTP CONFIGURATION
+# =====================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'pankajchachan2026@gmail.com' # 👈 Apna official Gmail yahan dalein
-EMAIL_HOST_PASSWORD = 'qovgaxoytqwlrtaz' # 👈 Yahan Gmail ka "App Password" dalega (Normal password nahi)
+EMAIL_HOST_USER = 'pankajchachan2026@gmail.com'
+EMAIL_HOST_PASSWORD = 'qovgaxoytqwlrtaz'  # Apne App Password se replace karein
