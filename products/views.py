@@ -58,28 +58,36 @@ def product_list(request):
         'current_sort': sort
     })
 
-# 🛒 2. Add to Cart
+# 🛒 2. Add to Cart (Integrated for both Variant & Normal products)
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    variant_id = request.POST.get('variant_id') # Form se variant id uthao
-    variant = get_object_or_404(ProductVariant, id=variant_id)
+    variant_id = request.POST.get('variant_id')
     
     cart = request.session.get('cart', {})
     
-    # Unique key for variant
-    cart_key = f"{product_id}_{variant_id}"
+    if variant_id:
+        # Variant wala product
+        variant = get_object_or_404(ProductVariant, id=variant_id)
+        cart_key = f"{product_id}_{variant_id}"
+        item_name = f"{product.name} ({variant.size_name})"
+        item_price = float(variant.price)
+    else:
+        # Normal product (Bina variant wala)
+        cart_key = str(product_id)
+        item_name = product.name
+        item_price = float(product.price)
     
     if cart_key in cart:
         cart[cart_key]['quantity'] += 1
     else:
         cart[cart_key] = {
-            'name': f"{product.name} ({variant.size_name})", 
-            'price': float(variant.price), 
+            'name': item_name, 
+            'price': item_price, 
             'quantity': 1
         }
     
     request.session['cart'] = cart
-    messages.success(request, f"{variant.size_name} added to cart!")
+    messages.success(request, f"{item_name} cart mein add hua!")
     return redirect('home')
 
 # 📊 3. Cart Detail View

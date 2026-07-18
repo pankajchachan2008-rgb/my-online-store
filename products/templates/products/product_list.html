@@ -206,13 +206,15 @@
                             <!-- Variant Selection Form -->
                             <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto">
                                 {% csrf_token %}
-                                <select name="variant_id" class="form-select form-select-sm mb-2" required>
-                                    {% for variant in product.variants.all %}
-                                        <option value="{{ variant.id }}">{{ variant.size_name }} - ₹{{ variant.price }}</option>
-                                    {% empty %}
-                                        <option value="">No sizes available</option>
-                                    {% endfor %}
-                                </select>
+                                
+                                {% if product.variants.exists %}
+                                    <select name="variant_id" class="form-select form-select-sm mb-2" required>
+                                        <option value="" disabled selected>Select Size</option>
+                                        {% for variant in product.variants.all %}
+                                            <option value="{{ variant.id }}">{{ variant.size_name }} - ₹{{ variant.price }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% endif %}
                                 
                                 <div class="d-flex flex-column gap-2">
                                     <button type="submit" class="btn btn-cart w-100">Add To Cart</button>
