@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant
 from .serializers import OrderSerializer, ProductSerializer
 
 # 🏠 1. Homepage View
@@ -60,19 +60,25 @@ def product_list(request):
 # 🛒 2. Add to Cart
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    variant_id = request.POST.get('variant_id') # Form se variant id uthao
+    variant = get_object_or_404(ProductVariant, id=variant_id)
+    
     cart = request.session.get('cart', {})
     
-    product_id_str = str(product_id)
-    if product_id_str in cart:
-        if isinstance(cart[product_id_str], dict):
-            cart[product_id_str]['quantity'] += 1
-        else:
-            cart[product_id_str] = {'name': product.name, 'price': float(product.price), 'quantity': 1}
+    # Unique key for variant
+    cart_key = f"{product_id}_{variant_id}"
+    
+    if cart_key in cart:
+        cart[cart_key]['quantity'] += 1
     else:
-        cart[product_id_str] = {'name': product.name, 'price': float(product.price), 'quantity': 1}
+        cart[cart_key] = {
+            'name': f"{product.name} ({variant.size_name})", 
+            'price': float(variant.price), 
+            'quantity': 1
+        }
     
     request.session['cart'] = cart
-    messages.success(request, f"{product.name} cart me add ho gaya hai!")
+    messages.success(request, f"{variant.size_name} added to cart!")
     return redirect('home')
 
 # 📊 3. Cart Detail View

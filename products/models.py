@@ -105,3 +105,13 @@ class Wishlist(models.Model):
 
     class Meta:
         unique_together = ('user', 'product') # Ek user ek product ko ek hi baar wishlist mein rakh sake
+
+# models.py mein ye naya code add karein
+class ProductVariant(models.Model):
+    product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
+    size_name = models.CharField(max_length=50)  # Jaise '500ml' ya 'XL'
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.product.name} ({self.size_name})"
