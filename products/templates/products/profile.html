@@ -1,126 +1,166 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Mere Store{% endblock %}
+
 {% block content %}
-<div class="container mt-4 mb-5">
-    <div class="row">
-        <!-- Sidebar Navigation -->
-        <div class="col-md-3 mb-4">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="bg-dark text-white text-center py-4">
-                    <div class="display-1 mb-2">👤</div>
-                    <h5 class="fw-bold mb-0">Hi, {{ user.first_name|default:user.username }}</h5>
-                </div>
-                <div class="list-group list-group-flush" id="profileTabs" role="tablist">
-                    <a class="list-group-item list-group-item-action active fw-medium py-3" id="nav-info-tab" data-bs-toggle="list" href="#nav-info" role="tab">📝 Personal Info</a>
-                    <a class="list-group-item list-group-item-action fw-medium py-3" id="nav-orders-tab" data-bs-toggle="list" href="#nav-orders" role="tab">📦 My Orders</a>
-                    <!-- Naya Wishlist Tab -->
-                    <a class="list-group-item list-group-item-action fw-medium py-3" id="nav-wishlist-tab" href="{% url 'view_wishlist' %}">❤️ My Wishlist</a>
-                    <a class="list-group-item list-group-item-action fw-medium py-3" id="nav-security-tab" data-bs-toggle="list" href="#nav-security" role="tab">🔒 Security & Settings</a>
-                </div>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body { font-family: 'Jost', sans-serif; background-color: #FAF4EF; color: #111111; }
+    
+    .profile-card {
+        background: #FFFFFF;
+        border: 1px solid #000000;
+        box-shadow: 6px 6px 0px #000000;
+        padding: 30px;
+        margin-bottom: 40px;
+        border-radius: 0;
+    }
+
+    .section-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+        letter-spacing: 1px;
+    }
+
+    .custom-input {
+        border: 1px solid #000000 !important;
+        border-radius: 0;
+        padding: 10px 15px;
+        box-shadow: none !important;
+        font-weight: 500;
+    }
+    .custom-input:focus { border-width: 2px; }
+
+    .btn-custom {
+        background: #000000;
+        color: #FFFFFF;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 0;
+        border: none;
+        padding: 12px 20px;
+        transition: 0.3s ease;
+        width: 100%;
+    }
+    .btn-custom:hover { background: #333333; color: white; }
+    
+    .btn-danger-custom {
+        background: transparent;
+        color: #dc3545;
+        border: 2px solid #dc3545;
+        font-weight: 600;
+        text-transform: uppercase;
+        border-radius: 0;
+        padding: 10px;
+        width: 100%;
+        transition: 0.3s ease;
+    }
+    .btn-danger-custom:hover { background: #dc3545; color: white; }
+
+    .order-table th { background: #000; color: #fff; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; padding: 12px; border: 1px solid #000; }
+    .order-table td { border-bottom: 1px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; padding: 12px; font-size: 0.95rem; vertical-align: middle; }
+    .status-badge { padding: 5px 10px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; border: 1px solid #000; }
+</style>
+
+<div class="container my-5" style="max-width: 1200px;">
+    <!-- Welcome Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+        <h2 class="fw-bold text-uppercase m-0">Welcome, {{ request.user.username }}</h2>
+        <form action="{% url 'logout' %}" method="post" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-dark rounded-0 fw-bold px-4 border-2">LOGOUT</button>
+        </form>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: Profile Update Form -->
+        <div class="col-lg-4">
+            <div class="profile-card">
+                <h3 class="section-title">Profile Details</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Full Name</label>
+                        <input type="text" name="first_name" class="form-control custom-input" value="{{ request.user.first_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email Address</label>
+                        <input type="email" name="email" class="form-control custom-input" value="{{ request.user.email }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mobile Number</label>
+                        <input type="text" name="mobile_number" class="form-control custom-input" value="{{ profile.mobile_number|default:'' }}">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Default Address</label>
+                        <textarea name="address" class="form-control custom-input" rows="3">{{ profile.default_address|default:'' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn-custom mb-3">Update Profile</button>
+                </form>
+                
+                <hr class="my-4" style="border-color: #000; border-width: 2px;">
+                
+                <h4 class="fw-bold fs-6 text-uppercase mb-3 text-danger">Account Settings</h4>
+                <a href="{% url 'password_change' %}" class="btn btn-outline-dark rounded-0 w-100 fw-bold mb-3 border-2">Change Password</a>
+                <form action="{% url 'delete_account' %}" method="POST" onsubmit="return confirm('Kya aap sach mein apna account hamesha ke liye delete karna chahte hain? Yeh action wapas nahi liya ja sakta.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger-custom">Delete Account</button>
+                </form>
             </div>
         </div>
 
-        <!-- Tab Content -->
-        <div class="col-md-9">
-            <div class="tab-content" id="nav-tabContent">
+        <!-- Right Column: Order History -->
+        <div class="col-lg-8">
+            <div class="profile-card">
+                <h3 class="section-title">My Recent Orders</h3>
                 
-                <!-- 1. Personal Info Tab -->
-                <div class="tab-pane fade show active" id="nav-info" role="tabpanel">
-                    <div class="card border-0 shadow-sm rounded-4 p-4">
-                        <h4 class="fw-bold mb-4 border-bottom pb-2">Personal Information</h4>
-                        <form method="POST">
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label text-muted">Username (Non-editable)</label>
-                                    <input type="text" class="form-control" value="{{ user.username }}" disabled>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Full Name</label>
-                                    <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Email Address</label>
-                                    <input type="email" name="email" class="form-control" value="{{ user.email }}">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Mobile Number</label>
-                                    <input type="text" name="mobile_number" class="form-control" value="{{ profile.mobile_number|default:'' }}">
-                                </div>
-                                <div class="col-12 mb-4">
-                                    <label class="form-label fw-bold">Default Delivery Address</label>
-                                    <textarea name="address" class="form-control" rows="3">{{ profile.default_address|default:'' }}</textarea>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-premium-primary w-100 rounded-pill py-2 fw-bold">Save Changes</button>
-                        </form>
-                    </div>
+                {% if orders %}
+                <div class="table-responsive">
+                    <table class="table order-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Invoice</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="fw-bold">#{{ order.id }}</td>
+                                <td>{{ order.created_at|date:"d M, Y" }}</td>
+                                <td class="fw-bold">₹{{ order.total_amount }}</td>
+                                <td>
+                                    <span class="status-badge 
+                                        {% if order.status == 'Completed' %}bg-success text-white border-success
+                                        {% elif order.status == 'Cancelled' %}bg-danger text-white border-danger
+                                        {% else %}bg-warning text-dark border-warning{% endif %}">
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'download_invoice' order.id %}" class="text-dark fw-bold text-decoration-underline" style="font-size: 0.85rem;">Download PDF</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-
-                <!-- 2. Order History Tab -->
-                <div class="tab-pane fade" id="nav-orders" role="tabpanel">
-                    <div class="card border-0 shadow-sm rounded-4 p-4">
-                        <h4 class="fw-bold mb-4 border-bottom pb-2">My Recent Orders</h4>
-                        {% if orders %}
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Order ID</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Total Amount</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for order in orders %}
-                                        <tr>
-                                            <td class="fw-bold">#{{ order.id }}</td>
-                                            <td>{{ order.created_at|date:"d M Y" }}</td>
-                                            <td>
-                                                {% if order.status == 'Pending' %}
-                                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">Pending</span>
-                                                {% else %}
-                                                    <span class="badge bg-success px-3 py-2 rounded-pill">{{ order.status }}</span>
-                                                {% endif %}
-                                            </td>
-                                            <td class="fw-bold text-success">₹{{ order.total_amount }}</td>
-                                            <td>
-                                                <a href="{% url 'download_invoice' order.id %}" class="btn btn-sm btn-outline-dark rounded-pill">📄 Invoice</a>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        {% else %}
-                            <div class="text-center py-5 text-muted">
-                                <h1 class="display-4 mb-3">🛍️</h1>
-                                <h5>Abhi tak koi order nahi kiya gaya hai.</h5>
-                                <a href="{% url 'home' %}" class="btn btn-dark mt-3 rounded-pill">Start Shopping</a>
-                            </div>
-                        {% endif %}
-                    </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <p class="text-muted fw-medium mb-3">Aapne abhi tak koi order nahi kiya hai.</p>
+                    <a href="{% url 'home' %}" class="btn btn-outline-dark rounded-0 fw-bold border-2 px-4 py-2">Start Shopping</a>
                 </div>
-
-                <!-- 3. Security & Settings Tab -->
-                <div class="tab-pane fade" id="nav-security" role="tabpanel">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                        <h4 class="fw-bold mb-3 border-bottom pb-2">Change Password</h4>
-                        <p class="text-muted">Apne account ko secure rakhne ke liye password update karein.</p>
-                        <a href="{% url 'password_change' %}" class="btn btn-dark rounded-pill px-4">🔑 Update Password</a>
-                    </div>
-
-                    <div class="card border-danger shadow-sm rounded-4 p-4 mt-4">
-                        <h4 class="fw-bold text-danger mb-3 border-bottom pb-2 border-danger">Danger Zone</h4>
-                        <p class="text-muted">Apna account delete karne se aapki saari details aur order history hamesha ke liye mit jayegi.</p>
-                        
-                        <form method="POST" action="{% url 'delete_account' %}" onsubmit="return confirm('Kya aap sach mein apna account humesha ke liye delete karna chahte hain? Yeh badla nahi ja sakta.');">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger rounded-pill px-4">🗑️ Delete My Account</button>
-                        </form>
-                    </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>
