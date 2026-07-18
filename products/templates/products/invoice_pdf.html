@@ -46,7 +46,6 @@
     <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 2px solid #111; padding-bottom: 15px; margin-bottom: 20px;">
         <tr>
             <td width="55%" valign="top">
-                <!-- Logo -->
                 <img src="{% static 'logo.png' %}" width="150" style="margin-bottom: 10px;"><br>
                 <span style="font-size: 24px; font-weight: bold; color: #111111; text-transform: uppercase;">Chachan General Store</span><br>
                 <span style="font-size: 11px; color: #666666; text-transform: uppercase; letter-spacing: 1px;">Premium Corporate Retail & Essentials</span>
@@ -64,10 +63,10 @@
         </tr>
     </table>
 
-    <!-- 2. Billing Info -->
-    <table width="100%" cellpadding="12" cellspacing="0" style="margin-bottom: 25px;">
+    <!-- 2. Billing Info (Error Fixed Here: Removed cellpadding="12" from table, added padding:12px to td) -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 25px;">
         <tr>
-            <td width="48%" bgcolor="#F8F9FA" valign="top" style="border-left: 4px solid #111111;">
+            <td width="48%" bgcolor="#F8F9FA" valign="top" style="border-left: 4px solid #111111; padding: 12px;">
                 <span style="font-size: 10px; font-weight: bold; color: #888888; text-transform: uppercase;">Billed To</span><br>
                 <span style="font-size: 14px; font-weight: bold; color: #111111;">{{ order.customer_name }}</span><br>
                 <span style="font-size: 12px; color: #444444;">
@@ -75,8 +74,8 @@
                     Address: {{ order.address }}
                 </span>
             </td>
-            <td width="4%"></td> <!-- Empty space between boxes -->
-            <td width="48%" bgcolor="#F8F9FA" valign="top" style="border-left: 4px solid #111111;">
+            <td width="4%"></td> <!-- Empty space between boxes (No padding now, totally safe) -->
+            <td width="48%" bgcolor="#F8F9FA" valign="top" style="border-left: 4px solid #111111; padding: 12px;">
                 <span style="font-size: 10px; font-weight: bold; color: #888888; text-transform: uppercase;">Dispatched From</span><br>
                 <span style="font-size: 14px; font-weight: bold; color: #111111;">Chachan General Store (Main)</span><br>
                 <span style="font-size: 12px; color: #444444;">
