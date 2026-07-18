@@ -10,7 +10,7 @@ from products.views import (
     product_list, add_to_cart, cart_detail, checkout_page,
     check_coupon_ajax, about_page, contact_page,
     custom_logout, register_page, profile_page,
-    delete_account, # 👈 Yeh yahan hona chahiye
+    delete_account, add_to_wishlist, view_wishlist, # 👈 Yahan add karein
     make_admin, trigger_import,
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
     download_invoice,
