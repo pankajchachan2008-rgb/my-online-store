@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 
-{% block title %}Order Successful - Mere Store Online{% endblock %}
-
 {% block content %}
 <div class="row justify-content-center my-5">
     <div class="col-md-7 text-center">
@@ -20,12 +18,17 @@
                         <span class="text-muted">Total Amount:</span>
                         <span class="fw-bold text-success">₹{{ order.total_amount }}</span>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="text-muted">Contact Number:</span>
-                        <span class="fw-bold">{{ order.phone }}</span>
-                    </div>
                 </div>
             </div>
+
+            <!-- WhatsApp Automation Button -->
+            {% if whatsapp_url %}
+            <div class="my-4">
+                <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-success btn-lg fw-bold px-4">
+                    💬 Send Order to WhatsApp
+                </a>
+            </div>
+            {% endif %}
 
             <p class="text-secondary small mb-4">Hum jald hi aapke diye gaye number par delivery ke liye contact karenge.</p>
             

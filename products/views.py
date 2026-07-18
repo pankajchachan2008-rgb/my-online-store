@@ -15,6 +15,7 @@ from django.utils.http import urlencode
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils.http import urlencode
 
 from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant
 from .serializers import OrderSerializer, ProductSerializer
@@ -101,7 +102,6 @@ def cart_detail(request):
         
     return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
-# 💳 4. Checkout Page
 def checkout_page(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -109,31 +109,28 @@ def checkout_page(request):
         return redirect('home')
         
     cart_total = 0
+    # Items list banane ke liye
+    order_items_list = []
+    
     for pid, item in list(cart.items()):
         if isinstance(item, dict) and 'price' in item:
             cart_total += item['price'] * item['quantity']
+            order_items_list.append(f"- {item['name']} (x{item['quantity']}) : ₹{item['price'] * item['quantity']}")
         
     if request.method == 'POST':
         name = request.POST.get('name')
         mobile = request.POST.get('mobile_number')
         address = request.POST.get('address')
         
+        # ... (Coupon logic waisa hi rahega)
         active_coupon = Coupon.objects.filter(mobile_number=mobile, is_used=False).first()
         final_total = float(cart_total)
-        
         if active_coupon:
-            discount_amount = (final_total * active_coupon.discount_percentage) / 100
-            final_total -= discount_amount
+            final_total -= (final_total * active_coupon.discount_percentage) / 100
             active_coupon.is_used = True
             active_coupon.save()
 
-        if request.user.is_authenticated:
-            profile, created = CustomerProfile.objects.get_or_create(user=request.user)
-            if not profile.default_address:
-                profile.default_address = address
-                profile.mobile_number = mobile
-                profile.save()
-
+        # Order creation
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             customer_name=name, mobile_number=mobile, address=address,
@@ -142,35 +139,23 @@ def checkout_page(request):
         
         for pid, item in cart.items():
             if isinstance(item, dict):
-                OrderItem.objects.create(
-                    order=order, product_name=item['name'], price=item['price'], quantity=item['quantity']
-                )
+                OrderItem.objects.create(order=order, product_name=item['name'], price=item['price'], quantity=item['quantity'])
             
-        new_coupon = None
-        if final_total >= 999:
-            new_coupon = Coupon.objects.create(code=f"CGS10-{order.id}", mobile_number=mobile, discount_percentage=10)
-        elif final_total >= 699:
-            new_coupon = Coupon.objects.create(code=f"CGS08-{order.id}", mobile_number=mobile, discount_percentage=8)
-
-        wa_message = f"📢 *Naya Order!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n*Total:* ₹{final_total}"
+        # 💬 WhatsApp Message Construction
+        items_str = "\n".join(order_items_list)
+        wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n\n*Total Amount:* ₹{final_total}"
+        
+        # WhatsApp URL generate karein (Yahan apna WhatsApp number 91XXXXXXXXXX ki jagah likhein)
+        whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
 
         request.session['cart'] = {}
         return render(request, 'products/order_success.html', {
             'order': order, 
-            'new_coupon': new_coupon, 
-            'wa_message': wa_message
+            'whatsapp_url': whatsapp_url # Ye url ab template mein jayega
         })
 
-    initial_data = {}
-    if request.user.is_authenticated:
-        profile, created = CustomerProfile.objects.get_or_create(user=request.user)
-        initial_data = {
-            'name': request.user.username,
-            'mobile': profile.mobile_number or "",
-            'address': profile.default_address or ""
-        }
-
-    return render(request, 'products/checkout.html', {'cart_total': cart_total, 'initial_data': initial_data})
+    # ... (Initial data logic)
+    return render(request, 'products/checkout.html', {'cart_total': cart_total})
 
 # 👤 5. Premium Profile Page
 @login_required(login_url='/login/')
