@@ -2,189 +2,195 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Invoice #{{ order.id }}</title>
+    <title>Tax Invoice #{{ order.id }}</title>
     <style>
         @page {
             size: a4 portrait;
-            margin: 2cm;
+            margin: 1.5cm;
+            @frame footer {
+                -pdf-frame-content: footer_content;
+                bottom: 1cm;
+                height: 1cm;
+            }
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
-            color: #111111;
+            color: #222222;
             font-size: 12px;
-            line-height: 1.5;
+            line-height: 1.4;
         }
-        .header-table {
-            width: 100%;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #000000;
-            padding-bottom: 10px;
-        }
-        .store-title {
-            font-size: 24px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #000000;
-        }
-        .invoice-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #555555;
-            text-align: right;
-            text-transform: uppercase;
-        }
-        .info-table {
-            width: 100%;
-            margin-bottom: 30px;
-        }
-        .info-table td {
-            vertical-align: top;
-        }
-        .section-heading {
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #777777;
-            margin-bottom: 5px;
-        }
-        .details-box {
-            font-size: 12px;
-        }
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
+        
+        /* 🌟 Header Section */
+        .header-table { width: 100%; border-bottom: 3px solid #111111; padding-bottom: 15px; margin-bottom: 20px; }
+        .company-name { font-size: 26px; font-weight: bold; color: #111111; text-transform: uppercase; letter-spacing: 1.5px; }
+        .company-tagline { font-size: 11px; color: #666666; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .invoice-label { font-size: 28px; font-weight: bold; color: #111111; text-align: right; text-transform: uppercase; letter-spacing: 2px; }
+        .invoice-meta { font-size: 11px; color: #555555; text-align: right; margin-top: 5px; }
+
+        /* 📦 Barcode & QR Section */
+        .barcode-img { width: 150px; height: 40px; margin-top: 10px; }
+        .qr-img { width: 70px; height: 70px; }
+
+        /* 🏷️ Billing Details Section */
+        .info-table { width: 100%; margin-bottom: 25px; }
+        .info-box { background-color: #F8F9FA; padding: 15px; border-left: 4px solid #111111; }
+        .section-title { font-size: 11px; font-weight: bold; color: #888888; text-transform: uppercase; margin-bottom: 8px; }
+        .party-name { font-size: 14px; font-weight: bold; color: #111111; margin-bottom: 4px; }
+        .party-details { font-size: 12px; color: #444444; line-height: 1.5; }
+
+        /* 🛒 Items Table */
+        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         .items-table th {
-            background-color: #000000;
-            color: #FFFFFF;
-            font-weight: bold;
-            text-transform: uppercase;
-            padding: 10px;
-            text-align: left;
-            font-size: 11px;
+            background-color: #111111; color: #FFFFFF; font-size: 11px; font-weight: bold;
+            text-transform: uppercase; padding: 12px 10px; text-align: left; border: 1px solid #111111;
         }
-        .items-table td {
-            padding: 10px;
-            border-bottom: 1px solid #DDDDDD;
-        }
-        .text-right { text-align: right !important; }
+        .items-table td { padding: 12px 10px; border-bottom: 1px solid #E0E0E0; border-left: 1px solid #E0E0E0; border-right: 1px solid #E0E0E0; }
+        .items-table tr:nth-child(even) { background-color: #FAFAFA; }
+        
         .text-center { text-align: center !important; }
-        .total-table {
-            width: 100%;
+        .text-right { text-align: right !important; }
+        
+        /* 💰 Calculation Section */
+        .calc-table { width: 100%; border-collapse: collapse; }
+        .calc-table td { padding: 8px 10px; }
+        .calc-label { font-size: 12px; font-weight: bold; color: #555555; text-transform: uppercase; }
+        .calc-value { font-size: 13px; font-weight: bold; color: #111111; }
+        .grand-total-row td {
+            background-color: #111111; color: #FFFFFF; font-size: 16px; font-weight: bold;
+            padding: 12px 10px; margin-top: 10px;
         }
-        .total-table td {
-            padding: 8px;
-        }
-        .total-row {
-            font-weight: bold;
-            font-size: 14px;
-            border-top: 2px solid #000000;
-            border-bottom: 2px solid #000000;
-        }
-        .footer {
-            text-align: center;
-            font-size: 10px;
-            color: #777777;
-            margin-top: 50px;
-            border-top: 1px solid #DDDDDD;
-            padding-top: 10px;
-        }
+
+        /* 📜 Footer */
+        .auth-sign { margin-top: 40px; text-align: right; }
+        .sign-line { border-top: 1px solid #111111; width: 150px; display: inline-block; margin-top: 40px; padding-top: 5px; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #555;}
+        
+        .footer-text { font-size: 9px; color: #888888; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Header & Logo -->
     <table class="header-table">
         <tr>
-            <td width="60%">
-                <div class="store-title">CHACHAN GENERAL STORE</div>
-                <div>Premium Essentials & Retail</div>
+            <td width="55%" valign="middle">
+                <!-- 🌟 Agar aapke paas static folder mein logo hai toh is comment ko hatakar use karein: -->
+                <!-- <img src="{% static 'logo.png' %}" height="50" style="margin-bottom: 10px;"> -->
+                <div class="company-name">Chachan General Store</div>
+                <div class="company-tagline">Premium Corporate Retail & Essentials</div>
             </td>
-            <td width="40%" class="text-right">
-                <div class="invoice-title">TAX INVOICE</div>
-                <div>Date: {{ order.created_at|date:"d M, Y" }}</div>
-                <div>Order No: #{{ order.id }}</div>
-                <div>Status: {{ order.status }}</div>
+            <td width="45%" valign="top" class="text-right">
+                <div class="invoice-label">TAX INVOICE</div>
+                <div class="invoice-meta">
+                    <strong>Invoice No:</strong> #INV-2026-{{ order.id }}<br>
+                    <strong>Date:</strong> {{ order.created_at|date:"d M, Y" }}<br>
+                    <strong>Status:</strong> <span style="color: #27ae60;">{{ order.status }}</span>
+                </div>
+                <!-- 📊 Dynamic Barcode Generation -->
+                <div>
+                    <img src="https://barcode.tec-it.com/barcode.ashx?data=INV-2026-{{ order.id }}&code=Code128&dpi=96" class="barcode-img" alt="Barcode">
+                </div>
             </td>
         </tr>
     </table>
 
-    <!-- Billing Information -->
+    <!-- Billing Info -->
     <table class="info-table">
         <tr>
-            <td width="50%">
-                <div class="section-heading">Billed To:</div>
-                <div class="details-box">
-                    <strong>{{ order.customer_name }}</strong><br>
-                    Phone: {{ order.mobile_number }}<br>
-                    Address: {{ order.address }}
+            <td width="48%">
+                <div class="info-box">
+                    <div class="section-title">Billed To</div>
+                    <div class="party-name">{{ order.customer_name }}</div>
+                    <div class="party-details">
+                        Phone: {{ order.mobile_number }}<br>
+                        Address: {{ order.address }}
+                    </div>
                 </div>
             </td>
-            <td width="50%" class="text-right">
-                <div class="section-heading">Dispatched From:</div>
-                <div class="details-box">
-                    <strong>Chachan General Store (Main Branch)</strong><br>
-                    Nohar, Rajasthan<br>
-                    India
+            <td width="4%"></td> <!-- Spacing -->
+            <td width="48%">
+                <div class="info-box">
+                    <div class="section-title">Dispatched From</div>
+                    <div class="party-name">Chachan General Store (Main)</div>
+                    <div class="party-details">
+                        GSTIN: 08AAAAA0000A1Z5<br>
+                        Nohar, Rajasthan, India<br>
+                        Contact: support@chachanstore.com
+                    </div>
                 </div>
             </td>
         </tr>
     </table>
 
-    <!-- Order Items Table -->
+    <!-- Items List -->
     <table class="items-table">
         <thead>
             <tr>
-                <th width="5%">#</th>
-                <th width="45%">Item Description</th>
-                <th width="15%" class="text-center">Qty</th>
-                <th width="15%" class="text-right">Price/Unit</th>
-                <th width="20%" class="text-right">Amount</th>
+                <th width="8%" class="text-center">S.No</th>
+                <th width="47%">Product Description</th>
+                <th width="15%" class="text-center">Quantity</th>
+                <th width="15%" class="text-right">Unit Price</th>
+                <th width="15%" class="text-right">Total</th>
             </tr>
         </thead>
         <tbody>
             {% for item in items %}
             <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ item.product_name }}</td>
+                <td class="text-center">{{ forloop.counter }}</td>
+                <td><strong>{{ item.product_name }}</strong></td>
                 <td class="text-center">{{ item.quantity }}</td>
-                <td class="text-right">Rs. {{ item.price }}</td>
-                <td class="text-right">Rs. {% widthratio item.price 1 item.quantity %}</td>
+                <td class="text-right">₹{{ item.price }}</td>
+                <td class="text-right">₹{% widthratio item.price 1 item.quantity %}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- Totals -->
-    <table class="total-table">
+    <!-- Calculation & QR Code -->
+    <table class="calc-table">
         <tr>
-            <td width="60%"></td>
-            <td width="40%">
-                <table width="100%">
+            <td width="55%" valign="top">
+                <!-- 📱 Dynamic QR Code For Verification/Payment -->
+                <div class="section-title" style="margin-bottom: 5px;">Scan To Verify</div>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Invoice:%20INV-2026-{{ order.id }}%0AAmount:%20Rs.{{ order.total_amount }}" class="qr-img" alt="QR Code">
+                <br><br>
+                <div style="font-size: 10px; color: #777;">* Terms & Conditions apply. Items once sold cannot be returned without original receipt.</div>
+            </td>
+            <td width="45%" valign="top">
+                <table width="100%" border="0">
+                    <tr>
+                        <td class="calc-label text-right">Subtotal:</td>
+                        <td class="calc-value text-right">₹{{ order.total_amount }}</td>
+                    </tr>
                     {% if order.applied_coupon %}
                     <tr>
-                        <td class="text-right">Subtotal:</td>
-                        <td class="text-right">Rs. {{ order.total_amount }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-right">Discount ({{ order.applied_coupon.code }}):</td>
-                        <td class="text-right text-success">- Applied</td>
+                        <td class="calc-label text-right">Coupon Discount ({{ order.applied_coupon.code }}):</td>
+                        <td class="calc-value text-right" style="color: #27ae60;">- Applied</td>
                     </tr>
                     {% endif %}
-                    <tr class="total-row">
-                        <td class="text-right">GRAND TOTAL:</td>
-                        <td class="text-right">Rs. {{ order.total_amount }}</td>
+                    <tr>
+                        <td class="calc-label text-right">Tax (Included):</td>
+                        <td class="calc-value text-right">₹0.00</td>
+                    </tr>
+                    <tr class="grand-total-row">
+                        <td class="text-right" style="color: #FFFFFF;">GRAND TOTAL:</td>
+                        <td class="text-right" style="color: #FFFFFF;">₹{{ order.total_amount }}</td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table>
 
-    <!-- Footer -->
-    <div class="footer">
-        Thank you for your business. This is a computer-generated invoice and does not require a physical signature.
+    <!-- Authorized Signatory -->
+    <div class="auth-sign">
+        <div class="sign-line">Authorized Signatory</div>
+    </div>
+
+    <!-- Fixed Footer -->
+    <div id="footer_content">
+        <div class="footer-text">
+            Thank you for shopping with Chachan General Store • This is a computer generated invoice
+        </div>
     </div>
 
 </body>
