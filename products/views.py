@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, WishList
 from .serializers import OrderSerializer, ProductSerializer
 
 # 🏠 1. Homepage View
