@@ -1,145 +1,190 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>Invoice #{{ order.id }}</title>
     <style>
         @page {
             size: a4 portrait;
-            margin: 1.5cm;
+            margin: 2cm;
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
-            color: #333333;
-            font-size: 13px;
-        }
-        /* Strict PDF-friendly Table CSS */
-        table {
-            width: 100%;
+            color: #111111;
+            font-size: 12px;
+            line-height: 1.5;
         }
         .header-table {
-            margin-bottom: 25px;
-            border-bottom: 2px solid #2c3e50;
+            width: 100%;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000000;
             padding-bottom: 10px;
         }
-        .billing-table {
+        .store-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000000;
+        }
+        .invoice-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #555555;
+            text-align: right;
+            text-transform: uppercase;
+        }
+        .info-table {
+            width: 100%;
             margin-bottom: 30px;
+        }
+        .info-table td {
+            vertical-align: top;
+        }
+        .section-heading {
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #777777;
+            margin-bottom: 5px;
+        }
+        .details-box {
+            font-size: 12px;
         }
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         .items-table th {
-            background-color: #2c3e50;
-            color: #ffffff;
-            padding: 8px;
-            text-align: left;
+            background-color: #000000;
+            color: #FFFFFF;
             font-weight: bold;
+            text-transform: uppercase;
+            padding: 10px;
+            text-align: left;
+            font-size: 11px;
         }
         .items-table td {
-            border-bottom: 1px solid #dddddd;
+            padding: 10px;
+            border-bottom: 1px solid #DDDDDD;
+        }
+        .text-right { text-align: right !important; }
+        .text-center { text-align: center !important; }
+        .total-table {
+            width: 100%;
+        }
+        .total-table td {
             padding: 8px;
         }
-        .totals-table {
-            width: 100%;
-            margin-top: 10px;
-        }
-        .totals-table td {
-            padding: 5px;
-            text-align: right;
+        .total-row {
+            font-weight: bold;
+            font-size: 14px;
+            border-top: 2px solid #000000;
+            border-bottom: 2px solid #000000;
         }
         .footer {
-            margin-top: 40px;
             text-align: center;
-            font-size: 11px;
-            color: #7f8c8d;
-            border-top: 1px solid #eeeeee;
+            font-size: 10px;
+            color: #777777;
+            margin-top: 50px;
+            border-top: 1px solid #DDDDDD;
             padding-top: 10px;
         }
     </style>
 </head>
 <body>
 
+    <!-- Header -->
     <table class="header-table">
         <tr>
-            <td style="width: 50%;">
-                <h1 style="color: #2c3e50; margin: 0; font-size: 28px;">CG SMART</h1>
-                <p style="margin: 2px 0; color: #7f8c8d; font-size: 12px;">India's Premier Online Store</p>
-                <p style="margin: 2px 0; color: #7f8c8d; font-size: 12px;">support@cgsmart.in</p>
+            <td width="60%">
+                <div class="store-title">CHACHAN GENERAL STORE</div>
+                <div>Premium Essentials & Retail</div>
             </td>
-            <td style="width: 50%; text-align: right; vertical-align: top;">
-                <h2 style="color: #2c3e50; margin: 0; font-size: 20px;">TAX INVOICE</h2>
-                <p style="margin: 2px 0;"><strong>Invoice No:</strong> #CGS-{{ order.id }}</p>
-                <p style="margin: 2px 0;"><strong>Date:</strong> {{ order.created_at|date:"d M Y" }}</p>
+            <td width="40%" class="text-right">
+                <div class="invoice-title">TAX INVOICE</div>
+                <div>Date: {{ order.created_at|date:"d M, Y" }}</div>
+                <div>Order No: #{{ order.id }}</div>
+                <div>Status: {{ order.status }}</div>
             </td>
         </tr>
     </table>
 
-    <table class="billing-table">
+    <!-- Billing Information -->
+    <table class="info-table">
         <tr>
-            <td style="width: 60%; vertical-align: top;">
-                <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #2c3e50;">Billed To:</h3>
-                <strong>{{ order.customer_name }}</strong><br>
-                {{ order.address }}<br>
-                <strong>Phone:</strong> {{ order.phone|default:order.mobile_number }}
+            <td width="50%">
+                <div class="section-heading">Billed To:</div>
+                <div class="details-box">
+                    <strong>{{ order.customer_name }}</strong><br>
+                    Phone: {{ order.mobile_number }}<br>
+                    Address: {{ order.address }}
+                </div>
             </td>
-            <td style="width: 40%; text-align: right; vertical-align: top;">
-                <pdf:barcode value="CGS-{{ order.id }}" type="code128" barwidth="1.2" barheight="40"></pdf:barcode>
-                <br><span style="font-size: 10px; color: #7f8c8d;">Scan for ERP record</span>
+            <td width="50%" class="text-right">
+                <div class="section-heading">Dispatched From:</div>
+                <div class="details-box">
+                    <strong>Chachan General Store (Main Branch)</strong><br>
+                    Nohar, Rajasthan<br>
+                    India
+                </div>
             </td>
         </tr>
     </table>
 
+    <!-- Order Items Table -->
     <table class="items-table">
         <thead>
             <tr>
-                <th style="width: 50%;">Item Description</th>
-                <th style="width: 15%;">Qty</th>
-                <th style="width: 15%;">Unit Price</th>
-                <th style="width: 20%; text-align: right;">Total</th>
+                <th width="5%">#</th>
+                <th width="45%">Item Description</th>
+                <th width="15%" class="text-center">Qty</th>
+                <th width="15%" class="text-right">Price/Unit</th>
+                <th width="20%" class="text-right">Amount</th>
             </tr>
         </thead>
         <tbody>
             {% for item in items %}
             <tr>
+                <td>{{ forloop.counter }}</td>
                 <td>{{ item.product_name }}</td>
-                <td>{{ item.quantity }}</td>
-                <td>₹{{ item.price }}</td>
-                <td style="text-align: right;">₹{% widthratio item.price 1 item.quantity %}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" style="text-align: center;">No items found in this order.</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-right">Rs. {{ item.price }}</td>
+                <td class="text-right">Rs. {% widthratio item.price 1 item.quantity %}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <table class="totals-table">
-        {% if order.applied_coupon %}
+    <!-- Totals -->
+    <table class="total-table">
         <tr>
-            <td style="width: 75%;">Subtotal:</td>
-            <td style="width: 25%;"><strong>₹{{ order.total_amount }}</strong></td>
-        </tr>
-        <tr>
-            <td style="width: 75%; color: #e67e22;">Discount Applied ({{ order.applied_coupon.discount_percentage }}%):</td>
-            <td style="width: 25%; color: #e67e22;">Included</td>
-        </tr>
-        {% endif %}
-        <tr>
-            <td style="width: 75%; border-top: 2px solid #2c3e50; padding-top: 10px;">
-                <strong style="font-size: 16px; color: #27ae60;">Grand Total:</strong>
-            </td>
-            <td style="width: 25%; border-top: 2px solid #2c3e50; padding-top: 10px;">
-                <strong style="font-size: 16px; color: #27ae60;">₹{{ order.total_amount }}</strong>
+            <td width="60%"></td>
+            <td width="40%">
+                <table width="100%">
+                    {% if order.applied_coupon %}
+                    <tr>
+                        <td class="text-right">Subtotal:</td>
+                        <td class="text-right">Rs. {{ order.total_amount }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-right">Discount ({{ order.applied_coupon.code }}):</td>
+                        <td class="text-right text-success">- Applied</td>
+                    </tr>
+                    {% endif %}
+                    <tr class="total-row">
+                        <td class="text-right">GRAND TOTAL:</td>
+                        <td class="text-right">Rs. {{ order.total_amount }}</td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
 
+    <!-- Footer -->
     <div class="footer">
-        Thank you for shopping with CG Smart!<br>
-        This is a computer-generated document and does not require a physical signature.
+        Thank you for your business. This is a computer-generated invoice and does not require a physical signature.
     </div>
 
 </body>

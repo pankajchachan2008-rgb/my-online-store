@@ -1,79 +1,154 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - Secure Payment{% endblock %}
+
 {% block content %}
-<div class="container mt-4 mb-5">
-    <div class="row">
-        <div class="col-md-7 shadow p-4 bg-white rounded-4">
-            <h3 class="fw-bold mb-4">Delivery & Billing Details</h3>
-            <form method="POST" action="">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label fw-medium">Customer Name</label>
-                    <input type="text" name="name" class="form-control py-2" value="{{ initial_data.name|default:'' }}" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-medium">Mobile Number</label>
-                    <input type="text" id="id_mobile_number" name="mobile_number" class="form-control py-2" value="{{ initial_data.mobile|default:'' }}" placeholder="10-digit number enter karein" required>
-                    <div id="coupon-status" class="mt-2 fw-semibold"></div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-medium">Complete Address</label>
-                    <textarea name="address" class="form-control" rows="3" required>{{ initial_data.address|default:'' }}</textarea>
-                </div>
-                <button type="submit" class="btn btn-success w-100 py-3 fs-5 mt-3 rounded-pill" style="background-color: #0d9488; border: none;">Place Order (Cash on Delivery) 📦</button>
-            </form>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body { font-family: 'Jost', sans-serif; background-color: #FAF4EF; color: #111111; }
+    
+    .checkout-card {
+        background: #FFFFFF;
+        border: 1px solid #000000;
+        box-shadow: 6px 6px 0px #000000;
+        padding: 30px;
+        margin-bottom: 40px;
+        border-radius: 0;
+    }
+
+    .section-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+        letter-spacing: 1px;
+    }
+
+    .custom-input {
+        border: 1px solid #000000 !important;
+        border-radius: 0;
+        padding: 12px 15px;
+        box-shadow: none !important;
+        font-weight: 500;
+    }
+    .custom-input:focus { border-width: 2px; }
+
+    .btn-checkout {
+        background: #25D366; /* WhatsApp Green */
+        color: #FFFFFF;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 0;
+        border: 2px solid #000000;
+        padding: 15px 20px;
+        transition: 0.3s ease;
+        width: 100%;
+        font-size: 1.1rem;
+    }
+    .btn-checkout:hover { background: #1EBE55; color: #fff; box-shadow: 4px 4px 0px #000; transform: translateY(-2px); }
+    
+    .btn-coupon {
+        background: #000000; color: #FFFFFF; font-weight: 600; text-transform: uppercase;
+        border-radius: 0; border: none; padding: 12px 20px; transition: 0.3s ease;
+    }
+    .btn-coupon:hover { background: #333333; color: white; }
+
+    .summary-item { border-bottom: 1px solid #EEEEEE; padding-bottom: 10px; margin-bottom: 10px; }
+    .summary-total { font-size: 1.5rem; font-weight: 700; border-top: 2px solid #000; padding-top: 15px; mt-3; }
+</style>
+
+<div class="container my-5" style="max-width: 1200px;">
+    <h2 class="fw-bold text-uppercase mb-4">Secure Checkout</h2>
+
+    <div class="row g-4">
+        <!-- Left Column: Billing Details -->
+        <div class="col-lg-7">
+            <div class="checkout-card">
+                <h3 class="section-title">Billing Information</h3>
+                
+                <form method="POST" id="checkoutForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Full Name</label>
+                        <input type="text" name="name" class="form-control custom-input" placeholder="Enter your full name" value="{{ request.user.first_name }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mobile Number (WhatsApp)</label>
+                        <input type="text" name="mobile_number" id="mobile_number" class="form-control custom-input" placeholder="e.g. 9876543210" value="{{ request.user.customerprofile.mobile_number|default:'' }}" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Delivery Address</label>
+                        <textarea name="address" class="form-control custom-input" rows="4" placeholder="Enter complete delivery address" required>{{ request.user.customerprofile.default_address|default:'' }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn-checkout mt-3">
+                        <i class="bi bi-whatsapp me-2"></i> Send Order via WhatsApp
+                    </button>
+                </form>
+            </div>
         </div>
 
-        <div class="col-md-5 mt-4 mt-md-0">
-            <div class="card border-0 shadow rounded-4 bg-light p-4">
-                <h4 class="fw-bold mb-3">Order Summary</h4>
-                <div class="d-flex justify-content-between mb-2">
-                    <span>Subtotal:</span>
-                    <span class="fw-bold">₹{{ cart_total }}</span>
+        <!-- Right Column: Order Summary & Coupon -->
+        <div class="col-lg-5">
+            <div class="checkout-card mb-4">
+                <h3 class="section-title">Order Summary</h3>
+                
+                {% for pid, item in request.session.cart.items %}
+                    <div class="summary-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold text-dark">{{ item.name }}</div>
+                            <small class="text-muted">Qty: {{ item.quantity }}</small>
+                        </div>
+                        <div class="fw-bold">₹{% widthratio item.price 1 item.quantity %}</div>
+                    </div>
+                {% endfor %}
+                
+                <div class="d-flex justify-content-between summary-total">
+                    <span>Total Amount</span>
+                    <span id="finalTotal">₹{{ cart_total }}</span>
                 </div>
-                <div class="d-flex justify-content-between mb-2 text-danger d-none" id="discount-row">
-                    <span>Auto-Applied Coupon:</span>
-                    <span class="fw-bold">-₹<span id="discount-val">0</span></span>
+            </div>
+
+            <!-- Coupon Section -->
+            <div class="checkout-card">
+                <h3 class="section-title fs-5">Apply Coupon</h3>
+                <div class="d-flex gap-2">
+                    <input type="text" id="couponCode" class="form-control custom-input" placeholder="Enter Code">
+                    <button type="button" class="btn-coupon" onclick="applyCoupon()">Apply</button>
                 </div>
-                <hr>
-                <div class="d-flex justify-content-between fs-4 fw-bold text-dark">
-                    <span>Total Bill:</span>
-                    <span class="text-success">₹<span id="final-total">{{ cart_total }}</span></span>
-                </div>
+                <div id="couponMessage" class="mt-2 fw-bold" style="font-size: 0.9rem;"></div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    document.getElementById("id_mobile_number").addEventListener("input", function() {
-        let mobile = this.value;
-        let statusDiv = document.getElementById("coupon-status");
-        let discountRow = document.getElementById("discount-row");
-        let discountVal = document.getElementById("discount-val");
-        let finalTotalSpan = document.getElementById("final-total");
-        let baseTotal = {{ cart_total }};
-
-        if(mobile.length === 10) {
-            fetch(`/check-coupon-ajax/?mobile=${mobile}`)
-            .then(response => response.json())
-            .then(data => {
-                if(data.status === 'found') {
-                    statusDiv.innerHTML = `<span class="text-success">🎉 Welcome Back! Aapka ${data.discount}% OFF Coupon (${data.code}) auto-apply ho gaya hai!</span>`;
-                    discountRow.classList.remove("d-none");
-                    let disc = (baseTotal * data.discount) / 100;
-                    discountVal.innerText = disc.toFixed(2);
-                    finalTotalSpan.innerText = (baseTotal - disc).toFixed(2);
-                } else {
-                    statusDiv.innerHTML = '<span class="text-muted">Is number par koi unused coupon nahi mila.</span>';
-                    discountRow.classList.add("d-none");
-                    finalTotalSpan.innerText = baseTotal;
-                }
-            });
-        } else {
-            statusDiv.innerHTML = '';
-            discountRow.classList.add("d-none");
-            finalTotalSpan.innerText = baseTotal;
+    // Existing Coupon Logic
+    function applyCoupon() {
+        let mobile = document.getElementById("mobile_number").value;
+        if (!mobile) {
+            alert("Pehle Mobile Number daalein taaki coupon verify ho sake.");
+            return;
         }
-    });
+        
+        fetch(`/check-coupon-ajax/?mobile=${mobile}`)
+        .then(response => response.json())
+        .then(data => {
+            let msgDiv = document.getElementById("couponMessage");
+            if (data.status === 'found') {
+                msgDiv.innerHTML = `<span class="text-success">🎉 ${data.discount}% discount applied! Code: ${data.code}</span>`;
+                // Logic to visually update total can be added here
+            } else {
+                msgDiv.innerHTML = `<span class="text-danger">❌ Koi active coupon nahi mila.</span>`;
+            }
+        });
+    }
 </script>
 {% endblock %}
