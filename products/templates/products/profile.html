@@ -12,6 +12,8 @@
                 <div class="list-group list-group-flush" id="profileTabs" role="tablist">
                     <a class="list-group-item list-group-item-action active fw-medium py-3" id="nav-info-tab" data-bs-toggle="list" href="#nav-info" role="tab">📝 Personal Info</a>
                     <a class="list-group-item list-group-item-action fw-medium py-3" id="nav-orders-tab" data-bs-toggle="list" href="#nav-orders" role="tab">📦 My Orders</a>
+                    <!-- Naya Wishlist Tab -->
+                    <a class="list-group-item list-group-item-action fw-medium py-3" id="nav-wishlist-tab" href="{% url 'view_wishlist' %}">❤️ My Wishlist</a>
                     <a class="list-group-item list-group-item-action fw-medium py-3" id="nav-security-tab" data-bs-toggle="list" href="#nav-security" role="tab">🔒 Security & Settings</a>
                 </div>
             </div>
@@ -113,14 +115,12 @@
                         <h4 class="fw-bold text-danger mb-3 border-bottom pb-2 border-danger">Danger Zone</h4>
                         <p class="text-muted">Apna account delete karne se aapki saari details aur order history hamesha ke liye mit jayegi.</p>
                         
-                        <!-- Account Delete form -->
                         <form method="POST" action="{% url 'delete_account' %}" onsubmit="return confirm('Kya aap sach mein apna account humesha ke liye delete karna chahte hain? Yeh badla nahi ja sakta.');">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-outline-danger rounded-pill px-4">🗑️ Delete My Account</button>
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
