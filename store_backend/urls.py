@@ -10,7 +10,7 @@ from products.views import (
     product_list, add_to_cart, cart_detail, checkout_page,
     check_coupon_ajax, about_page, contact_page,
     custom_logout, register_page, profile_page,
-    delete_account, add_to_wishlist, view_wishlist, # 👈 Yahan add karein
+    delete_account, add_to_wishlist, view_wishlist,
     make_admin, trigger_import,
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
     download_invoice,
@@ -34,12 +34,15 @@ urlpatterns = [
     path('logout/', custom_logout, name='logout'),
     path('register/', register_page, name='register'),
     path('profile/', profile_page, name='profile'),
-    path('profile/delete/', delete_account, name='delete_account'), # 👈 Sahi format
+    path('profile/delete/', delete_account, name='delete_account'),
     path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html', success_url='/profile/'), name='password_change'),
+    
+    # ❤️ Wishlist (Ab urlpatterns ke andar hai)
+    path('wishlist/', view_wishlist, name='view_wishlist'),
+    path('wishlist/add/<int:product_id>/', add_to_wishlist, name='add_to_wishlist'),
     
     # 🔧 Admin & Sync
     path('secret-create-admin-xyz/', make_admin, name='secret_make_admin'),
-    path('secret-import-products-xyz/', trigger_import, name='secret_trigger_import'),
     path('export-products/', export_products_csv, name='export_products'),
     path('import-products/', import_products_csv, name='import_products'),
 
@@ -51,9 +54,6 @@ urlpatterns = [
     # 📄 Invoices
     path('invoice/<int:order_id>/download/', download_invoice, name='download_invoice'),
     
-    # 🌟 Static & Media for Render Live Server
+    # 🌟 Static & Media
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
-
-path('wishlist/', view_wishlist, name='view_wishlist'),
-path('wishlist/add/<int:product_id>/', add_to_wishlist, name='add_to_wishlist'),
