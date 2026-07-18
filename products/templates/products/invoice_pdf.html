@@ -20,176 +20,144 @@
             font-size: 12px;
             line-height: 1.4;
         }
-        
-        /* 🌟 Header Section */
-        .header-table { width: 100%; border-bottom: 3px solid #111111; padding-bottom: 15px; margin-bottom: 20px; }
-        .company-name { font-size: 26px; font-weight: bold; color: #111111; text-transform: uppercase; letter-spacing: 1.5px; }
-        .company-tagline { font-size: 11px; color: #666666; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .invoice-label { font-size: 28px; font-weight: bold; color: #111111; text-align: right; text-transform: uppercase; letter-spacing: 2px; }
-        .invoice-meta { font-size: 11px; color: #555555; text-align: right; margin-top: 5px; }
-
-        /* 📦 Barcode & QR Section */
-        .barcode-img { width: 150px; height: 40px; margin-top: 10px; }
-        .qr-img { width: 70px; height: 70px; }
-
-        /* 🏷️ Billing Details Section */
-        .info-table { width: 100%; margin-bottom: 25px; }
-        .info-box { background-color: #F8F9FA; padding: 15px; border-left: 4px solid #111111; }
-        .section-title { font-size: 11px; font-weight: bold; color: #888888; text-transform: uppercase; margin-bottom: 8px; }
-        .party-name { font-size: 14px; font-weight: bold; color: #111111; margin-bottom: 4px; }
-        .party-details { font-size: 12px; color: #444444; line-height: 1.5; }
-
-        /* 🛒 Items Table */
-        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .items-table {
+            border-collapse: collapse;
+            width: 100%;
+        }
         .items-table th {
-            background-color: #111111; color: #FFFFFF; font-size: 11px; font-weight: bold;
-            text-transform: uppercase; padding: 12px 10px; text-align: left; border: 1px solid #111111;
+            background-color: #111111;
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 10px;
         }
-        .items-table td { padding: 12px 10px; border-bottom: 1px solid #E0E0E0; border-left: 1px solid #E0E0E0; border-right: 1px solid #E0E0E0; }
-        .items-table tr:nth-child(even) { background-color: #FAFAFA; }
-        
-        .text-center { text-align: center !important; }
-        .text-right { text-align: right !important; }
-        
-        /* 💰 Calculation Section */
-        .calc-table { width: 100%; border-collapse: collapse; }
-        .calc-table td { padding: 8px 10px; }
-        .calc-label { font-size: 12px; font-weight: bold; color: #555555; text-transform: uppercase; }
-        .calc-value { font-size: 13px; font-weight: bold; color: #111111; }
-        .grand-total-row td {
-            background-color: #111111; color: #FFFFFF; font-size: 16px; font-weight: bold;
-            padding: 12px 10px; margin-top: 10px;
+        .items-table td {
+            padding: 10px;
+            border-bottom: 1px solid #DDDDDD;
+            border-left: 1px solid #EEEEEE;
+            border-right: 1px solid #EEEEEE;
         }
-
-        /* 📜 Footer */
-        .auth-sign { margin-top: 40px; text-align: right; }
-        .sign-line { border-top: 1px solid #111111; width: 150px; display: inline-block; margin-top: 40px; padding-top: 5px; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #555;}
-        
-        .footer-text { font-size: 9px; color: #888888; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <!-- Header & Logo -->
-    <table class="header-table">
+    <!-- 1. Header (Logo & Barcode) -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 2px solid #111; padding-bottom: 15px; margin-bottom: 20px;">
         <tr>
-            <td width="55%" valign="middle">
-                <!-- 🌟 Agar aapke paas static folder mein logo hai toh is comment ko hatakar use karein: -->
-                <img src="{% static 'logo.png' %}" height="50" style="margin-bottom: 10px;">
-                <div class="company-name">Chachan General Store</div>
-                <div class="company-tagline">Premium Corporate Retail & Essentials</div>
+            <td width="55%" valign="top">
+                <!-- Logo -->
+                <img src="{% static 'logo.png' %}" width="150" style="margin-bottom: 10px;"><br>
+                <span style="font-size: 24px; font-weight: bold; color: #111111; text-transform: uppercase;">Chachan General Store</span><br>
+                <span style="font-size: 11px; color: #666666; text-transform: uppercase; letter-spacing: 1px;">Premium Corporate Retail & Essentials</span>
             </td>
-            <td width="45%" valign="top" class="text-right">
-                <div class="invoice-label">TAX INVOICE</div>
-                <div class="invoice-meta">
+            <td width="45%" align="right" valign="top">
+                <span style="font-size: 26px; font-weight: bold; color: #111111; text-transform: uppercase;">Tax Invoice</span><br><br>
+                <span style="font-size: 12px; color: #444444;">
                     <strong>Invoice No:</strong> #INV-2026-{{ order.id }}<br>
                     <strong>Date:</strong> {{ order.created_at|date:"d M, Y" }}<br>
                     <strong>Status:</strong> <span style="color: #27ae60;">{{ order.status }}</span>
-                </div>
-                <!-- 📊 Dynamic Barcode Generation -->
-                <div>
-                    <img src="https://barcode.tec-it.com/barcode.ashx?data=INV-2026-{{ order.id }}&code=Code128&dpi=96" class="barcode-img" alt="Barcode">
-                </div>
+                </span><br><br>
+                <!-- Barcode -->
+                <img src="https://barcode.tec-it.com/barcode.ashx?data=INV-2026-{{ order.id }}&code=Code128&dpi=96" width="140" height="40">
             </td>
         </tr>
     </table>
 
-    <!-- Billing Info -->
-    <table class="info-table">
+    <!-- 2. Billing Info -->
+    <table width="100%" cellpadding="12" cellspacing="0" style="margin-bottom: 25px;">
         <tr>
-            <td width="48%">
-                <div class="info-box">
-                    <div class="section-title">Billed To</div>
-                    <div class="party-name">{{ order.customer_name }}</div>
-                    <div class="party-details">
-                        Phone: {{ order.mobile_number }}<br>
-                        Address: {{ order.address }}
-                    </div>
-                </div>
+            <td width="48%" bgcolor="#F8F9FA" valign="top" style="border-left: 4px solid #111111;">
+                <span style="font-size: 10px; font-weight: bold; color: #888888; text-transform: uppercase;">Billed To</span><br>
+                <span style="font-size: 14px; font-weight: bold; color: #111111;">{{ order.customer_name }}</span><br>
+                <span style="font-size: 12px; color: #444444;">
+                    Phone: {{ order.mobile_number }}<br>
+                    Address: {{ order.address }}
+                </span>
             </td>
-            <td width="4%"></td> <!-- Spacing -->
-            <td width="48%">
-                <div class="info-box">
-                    <div class="section-title">Dispatched From</div>
-                    <div class="party-name">Chachan General Store (Main)</div>
-                    <div class="party-details">
-                        GSTIN: 08AAAAA0000A1Z5<br>
-                        Nohar, Rajasthan, India<br>
-                        Contact: support@chachanstore.com
-                    </div>
-                </div>
+            <td width="4%"></td> <!-- Empty space between boxes -->
+            <td width="48%" bgcolor="#F8F9FA" valign="top" style="border-left: 4px solid #111111;">
+                <span style="font-size: 10px; font-weight: bold; color: #888888; text-transform: uppercase;">Dispatched From</span><br>
+                <span style="font-size: 14px; font-weight: bold; color: #111111;">Chachan General Store (Main)</span><br>
+                <span style="font-size: 12px; color: #444444;">
+                    GSTIN: 08AAAAA0000A1Z5<br>
+                    Nohar, Rajasthan, India<br>
+                    Contact: support@chachanstore.com
+                </span>
             </td>
         </tr>
     </table>
 
-    <!-- Items List -->
-    <table class="items-table">
+    <!-- 3. Items List -->
+    <table class="items-table" style="margin-bottom: 30px;">
         <thead>
             <tr>
-                <th width="8%" class="text-center">S.No</th>
-                <th width="47%">Product Description</th>
-                <th width="15%" class="text-center">Quantity</th>
-                <th width="15%" class="text-right">Unit Price</th>
-                <th width="15%" class="text-right">Total</th>
+                <th width="8%" align="center">S.No</th>
+                <th width="47%" align="left">Product Description</th>
+                <th width="15%" align="center">Quantity</th>
+                <th width="15%" align="right">Unit Price</th>
+                <th width="15%" align="right">Total</th>
             </tr>
         </thead>
         <tbody>
             {% for item in items %}
-            <tr>
-                <td class="text-center">{{ forloop.counter }}</td>
-                <td><strong>{{ item.product_name }}</strong></td>
-                <td class="text-center">{{ item.quantity }}</td>
-                <td class="text-right">₹{{ item.price }}</td>
-                <td class="text-right">₹{% widthratio item.price 1 item.quantity %}</td>
+            <tr bgcolor="{% cycle '#FFFFFF' '#FAFAFA' %}">
+                <td align="center">{{ forloop.counter }}</td>
+                <td align="left"><strong>{{ item.product_name }}</strong></td>
+                <td align="center">{{ item.quantity }}</td>
+                <td align="right">₹{{ item.price }}</td>
+                <td align="right">₹{% widthratio item.price 1 item.quantity %}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <!-- Calculation & QR Code -->
-    <table class="calc-table">
+    <!-- 4. Totals and QR Code -->
+    <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td width="55%" valign="top">
-                <!-- 📱 Dynamic QR Code For Verification/Payment -->
-                <div class="section-title" style="margin-bottom: 5px;">Scan To Verify</div>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Invoice:%20INV-2026-{{ order.id }}%0AAmount:%20Rs.{{ order.total_amount }}" class="qr-img" alt="QR Code">
-                <br><br>
-                <div style="font-size: 10px; color: #777;">* Terms & Conditions apply. Items once sold cannot be returned without original receipt.</div>
+                <span style="font-size: 10px; font-weight: bold; color: #888888; text-transform: uppercase;">Scan To Verify</span><br><br>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Invoice:%20INV-2026-{{ order.id }}%0AAmount:%20Rs.{{ order.total_amount }}" width="80" height="80"><br><br>
+                <span style="font-size: 10px; color: #777777;">* Terms & Conditions apply. Items once sold<br>cannot be returned without original receipt.</span>
             </td>
             <td width="45%" valign="top">
-                <table width="100%" border="0">
+                <table width="100%" cellpadding="8" cellspacing="0">
                     <tr>
-                        <td class="calc-label text-right">Subtotal:</td>
-                        <td class="calc-value text-right">₹{{ order.total_amount }}</td>
+                        <td align="right" style="font-size: 12px; font-weight: bold; color: #555555; border-bottom: 1px solid #EEE;">Subtotal:</td>
+                        <td align="right" style="font-size: 13px; font-weight: bold; color: #111111; border-bottom: 1px solid #EEE;">₹{{ order.total_amount }}</td>
                     </tr>
                     {% if order.applied_coupon %}
                     <tr>
-                        <td class="calc-label text-right">Coupon Discount ({{ order.applied_coupon.code }}):</td>
-                        <td class="calc-value text-right" style="color: #27ae60;">- Applied</td>
+                        <td align="right" style="font-size: 12px; font-weight: bold; color: #555555; border-bottom: 1px solid #EEE;">Discount:</td>
+                        <td align="right" style="font-size: 12px; font-weight: bold; color: #27ae60; border-bottom: 1px solid #EEE;">- Applied</td>
                     </tr>
                     {% endif %}
                     <tr>
-                        <td class="calc-label text-right">Tax (Included):</td>
-                        <td class="calc-value text-right">₹0.00</td>
+                        <td align="right" style="font-size: 12px; font-weight: bold; color: #555555;">Tax (Included):</td>
+                        <td align="right" style="font-size: 13px; font-weight: bold; color: #111111;">₹0.00</td>
                     </tr>
-                    <tr class="grand-total-row">
-                        <td class="text-right" style="color: #FFFFFF;">GRAND TOTAL:</td>
-                        <td class="text-right" style="color: #FFFFFF;">₹{{ order.total_amount }}</td>
+                    <tr>
+                        <td align="right" bgcolor="#111111" style="color: #FFFFFF; font-size: 16px; font-weight: bold;">GRAND TOTAL:</td>
+                        <td align="right" bgcolor="#111111" style="color: #FFFFFF; font-size: 16px; font-weight: bold;">₹{{ order.total_amount }}</td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table>
 
-    <!-- Authorized Signatory -->
-    <div class="auth-sign">
-        <div class="sign-line">Authorized Signatory</div>
-    </div>
+    <!-- 5. Signatory -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 50px;">
+        <tr>
+            <td width="70%"></td>
+            <td width="30%" align="center" style="border-top: 1px solid #111111; padding-top: 8px;">
+                <span style="font-size: 10px; font-weight: bold; color: #555555; text-transform: uppercase;">Authorized Signatory</span>
+            </td>
+        </tr>
+    </table>
 
-    <!-- Fixed Footer -->
+    <!-- 6. Footer -->
     <div id="footer_content">
-        <div class="footer-text">
+        <div style="font-size: 9px; color: #888888; text-align: center; text-transform: uppercase; letter-spacing: 1px; border-top: 1px solid #DDD; padding-top: 10px;">
             Thank you for shopping with Chachan General Store • This is a computer generated invoice
         </div>
     </div>
