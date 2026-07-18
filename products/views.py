@@ -379,3 +379,8 @@ def add_to_wishlist(request, product_id):
 def view_wishlist(request):
     wishlist = Wishlist.objects.filter(user=request.user)
     return render(request, 'products/wishlist.html', {'wishlist': wishlist})
+
+# 🔍 Product Detail View
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    return render(request, 'products/product_detail.html', {'product': product})

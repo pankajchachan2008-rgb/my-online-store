@@ -192,18 +192,24 @@
                 {% for product in products %}
                 <div class="col">
                     <div class="product-card">
-                        <div class="img-box">
-                            {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                            {% else %}
-                                <img src="https://placehold.co/300x200/000000/FFFFFF?text={{ product.name|urlencode }}" alt="{{ product.name }}">
-                            {% endif %}
-                        </div>
-                        <div class="p-3 d-flex flex-column flex-grow-1">
-                            <div class="product-name" title="{{ product.name }}">{{ product.name }}</div>
-                            <div class="product-desc">{{ product.description|default:"Premium Quality Essential"|truncatechars:35 }}</div>
-                            
-                            <!-- Variant Selection Form -->
+                        
+                        <!-- 🌟 NAYA LOGIC: Link sirf image aur text par kaam karega -->
+                        <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
+                            <div class="img-box">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                {% else %}
+                                    <img src="https://placehold.co/300x200/000000/FFFFFF?text={{ product.name|urlencode }}" alt="{{ product.name }}">
+                                {% endif %}
+                            </div>
+                            <div class="p-3 pb-1 d-flex flex-column">
+                                <div class="product-name text-dark" title="{{ product.name }}">{{ product.name }}</div>
+                                <div class="product-desc">{{ product.description|default:"Premium Quality Essential"|truncatechars:35 }}</div>
+                            </div>
+                        </a>
+                        
+                        <!-- Add to Cart aur Wishlist Button (Link ke bahar) -->
+                        <div class="px-3 pb-3 d-flex flex-column flex-grow-1 mt-auto">
                             <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto">
                                 {% csrf_token %}
                                 
@@ -222,6 +228,7 @@
                                 </div>
                             </form>
                         </div>
+
                     </div>
                 </div>
                 {% endfor %}

@@ -14,12 +14,16 @@ from products.views import (
     make_admin, trigger_import,
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
     download_invoice,
-    export_products_csv, import_products_csv
+    export_products_csv, import_products_csv,
+    product_detail # 🌟 Naya View Import Kiya
 )
 
 urlpatterns = [
     path('secret-cgs-main/', admin.site.urls),
     path('', product_list, name='home'),
+    
+    # 🌟 Product Detail URL
+    path('product/<int:product_id>/', product_detail, name='product_detail'),
     
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('cart/', cart_detail, name='cart_detail'),
@@ -37,7 +41,7 @@ urlpatterns = [
     path('profile/delete/', delete_account, name='delete_account'),
     path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html', success_url='/profile/'), name='password_change'),
     
-    # ❤️ Wishlist (Ab urlpatterns ke andar hai)
+    # ❤️ Wishlist
     path('wishlist/', view_wishlist, name='view_wishlist'),
     path('wishlist/add/<int:product_id>/', add_to_wishlist, name='add_to_wishlist'),
     

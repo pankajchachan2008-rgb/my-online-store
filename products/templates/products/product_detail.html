@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Mere Store{% endblock %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    body { font-family: 'Jost', sans-serif; background-color: #FAF4EF; color: #111111; }
+    
+    .detail-card {
+        background: #FFFFFF;
+        border: 1px solid #000000;
+        box-shadow: 6px 6px 0px #000000;
+        padding: 30px;
+        margin-top: 30px;
+        margin-bottom: 50px;
+    }
+    
+    .product-image-large {
+        width: 100%;
+        max-height: 450px;
+        object-fit: contain;
+        border: 1px solid #EEEEEE;
+        padding: 20px;
+    }
+
+    .detail-title { font-weight: 700; font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
+    .detail-price { font-weight: 700; font-size: 1.5rem; color: #000000; margin-bottom: 20px; }
+    .detail-desc { font-size: 1rem; color: #555; line-height: 1.6; margin-bottom: 30px; }
+    
+    .btn-dark-custom {
+        background: #000000; color: #FFFFFF; font-weight: 600; text-transform: uppercase;
+        border-radius: 0; padding: 12px 20px; transition: 0.3s ease; border: 1px solid #000;
+    }
+    .btn-dark-custom:hover { background: #333333; color: white; }
+    
+    .btn-outline-custom {
+        background: transparent; color: #000000; font-weight: 600; text-transform: uppercase;
+        border-radius: 0; padding: 12px 20px; transition: 0.3s ease; border: 1px solid #000;
+    }
+    .btn-outline-custom:hover { background: #000000; color: white; }
+</style>
+
+<div class="container" style="max-width: 1100px;">
+    <nav aria-label="breadcrumb" class="mt-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-dark fw-medium text-decoration-none">Home</a></li>
+            {% if product.category %}
+            <li class="breadcrumb-item"><a href="{% url 'home' %}?category={{ product.category.id }}" class="text-dark fw-medium text-decoration-none">{{ product.category.name }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active fw-bold" aria-current="page">{{ product.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="detail-card">
+        <div class="row g-5 align-items-center">
+            <!-- Left: Image -->
+            <div class="col-md-6 text-center">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image-large">
+                {% else %}
+                    <img src="https://placehold.co/500x500/000000/FFFFFF?text=No+Image" alt="{{ product.name }}" class="product-image-large">
+                {% endif %}
+            </div>
+
+            <!-- Right: Product Details -->
+            <div class="col-md-6">
+                <h1 class="detail-title">{{ product.name }}</h1>
+                <div class="detail-price">
+                    {% if product.variants.exists %}
+                        Starting from ₹{{ product.price }}
+                    {% else %}
+                        ₹{{ product.price }}
+                    {% endif %}
+                </div>
+                
+                <div class="detail-desc">
+                    {{ product.description|default:"Yeh ek premium quality product hai. Iski detailed jankari jald hi update ki jayegi." }}
+                </div>
+
+                <!-- Add to Cart Form -->
+                <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-4">
+                    {% csrf_token %}
+                    
+                    {% if product.variants.exists %}
+                        <div class="mb-4">
+                            <label class="fw-bold mb-2">Select Size / Variant:</label>
+                            <select name="variant_id" class="form-select form-select-lg rounded-0 border-dark" required>
+                                <option value="" disabled selected>-- Choose an option --</option>
+                                {% for variant in product.variants.all %}
+                                    <option value="{{ variant.id }}">{{ variant.size_name }} - ₹{{ variant.price }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-3 d-md-flex">
+                        <button type="submit" class="btn btn-dark-custom flex-grow-1 fs-5">🛒 Add To Cart</button>
+                        <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-custom fs-5">❤️ Wishlist</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
