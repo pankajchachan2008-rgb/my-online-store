@@ -196,16 +196,17 @@
                             {% if product.image %}
                                 <img src="{{ product.image.url }}" alt="{{ product.name }}">
                             {% else %}
-                                <!-- Auto-generated Virtual Image -->
                                 <img src="https://placehold.co/300x200/000000/FFFFFF?text={{ product.name|urlencode }}" alt="{{ product.name }}">
                             {% endif %}
                         </div>
                         <div class="p-3 d-flex flex-column flex-grow-1">
                             <div class="product-name" title="{{ product.name }}">{{ product.name }}</div>
                             <div class="product-desc">{{ product.description|default:"Premium Quality Essential"|truncatechars:35 }}</div>
-                            <div class="mt-auto d-flex flex-column">
+                            <div class="mt-auto d-flex flex-column gap-2">
                                 <span class="price-tag">₹{{ product.price }}</span>
                                 <a href="{% url 'add_to_cart' product.id %}" class="btn btn-cart w-100 text-center text-decoration-none">Add To Cart</a>
+                                <!-- Wishlist Button Added Below -->
+                                <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger w-100 btn-sm">❤️ Wishlist</a>
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h3 class="fw-bold mb-4">❤️ My Wishlist</h3>
+    <div class="row">
+        {% for item in wishlist %}
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">{{ item.product.name }}</h5>
+                    <p class="text-success fw-bold">₹{{ item.product.price }}</p>
+                    <a href="{% url 'add_to_cart' item.product.id %}" class="btn btn-dark w-100">Add to Cart</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>Aapki wishlist khali hai.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

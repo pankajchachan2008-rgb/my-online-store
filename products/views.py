@@ -363,3 +363,20 @@ def import_products_csv(request):
         return redirect('home')
         
     return render(request, 'products/import_csv.html')
+
+@login_required(login_url='/login/')
+def add_to_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    # Security: check karein ki kya user ne pehle se add kiya hai
+    wishlist_item, created = Wishlist.objects.get_or_create(user=request.user, product=product)
+    
+    if created:
+        messages.success(request, f"{product.name} aapki Wishlist mein add ho gaya!")
+    else:
+        messages.info(request, "Yeh product pehle se aapki Wishlist mein hai.")
+    return redirect('home')
+
+@login_required(login_url='/login/')
+def view_wishlist(request):
+    wishlist = Wishlist.objects.filter(user=request.user)
+    return render(request, 'products/wishlist.html', {'wishlist': wishlist})

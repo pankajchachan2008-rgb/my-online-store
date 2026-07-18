@@ -54,3 +54,6 @@ urlpatterns = [
     # 🌟 Static & Media for Render Live Server
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
+
+path('wishlist/', view_wishlist, name='view_wishlist'),
+path('wishlist/add/<int:product_id>/', add_to_wishlist, name='add_to_wishlist'),
