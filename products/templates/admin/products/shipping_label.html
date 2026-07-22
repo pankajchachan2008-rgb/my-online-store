@@ -34,7 +34,7 @@
 
     {% for order in orders %}
     
-    <!-- Yahan kahin bhi <table> tag nahi hai -->
+    <!-- Yahan kahin bhi <table> tag nahi hai, isliye crash nahi hoga -->
     <div class="label-box">
         
         <div class="row">
@@ -44,7 +44,6 @@
         </div>
         
         <div class="row" style="text-align: center;">
-            <!-- Images bina width/height attributes ke -->
             <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false"><br><br>
             <strong style="font-size: 14px;">AWB: AWB{{ order.id }}998877</strong>
         </div>
