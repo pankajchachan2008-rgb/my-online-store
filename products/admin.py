@@ -6,36 +6,40 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant
 
+# --- Basic Registrations ---
 admin.site.register(Category)
 admin.site.register(CustomerProfile)
 admin.site.register(Banner)  
 admin.site.register(ProductVariant)
 
+# --- Product Admin Configuration ---
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
     extra = 1
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    # 1. List View mein kya dikhega
-    list_display = ('sku', 'name', 'category', 'price', 'is_active') 
+    # 'is_active' hata diya gaya hai kyunki yeh model mein exist nahi karta
+    list_display = ('sku', 'name', 'category', 'price') 
     
-    # 2. Search Bar: Isse aap Name, SKU ya Category ke naam se search kar payenge
+    # 1. Search Bar: SKU, Name ya Category ke naam se search karein
     search_fields = ('name', 'sku', 'category__name')
     
-    # 3. Sidebar Filter: Isse aap Categories ya Active/Inactive products filter kar payenge
-    list_filter = ('category', 'is_active')
+    # 2. Sidebar Filter: Category ke hisaab se filter karein
+    list_filter = ('category',)
     
-    # 4. Quick Edit: Bina open kiye list view se hi price/status change kar sakein
-    list_editable = ('price', 'is_active')
+    # 3. Quick Edit: List view mein price change kar sakein
+    list_editable = ('price',)
     
-    # 5. Existing Inlines
     inlines = [ProductVariantInline]
 
+# --- Coupon Admin ---
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
     list_display = ['code', 'mobile_number', 'discount_percentage', 'is_used']
+    search_fields = ('code', 'mobile_number')
 
+# --- Order Admin with Shipping Labels ---
 @admin.action(description="Print Shipping Labels (4x6 Thermal Format)")
 def print_shipping_labels(modeladmin, request, queryset):
     template_path = 'admin/products/shipping_label.html'
@@ -57,9 +61,12 @@ class OrderItemInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'customer_name', 'mobile_number', 'total_amount', 'status', 'created_at')
+    list_filter = ('status', 'created_at') # Order filter add kiya
+    search_fields = ('customer_name', 'mobile_number', 'id') # Order search add kiya
     inlines = [OrderItemInline]
     actions = [print_shipping_labels]
 
+# --- User Admin ---
 class ProfileInline(admin.StackedInline):
     model = CustomerProfile
     can_delete = False
