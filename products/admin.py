@@ -1,8 +1,12 @@
 from django.contrib import admin
+from django.http import HttpResponse
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 # 🌟 ADDED: ProductVariant in imports
 from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from .models import Order # Apne Order model ko import karein
 
 # 🌟 Category, OrderItem, CustomerProfile, aur Banner ko normally register karein
 admin.site.register(Category)
@@ -55,3 +59,34 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
+
+from django.contrib import admin
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from .models import Order # Apne Order model ko import karein
+
+@admin.action(description="Print Shipping Labels (4x6 Thermal Format)")
+def print_shipping_labels(modeladmin, request, queryset):
+    template_path = 'admin/products/shipping_label.html'
+    context = {'orders': queryset}
+    
+    response = HttpResponse(content_type='application/pdf')
+    # Label ko turant browser me open karne ke liye 'inline', download ke liye 'attachment'
+    response['Content-Disposition'] = 'inline; filename="shipping_labels.pdf"'
+    
+    template = get_template(template_path)
+    html = template.render(context)
+    
+    # Create PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error generating label: <pre>' + html + '</pre>')
+    return response
+
+# Apne Order admin me action register karein
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'customer_name', 'status', 'created_at']
+    actions = [print_shipping_labels]
+
+admin.site.register(Order, OrderAdmin)
