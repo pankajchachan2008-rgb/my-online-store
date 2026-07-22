@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Shipping Labels</title>
+    <title>Premium Shipping Labels</title>
     <style>
         @page {
             size: 100mm 150mm;
@@ -11,64 +11,111 @@
         body {
             font-family: Helvetica, Arial, sans-serif;
             color: #000000;
-            font-size: 12px;
+            font-size: 11px;
             line-height: 1.4;
         }
-        /* Table ki jagah CSS Div Boxes ka use */
         .label-box {
             border: 2px solid #000;
             width: 100%;
         }
-        .row {
-            border-bottom: 1px solid #000;
+        .header {
             padding: 10px;
-            margin: 0;
+            border-bottom: 2px solid #000;
         }
-        .last-row {
+        .logo-part { float: left; width: 50%; }
+        .courier-part { float: right; width: 45%; text-align: right; }
+        
+        .barcode-part {
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 2px solid #000;
+        }
+        .address-part {
             padding: 10px;
-            margin: 0;
+            border-bottom: 2px solid #000;
         }
+        .add-left { float: left; width: 70%; }
+        .add-right { float: right; width: 25%; text-align: right; }
+        
+        .bill-part {
+            padding: 10px;
+            border-bottom: 1px dashed #000;
+        }
+        .bill-left { float: left; width: 60%; }
+        .bill-right { float: right; width: 35%; text-align: right; }
+        
+        .footer-part { padding: 10px; font-size: 10px; }
+        .clear { clear: both; }
+        .fw-bold { font-weight: bold; }
     </style>
 </head>
 <body>
 
     {% for order in orders %}
-    
-    <!-- Yahan kahin bhi <table> tag nahi hai, isliye crash nahi hoga -->
     <div class="label-box">
         
-        <div class="row">
-            <strong style="font-size: 15px;">STANDARD DELIVERY</strong><br>
-            Partner: Trackon / Shree Maruti<br><br>
-            <strong>Prepaid</strong> &nbsp;|&nbsp; Date: {{ order.created_at|date:"d-m-Y" }}
-        </div>
-        
-        <div class="row" style="text-align: center;">
-            <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false"><br><br>
-            <strong style="font-size: 14px;">AWB: AWB{{ order.id }}998877</strong>
-        </div>
-
-        <div class="row">
-            Deliver To:<br>
-            <strong style="font-size: 15px;">{{ order.customer_name }}</strong><br>
-            {{ order.address }}<br><br>
-            <strong>Ph: {{ order.mobile_number }}</strong>
+        <!-- Header (Logo & Courier) -->
+        <div class="header">
+            <div class="logo-part">
+                <!-- MUKHYA: Apne store ka logo lagane ke liye is link ko apne logo ki link se replace karein -->
+                <img src="https://dummyimage.com/140x45/000/fff&text=YOUR+LOGO" style="width: 140px; height: 45px;">
+            </div>
+            <div class="courier-part">
+                <span style="font-size: 14px; font-weight: bold;">STANDARD</span><br>
+                Trackon / Shree Maruti
+            </div>
+            <div class="clear"></div>
         </div>
 
-        <div class="row">
-            <strong style="text-decoration: underline; font-size: 13px;">BILL OF SUPPLY</strong><br><br>
-            <strong>Order ID:</strong> #{{ order.id }} &nbsp;|&nbsp; <strong>Weight:</strong> 0.5 KG<br>
-            <strong>Total Amount:</strong> ₹{{ order.total_amount }}<br>
-            <i>Do Not Collect Cash (Prepaid Order)</i>
+        <!-- Big Barcode Section -->
+        <div class="barcode-part">
+            <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false" style="width: 250px; height: 55px;"><br>
+            <div style="font-size: 16px; font-weight: bold; margin-top: 6px; letter-spacing: 1px;">AWB: AWB{{ order.id }}998877</div>
         </div>
 
-        <div class="last-row">
-            Return Address:<br>
-            <strong>Chachan General Store</strong><br>
+        <!-- Delivery & Data Matrix Section -->
+        <div class="address-part">
+            <div class="add-left">
+                <span style="font-size: 10px; color: #333;">DELIVER TO:</span><br>
+                <span style="font-size: 16px; font-weight: bold;">{{ order.customer_name }}</span><br>
+                {{ order.address }}<br><br>
+                <span class="fw-bold" style="font-size: 13px;">Ph: {{ order.mobile_number }}</span>
+            </div>
+            <div class="add-right">
+                <!-- Premium Data Matrix Code -->
+                <img src="https://bwipjs-api.metafloor.com/?bcid=datamatrix&text=RTE-{{ order.id }}&scale=4" style="width: 75px; height: 75px;"><br>
+                <span class="fw-bold" style="font-size: 12px; display: block; margin-top: 4px;">RTE-{{ order.id }}</span>
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <!-- Bill of Supply Section -->
+        <div class="bill-part">
+            <div style="font-size: 13px; font-weight: bold; text-decoration: underline; margin-bottom: 8px;">BILL OF SUPPLY</div>
+            <div class="bill-left">
+                <strong>Order ID:</strong> #{{ order.id }}<br>
+                <strong>Date:</strong> {{ order.created_at|date:"d-m-Y" }}<br>
+                <strong>Weight:</strong> 0.5 KG
+            </div>
+            <div class="bill-right">
+                <span style="font-size: 13px; font-weight: bold;">PREPAID</span><br>
+                <span style="font-size: 15px; font-weight: bold;">₹{{ order.total_amount }}</span>
+            </div>
+            <div class="clear"></div>
+            
+            <div style="margin-top: 10px; border: 1px solid #000; padding: 5px; text-align: center; font-weight: bold; font-size: 12px;">
+                DO NOT COLLECT CASH
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-part">
+            <strong>Return Address:</strong><br>
+            Chachan General Store<br>
             Nohar, Rajasthan, India<br>
             Support: support@chachanstore.com
         </div>
-
+        
     </div>
 
     {% if not forloop.last %}
