@@ -17,7 +17,19 @@ class ProductVariantInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('sku', 'name', 'price') 
+    # 1. List View mein kya dikhega
+    list_display = ('sku', 'name', 'category', 'price', 'is_active') 
+    
+    # 2. Search Bar: Isse aap Name, SKU ya Category ke naam se search kar payenge
+    search_fields = ('name', 'sku', 'category__name')
+    
+    # 3. Sidebar Filter: Isse aap Categories ya Active/Inactive products filter kar payenge
+    list_filter = ('category', 'is_active')
+    
+    # 4. Quick Edit: Bina open kiye list view se hi price/status change kar sakein
+    list_editable = ('price', 'is_active')
+    
+    # 5. Existing Inlines
     inlines = [ProductVariantInline]
 
 @admin.register(Coupon)
