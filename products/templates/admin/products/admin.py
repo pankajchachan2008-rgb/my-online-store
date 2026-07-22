@@ -12,91 +12,75 @@
             font-family: Helvetica, Arial, sans-serif;
             color: #000000;
             font-size: 11px;
-            line-height: 1.2;
-        }
-        .page-break {
-            page-break-after: always;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+            line-height: 1.3;
         }
         .main-box {
             border: 2px solid #000;
+            width: 100%;
         }
         td {
-            padding: 6px;
+            padding: 8px;
             border-bottom: 1px solid #000;
             vertical-align: top;
         }
         .text-center { text-align: center; }
         .fw-bold { font-weight: bold; }
-        
-        .header-title { font-size: 16px; font-weight: bold; text-transform: uppercase; }
-        .awb-text { font-size: 14px; font-weight: bold; letter-spacing: 1px; }
-        .section-title { font-size: 9px; text-transform: uppercase; color: #333; margin-bottom: 2px;}
+        .title-text { font-size: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     {% for order in orders %}
-    <table class="main-box">
+    <table class="main-box" cellpadding="0" cellspacing="0">
         
+        <!-- Top Section -->
         <tr>
-            <td style="width: 70%; border-right: 1px solid #000;">
-                <span class="header-title">STANDARD DELIVERY</span><br>
-                <span>Partner: Trackon / Shree Maruti</span>
+            <td width="70%" style="border-right: 1px solid #000;">
+                <span class="title-text">STANDARD DELIVERY</span><br>
+                Partner: Trackon / Shree Maruti
             </td>
-            <td style="width: 30%; text-align: center;">
-                <span style="font-size: 12px;" class="fw-bold">Prepaid</span><br>
-                <span style="font-size: 9px;">Date: {{ order.created_at|date:"d-m-Y" }}</span>
-            </td>
-        </tr>
-
-        <tr>
-            <td colspan="2" style="text-align: center; padding: 15px 5px;">
-                <!-- Height/Width ko CSS (style) me move kar diya gaya hai -->
-                <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false" style="width: 220px; height: 50px;"><br>
-                <span class="awb-text">AWB: AWB{{ order.id }}998877</span>
+            <td width="30%" class="text-center">
+                <span class="fw-bold">Prepaid</span><br>
+                Date: {{ order.created_at|date:"d-m-Y" }}
             </td>
         </tr>
 
+        <!-- Barcode Section -->
         <tr>
-            <td style="width: 75%; border-right: 1px solid #000;">
-                <span class="section-title">Deliver To:</span><br>
-                <span class="fw-bold" style="font-size: 14px;">{{ order.customer_name }}</span><br>
-                <span>{{ order.address }}</span><br>
+            <td colspan="2" class="text-center" style="padding: 15px;">
+                <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false" width="220" height="50"><br><br>
+                <span class="fw-bold" style="font-size: 14px;">AWB: AWB{{ order.id }}998877</span>
+            </td>
+        </tr>
+
+        <!-- Address & QR Section -->
+        <tr>
+            <td width="75%" style="border-right: 1px solid #000;">
+                Deliver To:<br>
+                <span class="title-text">{{ order.customer_name }}</span><br>
+                {{ order.address }}<br>
                 <span class="fw-bold">Ph: {{ order.mobile_number }}</span>
             </td>
-            <td style="width: 25%; text-align: center; vertical-align: middle;">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=RTE-{{ order.id }}" style="width: 60px; height: 60px;"><br>
-                <span class="fw-bold" style="font-size: 12px;">NOH-01</span>
+            <td width="25%" class="text-center">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=RTE-{{ order.id }}" width="60" height="60"><br>
+                <span class="fw-bold">NOH-01</span>
             </td>
         </tr>
 
+        <!-- Bill of Supply (Flat Design, No Nested Table) -->
         <tr>
-            <!-- Cellpadding ki jagah CSS padding: 0 lagaya hai -->
-            <td colspan="2" style="padding: 0;">
-                <table style="width: 100%; border: none;">
-                    <tr>
-                        <td style="border: none; border-bottom: 1px dashed #000; padding: 4px;">
-                            <span class="section-title fw-bold">BILL OF SUPPLY</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border: none; padding: 6px;">
-                            <strong>Order ID:</strong> #{{ order.id }} &nbsp;&nbsp;|&nbsp;&nbsp; <strong>Weight:</strong> 0.5 KG<br>
-                            <strong>Total Amount:</strong> ₹{{ order.total_amount }}<br>
-                            <em>Do Not Collect Cash (Prepaid Order)</em>
-                        </td>
-                    </tr>
-                </table>
+            <td colspan="2">
+                <span class="fw-bold" style="font-size: 12px; text-decoration: underline;">BILL OF SUPPLY</span><br><br>
+                <strong>Order ID:</strong> #{{ order.id }} | <strong>Weight:</strong> 0.5 KG<br>
+                <strong>Total Amount:</strong> ₹{{ order.total_amount }}<br>
+                <i>Do Not Collect Cash (Prepaid Order)</i>
             </td>
         </tr>
 
+        <!-- Footer Section -->
         <tr>
-            <td colspan="2" style="border-bottom: none;">
-                <span class="section-title">Return Address (If Undelivered):</span><br>
+            <td colspan="2" style="border-bottom: 0;">
+                Return Address (If Undelivered):<br>
                 <strong>Chachan General Store</strong><br>
                 Nohar, Rajasthan, India<br>
                 Support: support@chachanstore.com
@@ -104,8 +88,9 @@
         </tr>
     </table>
 
+    <!-- xhtml2pdf native page break tag -->
     {% if not forloop.last %}
-    <div class="page-break"></div>
+        <pdf:nextpage />
     {% endif %}
     
     {% endfor %}
