@@ -2,30 +2,31 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-# 🌟 ADDED: ProductVariant in imports
-from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-from .models import Order # Apne Order model ko import karein
 
-# 🌟 Category, OrderItem, CustomerProfile, aur Banner ko normally register karein
+# Sabhi models ek hi baar import kiye hain
+from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant
+
+# ==========================================
+# 0. Basic Model Registrations
+# ==========================================
 admin.site.register(Category)
-admin.site.register(OrderItem)
 admin.site.register(CustomerProfile)
 admin.site.register(Banner)  
-admin.site.register(ProductVariant) # Variant directly dekhne ke liye
+admin.site.register(ProductVariant)
 
 # ==========================================
 # 1. Product Admin (WITH VARIANTS INLINE)
 # ==========================================
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
-    extra = 1  # Ek khali row dikhayega naya size add karne ke liye
+    extra = 1
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('sku', 'name', 'price') 
-    inlines = [ProductVariantInline]  # 🌟 ADDED: Product edit karte waqt Sizes dikhenge
+    inlines = [ProductVariantInline]
 
 # ==========================================
 # 2. Coupon Admin
@@ -35,20 +36,40 @@ class CouponAdmin(admin.ModelAdmin):
     list_display = ['code', 'mobile_number', 'discount_percentage', 'is_used']
 
 # ==========================================
-# 3. Order Admin with Inlines
+# 3. Order Admin with Inlines & Shipping Label Action
 # ==========================================
+# Custom Action Function (Yahan define kiya hai)
+@admin.action(description="Print Shipping Labels (4x6 Thermal Format)")
+def print_shipping_labels(modeladmin, request, queryset):
+    template_path = 'admin/products/shipping_label.html'
+    context = {'orders': queryset}
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="shipping_labels.pdf"'
+    
+    template = get_template(template_path)
+    html = template.render(context)
+    
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error generating label: <pre>' + html + '</pre>')
+    return response
+
+# OrderItem Inline
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
     readonly_fields = ('product_name', 'price', 'quantity')
 
+# Single OrderAdmin Class (Dono ko merge kar diya)
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'customer_name', 'mobile_number', 'total_amount', 'status', 'created_at')
     inlines = [OrderItemInline]
+    actions = [print_shipping_labels] # Action yahan add kar diya
 
 # ==========================================
-# 4. CRITICAL: UserAdmin Registration (Fixes 500 Error)
+# 4. UserAdmin Registration
 # ==========================================
 class ProfileInline(admin.StackedInline):
     model = CustomerProfile
@@ -59,34 +80,3 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
-
-from django.contrib import admin
-from django.http import HttpResponse
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-from .models import Order # Apne Order model ko import karein
-
-@admin.action(description="Print Shipping Labels (4x6 Thermal Format)")
-def print_shipping_labels(modeladmin, request, queryset):
-    template_path = 'admin/products/shipping_label.html'
-    context = {'orders': queryset}
-    
-    response = HttpResponse(content_type='application/pdf')
-    # Label ko turant browser me open karne ke liye 'inline', download ke liye 'attachment'
-    response['Content-Disposition'] = 'inline; filename="shipping_labels.pdf"'
-    
-    template = get_template(template_path)
-    html = template.render(context)
-    
-    # Create PDF
-    pisa_status = pisa.CreatePDF(html, dest=response)
-    if pisa_status.err:
-        return HttpResponse('Error generating label: <pre>' + html + '</pre>')
-    return response
-
-# Apne Order admin me action register karein
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'customer_name', 'status', 'created_at']
-    actions = [print_shipping_labels]
-
-admin.site.register(Order, OrderAdmin)
