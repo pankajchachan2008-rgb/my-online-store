@@ -2,102 +2,112 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Premium COD Shipping Labels</title>
+    <title>Premium Shipping Labels</title>
     <style>
         @page {
             size: 100mm 150mm;
-            margin: 2mm; 
+            margin: 2mm; /* Ultra-tight margin */
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
             color: #000000;
             font-size: 11px;
-            line-height: 1.15; 
+            line-height: 1.1; /* Extra tight line height */
         }
-        .label-box {
+        .main-wrapper {
             border: 2px solid #000;
             width: 100%;
+            /* Removed height restriction to let it naturally fit well within 150mm */
         }
-        .row {
+        .section {
             border-bottom: 2px solid #000;
-            padding: 6px;
+            padding: 4px 6px;
         }
-        .last-row {
-            padding: 6px;
+        .section-last {
+            padding: 4px 6px;
         }
-        /* Float framework for PDF */
-        .left-col { float: left; width: 60%; }
-        .right-col { float: right; width: 38%; text-align: right; }
+        /* Float framework optimized for xhtml2pdf */
+        .left-box { float: left; width: 60%; }
+        .right-box { float: right; width: 38%; text-align: right; }
         .clear { clear: both; }
-        .fw-bold { font-weight: bold; }
+        
+        .title-text { font-size: 9px; text-transform: uppercase; color: #444; }
+        .highlight-box {
+            background-color: #000;
+            color: #fff;
+            padding: 3px 6px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
 
     {% for order in orders %}
-    <div class="label-box">
+    <div class="main-wrapper">
         
-        <!-- Row 1: Logo & Courier Partner -->
-        <div class="row">
-            <div class="left-col">
-                <!-- Apne Store ka logo lagane ke liye is 'src' link ko change karein -->
-                <img src="https://dummyimage.com/150x45/000/fff&text=STORE+LOGO" width="150" height="45">
+        <!-- SECTION 1: Logo & Logistics Partner -->
+        <div class="section">
+            <div class="left-box">
+                <!-- Replace with your actual store logo URL -->
+                <img src="https://dummyimage.com/130x40/000/fff&text=STORE+LOGO" width="130" height="40">
             </div>
-            <div class="right-col">
-                <span style="font-size: 14px;" class="fw-bold">STANDARD</span><br>
-                <span style="font-size: 10px;">CGS LOGISTICS</span><br>
-                <span class="fw-bold" style="font-size: 14px; border: 1px solid #000; padding: 1px 4px; display: inline-block; margin-top: 2px;">COD ORDER</span>
+            <div class="right-box">
+                <span style="font-size: 14px; font-weight: bold;">STANDARD</span><br>
+                <span style="font-size: 11px; font-weight: bold;">CGS LOGISTICS</span><br>
             </div>
             <div class="clear"></div>
         </div>
 
-        <!-- Row 2: Main AWB Barcode -->
-        <div class="row" style="text-align: center; padding-top: 10px; padding-bottom: 10px;">
-            <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false" width="240" height="50"><br>
-            <div style="font-size: 15px; font-weight: bold; margin-top: 4px; letter-spacing: 1px;">AWB: AWB{{ order.id }}998877</div>
+        <!-- SECTION 2: COD Tag & Main Barcode -->
+        <div class="section" style="text-align: center; padding-top: 8px; padding-bottom: 8px;">
+            <div class="highlight-box" style="margin-bottom: 8px;">COD ORDER</div><br>
+            <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false" width="260" height="45"><br>
+            <div style="font-size: 14px; font-weight: bold; margin-top: 4px; letter-spacing: 1px;">AWB: AWB{{ order.id }}998877</div>
         </div>
 
-        <!-- Row 3: Deliver To & Data Matrix Code -->
-        <div class="row">
-            <div class="left-col">
-                <span style="font-size: 9px; color: #333;">DELIVER TO:</span><br>
-                <span style="font-size: 14px;" class="fw-bold">{{ order.customer_name }}</span><br>
-                {{ order.address }}<br>
-                <span class="fw-bold" style="font-size: 12px;">Ph: {{ order.mobile_number }}</span>
+        <!-- SECTION 3: Customer Address & Routing Matrix -->
+        <div class="section">
+            <div class="left-box">
+                <span class="title-text" style="text-decoration: underline; font-weight: bold;">DELIVER TO:</span><br>
+                <span style="font-size: 15px; font-weight: bold;">{{ order.customer_name }}</span><br>
+                <span style="font-size: 12px;">{{ order.address }}</span><br>
+                <span style="font-size: 13px; font-weight: bold;">Ph: {{ order.mobile_number }}</span>
             </div>
-            <div class="right-col">
-                <!-- Data Matrix Route Code -->
+            <div class="right-box">
                 <img src="https://bwipjs-api.metafloor.com/?bcid=datamatrix&text=RTE-{{ order.id }}&scale=4" width="60" height="60"><br>
-                <span class="fw-bold" style="font-size: 11px;">RTE-{{ order.id }}</span>
+                <span style="font-size: 12px; font-weight: bold;">RTE-{{ order.id }}</span>
             </div>
             <div class="clear"></div>
         </div>
 
-        <!-- Row 4: Bill of Supply & Amount -->
-        <div class="row">
-            <div style="font-size: 12px; font-weight: bold; text-decoration: underline; margin-bottom: 4px;">BILL OF SUPPLY</div>
-            <div class="left-col">
+        <!-- SECTION 4: Bill of Supply & Cash Collection -->
+        <div class="section">
+            <div class="left-box">
+                <span class="title-text" style="text-decoration: underline; font-weight: bold;">BILL OF SUPPLY</span><br>
                 <strong>Order ID:</strong> #{{ order.id }}<br>
                 <strong>Date:</strong> {{ order.created_at|date:"d-m-Y" }}<br>
                 <strong>Weight:</strong> 0.5 KG
             </div>
-            <div class="right-col">
-                <span style="font-size: 16px;" class="fw-bold">₹{{ order.total_amount }}</span><br>
-                <div style="border: 2px solid #000; padding: 4px; font-size: 11px; font-weight: bold; margin-top: 3px; display: inline-block; background-color: #f0f0f0;">
+            <div class="right-box">
+                <span style="font-size: 18px; font-weight: bold;">₹{{ order.total_amount }}</span><br>
+                <div style="border: 2px solid #000; padding: 4px; font-size: 11px; font-weight: bold; margin-top: 4px; background-color: #eee; display: inline-block;">
                     COLLECT CASH: ₹{{ order.total_amount }}
                 </div>
             </div>
             <div class="clear"></div>
         </div>
 
-        <!-- Row 5: Return Address -->
-        <div class="last-row" style="font-size: 10px;">
-            <span class="fw-bold">Return Address:</span> Chachan General Store, Nohar, Rajasthan, India | Support: support@chachanstore.com
+        <!-- SECTION 5: Footer -->
+        <div class="section-last" style="font-size: 9px;">
+            <strong style="font-size: 10px;">Return Address:</strong> Chachan General Store, Nohar, Rajasthan, India<br>
+            Support: support@chachanstore.com
         </div>
         
     </div>
 
-    <!-- Page break correctly placed outside the label-box -->
+    <!-- Correctly isolated page break tag -->
     {% if not forloop.last %}
         <pdf:nextpage />
     {% endif %}
