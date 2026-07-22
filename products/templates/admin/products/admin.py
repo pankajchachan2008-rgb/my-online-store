@@ -1,99 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Shipping Labels</title>
-    <style>
-        @page {
-            size: 100mm 150mm;
-            margin: 5mm;
-        }
-        body {
-            font-family: Helvetica, Arial, sans-serif;
-            color: #000000;
-            font-size: 11px;
-            line-height: 1.3;
-        }
-        .main-box {
-            border: 2px solid #000;
-            width: 100%;
-        }
-        td {
-            padding: 8px;
-            border-bottom: 1px solid #000;
-            vertical-align: top;
-        }
-        .text-center { text-align: center; }
-        .fw-bold { font-weight: bold; }
-        .title-text { font-size: 15px; font-weight: bold; }
-    </style>
-</head>
-<body>
+from django.contrib import admin
+from django.http import HttpResponse
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant
 
-    {% for order in orders %}
-    <table class="main-box" cellpadding="0" cellspacing="0">
-        
-        <!-- Top Section -->
-        <tr>
-            <td width="70%" style="border-right: 1px solid #000;">
-                <span class="title-text">STANDARD DELIVERY</span><br>
-                Partner: Trackon / Shree Maruti
-            </td>
-            <td width="30%" class="text-center">
-                <span class="fw-bold">Prepaid</span><br>
-                Date: {{ order.created_at|date:"d-m-Y" }}
-            </td>
-        </tr>
+# ==========================================
+# 1. Basic Model Registrations
+# ==========================================
+admin.site.register(Category)
+admin.site.register(CustomerProfile)
+admin.site.register(Banner)  
+admin.site.register(ProductVariant)
 
-        <!-- Barcode Section -->
-        <tr>
-            <td colspan="2" class="text-center" style="padding: 15px;">
-                <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false" width="220" height="50"><br><br>
-                <span class="fw-bold" style="font-size: 14px;">AWB: AWB{{ order.id }}998877</span>
-            </td>
-        </tr>
+# ==========================================
+# 2. Product Admin (with Variants Inline)
+# ==========================================
+class ProductVariantInline(admin.TabularInline):
+    model = ProductVariant
+    extra = 1
 
-        <!-- Address & QR Section -->
-        <tr>
-            <td width="75%" style="border-right: 1px solid #000;">
-                Deliver To:<br>
-                <span class="title-text">{{ order.customer_name }}</span><br>
-                {{ order.address }}<br>
-                <span class="fw-bold">Ph: {{ order.mobile_number }}</span>
-            </td>
-            <td width="25%" class="text-center">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=RTE-{{ order.id }}" width="60" height="60"><br>
-                <span class="fw-bold">NOH-01</span>
-            </td>
-        </tr>
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('sku', 'name', 'price') 
+    inlines = [ProductVariantInline]
 
-        <!-- Bill of Supply (Flat Design, No Nested Table) -->
-        <tr>
-            <td colspan="2">
-                <span class="fw-bold" style="font-size: 12px; text-decoration: underline;">BILL OF SUPPLY</span><br><br>
-                <strong>Order ID:</strong> #{{ order.id }} | <strong>Weight:</strong> 0.5 KG<br>
-                <strong>Total Amount:</strong> ₹{{ order.total_amount }}<br>
-                <i>Do Not Collect Cash (Prepaid Order)</i>
-            </td>
-        </tr>
+# ==========================================
+# 3. Coupon Admin
+# ==========================================
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ['code', 'mobile_number', 'discount_percentage', 'is_used']
 
-        <!-- Footer Section -->
-        <tr>
-            <td colspan="2" style="border-bottom: 0;">
-                Return Address (If Undelivered):<br>
-                <strong>Chachan General Store</strong><br>
-                Nohar, Rajasthan, India<br>
-                Support: support@chachanstore.com
-            </td>
-        </tr>
-    </table>
-
-    <!-- xhtml2pdf native page break tag -->
-    {% if not forloop.last %}
-        <pdf:nextpage />
-    {% endif %}
+# ==========================================
+# 4. Order Admin & Shipping Label Action
+# ==========================================
+@admin.action(description="Print Shipping Labels (4x6 Thermal Format)")
+def print_shipping_labels(modeladmin, request, queryset):
+    template_path = 'admin/products/shipping_label.html'
+    context = {'orders': queryset}
     
-    {% endfor %}
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="shipping_labels.pdf"'
+    
+    template = get_template(template_path)
+    html = template.render(context)
+    
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('Error generating label: <pre>' + html + '</pre>')
+    return response
 
-</body>
-</html>
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    readonly_fields = ('product_name', 'price', 'quantity')
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer_name', 'mobile_number', 'total_amount', 'status', 'created_at')
+    inlines = [OrderItemInline]
+    actions = [print_shipping_labels]
+
+# ==========================================
+# 5. User Profile Inline & UserAdmin
+# ==========================================
+class ProfileInline(admin.StackedInline):
+    model = CustomerProfile
+    can_delete = False
+
+class CustomUserAdmin(UserAdmin):
+    inlines = (ProfileInline, )
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
