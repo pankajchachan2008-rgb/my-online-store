@@ -6,80 +6,69 @@
     <style>
         @page {
             size: 100mm 150mm;
-            margin: 5mm;
+            margin: 4mm;
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
             color: #000000;
             font-size: 11px;
-            line-height: 1.3;
+            line-height: 1.4;
         }
-        /* Table ki width ko 100% ki jagah direct 250px de diya gaya hai */
-        .main-box {
-            border: 2px solid #000;
-            width: 250px; 
-        }
-        td {
-            padding: 5px;
-            border-bottom: 1px solid #000;
-            vertical-align: top;
-        }
-        .text-center { text-align: center; }
-        .fw-bold { font-weight: bold; }
     </style>
 </head>
 <body>
 
     {% for order in orders %}
-    <table class="main-box" cellpadding="0" cellspacing="0">
-        
+    <!-- No CSS classes for table, strictly HTML4 attributes -->
+    <table width="260" border="1" cellpadding="8" cellspacing="0">
         <tr>
-            <!-- Column widths strictly in px -->
-            <td style="width: 170px; border-right: 1px solid #000;">
-                <span style="font-size: 14px; font-weight: bold;">STANDARD DELIVERY</span><br>
+            <td width="180">
+                <font size="3"><b>STANDARD DELIVERY</b></font><br />
                 Partner: Trackon / Shree Maruti
             </td>
-            <td style="width: 80px; text-align: center;">
-                <span class="fw-bold">Prepaid</span><br>
-                Date: {{ order.created_at|date:"d-m-Y" }}
+            <td width="80" align="center">
+                <b>Prepaid</b><br />
+                {{ order.created_at|date:"d-m-Y" }}
+            </td>
+        </tr>
+        
+        <tr>
+            <td colspan="2" align="center">
+                <br />
+                <!-- Strict width and height attributes -->
+                <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false" width="200" height="45" /><br /><br />
+                <b>AWB: AWB{{ order.id }}998877</b>
+                <br />
             </td>
         </tr>
 
         <tr>
-            <td colspan="2" class="text-center" style="padding: 10px 5px;">
-                <!-- Image sizes in px -->
-                <img src="https://bwipjs-api.metafloor.com/?bcid=code128&text=AWB{{ order.id }}998877&includetext=false" style="width: 200px; height: 40px;"><br>
-                <span class="fw-bold" style="font-size: 12px; margin-top: 5px; display: block;">AWB: AWB{{ order.id }}998877</span>
+            <td width="180">
+                Deliver To:<br />
+                <font size="3"><b>{{ order.customer_name }}</b></font><br />
+                {{ order.address }}<br />
+                <b>Ph: {{ order.mobile_number }}</b>
             </td>
-        </tr>
-
-        <tr>
-            <td style="width: 170px; border-right: 1px solid #000;">
-                Deliver To:<br>
-                <span style="font-size: 13px; font-weight: bold;">{{ order.customer_name }}</span><br>
-                {{ order.address }}<br>
-                <span class="fw-bold">Ph: {{ order.mobile_number }}</span>
-            </td>
-            <td style="width: 80px; text-align: center; vertical-align: middle;">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=RTE-{{ order.id }}" style="width: 50px; height: 50px;"><br>
-                <span class="fw-bold">NOH-01</span>
+            <td width="80" align="center">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=55x55&data=RTE-{{ order.id }}" width="55" height="55" /><br />
+                <b>NOH-01</b>
             </td>
         </tr>
 
         <tr>
             <td colspan="2">
-                <span class="fw-bold" style="font-size: 12px; text-decoration: underline;">BILL OF SUPPLY</span><br><br>
-                <strong>Order ID:</strong> #{{ order.id }} | <strong>Weight:</strong> 0.5 KG<br>
-                <strong>Total Amount:</strong> ₹{{ order.total_amount }}<br>
+                <u><b>BILL OF SUPPLY</b></u><br /><br />
+                <b>Order ID:</b> #{{ order.id }} &nbsp;|&nbsp; <b>Weight:</b> 0.5 KG<br />
+                <b>Total Amount:</b> Rs. {{ order.total_amount }}<br />
                 <i>Do Not Collect Cash (Prepaid Order)</i>
             </td>
         </tr>
 
         <tr>
-            <td colspan="2" style="border-bottom: 0;">
-                Return Address:<br>
-                <strong>Chachan General Store</strong><br>
-                Nohar, Rajasthan, India<br>
+            <td colspan="2">
+                Return Address:<br />
+                <b>Chachan General Store</b><br />
+                Nohar, Rajasthan, India<br />
                 Support: support@chachanstore.com
             </td>
         </tr>
