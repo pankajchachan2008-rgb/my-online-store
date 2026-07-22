@@ -1,0 +1,15 @@
+{% if active_banners %}
+<div class="banner-container" style="width: 100%; overflow: hidden; margin: 10px 0;">
+    {% for banner in active_banners %}
+        <div class="banner-item" style="display: block; width: 100%;">
+            {% if banner.link %}
+                <a href="{{ banner.link }}">
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title }}" style="width: 100%; height: auto; border-radius: 8px;">
+                </a>
+            {% else %}
+                <img src="{{ banner.image.url }}" alt="{{ banner.title }}" style="width: 100%; height: auto; border-radius: 8px;">
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}

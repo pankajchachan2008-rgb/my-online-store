@@ -52,12 +52,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'products.context_processors.get_active_banners', # <--- Sahi format (Quote add kar diya hai)
             ],
         },
     },
 ]
-
-WSGI_APPLICATION = 'store_backend.wsgi.application'
 
 # Database Configuration (PostgreSQL/SQLite Engine)
 DATABASES = {
