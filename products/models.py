@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from cloudinary_storage.storage import VideoMediaCloudinaryStorage
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -103,7 +104,16 @@ def save_user_profile(sender, instance, **kwargs):
 
 class Banner(models.Model):
     title = models.CharField(max_length=200, help_text="Festival ya Offer ka naam")
-    animated_file = models.FileField(upload_to='banners/', help_text="Upload GIF or animated video")
+    
+    # 🌟 NAYA CODE: Cloudinary Video Storage add kar diya gaya hai
+    animated_file = models.FileField(
+        upload_to='banners/', 
+        help_text="Upload GIF or animated video",
+        storage=VideoMediaCloudinaryStorage(), 
+        blank=True, 
+        null=True
+    )
+    
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
