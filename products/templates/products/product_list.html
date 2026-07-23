@@ -107,6 +107,7 @@
         align-items: center;
         justify-content: center;
         padding: 15px;
+        position: relative; /* Added for absolute positioning of discount badge */
     }
     .img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
     
@@ -193,9 +194,17 @@
                 <div class="col">
                     <div class="product-card">
                         
-                        <!-- 🌟 NAYA LOGIC: Link sirf image aur text par kaam karega -->
+                        <!-- 🌟 LOGIC: Link sirf image aur text par kaam karega -->
                         <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
-                            <div class="img-box">
+                            <div class="img-box position-relative">
+                                
+                                <!-- 🌟 NEW LOGIC: Dynamic Discount Badge -->
+                                {% if product.discount_percentage > 0 %}
+                                    <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-2 py-1" style="font-size: 0.75rem; border: 1px solid #000; box-shadow: 2px 2px 0px #000; z-index: 2;">
+                                        {{ product.discount_percentage }}% OFF
+                                    </span>
+                                {% endif %}
+
                                 {% if product.image %}
                                     <img src="{{ product.image.url }}" alt="{{ product.name }}">
                                 {% else %}
@@ -205,6 +214,14 @@
                             <div class="p-3 pb-1 d-flex flex-column">
                                 <div class="product-name text-dark" title="{{ product.name }}">{{ product.name }}</div>
                                 <div class="product-desc">{{ product.description|default:"Premium Quality Essential"|truncatechars:35 }}</div>
+                                
+                                <!-- Product Price added for grid view -->
+                                <div class="price-tag mt-1">
+                                    ₹{{ product.price }} 
+                                    {% if product.mrp and product.mrp > product.price %}
+                                        <small class="text-muted text-decoration-line-through fs-6 ms-1">₹{{ product.mrp }}</small>
+                                    {% endif %}
+                                </div>
                             </div>
                         </a>
                         
@@ -214,7 +231,7 @@
                                 {% csrf_token %}
                                 
                                 {% if product.variants.exists %}
-                                    <select name="variant_id" class="form-select form-select-sm mb-2" required>
+                                    <select name="variant_id" class="form-select form-select-sm mb-2 rounded-0 border-dark" required>
                                         <option value="" disabled selected>Select Size</option>
                                         {% for variant in product.variants.all %}
                                             <option value="{{ variant.id }}">{{ variant.size_name }} - ₹{{ variant.price }}</option>
@@ -224,7 +241,7 @@
                                 
                                 <div class="d-flex flex-column gap-2">
                                     <button type="submit" class="btn btn-cart w-100">Add To Cart</button>
-                                    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger w-100 btn-sm">❤️ Wishlist</a>
+                                    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger w-100 btn-sm rounded-0 text-uppercase fw-bold" style="border: 2px solid #dc3545;">❤️ Wishlist</a>
                                 </div>
                             </form>
                         </div>

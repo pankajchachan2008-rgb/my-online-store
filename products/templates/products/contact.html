@@ -1,12 +1,37 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5">
-    <h2>Contact Us</h2>
-    <p>Agar aapko kisi bhi order ya product ki jaankari chahiye, toh humse sampark karein:</p>
-    <ul>
-        <li><strong>Email:</strong> support@cgsmart.in</li>
-        <li><strong>Phone:</strong> +91-7357073316</li>
-        <li><strong>Address:</strong> Nohar, Rajasthan</li>
-    </ul>
+<style>
+    .contact-wrapper { border: 2px solid #000; box-shadow: 6px 6px 0px #000000; background: #fff; }
+    .contact-info-bg { background: #000; color: white; padding: 40px; height: 100%; }
+    .info-item { display: flex; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
+    .info-icon { font-size: 2rem; margin-right: 20px; }
+    .contact-form-section { padding: 40px; }
+    .custom-input { border: 2px solid #000 !important; border-radius: 0; padding: 12px; font-weight: 500; }
+    .btn-submit { background: #000; color: #fff; text-transform: uppercase; font-weight: 700; border: none; padding: 15px; width: 100%; }
+    .btn-submit:hover { background: #333; }
+</style>
+
+<div class="container my-5" style="max-width: 1000px;">
+    <div class="row g-0 contact-wrapper">
+        <div class="col-md-5">
+            <div class="contact-info-bg">
+                <h3 class="fw-bold text-uppercase mb-4">Contact Info</h3>
+                <p class="text-white-50 mb-5">Agar aapko kisi bhi order ya product ki jaankari chahiye, toh humse sampark karein:</p>
+                <div class="info-item"><div class="info-icon">📍</div><div><h6 class="mb-1 fw-bold text-uppercase">Store Address</h6><p class="mb-0 text-white-50">Nohar, Rajasthan</p></div></div>
+                <div class="info-item"><div class="info-icon">📧</div><div><h6 class="mb-1 fw-bold text-uppercase">Email Us</h6><p class="mb-0 text-white-50">support@cgsmart.in</p></div></div>
+                <div class="info-item border-0"><div class="info-icon">📞</div><div><h6 class="mb-1 fw-bold text-uppercase">Call Us</h6><p class="mb-0 text-white-50">+91-7357073316</p></div></div>
+            </div>
+        </div>
+        <div class="col-md-7 contact-form-section">
+            <h2 class="fw-bold text-uppercase mb-4">Send Message</h2>
+            <form action="#" method="POST">
+                {% csrf_token %}
+                <div class="mb-3"><input type="text" class="form-control custom-input" placeholder="Full Name" required></div>
+                <div class="mb-3"><input type="email" class="form-control custom-input" placeholder="Email Address" required></div>
+                <div class="mb-4"><textarea class="form-control custom-input" placeholder="Your Message" style="height: 120px" required></textarea></div>
+                <button type="submit" class="btn-submit">Submit Query</button>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

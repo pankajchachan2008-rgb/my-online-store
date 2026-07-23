@@ -1,6 +1,48 @@
-{% extends 'base.html' %} {% block content %}
-<div class="container mt-5">
-    <h2>About CGSmart</h2>
-    <p>Welcome to CGSmart, the online extension of Chachan General Store. Hum hamesha premium quality ka samaan sabse behtareen rates par dete hain. Hamari koshish hai ki aapko ghar baithe best service mile.</p>
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .about-hero {
+        background: #000; color: white; padding: 60px 20px; 
+        text-align: center; margin-bottom: 40px; border: 2px solid #000;
+        box-shadow: 6px 6px 0px #000000;
+    }
+    .about-hero h1 { font-weight: 700; font-size: 2.8rem; margin-bottom: 15px; text-transform: uppercase; }
+    .about-text { font-size: 1.2rem; line-height: 1.8; color: #333; font-weight: 500; }
+    .feature-card {
+        background: white; padding: 30px 20px; text-align: center;
+        border: 2px solid #000; box-shadow: 4px 4px 0px #000000; height: 100%; transition: transform 0.2s;
+    }
+    .feature-card:hover { transform: translateY(-5px); }
+    .feature-card h4 { font-weight: 700; text-transform: uppercase; margin-bottom: 10px; margin-top: 15px; }
+</style>
+
+<div class="container my-5" style="max-width: 1200px;">
+    <div class="about-hero">
+        <h1>Welcome to CG<span>SMART</span></h1>
+        <p class="lead mb-0 fw-medium">The Online Extension of Chachan General Store</p>
+    </div>
+    
+    <div class="row align-items-center mb-5 pb-4">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <div style="border: 2px solid #000; padding: 10px; background: #fff; box-shadow: 6px 6px 0px #000;">
+                <img src="https://dummyimage.com/600x400/000/fff&text=Chachan+General+Store" alt="Our Store" class="img-fluid">
+            </div>
+        </div>
+        <div class="col-lg-6 px-lg-5">
+            <h2 class="fw-bold mb-4 text-uppercase border-bottom border-dark pb-2 border-2">Our Roots in Nohar</h2>
+            <p class="about-text">
+                Hum hamesha premium quality ka samaan sabse behtareen rates par dete hain. Ek local family store se shuru hokar, humne varshon tak Nohar ki community ka vishwas jeeta hai.
+            </p>
+            <p class="about-text">
+                CGSmart usi bharose aur service ko digital platform par laane ki ek koshish hai. Hamari priority hai ki aapko ghar baithe best shopping experience aur fast service mile.
+            </p>
+        </div>
+    </div>
+    
+    <div class="row g-4 mt-2">
+        <div class="col-md-4"><div class="feature-card"><h1>🏆</h1><h4>Top Quality</h4><p class="text-muted fw-medium">Handpicked premium daily essentials.</p></div></div>
+        <div class="col-md-4"><div class="feature-card"><h1>⚡</h1><h4>Fast Delivery</h4><p class="text-muted fw-medium">Seamless ordering via WhatsApp directly.</p></div></div>
+        <div class="col-md-4"><div class="feature-card"><h1>🤝</h1><h4>Trust</h4><p class="text-muted fw-medium">Built on decades of local customer faith.</p></div></div>
+    </div>
 </div>
 {% endblock %}

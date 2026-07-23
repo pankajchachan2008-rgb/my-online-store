@@ -116,29 +116,62 @@ def checkout_page(request):
         messages.warning(request, "Aapka cart khali hai!")
         return redirect('home')
         
-    cart_total = 0
-    # Items list banane ke liye
+    subtotal = 0
+    total_mrp = 0
+    hidden_discount_total = 0
     order_items_list = []
     
     for pid, item in list(cart.items()):
         if isinstance(item, dict) and 'price' in item:
-            cart_total += item['price'] * item['quantity']
-            order_items_list.append(f"- {item['name']} (x{item['quantity']}) : ₹{item['price'] * item['quantity']}")
+            item_qty = item['quantity']
+            item_price = item['price']
+            subtotal += item_price * item_qty
+            
+            # Extract product ID safely handling variants (e.g., '1_2' -> 1)
+            product_id = int(str(pid).split('_')[0])
+            try:
+                product = Product.objects.get(id=product_id)
+                # MRP Check
+                if product.mrp:
+                    total_mrp += float(product.mrp) * item_qty
+                else:
+                    total_mrp += item_price * item_qty 
+                    
+                # GAMECHANGER: Check hidden discount
+                if product.last_moment_discount > 0:
+                    hidden_discount_total += float(product.last_moment_discount) * item_qty
+            except Product.DoesNotExist:
+                total_mrp += item_price * item_qty
+                
+            order_items_list.append(f"- {item['name']} (x{item_qty}) : ₹{item_price * item_qty}")
+    
+    regular_discount = total_mrp - subtotal
+    payable_subtotal = subtotal - hidden_discount_total
+    
+    # 🚚 DELIVERY TIER LOGIC
+    if payable_subtotal < 500:
+        delivery_fee = 30
+    elif 500 <= payable_subtotal <= 699:
+        delivery_fee = 20
+    elif 700 <= payable_subtotal <= 999:
+        delivery_fee = 15
+    else:
+        delivery_fee = 0
+        
+    final_total = payable_subtotal + delivery_fee
+    total_savings = regular_discount + hidden_discount_total
         
     if request.method == 'POST':
         name = request.POST.get('name')
         mobile = request.POST.get('mobile_number')
         address = request.POST.get('address')
         
-        # ... (Coupon logic waisa hi rahega)
         active_coupon = Coupon.objects.filter(mobile_number=mobile, is_used=False).first()
-        final_total = float(cart_total)
         if active_coupon:
             final_total -= (final_total * active_coupon.discount_percentage) / 100
             active_coupon.is_used = True
             active_coupon.save()
 
-        # Order creation
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             customer_name=name, mobile_number=mobile, address=address,
@@ -149,21 +182,28 @@ def checkout_page(request):
             if isinstance(item, dict):
                 OrderItem.objects.create(order=order, product_name=item['name'], price=item['price'], quantity=item['quantity'])
             
-        # 💬 WhatsApp Message Construction
+        # 💬 WhatsApp Message Integration with Details
         items_str = "\n".join(order_items_list)
-        wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n\n*Total Amount:* ₹{final_total}"
+        wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n\n*Delivery Charge:* ₹{delivery_fee}\n*Total Payable:* ₹{final_total}"
         
-        # WhatsApp URL generate karein (Yahan apna WhatsApp number 91XXXXXXXXXX ki jagah likhein)
         whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
 
         request.session['cart'] = {}
         return render(request, 'products/order_success.html', {
             'order': order, 
-            'whatsapp_url': whatsapp_url # Ye url ab template mein jayega
+            'whatsapp_url': whatsapp_url 
         })
 
-    # ... (Initial data logic)
-    return render(request, 'products/checkout.html', {'cart_total': cart_total})
+    context = {
+        'cart_total': subtotal,
+        'total_mrp': total_mrp,
+        'regular_discount': regular_discount,
+        'hidden_discount_total': hidden_discount_total,
+        'delivery_fee': delivery_fee,
+        'final_total': final_total,
+        'total_savings': total_savings
+    }
+    return render(request, 'products/checkout.html', context)
 
 # 👤 5. Premium Profile Page
 @login_required(login_url='/login/')
