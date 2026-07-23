@@ -1,89 +1,209 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<div class="container mt-2 mb-5">
+
+<style>
+    /* 🌟 Premium Flipkart Style CSS */
+    body { background-color: #f1f3f6; } /* Flipkart light grey background */
     
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-dark">🛒 Aapka Cart</h2>
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-4">← Shopping Jari Rakhein</a>
-    </div>
+    .cart-left-box { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); padding: 0; }
+    .cart-header { padding: 18px 24px; border-bottom: 1px solid #f0f0f0; }
+    .cart-item-card { padding: 24px; border-bottom: 1px solid #f0f0f0; display: flex; flex-direction: column; }
+    @media (min-width: 768px) { .cart-item-card { flex-direction: row; gap: 20px; } }
+    
+    /* Quantity Buttons */
+    .qty-control { display: flex; align-items: center; margin-top: 20px; }
+    .qty-btn { 
+        width: 28px; height: 28px; background: #fff; border: 1px solid #c2c2c2; 
+        border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+        font-weight: 600; color: #212121; text-decoration: none; font-size: 16px; cursor: pointer;
+    }
+    .qty-btn:hover { background: #f0f0f0; color: #212121; }
+    .qty-btn.disabled { pointer-events: none; opacity: 0.4; }
+    .qty-input { 
+        width: 46px; height: 28px; margin: 0 10px; border: 1px solid #c2c2c2; 
+        border-radius: 2px; text-align: center; font-weight: 500; font-size: 14px;
+        color: #212121; outline: none; background: #fff;
+    }
+    
+    /* Remove Button */
+    .remove-btn { 
+        color: #212121; font-weight: 600; text-transform: uppercase; font-size: 14px; 
+        text-decoration: none; margin-left: 24px; transition: 0.3s ease; 
+    }
+    .remove-btn:hover { color: #2874f0; } /* Flipkart Blue hover */
 
-    <div class="row mb-4 justify-content-center">
-        <div class="col-md-10">
+    /* Right Side Price Box */
+    .price-box { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); position: sticky; top: 100px; }
+    .price-box-header { padding: 13px 24px; border-bottom: 1px solid #f0f0f0; color: #878787; text-transform: uppercase; font-weight: 600; font-size: 14px; }
+    .price-box-body { padding: 0 24px; }
+    .price-row { display: flex; justify-content: space-between; padding: 20px 0; font-size: 15px; color: #212121; }
+    .border-dash { border-bottom: 1px dashed #e0e0e0; }
+    .total-row { display: flex; justify-content: space-between; padding: 20px 0; font-weight: 600; font-size: 18px; border-top: 1px dashed #e0e0e0; border-bottom: 1px dashed #e0e0e0; margin-bottom: 15px;}
+    
+    /* Place Order Button */
+    .btn-place-order { 
+        background: #fb641b; color: #fff; border-radius: 2px; font-size: 16px; 
+        font-weight: 600; padding: 16px 30px; border: none; width: 100%; box-shadow: 0 1px 2px 0 rgba(0,0,0,.2); text-transform: uppercase;
+    }
+    .btn-place-order:hover { background: #df5815; color: white; }
+</style>
 
-            <div id="upsell-alert" class="alert alert-warning text-center rounded-4 shadow-sm fw-semibold border-warning d-none" style="font-size: 1rem;">
-                ✨ Sirf <strong class="text-danger">₹<span id="amount-needed"></span></strong> ka samaan aur add karein aur apne next order ke liye <strong class="text-dark">8% Discount Scratch Card</strong> jeetein!
+<div class="container mt-4 mb-5" style="max-width: 1200px;">
+    
+    <!-- Upsell Alert (Aapka purana scratch card feature) -->
+    <div class="row justify-content-center mb-3">
+        <div class="col-12">
+            <div id="upsell-alert" class="alert text-center fw-semibold d-none" style="background: #e8f4f8; border: 1px solid #2874f0; color: #212121; border-radius: 4px;">
+                ✨ Sirf <strong class="text-danger">₹<span id="amount-needed"></span></strong> ka samaan aur add karein aur Next Order ke liye <strong style="color: #2874f0;">8% Discount Scratch Card</strong> jeetein!
             </div>
-
-            <div id="scratch-box" class="card border-0 shadow-lg rounded-4 d-none overflow-hidden" style="background: linear-gradient(135deg, #0f172a, #0d9488);">
-                <div class="card-body text-center p-4">
-                    <h4 class="fw-bold text-white mb-2">🎉 Badhai Ho! Aapne ek Scratch Card Jeeta Hai!</h4>
-                    <p class="text-white-50 mb-4 small">Niche diye gaye card par click karke scratch karein aur apna Next Order Discount Code payein.</p>
-
-                    <div class="mx-auto position-relative" style="width: 300px; height: 90px; cursor: pointer;" onclick="revealCard()">
-                        <div class="bg-white rounded-3 w-100 h-100 d-flex align-items-center justify-content-center border border-3 border-warning shadow-inner">
-                            <h4 id="coupon-code" class="fw-bold text-dark m-0" style="letter-spacing: 1px;"></h4>
+            
+            <div id="scratch-box" class="card border-0 shadow-sm d-none mb-3" style="background: linear-gradient(135deg, #2874f0, #1c5ab5); border-radius: 4px;">
+                <div class="card-body text-center py-3">
+                    <h5 class="fw-bold text-white mb-1">🎉 You Won a Scratch Card!</h5>
+                    <div class="mx-auto mt-3 position-relative" style="width: 250px; height: 60px; cursor: pointer;" onclick="revealCard()">
+                        <div class="bg-white w-100 h-100 d-flex align-items-center justify-content-center rounded border border-warning shadow-sm">
+                            <h5 id="coupon-code" class="fw-bold m-0" style="color: #212121;"></h5>
                         </div>
-                        <div id="scratch-cover" class="position-absolute top-0 start-0 w-100 h-100 rounded-3 d-flex align-items-center justify-content-center text-dark fw-bold shadow" style="background: repeating-linear-gradient(45deg, #e2e8f0, #e2e8f0 10px, #cbd5e1 10px, #cbd5e1 20px); transition: opacity 0.6s ease; font-size: 1.2rem;">
+                        <div id="scratch-cover" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center fw-bold shadow-sm rounded" style="background: #e0e0e0; transition: opacity 0.6s ease; font-size: 1rem; color: #878787;">
                             🪙 Tap to Scratch
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
-        <div class="card-body p-0 table-responsive">
-            {% if cart_items %}
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr>
-                            <th scope="col" class="ps-4 py-3 text-muted fw-semibold">Product</th>
-                            <th scope="col" class="py-3 text-muted fw-semibold">Price</th>
-                            <th scope="col" class="py-3 text-muted fw-semibold">Quantity</th>
-                            <th scope="col" class="py-3 text-muted fw-semibold">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in cart_items %}
-                        <tr>
-                            <td class="ps-4 py-3 fw-medium text-dark">{{ item.product.name }}</td>
-                            <td class="py-3">₹{{ item.product.price }}</td>
-                            <td class="py-3 fw-bold">{{ item.quantity }}</td>
-                            <td class="py-3 fw-bold text-success">₹{{ item.total_price }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="text-center py-5">
-                    <span style="font-size: 4rem; opacity: 0.5;">🛒</span>
-                    <h4 class="mt-3 text-muted fw-bold">Aapka Cart Khali Hai</h4>
-                    <p class="text-muted">Ache offers ka fayda uthane ke liye samaan add karein!</p>
-                </div>
-            {% endif %}
-        </div>
+    <div class="row align-items-start g-4">
         
-        {% if cart_items %}
-        <div class="card-footer bg-white p-4 border-top">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <span class="text-muted fw-semibold d-block" style="font-size: 0.9rem;">Total Amount</span>
-                    <h3 class="fw-bold text-dark m-0">₹{{ cart_total }}</h3>
+        <!-- LEFT SIDE: CART ITEMS -->
+        <div class="col-lg-8">
+            <div class="cart-left-box">
+                <div class="cart-header d-flex justify-content-between align-items-center">
+                    <h4 class="fw-bold m-0" style="color: #212121; font-size: 18px;">Flipkart ({{ cart_items|length }})</h4>
                 </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <a href="{% url 'checkout' %}" class="btn btn-premium-primary px-5 py-3 rounded-pill fs-5 shadow-sm">
-                        Proceed to Checkout 🚀
-                    </a>
-                </div>
+                
+                {% if cart_items %}
+                    {% for item in cart_items %}
+                    <div class="cart-item-card">
+                        
+                        <!-- Product Image -->
+                        <div style="width: 112px; flex-shrink: 0;" class="text-center mx-auto mx-md-0 mb-3 mb-md-0">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid" style="max-height: 112px; max-width: 100%; object-fit: contain;">
+                            {% else %}
+                                <img src="{% static 'logo.png' %}" alt="Placeholder" class="img-fluid" style="max-height: 100px; opacity: 0.2;">
+                            {% endif %}
+                            
+                            <!-- Mobile-only Quantity Control (Hidden on desktop) -->
+                            <div class="qty-control d-flex d-md-none justify-content-center mt-3">
+                                <a href="{% url 'update_cart_item' item.key 'decrease' %}" class="qty-btn {% if item.quantity == 1 %}disabled{% endif %}">-</a>
+                                <input type="text" class="qty-input" value="{{ item.quantity }}" readonly>
+                                <a href="{% url 'update_cart_item' item.key 'increase' %}" class="qty-btn">+</a>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Details -->
+                        <div class="flex-grow-1 ps-md-4">
+                            <a href="{% url 'product_detail' item.product.id %}" class="text-decoration-none text-dark">
+                                <h5 class="fw-medium mb-1" style="font-size: 16px; line-height: 1.4; color: #212121; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ item.name }}</h5>
+                            </a>
+                            <p class="mb-2" style="color: #878787; font-size: 14px;">Seller: CGSMART Retail <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_62673a.png" height="15" class="ms-1"></p>
+                            
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                {% if item.product.mrp and item.product.mrp > item.unit_price %}
+                                    <span class="text-decoration-line-through" style="color: #878787; font-size: 14px;">₹{{ item.product.mrp }}</span>
+                                {% endif %}
+                                <span class="fw-bold" style="font-size: 18px; color: #212121;">₹{{ item.unit_price }}</span>
+                                {% if item.product.discount_percentage > 0 %}
+                                    <span class="fw-bold ms-2" style="color: #388e3c; font-size: 14px;">{{ item.product.discount_percentage }}% Off</span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Desktop Controls -->
+                            <div class="d-none d-md-flex align-items-center mt-4">
+                                <div class="qty-control mt-0">
+                                    <a href="{% url 'update_cart_item' item.key 'decrease' %}" class="qty-btn {% if item.quantity == 1 %}disabled{% endif %}">-</a>
+                                    <input type="text" class="qty-input" value="{{ item.quantity }}" readonly>
+                                    <a href="{% url 'update_cart_item' item.key 'increase' %}" class="qty-btn">+</a>
+                                </div>
+                                <a href="{% url 'update_cart_item' item.key 'remove' %}" class="remove-btn">Remove</a>
+                            </div>
+                            <!-- Mobile Remove Button -->
+                            <div class="d-block d-md-none text-center mt-3 pt-3 border-top">
+                                <a href="{% url 'update_cart_item' item.key 'remove' %}" class="remove-btn ms-0 border-0 bg-transparent w-100 text-center">REMOVE ITEM</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="p-3 text-end d-none d-lg-block" style="background: #fff; border-top: 1px solid #f0f0f0; border-radius: 0 0 4px 4px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); position: sticky; bottom: 0;">
+                        <a href="{% url 'checkout' %}" class="btn-place-order d-inline-block text-decoration-none text-center" style="width: auto; padding: 16px 45px;">Place Order</a>
+                    </div>
+
+                {% else %}
+                    <!-- Empty Cart -->
+                    <div class="text-center py-5">
+                        <img src="https://rukminim2.flixcart.com/www/800/800/promos/16/05/2019/d438a32e-765a-4d8b-b4a6-520b560971e8.png" alt="Empty Cart" style="width: 250px; margin-bottom: 25px;">
+                        <h5 class="fw-medium text-dark">Your cart is empty!</h5>
+                        <p class="text-muted small">Add items to it now.</p>
+                        <a href="{% url 'home' %}" class="btn text-white px-5 py-2 mt-3 shadow-sm" style="background: #2874f0; border-radius: 2px; font-weight: 500;">Shop Now</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
-    </div>
 
+        <!-- RIGHT SIDE: PRICE DETAILS -->
+        {% if cart_items %}
+        <div class="col-lg-4">
+            <div class="price-box">
+                <div class="price-box-header">
+                    Price Details
+                </div>
+                <div class="price-box-body">
+                    <div class="price-row">
+                        <span>Price ({{ cart_items|length }} items)</span>
+                        <span>₹{{ cart_total }}</span>
+                    </div>
+                    
+                    <div class="price-row border-dash">
+                        <span>Delivery Charges</span>
+                        <span style="color: #388e3c;">Calculated at checkout</span>
+                    </div>
+                    
+                    <div class="total-row">
+                        <span>Total Amount</span>
+                        <span>₹{{ cart_total }}</span>
+                    </div>
+                    
+                    <p style="color: #388e3c; font-weight: 600; font-size: 14px; margin-bottom: 20px;">
+                        Continue to checkout to see final savings.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Mobile Sticky Footer for Place Order -->
+            <div class="d-block d-lg-none p-3 mt-4" style="background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted" style="font-size: 12px; text-decoration: line-through;">₹{{ cart_total }}</div>
+                        <div class="fw-bold" style="font-size: 18px; color: #212121;">₹{{ cart_total }}</div>
+                    </div>
+                    <a href="{% url 'checkout' %}" class="btn-place-order w-auto px-4" style="text-decoration: none;">Place Order</a>
+                </div>
+            </div>
+            
+        </div>
+        {% endif %}
+
+    </div>
 </div>
 
+<!-- Extra space at bottom for mobile sticky button -->
+<div class="d-block d-lg-none" style="height: 80px;"></div>
+
+<!-- Upsell Logic JS -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         let cartTotal = {{ cart_total|default:0 }}; 
@@ -95,10 +215,10 @@
 
         if (cartTotal >= 999) {
             scratchBox.classList.remove("d-none");
-            couponCode.innerHTML = "🎁 CGSMART10 <br><small class='text-muted fs-6'>(10% OFF NEXT ORDER)</small>";
+            couponCode.innerHTML = "🎁 CGSMART10 <br><small class='fs-6 text-muted'>(10% OFF NEXT ORDER)</small>";
         } else if (cartTotal >= 699) {
             scratchBox.classList.remove("d-none");
-            couponCode.innerHTML = "🎉 CGSMART08 <br><small class='text-muted fs-6'>(8% OFF NEXT ORDER)</small>";
+            couponCode.innerHTML = "🎉 CGSMART08 <br><small class='fs-6 text-muted'>(8% OFF NEXT ORDER)</small>";
         } else if (cartTotal > 0) {
             upsellAlert.classList.remove("d-none");
             amountNeeded.innerText = (699 - cartTotal).toFixed(2);

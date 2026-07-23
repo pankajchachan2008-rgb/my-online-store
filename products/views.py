@@ -95,38 +95,35 @@ def cart_detail(request):
     cart = request.session.get('cart', {})
     cart_items = []
     cart_total = 0
-    cart_modified = False  # Track karne ke liye ki cart me koi change hua hai ya nahi
+    cart_modified = False
     
     for pid, item in list(cart.items()):
         if isinstance(item, dict) and 'price' in item and 'quantity' in item:
             try:
-                # Variant ID ('1_2') me se sirf Product ID ('1') nikalne ka safe tareeka
                 product_id = int(str(pid).split('_')[0])
-                
-                # get_object_or_404 ki jagah .get() use kar rahe hain
                 product = Product.objects.get(id=product_id)
-                
                 total_price = item['price'] * item['quantity']
                 cart_total += total_price
+                
+                # 🌟 NAYA CODE: 'key' aur 'name', 'unit_price' pass kar rahe hain
                 cart_items.append({
+                    'key': str(pid), 
                     'product': product, 
+                    'name': item['name'],
+                    'unit_price': item['price'],
                     'quantity': item['quantity'], 
                     'total_price': total_price
                 })
-                
             except Product.DoesNotExist:
-                # GAMECHANGER: Agar product admin dwara delete ho gaya hai, toh silently hata do
                 cart.pop(pid, None)
                 cart_modified = True
             except ValueError:
-                # Agar product id ka format bigad jaye toh bhi safe rahega
                 cart.pop(pid, None)
                 cart_modified = True
         else:
             cart.pop(pid, None)
             cart_modified = True
             
-    # Agar humne cart se fasa hua (deleted) product hataya hai, toh session update kar dein
     if cart_modified:
         request.session['cart'] = cart
         request.session.modified = True
@@ -447,3 +444,24 @@ def view_wishlist(request):
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'products/product_detail.html', {'product': product})
+
+# 🔄 NAYA FUNCTION: Cart Item Modify/Remove Karne Ke Liye
+def update_cart_item(request, item_key, action):
+    cart = request.session.get('cart', {})
+    
+    if item_key in cart:
+        if action == 'increase':
+            cart[item_key]['quantity'] += 1
+        elif action == 'decrease':
+            # 1 se kam nahi ho sakta, agar 1 hai aur '-' dabaya toh cart se hat jayega
+            if cart[item_key]['quantity'] > 1:
+                cart[item_key]['quantity'] -= 1
+            else:
+                cart.pop(item_key, None)
+        elif action == 'remove':
+            cart.pop(item_key, None)
+        
+        request.session['cart'] = cart
+        request.session.modified = True
+        
+    return redirect('cart_detail')
