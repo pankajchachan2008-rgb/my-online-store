@@ -148,7 +148,7 @@ import os
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'mqge4pqj', 
-    'API_KEY': 323853635316772', 
+    'API_KEY': '323853635316772', 
     'API_SECRET': 'ukYJxlfcZ_SO7HmfBdQCePdbbfA'
 }
 
