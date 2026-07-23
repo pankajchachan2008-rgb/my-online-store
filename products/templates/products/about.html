@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block content %}
+{% load static %}
 <style>
     .about-hero {
         background: #000; color: white; padding: 60px 20px; 
@@ -25,7 +25,7 @@
     <div class="row align-items-center mb-5 pb-4">
         <div class="col-lg-6 mb-4 mb-lg-0">
             <div style="border: 2px solid #000; padding: 10px; background: #fff; box-shadow: 6px 6px 0px #000;">
-                <img src="https://dummyimage.com/600x400/000/fff&text=Chachan+General+Store" alt="Our Store" class="img-fluid">
+                <img src="{% static 'logo.png' %}" alt="CGSMART Logo" class="img-fluid mb-4" style="max-width: 250px; height: auto;">
             </div>
         </div>
         <div class="col-lg-6 px-lg-5">
