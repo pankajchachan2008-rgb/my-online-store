@@ -15,7 +15,8 @@ from products.views import (
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
     download_invoice,
     export_products_csv, import_products_csv,
-    product_detail # 🌟 Naya View Import Kiya
+    product_detail, 
+    update_cart_item # 🌟 Naya View Import Kiya
 )
 
 urlpatterns = [
@@ -27,6 +28,10 @@ urlpatterns = [
     
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('cart/', cart_detail, name='cart_detail'),
+    
+    # 🌟 NAYI LINE: Cart update (+, -, remove) ke liye rasta
+    path('cart/update/<str:item_key>/<str:action>/', update_cart_item, name='update_cart_item'),
+    
     path('checkout/', checkout_page, name='checkout'),
     path('check-coupon-ajax/', check_coupon_ajax, name='check_coupon_ajax'),
     
