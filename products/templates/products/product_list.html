@@ -169,17 +169,25 @@
 
         <div class="col-lg-9">
             
-            <!-- 🌟 BANNER (Dynamic from Admin) -->
+            <!-- 🌟 MULTI-FORMAT BANNER (Video + Image + Fallback) -->
             {% if banners %}
             <div id="bannerCarousel" class="carousel slide banner-container mb-4" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     {% for banner in banners %}
                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        
+                        <!-- Agar Animated File (MP4 Video) hai -->
                         {% if banner.animated_file %}
-                            <img src="{{ banner.animated_file.url }}" class="d-block w-100 banner-media" alt="{{ banner.title|default:'Store Banner' }}">
+                            <video class="d-block w-100 banner-media" autoplay loop muted playsinline>
+                                <source src="{{ banner.animated_file.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            
+                        <!-- Agar Normal Image (JPG/PNG/GIF) hai -->
                         {% elif banner.image %}
                             <img src="{{ banner.image.url }}" class="d-block w-100 banner-media" alt="{{ banner.title|default:'Store Banner' }}">
                         {% endif %}
+                        
                     </div>
                     {% endfor %}
                 </div>
@@ -195,6 +203,12 @@
                     <span class="visually-hidden">Next</span>
                 </button>
                 {% endif %}
+            </div>
+            
+            {% else %}
+            <!-- FALLBACK: Agar admin panel me koi active banner nahi hai -->
+            <div class="banner-container mb-4">
+                <img src="{% static 'main_banner.png' %}" class="d-block w-100 banner-media" alt="Chachan General Store">
             </div>
             {% endif %}
 
@@ -250,7 +264,7 @@
                             </div>
                         </a>
                         
-                        <!-- Add to Cart aur Wishlist Button (Link ke bahar) -->
+                        <!-- Add to Cart aur Wishlist Button -->
                         <div class="px-3 pb-3 d-flex flex-column flex-grow-1 mt-auto">
                             <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto">
                                 {% csrf_token %}

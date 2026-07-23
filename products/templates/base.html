@@ -72,9 +72,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top">
         <div class="container">
             
-            <!-- 🌟 Premium Text Logo Fixed -->
-            <a class="navbar-brand fw-bold m-0" href="{% url 'home' %}" style="font-family: 'Jost', sans-serif; font-size: 1.8rem; letter-spacing: 1px; color: #ffffff !important; text-decoration: none;">
-                CG<span style="color: #25D366;">SMART</span>
+            <!-- 🌟 Original Image Logo Restored -->
+            <a class="navbar-brand m-0 p-0" href="{% url 'home' %}">
+                <img src="{% static 'logo.png' %}" alt="CGSMART Logo" style="height: 45px; width: auto; object-fit: contain;">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -121,9 +121,6 @@
     <div class="container-fluid p-0">
         <div class="container mt-4 mb-5">
             
-            <!-- Banner Section Integrated -->
-            {% include 'includes/banners.html' %}
-
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm" role="alert">
