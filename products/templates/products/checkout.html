@@ -1,164 +1,173 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block title %}Checkout - Secure Payment{% endblock %}
-
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    body { font-family: 'Jost', sans-serif; background-color: #FAF4EF; color: #111111; }
+    body { background-color: #f1f3f6; font-family: 'Jost', sans-serif; }
     
-    .checkout-card {
-        background: #FFFFFF; border: 1px solid #000000; box-shadow: 6px 6px 0px #000000;
-        padding: 30px; margin-bottom: 40px; border-radius: 0;
-    }
-    .section-title {
-        font-weight: 700; font-size: 1.5rem; text-transform: uppercase; margin-bottom: 20px;
-        border-bottom: 2px solid #000; padding-bottom: 10px; letter-spacing: 1px;
-    }
-    .custom-input {
-        border: 1px solid #000000 !important; border-radius: 0; padding: 12px 15px;
-        box-shadow: none !important; font-weight: 500;
-    }
-    .custom-input:focus { border-width: 2px; }
-
-    .btn-checkout {
-        background: #25D366; color: #FFFFFF; font-weight: 700; text-transform: uppercase;
-        letter-spacing: 1px; border-radius: 0; border: 2px solid #000000; padding: 15px 20px;
-        transition: 0.3s ease; width: 100%; font-size: 1.1rem;
-    }
-    .btn-checkout:hover { background: #1EBE55; color: #fff; box-shadow: 4px 4px 0px #000; transform: translateY(-2px); }
+    .checkout-box { background: #fff; border-radius: 2px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.15); margin-bottom: 15px; }
     
-    .btn-coupon {
-        background: #000000; color: #FFFFFF; font-weight: 600; text-transform: uppercase;
-        border-radius: 0; border: none; padding: 12px 20px; transition: 0.3s ease;
-    }
-    .btn-coupon:hover { background: #333333; color: white; }
-
-    .summary-item { border-bottom: 1px solid #EEEEEE; padding-bottom: 10px; margin-bottom: 10px; font-size: 1.1rem;}
-    .summary-total { font-size: 1.5rem; font-weight: 700; border-top: 2px solid #000; padding-top: 15px; margin-top: 15px; }
-
-    @keyframes popIn {
-        0% { transform: scale(0.9); opacity: 0; }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); opacity: 1; }
-    }
+    /* Active Step Header (Blue) */
+    .checkout-header { background: #2874f0; color: #fff; padding: 15px 24px; font-size: 16px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; border-radius: 2px 2px 0 0; }
+    .checkout-header .step-num { background: #fff; color: #2874f0; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; border-radius: 2px; font-size: 14px; margin-right: 15px; }
+    
+    /* Completed/Inactive Step Header (White) */
+    .checkout-header-inactive { background: #fff; color: #878787; padding: 15px 24px; font-size: 16px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0; }
+    .checkout-header-inactive .step-num { background: #f0f0f0; color: #878787; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; border-radius: 2px; font-size: 14px; margin-right: 15px; }
+    
+    .checkout-body { padding: 24px; }
+    
+    .form-control-custom { border: 1px solid #e0e0e0; border-radius: 2px; padding: 12px 15px; font-size: 14px; outline: none; transition: 0.3s; width: 100%; box-shadow: none; }
+    .form-control-custom:focus { border-color: #2874f0; }
+    
+    /* Price Details Card */
+    .price-box { background: #fff; border-radius: 2px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.15); position: sticky; top: 100px; }
+    .price-box-header { padding: 13px 24px; border-bottom: 1px solid #f0f0f0; color: #878787; text-transform: uppercase; font-weight: 600; font-size: 14px; }
+    .price-box-body { padding: 0 24px; }
+    .price-row { display: flex; justify-content: space-between; padding: 20px 0; font-size: 15px; color: #212121; }
+    .border-dash { border-bottom: 1px dashed #e0e0e0; }
+    .total-row { display: flex; justify-content: space-between; padding: 20px 0; font-weight: 600; font-size: 18px; border-top: 1px dashed #e0e0e0; border-bottom: 1px dashed #e0e0e0; margin-bottom: 15px;}
+    
+    .btn-place-order { background: #fb641b; color: #fff; border-radius: 2px; font-size: 16px; font-weight: 600; padding: 16px 30px; border: none; width: 100%; box-shadow: 0 1px 2px 0 rgba(0,0,0,.2); text-transform: uppercase; transition: 0.3s; }
+    .btn-place-order:hover { background: #df5815; color: white; }
+    
+    .savings-text { color: #388e3c; font-weight: 600; font-size: 15px; margin-bottom: 20px; }
 </style>
 
-<div class="container my-5" style="max-width: 1200px;">
-    <h2 class="fw-bold text-uppercase mb-4">Secure Checkout</h2>
-
-    <div class="row g-4">
-        <!-- Left Column: Billing Details (WhatsApp Linked) -->
-        <div class="col-lg-7">
-            <div class="checkout-card">
-                <h3 class="section-title">Billing Information</h3>
+<div class="container mt-4 mb-5" style="max-width: 1200px;">
+    <form method="POST" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <div class="row align-items-start g-4">
+            
+            <!-- LEFT SIDE: STEPS -->
+            <div class="col-lg-8">
                 
-                <form method="POST" id="checkoutForm">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Full Name</label>
-                        <input type="text" name="name" class="form-control custom-input" placeholder="Enter your full name" value="{{ request.user.first_name }}" required>
+                <!-- STEP 1: LOGIN (Completed State) -->
+                <div class="checkout-box">
+                    <div class="checkout-header-inactive">
+                        <span class="step-num">1</span>
+                        LOGIN 
+                        <span class="ms-3 text-dark fw-bold" style="font-size: 14px; text-transform: none;">
+                            {% if user.is_authenticated %}{{ user.first_name|default:user.username }}{% else %}Guest User{% endif %}
+                        </span>
+                        <span class="ms-auto" style="color: #2874f0; font-size: 14px;">✔</span>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Mobile Number (WhatsApp)</label>
-                        <input type="text" name="mobile_number" id="mobile_number" class="form-control custom-input" placeholder="e.g. 9876543210" value="{{ request.user.customerprofile.mobile_number|default:'' }}" required>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="form-label fw-bold">Delivery Address</label>
-                        <textarea name="address" class="form-control custom-input" rows="4" placeholder="Enter complete delivery address" required>{{ request.user.customerprofile.default_address|default:'' }}</textarea>
-                    </div>
+                </div>
 
-                    <button type="submit" class="btn-checkout mt-3">
-                        <i class="bi bi-whatsapp me-2"></i> Send Order via WhatsApp
-                    </button>
-                </form>
+                <!-- STEP 2: DELIVERY ADDRESS (Active State) -->
+                <div class="checkout-box">
+                    <div class="checkout-header">
+                        <span class="step-num">2</span>
+                        DELIVERY ADDRESS
+                    </div>
+                    <div class="checkout-body" style="background: #f5faff;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-bold mb-1">Full Name</label>
+                                <input type="text" name="name" class="form-control-custom bg-white" required 
+                                       value="{% if user.is_authenticated %}{{ user.first_name }}{% endif %}" placeholder="Enter your full name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small fw-bold mb-1">Mobile Number</label>
+                                <input type="text" name="mobile_number" class="form-control-custom bg-white" required 
+                                       value="{{ user.customerprofile.mobile_number|default:'' }}" placeholder="10-digit mobile number">
+                            </div>
+                            <div class="col-12 mt-3">
+                                <label class="text-muted small fw-bold mb-1">Complete Address</label>
+                                <textarea name="address" class="form-control-custom bg-white" rows="3" required placeholder="House No, Building Name, Street, Area, City, Pincode">{{ user.customerprofile.default_address|default:'' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: ORDER SUMMARY (Completed State Preview) -->
+                <div class="checkout-box">
+                    <div class="checkout-header-inactive">
+                        <span class="step-num">3</span>
+                        ORDER SUMMARY 
+                        <span class="ms-3 text-dark fw-bold" style="font-size: 14px; text-transform: none;">₹{{ final_total }}</span>
+                    </div>
+                </div>
+                
+                <!-- STEP 4: PAYMENT OPTIONS -->
+                <div class="checkout-box">
+                    <div class="checkout-header-inactive">
+                        <span class="step-num">4</span>
+                        PAYMENT OPTIONS
+                    </div>
+                    <div class="checkout-body border-top bg-white">
+                        <div class="form-check d-flex align-items-center mb-3">
+                            <input class="form-check-input me-3" type="radio" name="payment_mode" id="cod" checked style="width: 18px; height: 18px;">
+                            <label class="form-check-label fw-medium" for="cod" style="font-size: 16px; color: #212121;">
+                                Pay via WhatsApp
+                            </label>
+                        </div>
+                        <p class="text-muted small ms-4 ps-2 mb-4">Clicking the button below will securely process your order via our official WhatsApp channel.</p>
+                        
+                        <div class="text-end mt-4 d-none d-lg-block">
+                            <button type="submit" class="btn-place-order" style="width: auto; padding: 16px 50px;">CONFIRM ORDER</button>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
-        </div>
 
-        <!-- Right Column: Premium Order Summary -->
-        <div class="col-lg-5">
-            <div class="checkout-card mb-4 sticky-top" style="top: 20px;">
-                <h3 class="section-title">Price Details</h3>
+            <!-- RIGHT SIDE: PRICE DETAILS -->
+            <div class="col-lg-4">
+                <div class="price-box">
+                    <div class="price-box-header">
+                        PRICE DETAILS
+                    </div>
+                    <div class="price-box-body">
+                        <div class="price-row">
+                            <span>Price (MRP)</span>
+                            <span>₹{{ total_mrp|default:cart_total }}</span>
+                        </div>
+                        
+                        {% if total_savings > 0 %}
+                        <div class="price-row" style="color: #388e3c;">
+                            <span>Discount</span>
+                            <span>− ₹{{ total_savings }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="price-row border-dash">
+                            <span>Delivery Charges</span>
+                            {% if delivery_fee == 0 %}
+                                <span style="color: #388e3c;">Free</span>
+                            {% else %}
+                                <span>₹{{ delivery_fee }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="total-row">
+                            <span>Total Payable</span>
+                            <span>₹{{ final_total }}</span>
+                        </div>
+                        
+                        {% if total_savings > 0 %}
+                        <p class="savings-text">
+                            You will save ₹{{ total_savings }} on this order
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
                 
-                <div class="summary-item d-flex justify-content-between align-items-center mb-2">
-                    <span>Price (Item/s)</span>
-                    <span>₹{{ total_mrp }}</span>
-                </div>
-
-                <div class="summary-item d-flex justify-content-between align-items-center mb-2">
-                    <span>Regular Discount</span>
-                    <span class="text-success fw-bold">- ₹{{ regular_discount }}</span>
-                </div>
-
-                <!-- GAMECHANGER SURPRISE REVEAL -->
-                {% if hidden_discount_total > 0 %}
-                <div class="alert mt-3 mb-3 p-3 shadow-sm border-0" style="background: linear-gradient(45deg, #10b981, #059669); color: white; border-radius: 8px; animation: popIn 0.5s ease-out;">
+                <!-- Mobile Sticky Footer for Place Order -->
+                <div class="d-block d-lg-none p-3 mt-4" style="background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>🎉 SURPRISE UNLOCKED!</strong><br>
-                            <small>Last Moment Discount Applied</small>
+                            <div class="text-muted" style="font-size: 12px;">Total Payable</div>
+                            <div class="fw-bold" style="font-size: 18px; color: #212121;">₹{{ final_total }}</div>
                         </div>
-                        <div class="fs-4 fw-bold">- ₹{{ hidden_discount_total }}</div>
+                        <button type="submit" class="btn-place-order w-auto px-4">CONFIRM ORDER</button>
                     </div>
                 </div>
-                {% endif %}
-
-                <div class="summary-item d-flex justify-content-between align-items-center mb-3 border-0">
-                    <span>Delivery Charges</span>
-                    {% if delivery_fee == 0 %}
-                        <span class="text-success fw-bold">FREE</span>
-                    {% else %}
-                        <span>₹{{ delivery_fee }}</span>
-                    {% endif %}
-                </div>
-
-                <div class="d-flex justify-content-between summary-total">
-                    <span>Total Amount</span>
-                    <span id="finalTotal">₹{{ final_total }}</span>
-                </div>
-
-                {% if total_savings > 0 %}
-                <div class="text-success fw-bold mt-4 text-center" style="font-size: 1.1rem; border: 1px dashed #25D366; padding: 10px;">
-                    You will save ₹{{ total_savings }} on this order!
-                </div>
-                {% endif %}
+                
             </div>
-
-            <!-- Coupon Section (Kept intact for Ajax call) -->
-            <div class="checkout-card">
-                <h3 class="section-title fs-5">Apply Coupon</h3>
-                <div class="d-flex gap-2">
-                    <input type="text" id="couponCode" class="form-control custom-input" placeholder="Enter Code">
-                    <button type="button" class="btn-coupon" onclick="applyCoupon()">Apply</button>
-                </div>
-                <div id="couponMessage" class="mt-2 fw-bold" style="font-size: 0.9rem;"></div>
-            </div>
+            
         </div>
-    </div>
+    </form>
 </div>
-
-<script>
-    function applyCoupon() {
-        let mobile = document.getElementById("mobile_number").value;
-        if (!mobile) {
-            alert("Pehle Mobile Number daalein taaki coupon verify ho sake.");
-            return;
-        }
-        
-        fetch(`/check-coupon-ajax/?mobile=${mobile}`)
-        .then(response => response.json())
-        .then(data => {
-            let msgDiv = document.getElementById("couponMessage");
-            if (data.status === 'found') {
-                msgDiv.innerHTML = `<span class="text-success">🎉 ${data.discount}% discount applied! Code: ${data.code}</span>`;
-            } else {
-                msgDiv.innerHTML = `<span class="text-danger">❌ Koi active coupon nahi mila.</span>`;
-            }
-        });
-    }
-</script>
+<div class="d-block d-lg-none" style="height: 80px;"></div>
 {% endblock %}

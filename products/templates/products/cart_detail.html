@@ -3,8 +3,8 @@
 {% block content %}
 
 <style>
-    /* 🌟 Premium Flipkart Style CSS */
-    body { background-color: #f1f3f6; } /* Flipkart light grey background */
+    /* 🌟 Premium Minimalist Style CSS */
+    body { background-color: #f1f3f6; font-family: 'Jost', sans-serif; }
     
     .cart-left-box { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); padding: 0; }
     .cart-header { padding: 18px 24px; border-bottom: 1px solid #f0f0f0; }
@@ -31,7 +31,7 @@
         color: #212121; font-weight: 600; text-transform: uppercase; font-size: 14px; 
         text-decoration: none; margin-left: 24px; transition: 0.3s ease; 
     }
-    .remove-btn:hover { color: #2874f0; } /* Flipkart Blue hover */
+    .remove-btn:hover { color: #2874f0; }
 
     /* Right Side Price Box */
     .price-box { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); position: sticky; top: 100px; }
@@ -51,7 +51,7 @@
 
 <div class="container mt-4 mb-5" style="max-width: 1200px;">
     
-    <!-- Upsell Alert (Aapka purana scratch card feature) -->
+    <!-- Upsell Alert -->
     <div class="row justify-content-center mb-3">
         <div class="col-12">
             <div id="upsell-alert" class="alert text-center fw-semibold d-none" style="background: #e8f4f8; border: 1px solid #2874f0; color: #212121; border-radius: 4px;">
@@ -80,7 +80,7 @@
         <div class="col-lg-8">
             <div class="cart-left-box">
                 <div class="cart-header d-flex justify-content-between align-items-center">
-                    <h4 class="fw-bold m-0" style="color: #212121; font-size: 18px;">Cart Details ({{ cart_items|length }})</h4>
+                    <h4 class="fw-bold m-0" style="color: #212121; font-size: 18px;">My Cart ({{ cart_items|length }})</h4>
                 </div>
                 
                 {% if cart_items %}
@@ -95,7 +95,7 @@
                                 <img src="{% static 'logo.png' %}" alt="Placeholder" class="img-fluid" style="max-height: 100px; opacity: 0.2;">
                             {% endif %}
                             
-                            <!-- Mobile-only Quantity Control (Hidden on desktop) -->
+                            <!-- Mobile-only Quantity Control -->
                             <div class="qty-control d-flex d-md-none justify-content-center mt-3">
                                 <a href="{% url 'update_cart_item' item.key 'decrease' %}" class="qty-btn {% if item.quantity == 1 %}disabled{% endif %}">-</a>
                                 <input type="text" class="qty-input" value="{{ item.quantity }}" readonly>
@@ -108,7 +108,7 @@
                             <a href="{% url 'product_detail' item.product.id %}" class="text-decoration-none text-dark">
                                 <h5 class="fw-medium mb-1" style="font-size: 16px; line-height: 1.4; color: #212121; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ item.name }}</h5>
                             </a>
-                            <p class="mb-2" style="color: #878787; font-size: 14px;">Seller: CGSMART Retail <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_62673a.png" height="15" class="ms-1"></p>
+                            <p class="mb-2" style="color: #878787; font-size: 14px;">Seller: CGSMART Retail <span class="ms-1" style="color: #388e3c; font-size: 12px;">✅ Verified</span></p>
                             
                             <div class="d-flex align-items-center gap-2 mb-2">
                                 {% if item.product.mrp and item.product.mrp > item.unit_price %}
@@ -145,8 +145,8 @@
                 {% else %}
                     <!-- Empty Cart -->
                     <div class="text-center py-5">
-                        <img src="https://rukminim2.flixcart.com/www/800/800/promos/16/05/2019/d438a32e-765a-4d8b-b4a6-520b560971e8.png" alt="Empty Cart" style="width: 250px; margin-bottom: 25px;">
-                        <h5 class="fw-medium text-dark">Your cart is empty!</h5>
+                        <span style="font-size: 4rem; opacity: 0.5;">🛒</span>
+                        <h5 class="fw-medium text-dark mt-3">Your cart is empty!</h5>
                         <p class="text-muted small">Add items to it now.</p>
                         <a href="{% url 'home' %}" class="btn text-white px-5 py-2 mt-3 shadow-sm" style="background: #2874f0; border-radius: 2px; font-weight: 500;">Shop Now</a>
                     </div>
@@ -199,8 +199,6 @@
 
     </div>
 </div>
-
-<!-- Extra space at bottom for mobile sticky button -->
 <div class="d-block d-lg-none" style="height: 80px;"></div>
 
 <!-- Upsell Logic JS -->
