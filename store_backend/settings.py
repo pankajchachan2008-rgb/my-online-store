@@ -146,16 +146,17 @@ EMAIL_HOST_PASSWORD = 'oltqxsmoydkhgoah'  # Apne App Password se replace karein
 
 import os
 
+# Static files (CSS, JS) ki settings
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'  # <--- Yeh nayi line add karein
+
+# Media files (Images, Banners) jo Cloudinary par jayengi
+MEDIA_URL = '/media/'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'mqge4pqj', 
     'API_KEY': '323853635316772', 
     'API_SECRET': 'ukYJxlfcZ_SO7HmfBdQCePdbbfA'
 }
-
-# Static files (CSS, JS) abhi bhi Render par rahengi
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Media files (Images, Banners) ab Cloudinary par save hongi
-MEDIA_URL = '/media/'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
