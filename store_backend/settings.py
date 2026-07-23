@@ -18,12 +18,14 @@ CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in', 'https:/
 
 # Application definition
 INSTALLED_APPS = [
+    'cloudinary_storage', # Nayi line
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
     'rest_framework',
     'products',
 ]
@@ -141,3 +143,19 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'pankajchachan2026@gmail.com'
 EMAIL_HOST_PASSWORD = 'oltqxsmoydkhgoah'  # Apne App Password se replace karein
+
+import os
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'mqge4pqj', 
+    'API_KEY': 323853635316772', 
+    'API_SECRET': 'ukYJxlfcZ_SO7HmfBdQCePdbbfA'
+}
+
+# Static files (CSS, JS) abhi bhi Render par rahengi
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (Images, Banners) ab Cloudinary par save hongi
+MEDIA_URL = '/media/'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
