@@ -105,10 +105,18 @@ def save_user_profile(sender, instance, **kwargs):
 class Banner(models.Model):
     title = models.CharField(max_length=200, help_text="Festival ya Offer ka naam")
     
-    # 🌟 NAYA CODE: Cloudinary Video Storage add kar diya gaya hai
-    animated_file = models.FileField(
+    # 🌟 Image Banner ke liye (PNG/JPG) - Yeh default Image Storage use karega
+    image = models.ImageField(
         upload_to='banners/', 
-        help_text="Upload GIF or animated video",
+        blank=True, 
+        null=True, 
+        help_text="Sirf Image yahan upload karein (PNG/JPG)"
+    )
+    
+    # 🌟 Video Banner ke liye (MP4) - Yeh strict Video Storage use karega
+    animated_file = models.FileField(
+        upload_to='banners/videos/', 
+        help_text="Sirf Video yahan upload karein (MP4)",
         storage=VideoMediaCloudinaryStorage(), 
         blank=True, 
         null=True
