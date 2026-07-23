@@ -52,14 +52,21 @@
     }
     .btn-search:hover { background: #333333; color: white; }
 
-    /* 🏷️ Clean Sidebar */
+    /* 🏷️ Clean Sidebar (Fixed Scrolling) */
     .sidebar {
         background: #FFFFFF;
         border: 1px solid #000000;
         padding: 20px;
         position: sticky;
-        top: 20px;
+        top: 85px; /* Navbar height ke hisaab se adjust kiya */
+        max-height: calc(100vh - 120px); /* Screen height se bada nahi hoga */
+        overflow-y: auto; /* Scroll enable kiya */
     }
+    /* Sidebar ka custom premium scrollbar */
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: #000000; border-radius: 10px; }
+    .sidebar::-webkit-scrollbar-track { background: #f1f1f1; }
+
     .sidebar-title {
         font-weight: 700;
         text-transform: uppercase;
@@ -83,6 +90,32 @@
     }
     .cat-link:hover { color: #000; font-weight: 600; padding-left: 15px; }
     .cat-link.active { background: #000000; color: #FFFFFF; font-weight: 600; }
+
+    /* 📱 Mobile Horizontal Category Scroll */
+    .mobile-cat-scroll {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox ke liye scrollbar hide */
+    }
+    .mobile-cat-scroll::-webkit-scrollbar { display: none; /* Chrome/Safari ke liye scrollbar hide */ }
+    
+    .mobile-cat-btn {
+        border: 1px solid #000;
+        padding: 6px 16px;
+        color: #000;
+        text-decoration: none;
+        white-space: nowrap;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        background: #fff;
+        transition: 0.3s;
+    }
+    .mobile-cat-btn.active { background: #000; color: #fff; }
 
     /* 📦 Premium Modern Product Cards */
     .product-card {
@@ -156,7 +189,7 @@
 <div class="container-fluid px-4 my-4" style="max-width: 1400px;">
     <div class="row g-4">
         
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR (Desktop Only) -->
         <div class="col-lg-3 d-none d-lg-block">
             <div class="sidebar">
                 <h5 class="sidebar-title">Categories</h5>
@@ -169,6 +202,14 @@
 
         <div class="col-lg-9">
             
+            <!-- MOBILE CATEGORY SCROLL (Sirf Mobile par dikhega) -->
+            <div class="d-lg-none mobile-cat-scroll">
+                <a href="?" class="mobile-cat-btn {% if not active_category %}active{% endif %}">All</a>
+                {% for cat in categories %}
+                    <a href="?category={{ cat.id }}" class="mobile-cat-btn {% if active_category == cat.id %}active{% endif %}">{{ cat.name }}</a>
+                {% endfor %}
+            </div>
+
             <!-- 🌟 MULTI-FORMAT BANNER (Video + Image + Fallback) -->
             {% if banners %}
             <div id="bannerCarousel" class="carousel slide banner-container mb-4" data-bs-ride="carousel">
