@@ -107,7 +107,7 @@
         align-items: center;
         justify-content: center;
         padding: 15px;
-        position: relative; /* Added for absolute positioning of discount badge */
+        position: relative;
     }
     .img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
     
@@ -168,10 +168,35 @@
         </div>
 
         <div class="col-lg-9">
-            <!-- BANNER -->
-            <div class="banner-container">
-                <img src="{% static 'main_banner.png' %}" class="banner-media" alt="Chachan General Store">
+            
+            <!-- 🌟 BANNER (Dynamic from Admin) -->
+            {% if banners %}
+            <div id="bannerCarousel" class="carousel slide banner-container mb-4" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for banner in banners %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        {% if banner.animated_file %}
+                            <img src="{{ banner.animated_file.url }}" class="d-block w-100 banner-media" alt="{{ banner.title|default:'Store Banner' }}">
+                        {% elif banner.image %}
+                            <img src="{{ banner.image.url }}" class="d-block w-100 banner-media" alt="{{ banner.title|default:'Store Banner' }}">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Next/Prev Buttons (Agar 1 se zyada banner hain) -->
+                {% if banners|length > 1 %}
+                <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+                {% endif %}
             </div>
+            {% endif %}
 
             <!-- SEARCH & SORT -->
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
@@ -194,11 +219,11 @@
                 <div class="col">
                     <div class="product-card">
                         
-                        <!-- 🌟 LOGIC: Link sirf image aur text par kaam karega -->
+                        <!-- Link sirf image aur text par kaam karega -->
                         <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
                             <div class="img-box position-relative">
                                 
-                                <!-- 🌟 NEW LOGIC: Dynamic Discount Badge -->
+                                <!-- Dynamic Discount Badge -->
                                 {% if product.discount_percentage > 0 %}
                                     <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-2 py-1" style="font-size: 0.75rem; border: 1px solid #000; box-shadow: 2px 2px 0px #000; z-index: 2;">
                                         {{ product.discount_percentage }}% OFF

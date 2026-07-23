@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -33,15 +34,7 @@
             padding: 15px 0;
             border-bottom: 3px solid var(--accent-color);
         }
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.6rem;
-            letter-spacing: 0.5px;
-            color: #ffffff !important;
-        }
-        .navbar-brand span {
-            color: var(--accent-color);
-        }
+        
         .nav-link {
             font-weight: 500;
             transition: color 0.3s ease;
@@ -78,7 +71,11 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">CG<span>Smart</span></a>
+            
+            <!-- 🌟 Premium Text Logo Fixed -->
+            <a class="navbar-brand fw-bold m-0" href="{% url 'home' %}" style="font-family: 'Jost', sans-serif; font-size: 1.8rem; letter-spacing: 1px; color: #ffffff !important; text-decoration: none;">
+                CG<span style="color: #25D366;">SMART</span>
+            </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
