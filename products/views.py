@@ -95,18 +95,41 @@ def cart_detail(request):
     cart = request.session.get('cart', {})
     cart_items = []
     cart_total = 0
+    cart_modified = False  # Track karne ke liye ki cart me koi change hua hai ya nahi
     
     for pid, item in list(cart.items()):
         if isinstance(item, dict) and 'price' in item and 'quantity' in item:
-            product = get_object_or_404(Product, id=int(pid))
-            total_price = item['price'] * item['quantity']
-            cart_total += total_price
-            cart_items.append({
-                'product': product, 'quantity': item['quantity'], 'total_price': total_price
-            })
+            try:
+                # Variant ID ('1_2') me se sirf Product ID ('1') nikalne ka safe tareeka
+                product_id = int(str(pid).split('_')[0])
+                
+                # get_object_or_404 ki jagah .get() use kar rahe hain
+                product = Product.objects.get(id=product_id)
+                
+                total_price = item['price'] * item['quantity']
+                cart_total += total_price
+                cart_items.append({
+                    'product': product, 
+                    'quantity': item['quantity'], 
+                    'total_price': total_price
+                })
+                
+            except Product.DoesNotExist:
+                # GAMECHANGER: Agar product admin dwara delete ho gaya hai, toh silently hata do
+                cart.pop(pid, None)
+                cart_modified = True
+            except ValueError:
+                # Agar product id ka format bigad jaye toh bhi safe rahega
+                cart.pop(pid, None)
+                cart_modified = True
         else:
             cart.pop(pid, None)
-            request.session['cart'] = cart
+            cart_modified = True
+            
+    # Agar humne cart se fasa hua (deleted) product hataya hai, toh session update kar dein
+    if cart_modified:
+        request.session['cart'] = cart
+        request.session.modified = True
         
     return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
