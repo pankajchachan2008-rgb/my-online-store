@@ -8,112 +8,119 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- Premium Fonts: Jost for luxury feel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Jost:wght@500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-dark: #0f172a; 
-            --accent-color: #0d9488; 
-            --bg-light: #f8fafc;     
-            --text-main: #334155;
+            --bg-light: #FAF4EF; /* Premium background */
+            --text-dark: #111111;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-light);
-            color: var(--text-main);
+            color: var(--text-dark);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
-        .navbar {
-            background-color: var(--primary-dark) !important;
+        /* 🌟 Premium Luxury Navbar */
+        .premium-navbar {
+            background-color: #FFFFFF;
+            border-bottom: 1px solid #E5E5E5;
             padding: 15px 0;
-            border-bottom: 3px solid var(--accent-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none !important;
+        }
+        .brand-logo { height: 45px; width: auto; }
+        .brand-name {
+            font-family: 'Jost', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #111111;
+            margin: 0;
+        }
         .nav-link {
+            font-family: 'Jost', sans-serif;
             font-weight: 500;
-            transition: color 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            color: #333 !important;
+            margin-left: 20px;
+            transition: color 0.3s;
         }
-        .nav-link:hover {
-            color: var(--accent-color) !important;
-        }
+        .nav-link:hover { color: #000 !important; font-weight: 600; }
 
-        .btn-premium-primary {
-            background-color: var(--accent-color);
-            color: white;
-            border-radius: 8px;
+        .btn-luxury {
+            background-color: #000000;
+            color: #FFFFFF;
+            border-radius: 0;
             padding: 8px 20px;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
             border: none;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
-        .btn-premium-primary:hover {
-            background-color: #0f766e;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
-        }
+        .btn-luxury:hover { background-color: #333333; color: white; }
 
         footer {
-            background-color: var(--primary-dark);
-            color: #94a3b8;
-            font-size: 0.9rem;
-            border-top: 1px solid #1e293b;
+            background-color: #000000;
+            color: #FFFFFF;
+            font-size: 0.85rem;
+            padding: 20px 0;
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top">
-        <div class="container">
+    <!-- 🌟 Luxury Header -->
+    <nav class="navbar navbar-expand-lg premium-navbar sticky-top">
+        <div class="container" style="max-width: 1400px;">
             
-            <!-- 🌟 Original Image Logo Restored -->
-            <a class="navbar-brand m-0 p-0" href="{% url 'home' %}">
-                <img src="{% static 'logo.png' %}" alt="CGSMART Logo" style="height: 45px; width: auto; object-fit: contain;">
+            <!-- Logo + Brand Name -->
+            <a class="brand-container" href="{% url 'home' %}">
+                <img src="{% static 'logo.png' %}" alt="Logo" class="brand-logo">
+                <span class="brand-name">Chachan General Store</span>
             </a>
-            
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-4">
-                    <li class="nav-item"><a class="nav-link text-white-50" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-white-50" href="{% url 'about' %}">About Us</a></li>
-                    <li class="nav-item"><a class="nav-link text-white-50" href="{% url 'contact' %}">Contact</a></li>
-                </ul>
-                
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item me-3">
-                        <a class="nav-link text-white" href="{% url 'view_wishlist' %}">❤️ Wishlist</a>
-                    </li>
-                    <li class="nav-item me-3">
-                        <a class="nav-link text-white btn btn-outline-light border-0 px-3" href="{% url 'cart_detail' %}">
-                            🛒 Cart
-                        </a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'view_wishlist' %}">Wishlist</a></li>
                     
                     {% if user.is_authenticated %}
-                        <li class="nav-item me-2">
-                            <a class="btn btn-outline-light rounded-pill px-3" href="{% url 'profile' %}">👤 My Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-warning fw-medium" href="{% url 'logout' %}">Logout</a>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-outline-dark btn-sm rounded-0" href="{% url 'logout' %}">Logout</a>
                         </li>
                     {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link text-white me-2" href="{% url 'login' %}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn-premium-primary text-decoration-none" href="{% url 'register' %}">Sign Up</a>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item ms-3">
+                            <a class="btn btn-luxury" href="{% url 'register' %}">Sign Up</a>
                         </li>
                     {% endif %}
+                    
+                    <li class="nav-item ms-3">
+                        <a class="nav-link btn btn-dark text-white px-3" href="{% url 'cart_detail' %}">Cart</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -121,10 +128,9 @@
 
     <div class="container-fluid p-0">
         <div class="container mt-4 mb-5">
-            
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-0 shadow-sm" role="alert">
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -136,9 +142,9 @@
         </div>
     </div>
 
-    <footer class="text-center py-4 mt-auto">
+    <footer class="text-center mt-auto">
         <div class="container">
-            <p class="mb-0">© 2026 CGSMART. All rights reserved.</p>
+            <p class="mb-0 text-uppercase" style="letter-spacing: 2px;">© 2026 Chachan General Store. Premium Essentials.</p>
         </div>
     </footer>
 
