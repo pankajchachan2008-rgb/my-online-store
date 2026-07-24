@@ -72,26 +72,24 @@ if 'DATABASE_URL' in os.environ:
         default=os.environ.get('DATABASE_URL')
     )
 
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
-
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
-# Static & Media Files Setup
+# =====================================================================
+#                 STATIC & MEDIA STORAGE CONFIGURATION
+# =====================================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Cloudinary & WhiteNoise Storage Config
+# Legacy support for libraries expecting these variables
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Modern Django 4.2+ Storage
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
@@ -102,13 +100,13 @@ STORAGES = {
 }
 
 MEDIA_URL = '/media/'
-# MEDIA_ROOT is not strictly needed when using Cloudinary as default storage
 
-# Authentication Redirections
+# =====================================================================
+#                 SECURITY HARDENING & EMAILS
+# =====================================================================
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# Security Hardening
 SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_HSTS_SECONDS = 31536000
@@ -125,7 +123,6 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_REFERRER_POLICY = "same-origin"
 
-# Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -133,7 +130,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'pankajchachan2026@gmail.com'
 EMAIL_HOST_PASSWORD = 'oltqxsmoydkhgoah'
 
-# Cloudinary Setup
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'mqge4pqj', 
     'API_KEY': '323853635316772', 
