@@ -22,6 +22,11 @@ from .serializers import OrderSerializer, ProductSerializer
 
 from django.core.paginator import Paginator  # 👈 Yeh import top par add karein
 
+from django.http import HttpResponse
+
+def ping(request):
+    return HttpResponse("OK", status=200)
+
 # 🏠 1. Homepage View (Optimized with Pagination)
 def product_list(request):
     search_query = request.GET.get('search', '').strip()

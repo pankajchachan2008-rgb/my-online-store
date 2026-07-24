@@ -5,6 +5,14 @@ from django.conf.urls.static import static
 from django.views.static import serve
 from django.contrib.auth import views as auth_views
 
+from django.urls import path
+from . import views  # Apne app ke hisaab se import karein
+
+urlpatterns = [
+    # Aapke baaki links yahan honge...
+    path('ping/', views.ping, name='ping'),
+]
+
 # Views functions imports
 from products.views import (
     product_list, add_to_cart, cart_detail, checkout_page,
