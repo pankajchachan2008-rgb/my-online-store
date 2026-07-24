@@ -4,14 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from django.contrib.auth import views as auth_views
-
-from django.urls import path
-from . import views  # Apne app ke hisaab se import karein
-
-urlpatterns = [
-    # Aapke baaki links yahan honge...
-    path('ping/', views.ping, name='ping'),
-]
+from django.http import HttpResponse  # 🌟 NAYA IMPORT PING KE LIYE
 
 # Views functions imports
 from products.views import (
@@ -27,6 +20,11 @@ from products.views import (
     update_cart_item # 🌟 Naya View Import Kiya
 )
 
+# 🌟 UPTIMEROBOT KE LIYE PING FUNCTION SEEDHA YAHI BANA DIYA
+def ping(request):
+    return HttpResponse("OK", status=200)
+
+# EK HI URLPATTERNS LIST (Sab isi ke andar aayega)
 urlpatterns = [
     path('secret-cgs-main/', admin.site.urls),
     path('', product_list, name='home'),
@@ -70,6 +68,9 @@ urlpatterns = [
 
     # 📄 Invoices
     path('invoice/<int:order_id>/download/', download_invoice, name='download_invoice'),
+    
+    # 🌟 UPTIMEROBOT KA PING URL YAHAN JOD DIYA
+    path('ping/', ping, name='ping'),
     
     # 🌟 Static & Media
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
