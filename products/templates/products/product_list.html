@@ -292,7 +292,8 @@
                                 {% endif %}
                             </div>
                             <div class="p-3 pb-1 d-flex flex-column">
-                                <div class="product-name text-dark" title="{{ product.name }}">{{ product.name }}</div>
+                                <!-- YAHAN CHANGE KIYA HAI: <strong> tag add kiya gaya hai -->
+                                <div class="product-name text-dark" title="{{ product.name }}"><strong>{{ product.name }}</strong></div>
                                 <div class="product-desc">{{ product.description|default:"Premium Quality Essential"|truncatechars:35 }}</div>
                                 
                                 <!-- Product Price added for grid view -->
