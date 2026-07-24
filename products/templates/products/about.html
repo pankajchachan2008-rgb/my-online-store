@@ -3,12 +3,42 @@
 
 {% block content %}
 <style>
+    /* 🌟 Naya Animated Gradient Banner */
     .about-hero {
-        background: #000; color: white; padding: 60px 20px; 
-        text-align: center; margin-bottom: 40px; border: 2px solid #000;
+        background: linear-gradient(-45deg, #FF512F, #DD2476, #1A2980, #26D0CE);
+        background-size: 400% 400%;
+        animation: gradientBG 10s ease infinite;
+        color: white; 
+        padding: 80px 20px; /* Thoda aur bada banner look dene ke liye padding badhai hai */
+        text-align: center; 
+        margin-bottom: 40px; 
+        border: 2px solid #000;
         box-shadow: 6px 6px 0px #000000;
+        border-radius: 8px;
     }
-    .about-hero h1 { font-weight: 700; font-size: 2.8rem; margin-bottom: 15px; text-transform: uppercase; }
+
+    /* Animation ki timing aur movement */
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Text ko attractive aur bold banaya */
+    .about-hero h1 { 
+        font-weight: 800; 
+        font-size: 3.2rem; 
+        margin-bottom: 15px; 
+        text-transform: uppercase; 
+        text-shadow: 3px 3px 6px rgba(0,0,0,0.4); /* Text ko glow/shadow diya */
+    }
+    
+    .about-hero .lead {
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+        font-size: 1.3rem;
+    }
+
+    /* Baaki purani styling waise hi hai */
     .about-text { font-size: 1.2rem; line-height: 1.8; color: #333; font-weight: 500; }
     .feature-card {
         background: white; padding: 30px 20px; text-align: center;
@@ -19,8 +49,10 @@
 </style>
 
 <div class="container my-5" style="max-width: 1200px;">
+    
+    <!-- 🌟 ANIMATED HERO SECTION -->
     <div class="about-hero">
-        <h1>Welcome to CG<span>SMART</span></h1>
+        <h1>Welcome to CG<span style="color: #FFD700;">SMART</span></h1>
         <p class="lead mb-0 fw-medium">The Online Extension of Chachan General Store</p>
     </div>
     
