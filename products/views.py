@@ -20,7 +20,9 @@ from django.utils.http import urlencode
 from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant
 from .serializers import OrderSerializer, ProductSerializer
 
-# 🏠 1. Homepage View
+from django.core.paginator import Paginator  # 👈 Yeh import top par add karein
+
+# 🏠 1. Homepage View (Optimized with Pagination)
 def product_list(request):
     search_query = request.GET.get('search', '').strip()
     category_id = request.GET.get('category')
@@ -30,6 +32,7 @@ def product_list(request):
     products = Product.objects.all()
     banners = Banner.objects.filter(is_active=True).order_by('-id')
 
+    # Filtering logic
     if search_query:
         products = products.filter(name__icontains=search_query)
         
@@ -42,15 +45,21 @@ def product_list(request):
     else:
         active_category = None
     
+    # Sorting logic
     if sort == 'low_to_high':
         products = products.order_by('price')
     elif sort == 'high_to_low':
         products = products.order_by('-price')
     else:
         products = products.order_by('-id')
+    
+    # 🌟 PAGINATION: Ek page par sirf 20 products
+    paginator = Paginator(products, 20) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
         
     return render(request, 'products/product_list.html', {
-        'products': products, 
+        'products': page_obj,  # 👈 'products' ab 'page_obj' ka data hold karega
         'categories': categories,
         'banners': banners,
         'active_category': active_category,
