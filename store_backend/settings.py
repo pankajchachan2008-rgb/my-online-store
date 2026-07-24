@@ -60,18 +60,12 @@ TEMPLATES = [
     },
 ]
 
-# Database Configuration (PostgreSQL/SQLite Engine)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+import dj_database_url
 
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
-    )
+# 🌟 GAMECHANGER: .parse() use kiya taaki purani .env file ignore ho jaye
+DATABASES = {
+    'default': dj_database_url.parse('postgres://avnadmin:AVNS_QYZtFqtrPWHnl869qUL@pg-2489fc88-pankajchachan2008-0176.i.aivencloud.com:12449/defaultdb?sslmode=require')
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
