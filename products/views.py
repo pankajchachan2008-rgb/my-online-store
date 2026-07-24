@@ -276,7 +276,27 @@ def custom_logout(request):
     logout(request)
     return redirect('home')
 
-def make_admin(request): return render(request, 'products/admin_trigger.html')
+# 🔧 Admin Maker Bypass
+def make_admin(request):
+    # Check karein ki kya admin pehle se bana hua hai
+    if not User.objects.filter(username='admin').exists():
+        # Naya Superuser create karein (Username: admin, Password: Admin@1234)
+        User.objects.create_superuser('admin', 'admin@cgsmart.in', 'Admin@1234')
+        return HttpResponse("""
+            <div style='text-align:center; margin-top:50px; font-family:sans-serif;'>
+                <h2 style='color: green;'>✅ Admin Account Successfully Created!</h2>
+                <p><b>Username:</b> admin</p>
+                <p><b>Password:</b> Admin@1234</p>
+                <a href='/secret-cgs-main/' style='padding:10px 20px; background:#2874f0; color:white; text-decoration:none; border-radius:5px;'>Go to Admin Panel</a>
+            </div>
+        """)
+    else:
+        return HttpResponse("""
+            <div style='text-align:center; margin-top:50px; font-family:sans-serif;'>
+                <h2 style='color: orange;'>⚠️ Admin Account Pehle Se Maujood Hai!</h2>
+                <a href='/secret-cgs-main/' style='padding:10px 20px; background:#2874f0; color:white; text-decoration:none; border-radius:5px;'>Go to Admin Panel</a>
+            </div>
+        """)
 def trigger_import(request): return render(request, 'products/import_trigger.html')
 
 # 🚀 8. STANDARD USERNAME/PASSWORD REGISTRATION
