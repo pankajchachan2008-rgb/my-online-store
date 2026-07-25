@@ -89,17 +89,19 @@
     <nav class="navbar navbar-expand-lg premium-navbar sticky-top">
         <div class="container" style="max-width: 1400px;">
             
-            <!-- Logo + Brand Name (FIXED PATH) -->
+            <!-- Logo + Brand Name (FIXED FOR CLOUDINARY) -->
             <a class="brand-container" href="{% url 'home' %}">
-                <img src="{% static 'logo.png' %}" alt="Logo" class="brand-logo">
+                
+                <!-- 👇 YAHAN APNA CLOUDINARY KA LINK DAALNA HAI 👇 -->
+                <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
+                <!-- 👆 YAHAN APNA CLOUDINARY KA LINK DAALNA HAI 👆 -->
+                
                 <span class="brand-name">Chachan General Store</span>
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
-            <!-- ... baaki ka navbar code ... -->
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
