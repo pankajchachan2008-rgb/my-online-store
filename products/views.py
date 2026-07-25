@@ -22,13 +22,12 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator 
 
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address # <-- Address add kiya
-from .serializers import OrderSerializer, ProductSerializer
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address
 
 def ping(request):
     return HttpResponse("OK", status=200)
 
-# 🏠 1. Homepage View (Optimized with Pagination)
+# 🏠 1. Homepage View
 def product_list(request):
     search_query = request.GET.get('search', '').strip()
     category_id = request.GET.get('category')
@@ -38,7 +37,6 @@ def product_list(request):
     products = Product.objects.all()
     banners = Banner.objects.filter(is_active=True).order_by('-id')
 
-    # Filtering logic
     if search_query:
         products = products.filter(name__icontains=search_query)
         
@@ -51,7 +49,6 @@ def product_list(request):
     else:
         active_category = None
     
-    # Sorting logic
     if sort == 'low_to_high':
         products = products.order_by('price')
     elif sort == 'high_to_low':
@@ -59,7 +56,6 @@ def product_list(request):
     else:
         products = products.order_by('-id')
     
-    # 🌟 PAGINATION: Ek page par sirf 20 products
     paginator = Paginator(products, 20) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -140,10 +136,9 @@ def cart_detail(request):
         request.session['cart'] = cart
         request.session.modified = True
         
-    # ✅ FIX: Yahan return line ke aage space (indent) add kiya gaya hai
     return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
-
+# 🛍️ 4. Checkout Page (FIXED - Removed Duplicates)
 def checkout_page(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -155,7 +150,6 @@ def checkout_page(request):
     hidden_discount_total = 0
     order_items_list = []
     
-    # 🛒 Cart Calculation (Same as before)
     for pid, item in list(cart.items()):
         if isinstance(item, dict) and 'price' in item:
             item_qty = item['quantity']
@@ -188,29 +182,25 @@ def checkout_page(request):
     final_total = payable_subtotal + delivery_fee
     total_savings = regular_discount + hidden_discount_total
         
-    # 📦 POST Request Handling
     if request.method == 'POST':
-        # 🌟 NAYA LOGIC: Check selected Address ID
         address_id = request.POST.get('address_id')
         
-        if address_id: # Agar customer ne Saved Address chuna hai
+        if address_id:
             selected_address = Address.objects.get(id=address_id, user=request.user)
             name = selected_address.name
             mobile = selected_address.mobile_number
             address = f"{selected_address.full_address}, {selected_address.locality}, {selected_address.city}, {selected_address.state} - {selected_address.pincode}"
-        else: # Agar customer ne naya manual address type kiya hai
+        else:
             name = request.POST.get('name')
             mobile = request.POST.get('mobile_number')
             address = request.POST.get('address')
         
-        # Coupon Logic
         active_coupon = Coupon.objects.filter(mobile_number=mobile, is_used=False).first()
         if active_coupon:
             final_total -= (final_total * active_coupon.discount_percentage) / 100
             active_coupon.is_used = True
             active_coupon.save()
 
-        # Create Order
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             customer_name=name, mobile_number=mobile, address=address,
@@ -232,7 +222,6 @@ def checkout_page(request):
             'whatsapp_url': whatsapp_url 
         })
 
-    # 📍 Fetch Saved Addresses for Checkout UI
     saved_addresses = Address.objects.filter(user=request.user) if request.user.is_authenticated else []
 
     context = {
@@ -243,110 +232,10 @@ def checkout_page(request):
         'delivery_fee': delivery_fee,
         'final_total': final_total,
         'total_savings': total_savings,
-        'saved_addresses': saved_addresses # 👈 Yahan hum addresses bhej rahe hain
-    }
-    return render(request, 'products/checkout.html', context)def checkout_page(request):
-    cart = request.session.get('cart', {})
-    if not cart:
-        messages.warning(request, "Aapka cart khali hai!")
-        return redirect('home')
-        
-    subtotal = 0
-    total_mrp = 0
-    hidden_discount_total = 0
-    order_items_list = []
-    
-    # 🛒 Cart Calculation (Same as before)
-    for pid, item in list(cart.items()):
-        if isinstance(item, dict) and 'price' in item:
-            item_qty = item['quantity']
-            item_price = item['price']
-            subtotal += item_price * item_qty
-            
-            product_id = int(str(pid).split('_')[0])
-            try:
-                product = Product.objects.get(id=product_id)
-                if product.mrp:
-                    total_mrp += float(product.mrp) * item_qty
-                else:
-                    total_mrp += item_price * item_qty 
-                    
-                if product.last_moment_discount > 0:
-                    hidden_discount_total += float(product.last_moment_discount) * item_qty
-            except Product.DoesNotExist:
-                total_mrp += item_price * item_qty
-                
-            order_items_list.append(f"- {item['name']} (x{item_qty}) : ₹{item_price * item_qty}")
-    
-    regular_discount = total_mrp - subtotal
-    payable_subtotal = subtotal - hidden_discount_total
-    
-    if payable_subtotal < 500: delivery_fee = 30
-    elif 500 <= payable_subtotal <= 699: delivery_fee = 20
-    elif 700 <= payable_subtotal <= 999: delivery_fee = 15
-    else: delivery_fee = 0
-        
-    final_total = payable_subtotal + delivery_fee
-    total_savings = regular_discount + hidden_discount_total
-        
-    # 📦 POST Request Handling
-    if request.method == 'POST':
-        # 🌟 NAYA LOGIC: Check selected Address ID
-        address_id = request.POST.get('address_id')
-        
-        if address_id: # Agar customer ne Saved Address chuna hai
-            selected_address = Address.objects.get(id=address_id, user=request.user)
-            name = selected_address.name
-            mobile = selected_address.mobile_number
-            address = f"{selected_address.full_address}, {selected_address.locality}, {selected_address.city}, {selected_address.state} - {selected_address.pincode}"
-        else: # Agar customer ne naya manual address type kiya hai
-            name = request.POST.get('name')
-            mobile = request.POST.get('mobile_number')
-            address = request.POST.get('address')
-        
-        # Coupon Logic
-        active_coupon = Coupon.objects.filter(mobile_number=mobile, is_used=False).first()
-        if active_coupon:
-            final_total -= (final_total * active_coupon.discount_percentage) / 100
-            active_coupon.is_used = True
-            active_coupon.save()
-
-        # Create Order
-        order = Order.objects.create(
-            user=request.user if request.user.is_authenticated else None,
-            customer_name=name, mobile_number=mobile, address=address,
-            total_amount=final_total, applied_coupon=active_coupon, status='Pending'
-        )
-        
-        for pid, item in cart.items():
-            if isinstance(item, dict):
-                OrderItem.objects.create(order=order, product_name=item['name'], price=item['price'], quantity=item['quantity'])
-            
-        items_str = "\n".join(order_items_list)
-        wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n\n*Delivery Charge:* ₹{delivery_fee}\n*Total Payable:* ₹{final_total}"
-        
-        whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
-
-        request.session['cart'] = {}
-        return render(request, 'products/order_success.html', {
-            'order': order, 
-            'whatsapp_url': whatsapp_url 
-        })
-
-    # 📍 Fetch Saved Addresses for Checkout UI
-    saved_addresses = Address.objects.filter(user=request.user) if request.user.is_authenticated else []
-
-    context = {
-        'cart_total': subtotal,
-        'total_mrp': total_mrp,
-        'regular_discount': regular_discount,
-        'hidden_discount_total': hidden_discount_total,
-        'delivery_fee': delivery_fee,
-        'final_total': final_total,
-        'total_savings': total_savings,
-        'saved_addresses': saved_addresses # 👈 Yahan hum addresses bhej rahe hain
+        'saved_addresses': saved_addresses
     }
     return render(request, 'products/checkout.html', context)
+
 
 # 👤 5. Premium Profile Page
 @login_required(login_url='/login/')
@@ -357,7 +246,6 @@ def profile_page(request):
     profile, created = CustomerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
-        # Yahan hum check karenge ki kaunsa form submit hua hai
         action = request.POST.get('action')
         
         if action == 'update_profile':
@@ -442,6 +330,7 @@ def make_admin(request):
                 <a href='/secret-cgs-main/' style='padding:10px 20px; background:#2874f0; color:white; text-decoration:none; border-radius:5px;'>Go to Admin Panel</a>
             </div>
         """)
+
 def trigger_import(request): return render(request, 'products/import_trigger.html')
 
 # 🚀 8. STANDARD USERNAME/PASSWORD REGISTRATION
@@ -492,22 +381,19 @@ def sync_products_from_erp_api(request):
             )
     return Response({'message': 'Product sync process successfully executed'})
 
-# 📄 10. Download Smart PDF Invoice (MERGED WITH QR & BARCODE LOGIC)
+# 📄 10. Download Smart PDF Invoice
 @login_required(login_url='/login/')
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     items = OrderItem.objects.filter(order=order)
     
-    # 🌟 Format Bill Number dynamically based on order ID
     bill_no = f"#INV-2026-{order.id}"
 
-    # 1. QR Code Generate Karna
     qr = qrcode.make(bill_no)
     qr_buffer = BytesIO()
     qr.save(qr_buffer, format="PNG")
     qr_base64 = base64.b64encode(qr_buffer.getvalue()).decode("utf-8")
 
-    # 2. Barcode Generate Karna (Code128 format)
     CODE128 = barcode.get_barcode_class('code128')
     bc = CODE128(bill_no, writer=ImageWriter())
     bc_buffer = BytesIO()
@@ -516,7 +402,6 @@ def download_invoice(request, order_id):
     
     template_path = 'products/invoice_pdf.html'
     
-    # 🌟 Naya context jo HTML variables se directly match karta hai
     context = {
         'order': order, 
         'items': items,
@@ -544,7 +429,7 @@ def download_invoice(request, order_id):
         return HttpResponse('Invoice generate karne mein error aayi: <pre>' + html + '</pre>')
     return response
 
-# 📥 11. EXPORT: Download products to Excel (CSV)
+# 📥 11. EXPORT: Download products to Excel
 @login_required(login_url='/login/')
 def export_products_csv(request):
     if not request.user.is_superuser:
@@ -565,7 +450,7 @@ def export_products_csv(request):
         
     return response
 
-# 📤 12. IMPORT: Upload updated Excel (CSV)
+# 📤 12. IMPORT: Upload updated Excel
 @login_required(login_url='/login/')
 def import_products_csv(request):
     if not request.user.is_superuser:
@@ -640,7 +525,7 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'products/product_detail.html', {'product': product})
 
-# 🔄 NAYA FUNCTION: Cart Item Modify/Remove Karne Ke Liye
+# 🔄 NAYA FUNCTION: Cart Item Modify/Remove
 def update_cart_item(request, item_key, action):
     cart = request.session.get('cart', {})
     
@@ -662,10 +547,8 @@ def update_cart_item(request, item_key, action):
 
 @login_required(login_url='/login/')
 def cancel_order(request, order_id):
-    # Sirf wahi user apna order cancel kar sakta hai jisne order place kiya ho
     order = get_object_or_404(Order, id=order_id, user=request.user)
     
-    # Order tabhi cancel ho sakta hai jab wo 'Pending' ho
     if order.status == 'Pending':
         order.status = 'Cancelled'
         order.save()
