@@ -149,3 +149,10 @@ CLOUDINARY_STORAGE = {
     'API_KEY': '323853635316772', 
     'API_SECRET': 'ukYJxlfcZ_SO7HmfBdQCePdbbfA'
 }
+
+STATIC_URL = '/static/'
+
+# Yeh nayi 3 lines add karni hain taaki Django main static folder ko read kar sake
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
