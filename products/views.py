@@ -1,5 +1,10 @@
 import csv
 import random
+import qrcode
+import barcode
+from barcode.writer import ImageWriter
+from io import BytesIO
+import base64
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, login
 from django.contrib.auth.forms import UserCreationForm
@@ -15,14 +20,10 @@ from django.utils.http import urlencode
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.utils.http import urlencode
+from django.core.paginator import Paginator 
 
 from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant
 from .serializers import OrderSerializer, ProductSerializer
-
-from django.core.paginator import Paginator  # 👈 Yeh import top par add karein
-
-from django.http import HttpResponse
 
 def ping(request):
     return HttpResponse("OK", status=200)
@@ -64,7 +65,7 @@ def product_list(request):
     page_obj = paginator.get_page(page_number)
         
     return render(request, 'products/product_list.html', {
-        'products': page_obj,  # 👈 'products' ab 'page_obj' ka data hold karega
+        'products': page_obj,  
         'categories': categories,
         'banners': banners,
         'active_category': active_category,
@@ -72,7 +73,7 @@ def product_list(request):
         'current_sort': sort
     })
 
-# 🛒 2. Add to Cart (Integrated for both Variant & Normal products)
+# 🛒 2. Add to Cart
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     variant_id = request.POST.get('variant_id')
@@ -80,13 +81,11 @@ def add_to_cart(request, product_id):
     cart = request.session.get('cart', {})
     
     if variant_id:
-        # Variant wala product
         variant = get_object_or_404(ProductVariant, id=variant_id)
         cart_key = f"{product_id}_{variant_id}"
         item_name = f"{product.name} ({variant.size_name})"
         item_price = float(variant.price)
     else:
-        # Normal product (Bina variant wala)
         cart_key = str(product_id)
         item_name = product.name
         item_price = float(product.price)
@@ -119,7 +118,6 @@ def cart_detail(request):
                 total_price = item['price'] * item['quantity']
                 cart_total += total_price
                 
-                # 🌟 NAYA CODE: 'key' aur 'name', 'unit_price' pass kar rahe hain
                 cart_items.append({
                     'key': str(pid), 
                     'product': product, 
@@ -161,17 +159,14 @@ def checkout_page(request):
             item_price = item['price']
             subtotal += item_price * item_qty
             
-            # Extract product ID safely handling variants (e.g., '1_2' -> 1)
             product_id = int(str(pid).split('_')[0])
             try:
                 product = Product.objects.get(id=product_id)
-                # MRP Check
                 if product.mrp:
                     total_mrp += float(product.mrp) * item_qty
                 else:
                     total_mrp += item_price * item_qty 
                     
-                # GAMECHANGER: Check hidden discount
                 if product.last_moment_discount > 0:
                     hidden_discount_total += float(product.last_moment_discount) * item_qty
             except Product.DoesNotExist:
@@ -182,7 +177,6 @@ def checkout_page(request):
     regular_discount = total_mrp - subtotal
     payable_subtotal = subtotal - hidden_discount_total
     
-    # 🚚 DELIVERY TIER LOGIC
     if payable_subtotal < 500:
         delivery_fee = 30
     elif 500 <= payable_subtotal <= 699:
@@ -216,7 +210,6 @@ def checkout_page(request):
             if isinstance(item, dict):
                 OrderItem.objects.create(order=order, product_name=item['name'], price=item['price'], quantity=item['quantity'])
             
-        # 💬 WhatsApp Message Integration with Details
         items_str = "\n".join(order_items_list)
         wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n\n*Delivery Charge:* ₹{delivery_fee}\n*Total Payable:* ₹{final_total}"
         
@@ -248,7 +241,6 @@ def profile_page(request):
     profile, created = CustomerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
-        # Dono User aur Profile update karna
         request.user.first_name = request.POST.get('first_name', '')
         request.user.email = request.POST.get('email', '')
         request.user.save()
@@ -263,7 +255,7 @@ def profile_page(request):
     recent_orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'products/profile.html', {'profile': profile, 'orders': recent_orders})
 
-# 🗑️ Naya Feature: Delete Account
+# 🗑️ Delete Account
 @login_required(login_url='/login/')
 def delete_account(request):
     if request.method == 'POST':
@@ -292,9 +284,7 @@ def custom_logout(request):
 
 # 🔧 Admin Maker Bypass
 def make_admin(request):
-    # Check karein ki kya admin pehle se bana hua hai
     if not User.objects.filter(username='admin').exists():
-        # Naya Superuser create karein (Username: admin, Password: Admin@1234)
         User.objects.create_superuser('admin', 'admin@cgsmart.in', 'Admin@1234')
         return HttpResponse("""
             <div style='text-align:center; margin-top:50px; font-family:sans-serif;'>
@@ -361,14 +351,45 @@ def sync_products_from_erp_api(request):
             )
     return Response({'message': 'Product sync process successfully executed'})
 
-# 📄 10. Download Smart PDF Invoice
+# 📄 10. Download Smart PDF Invoice (MERGED WITH QR & BARCODE LOGIC)
 @login_required(login_url='/login/')
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     items = OrderItem.objects.filter(order=order)
     
+    # 🌟 Format Bill Number dynamically based on order ID
+    bill_no = f"#INV-2026-{order.id}"
+
+    # 1. QR Code Generate Karna
+    qr = qrcode.make(bill_no)
+    qr_buffer = BytesIO()
+    qr.save(qr_buffer, format="PNG")
+    qr_base64 = base64.b64encode(qr_buffer.getvalue()).decode("utf-8")
+
+    # 2. Barcode Generate Karna (Code128 format)
+    CODE128 = barcode.get_barcode_class('code128')
+    bc = CODE128(bill_no, writer=ImageWriter())
+    bc_buffer = BytesIO()
+    bc.write(bc_buffer, options={'write_text': False}) 
+    barcode_base64 = base64.b64encode(bc_buffer.getvalue()).decode("utf-8")
+    
     template_path = 'products/invoice_pdf.html'
-    context = {'order': order, 'items': items}
+    
+    # 🌟 Naya context jo HTML variables se directly match karta hai
+    context = {
+        'order': order, 
+        'items': items,
+        'company_name': 'Chachan General Store',
+        'tagline': 'Premium Corporate Retail & Essentials',
+        'bill_no': bill_no,
+        'customer_name': order.customer_name,
+        'customer_phone': order.mobile_number,
+        'customer_address': order.address,
+        'date': order.created_at.strftime('%d %b, %Y') if hasattr(order, 'created_at') else '',
+        'status': order.status,
+        'qr_code_base64': qr_base64,
+        'barcode_base64': barcode_base64,
+    }
     
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="CGSmart_Invoice_{order.id}.pdf"'
@@ -460,7 +481,6 @@ def import_products_csv(request):
 @login_required(login_url='/login/')
 def add_to_wishlist(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    # Security: check karein ki kya user ne pehle se add kiya hai
     wishlist_item, created = Wishlist.objects.get_or_create(user=request.user, product=product)
     
     if created:
@@ -487,7 +507,6 @@ def update_cart_item(request, item_key, action):
         if action == 'increase':
             cart[item_key]['quantity'] += 1
         elif action == 'decrease':
-            # 1 se kam nahi ho sakta, agar 1 hai aur '-' dabaya toh cart se hat jayega
             if cart[item_key]['quantity'] > 1:
                 cart[item_key]['quantity'] -= 1
             else:
@@ -499,39 +518,3 @@ def update_cart_item(request, item_key, action):
         request.session.modified = True
         
     return redirect('cart_detail')
-
-import qrcode
-import barcode
-from barcode.writer import ImageWriter
-from io import BytesIO
-import base64
-from django.shortcuts import render
-
-# Aapka PDF generate karne wala view
-def generate_bill_pdf(request, bill_no):
-    # 1. QR Code Generate Karna
-    qr = qrcode.make(bill_no)
-    qr_buffer = BytesIO()
-    qr.save(qr_buffer, format="PNG")
-    qr_base64 = base64.b64encode(qr_buffer.getvalue()).decode("utf-8")
-
-    # 2. Barcode Generate Karna (Code128 format)
-    CODE128 = barcode.get_barcode_class('code128')
-    bc = CODE128(bill_no, writer=ImageWriter())
-    bc_buffer = BytesIO()
-    # options se text hide kar rahe hain kyunki humne HTML mein text alag se likha hai
-    bc.write(bc_buffer, options={'write_text': False}) 
-    barcode_base64 = base64.b64encode(bc_buffer.getvalue()).decode("utf-8")
-
-    # 3. Context mein data bhejhein
-    context = {
-        'company_name': 'Chachan General Store',
-        'bill_no': bill_no,
-        'customer_name': 'Ramniwas',
-        'qr_code_base64': qr_base64,
-        'barcode_base64': barcode_base64,
-        # ... baaki data ...
-    }
-
-    # Aapka xhtml2pdf ya template render logic yahan aayega...
-    return render(request, 'invoice_template.html', context)

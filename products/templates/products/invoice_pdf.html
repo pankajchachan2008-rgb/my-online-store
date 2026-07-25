@@ -2,150 +2,173 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
+    <title>Bill of Supply</title>
     <style>
         @page {
             size: A4;
-            margin: 1.5cm;
+            margin: 1.2cm;
             @frame footer {
                 -pdf-frame-content: footerContent;
                 bottom: 1cm;
-                margin-left: 1.5cm;
-                margin-right: 1.5cm;
+                margin-left: 1.2cm;
+                margin-right: 1.2cm;
                 height: 1cm;
             }
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
-            font-size: 12px;
-            color: #333333;
+            font-size: 11px;
+            color: #2b2b2b;
         }
+        
+        /* Red Theme Colors: 
+           Primary Red: #C0392B 
+           Dark Grey: #34495E 
+           Light Red BG: #FADBD8 
+        */
+
         .header-table {
             width: 100%;
-            border-bottom: 2px solid #2C3E50;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #C0392B;
             padding-bottom: 15px;
-            margin-bottom: 20px;
         }
         .company-name {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
-            color: #2C3E50;
+            color: #C0392B;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .tagline {
             font-size: 10px;
             color: #7F8C8D;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
+            margin-top: 4px;
         }
         .document-title {
             font-size: 26px;
             font-weight: bold;
-            color: #2C3E50;
+            color: #34495E;
             text-align: right;
             text-transform: uppercase;
+            letter-spacing: 2px;
         }
+        
         .info-table {
             width: 100%;
             margin-bottom: 25px;
+            border: 1px solid #E5E7E9;
         }
         .info-table td {
             vertical-align: top;
-            width: 33%;
+            width: 33.33%;
+            padding: 10px;
+            border-right: 1px solid #E5E7E9;
+        }
+        .info-table td.last {
+            border-right: none;
         }
         .section-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: bold;
-            color: #ffffff;
-            background-color: #2C3E50;
-            padding: 4px 8px;
-            margin-bottom: 8px;
-            display: block;
+            color: #C0392B;
+            text-transform: uppercase;
+            border-bottom: 1px solid #FADBD8;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
         }
         .info-text {
             font-size: 11px;
-            line-height: 1.5;
-            padding-left: 4px;
+            line-height: 1.6;
         }
+        
         .items-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
         .items-table th {
-            background-color: #2C3E50;
-            color: white;
-            padding: 10px;
+            background-color: #C0392B;
+            color: #ffffff;
+            padding: 10px 8px;
             text-align: left;
             font-size: 11px;
             font-weight: bold;
-            border: 1px solid #2C3E50;
+            text-transform: uppercase;
+            border: 1px solid #C0392B;
         }
         .items-table td {
-            padding: 10px;
-            border: 1px solid #BDC3C7;
+            padding: 10px 8px;
+            border: 1px solid #E5E7E9;
             font-size: 11px;
         }
-        .items-table th.right-align,
-        .items-table td.right-align {
-            text-align: right;
+        .items-table tr.alt-row td {
+            background-color: #FDFEFE;
         }
-        .items-table th.center-align,
-        .items-table td.center-align {
-            text-align: center;
-        }
+        .right-align { text-align: right; }
+        .center-align { text-align: center; }
+        
         .totals-table {
             width: 100%;
             margin-bottom: 30px;
         }
-        .totals-table td {
-            padding: 6px;
-            font-size: 12px;
+        .terms-box {
+            background-color: #F8F9F9;
+            border-left: 3px solid #C0392B;
+            padding: 8px;
+            font-size: 9px;
+            color: #5D6D7E;
+            line-height: 1.5;
         }
-        .grand-total {
-            font-size: 16px;
+        .totals-calc {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .totals-calc td {
+            padding: 6px 10px;
+            font-size: 11px;
+            border-bottom: 1px solid #E5E7E9;
+        }
+        .grand-total-row td {
+            font-size: 14px;
             font-weight: bold;
-            color: #2C3E50;
-            background-color: #ecf0f1;
+            color: #ffffff;
+            background-color: #C0392B;
+            border: none;
         }
+        
         .footer-section {
             width: 100%;
-            margin-top: 30px;
+            margin-top: 10px;
         }
-        .footer-section td {
-            vertical-align: bottom;
-        }
+        /* xhtml2pdf sometimes needs width/height defined in CSS AND HTML attributes */
         .qr-code {
-            width: 90px;
-            height: 90px;
-            border: 1px solid #BDC3C7;
+            border: 1px solid #E5E7E9;
             padding: 4px;
+            background-color: white;
         }
-        .barcode {
-            width: 160px;
-            height: 40px;
-            margin-bottom: 10px;
+        .barcode-container {
+            text-align: center;
         }
         .sign-box {
             text-align: center;
-            width: 180px;
-            border-top: 1px solid #333;
-            padding-top: 5px;
-            font-size: 11px;
+            width: 160px;
+            border-top: 1px solid #34495E;
+            padding-top: 6px;
+            font-size: 10px;
             font-weight: bold;
             float: right;
+            color: #34495E;
         }
-        .terms {
-            font-size: 9px;
-            color: #7F8C8D;
-            line-height: 1.4;
-        }
+        
         #footerContent {
             text-align: center;
             font-size: 9px;
-            color: #7F8C8D;
-            border-top: 1px solid #BDC3C7;
-            padding-top: 5px;
+            color: #95A5A6;
+            border-top: 1px solid #E5E7E9;
+            padding-top: 6px;
         }
     </style>
 </head>
@@ -154,21 +177,21 @@
     <!-- HEADER SECTION -->
     <table class="header-table">
         <tr>
-            <td style="width: 60%;">
+            <td style="width: 60%; vertical-align: bottom;">
                 <div class="company-name">{{ company_name|default:"Chachan General Store" }}</div>
                 <div class="tagline">{{ tagline|default:"Premium Corporate Retail & Essentials" }}</div>
             </td>
-            <td style="width: 40%;">
+            <td style="width: 40%; vertical-align: bottom;">
                 <div class="document-title">BILL OF SUPPLY</div>
             </td>
         </tr>
     </table>
 
-    <!-- INFO SECTION -->
+    <!-- INFO SECTION (Boxed Layout) -->
     <table class="info-table">
         <tr>
             <!-- Dispatched From -->
-            <td style="padding-right: 15px;">
+            <td>
                 <div class="section-title">Dispatched From</div>
                 <div class="info-text">
                     <strong>Chachan General Store (Main)</strong><br>
@@ -179,7 +202,7 @@
             </td>
             
             <!-- Billed To -->
-            <td style="padding-right: 15px;">
+            <td>
                 <div class="section-title">Billed To</div>
                 <div class="info-text">
                     <strong>{{ customer_name|default:"Ramniwas" }}</strong><br>
@@ -189,12 +212,12 @@
             </td>
 
             <!-- Document Details -->
-            <td>
+            <td class="last">
                 <div class="section-title">Document Details</div>
                 <div class="info-text">
-                    <strong>No:</strong> {{ bill_no|default:"#INV-2026-2" }}<br>
+                    <strong>Bill No:</strong> {{ bill_no|default:"#INV-2026-2" }}<br>
                     <strong>Date:</strong> {{ date|default:"25 Jul, 2026" }}<br>
-                    <strong>Status:</strong> <span style="font-weight:bold; color: {% if status == 'Paid' %}green{% else %}#e74c3c{% endif %};">{{ status|default:"Pending" }}</span>
+                    <strong>Status:</strong> <span style="font-weight:bold; color: {% if status == 'Paid' %}green{% else %}#C0392B{% endif %};">{{ status|default:"Pending" }}</span>
                 </div>
             </td>
         </tr>
@@ -206,9 +229,9 @@
             <tr>
                 <th class="center-align" style="width: 8%;">S.No</th>
                 <th style="width: 47%;">Product Description</th>
-                <th class="center-align" style="width: 15%;">Quantity</th>
-                <th class="right-align" style="width: 15%;">Unit Price (₹)</th>
-                <th class="right-align" style="width: 15%;">Total (₹)</th>
+                <th class="center-align" style="width: 15%;">Qty</th>
+                <th class="right-align" style="width: 15%;">Unit Price</th>
+                <th class="right-align" style="width: 15%;">Total</th>
             </tr>
         </thead>
         <tbody>
@@ -218,11 +241,11 @@
                 <td class="center-align">1</td>
                 <td>
                     <strong>DABUR AMLA OIL</strong><br>
-                    <span style="font-size: 9px; color: #7F8C8D;">MRP: ₹207.00</span>
+                    <span style="font-size: 9px; color: #7F8C8D;">MRP: Rs. 207.00</span>
                 </td>
                 <td class="center-align">1</td>
-                <td class="right-align">190.00</td>
-                <td class="right-align">190.00</td>
+                <td class="right-align">Rs. 190.00</td>
+                <td class="right-align">Rs. 190.00</td>
             </tr>
             <!-- {% endfor %} -->
         </tbody>
@@ -231,26 +254,26 @@
     <!-- TOTALS SECTION -->
     <table class="totals-table">
         <tr>
-            <td style="width: 60%;">
-                <div class="terms">
+            <td style="width: 55%; padding-right: 20px;">
+                <div class="terms-box">
                     <strong>Terms & Conditions:</strong><br>
                     1. All disputes are subject to Nohar jurisdiction.<br>
                     2. Items once sold cannot be returned without original receipt.
                 </div>
             </td>
-            <td style="width: 40%;">
-                <table style="width: 100%;">
+            <td style="width: 45%;">
+                <table class="totals-calc">
                     <tr>
-                        <td style="text-align: right; border-bottom: 1px solid #ecf0f1;">Subtotal:</td>
-                        <td style="text-align: right; border-bottom: 1px solid #ecf0f1;">₹190.00</td>
+                        <td class="right-align">Subtotal:</td>
+                        <td class="right-align" style="width: 40%;">Rs. 190.00</td>
                     </tr>
                     <tr>
-                        <td style="text-align: right; border-bottom: 1px solid #ecf0f1;">Tax (Included):</td>
-                        <td style="text-align: right; border-bottom: 1px solid #ecf0f1;">₹0.00</td>
+                        <td class="right-align">Tax (Included):</td>
+                        <td class="right-align">Rs. 0.00</td>
                     </tr>
-                    <tr>
-                        <td style="text-align: right; font-weight: bold;" class="grand-total">GRAND TOTAL:</td>
-                        <td style="text-align: right; font-weight: bold; color: #2C3E50;" class="grand-total">₹190.00</td>
+                    <tr class="grand-total-row">
+                        <td class="right-align">GRAND TOTAL:</td>
+                        <td class="right-align">Rs. 190.00</td>
                     </tr>
                 </table>
             </td>
@@ -261,17 +284,16 @@
     <table class="footer-section">
         <tr>
             <td style="width: 30%;">
-                <div style="font-size: 9px; font-weight: bold; color: #2C3E50; margin-bottom: 3px;">SCAN TO VERIFY</div>
-                <!-- Dynamic QR Code -->
-                <img src="data:image/png;base64,{{ qr_code_base64 }}" class="qr-code" alt="QR Code">
+                <div style="font-size: 9px; font-weight: bold; color: #C0392B; margin-bottom: 5px;">SCAN TO VERIFY</div>
+                <!-- FIXED: Added hardcoded width and height for xhtml2pdf compatibility -->
+                <img src="data:image/png;base64,{{ qr_code_base64 }}" width="80" height="80" class="qr-code" alt="QR Code">
             </td>
-            <td style="width: 40%; text-align: center;">
-                <!-- Dynamic Barcode -->
-                <img src="data:image/png;base64,{{ barcode_base64 }}" class="barcode" alt="Barcode"><br>
-                <span style="font-size: 10px; color: #7F8C8D;">{{ bill_no|default:"#INV-2026-2" }}</span>
+            <td style="width: 40%;" class="barcode-container">
+                <!-- FIXED: Added hardcoded width and height -->
+                <img src="data:image/png;base64,{{ barcode_base64 }}" width="150" height="40" alt="Barcode"><br>
+                <div style="font-size: 10px; color: #34495E; margin-top: 4px; font-weight: bold;">{{ bill_no|default:"#INV-2026-2" }}</div>
             </td>
-            <td style="width: 30%; text-align: right;">
-                <br><br><br>
+            <td style="width: 30%; text-align: right; vertical-align: bottom;">
                 <div class="sign-box">
                     Authorized Signatory
                 </div>
