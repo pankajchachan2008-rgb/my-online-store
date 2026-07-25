@@ -499,3 +499,39 @@ def update_cart_item(request, item_key, action):
         request.session.modified = True
         
     return redirect('cart_detail')
+
+import qrcode
+import barcode
+from barcode.writer import ImageWriter
+from io import BytesIO
+import base64
+from django.shortcuts import render
+
+# Aapka PDF generate karne wala view
+def generate_bill_pdf(request, bill_no):
+    # 1. QR Code Generate Karna
+    qr = qrcode.make(bill_no)
+    qr_buffer = BytesIO()
+    qr.save(qr_buffer, format="PNG")
+    qr_base64 = base64.b64encode(qr_buffer.getvalue()).decode("utf-8")
+
+    # 2. Barcode Generate Karna (Code128 format)
+    CODE128 = barcode.get_barcode_class('code128')
+    bc = CODE128(bill_no, writer=ImageWriter())
+    bc_buffer = BytesIO()
+    # options se text hide kar rahe hain kyunki humne HTML mein text alag se likha hai
+    bc.write(bc_buffer, options={'write_text': False}) 
+    barcode_base64 = base64.b64encode(bc_buffer.getvalue()).decode("utf-8")
+
+    # 3. Context mein data bhejhein
+    context = {
+        'company_name': 'Chachan General Store',
+        'bill_no': bill_no,
+        'customer_name': 'Ramniwas',
+        'qr_code_base64': qr_base64,
+        'barcode_base64': barcode_base64,
+        # ... baaki data ...
+    }
+
+    # Aapka xhtml2pdf ya template render logic yahan aayega...
+    return render(request, 'invoice_template.html', context)

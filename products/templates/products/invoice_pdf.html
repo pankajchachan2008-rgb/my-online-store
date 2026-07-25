@@ -1,164 +1,287 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tax Invoice #{{ order.id }}</title>
+    <title>Document</title>
     <style>
         @page {
-            size: a4 portrait;
+            size: A4;
             margin: 1.5cm;
             @frame footer {
-                -pdf-frame-content: footer_content;
+                -pdf-frame-content: footerContent;
                 bottom: 1cm;
+                margin-left: 1.5cm;
+                margin-right: 1.5cm;
                 height: 1cm;
             }
         }
         body {
             font-family: Helvetica, Arial, sans-serif;
-            color: #222222;
             font-size: 12px;
-            line-height: 1.4;
+            color: #333333;
         }
-        .items-table {
-            border-collapse: collapse;
+        .header-table {
             width: 100%;
+            border-bottom: 2px solid #2C3E50;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
-        .items-table th {
-            background-color: #111111;
-            color: #FFFFFF;
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2C3E50;
+            text-transform: uppercase;
+        }
+        .tagline {
+            font-size: 10px;
+            color: #7F8C8D;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .document-title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #2C3E50;
+            text-align: right;
+            text-transform: uppercase;
+        }
+        .info-table {
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        .info-table td {
+            vertical-align: top;
+            width: 33%;
+        }
+        .section-title {
             font-size: 11px;
             font-weight: bold;
-            text-transform: uppercase;
+            color: #ffffff;
+            background-color: #2C3E50;
+            padding: 4px 8px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .info-text {
+            font-size: 11px;
+            line-height: 1.5;
+            padding-left: 4px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th {
+            background-color: #2C3E50;
+            color: white;
             padding: 10px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid #2C3E50;
         }
         .items-table td {
             padding: 10px;
-            border-bottom: 1px solid #DDDDDD;
-            border-left: 1px solid #EEEEEE;
-            border-right: 1px solid #EEEEEE;
+            border: 1px solid #BDC3C7;
+            font-size: 11px;
+        }
+        .items-table th.right-align,
+        .items-table td.right-align {
+            text-align: right;
+        }
+        .items-table th.center-align,
+        .items-table td.center-align {
+            text-align: center;
+        }
+        .totals-table {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .totals-table td {
+            padding: 6px;
+            font-size: 12px;
+        }
+        .grand-total {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2C3E50;
+            background-color: #ecf0f1;
+        }
+        .footer-section {
+            width: 100%;
+            margin-top: 30px;
+        }
+        .footer-section td {
+            vertical-align: bottom;
+        }
+        .qr-code {
+            width: 90px;
+            height: 90px;
+            border: 1px solid #BDC3C7;
+            padding: 4px;
+        }
+        .barcode {
+            width: 160px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+        .sign-box {
+            text-align: center;
+            width: 180px;
+            border-top: 1px solid #333;
+            padding-top: 5px;
+            font-size: 11px;
+            font-weight: bold;
+            float: right;
+        }
+        .terms {
+            font-size: 9px;
+            color: #7F8C8D;
+            line-height: 1.4;
+        }
+        #footerContent {
+            text-align: center;
+            font-size: 9px;
+            color: #7F8C8D;
+            border-top: 1px solid #BDC3C7;
+            padding-top: 5px;
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. Header (Logo & Barcode) -->
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-bottom: 2px solid #111; padding-bottom: 15px; margin-bottom: 20px;">
+    <!-- HEADER SECTION -->
+    <table class="header-table">
         <tr>
-            <td width="55%" valign="top">
-                <img src="{% static 'logo.png' %}" width="150" style="margin-bottom: 10px;"><br>
-                <span style="font-size: 24px; font-weight: bold; color: #111111; text-transform: uppercase;">Chachan General Store</span><br>
-                <span style="font-size: 11px; color: #666666; text-transform: uppercase; letter-spacing: 1px;">Premium Corporate Retail & Essentials</span>
+            <td style="width: 60%;">
+                <div class="company-name">{{ company_name|default:"Chachan General Store" }}</div>
+                <div class="tagline">{{ tagline|default:"Premium Corporate Retail & Essentials" }}</div>
             </td>
-            <td width="45%" align="right" valign="top">
-                <span style="font-size: 26px; font-weight: bold; color: #111111; text-transform: uppercase;">Tax Invoice</span><br><br>
-                <span style="font-size: 12px; color: #444444;">
-                    <strong>Invoice No:</strong> #INV-2026-{{ order.id }}<br>
-                    <strong>Date:</strong> {{ order.created_at|date:"d M, Y" }}<br>
-                    <strong>Status:</strong> <span style="color: #27ae60;">{{ order.status }}</span>
-                </span><br><br>
-                <!-- Barcode -->
-                <img src="https://barcode.tec-it.com/barcode.ashx?data=INV-2026-{{ order.id }}&code=Code128&dpi=96" width="140" height="40">
+            <td style="width: 40%;">
+                <div class="document-title">BILL OF SUPPLY</div>
             </td>
         </tr>
     </table>
 
-    <!-- 2. Billing Info (Error Fixed Here: Removed cellpadding="12" from table, added padding:12px to td) -->
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 25px;">
+    <!-- INFO SECTION -->
+    <table class="info-table">
         <tr>
-            <td width="48%" bgcolor="#F8F9FA" valign="top" style="border-left: 4px solid #111111; padding: 12px;">
-                <span style="font-size: 10px; font-weight: bold; color: #888888; text-transform: uppercase;">Billed To</span><br>
-                <span style="font-size: 14px; font-weight: bold; color: #111111;">{{ order.customer_name }}</span><br>
-                <span style="font-size: 12px; color: #444444;">
-                    Phone: {{ order.mobile_number }}<br>
-                    Address: {{ order.address }}
-                </span>
-            </td>
-            <td width="4%"></td> <!-- Empty space between boxes (No padding now, totally safe) -->
-            <td width="48%" bgcolor="#F8F9FA" valign="top" style="border-left: 4px solid #111111; padding: 12px;">
-                <span style="font-size: 10px; font-weight: bold; color: #888888; text-transform: uppercase;">Dispatched From</span><br>
-                <span style="font-size: 14px; font-weight: bold; color: #111111;">Chachan General Store (Main)</span><br>
-                <span style="font-size: 12px; color: #444444;">
+            <!-- Dispatched From -->
+            <td style="padding-right: 15px;">
+                <div class="section-title">Dispatched From</div>
+                <div class="info-text">
+                    <strong>Chachan General Store (Main)</strong><br>
                     GSTIN: 08AAAAA0000A1Z5<br>
                     Nohar, Rajasthan, India<br>
-                    Contact: support@chachanstore.com
-                </span>
+                    Email: support@chachanstore.com
+                </div>
+            </td>
+            
+            <!-- Billed To -->
+            <td style="padding-right: 15px;">
+                <div class="section-title">Billed To</div>
+                <div class="info-text">
+                    <strong>{{ customer_name|default:"Ramniwas" }}</strong><br>
+                    Phone: {{ customer_phone|default:"8619278033" }}<br>
+                    Address: {{ customer_address|default:"Nohar" }}
+                </div>
+            </td>
+
+            <!-- Document Details -->
+            <td>
+                <div class="section-title">Document Details</div>
+                <div class="info-text">
+                    <strong>No:</strong> {{ bill_no|default:"#INV-2026-2" }}<br>
+                    <strong>Date:</strong> {{ date|default:"25 Jul, 2026" }}<br>
+                    <strong>Status:</strong> <span style="font-weight:bold; color: {% if status == 'Paid' %}green{% else %}#e74c3c{% endif %};">{{ status|default:"Pending" }}</span>
+                </div>
             </td>
         </tr>
     </table>
 
-    <!-- 3. Items List -->
-    <table class="items-table" style="margin-bottom: 30px;">
+    <!-- ITEMS TABLE -->
+    <table class="items-table">
         <thead>
             <tr>
-                <th width="8%" align="center">S.No</th>
-                <th width="47%" align="left">Product Description</th>
-                <th width="15%" align="center">Quantity</th>
-                <th width="15%" align="right">Unit Price</th>
-                <th width="15%" align="right">Total</th>
+                <th class="center-align" style="width: 8%;">S.No</th>
+                <th style="width: 47%;">Product Description</th>
+                <th class="center-align" style="width: 15%;">Quantity</th>
+                <th class="right-align" style="width: 15%;">Unit Price (₹)</th>
+                <th class="right-align" style="width: 15%;">Total (₹)</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in items %}
-            <tr bgcolor="{% cycle '#FFFFFF' '#FAFAFA' %}">
-                <td align="center">{{ forloop.counter }}</td>
-                <td align="left"><strong>{{ item.product_name }}</strong></td>
-                <td align="center">{{ item.quantity }}</td>
-                <td align="right">₹{{ item.price }}</td>
-                <td align="right">₹{% widthratio item.price 1 item.quantity %}</td>
+            <!-- Django For Loop Example -->
+            <!-- {% for item in items %} -->
+            <tr>
+                <td class="center-align">1</td>
+                <td>
+                    <strong>DABUR AMLA OIL</strong><br>
+                    <span style="font-size: 9px; color: #7F8C8D;">MRP: ₹207.00</span>
+                </td>
+                <td class="center-align">1</td>
+                <td class="right-align">190.00</td>
+                <td class="right-align">190.00</td>
             </tr>
-            {% endfor %}
+            <!-- {% endfor %} -->
         </tbody>
     </table>
 
-    <!-- 4. Totals and QR Code -->
-    <table width="100%" cellpadding="0" cellspacing="0">
+    <!-- TOTALS SECTION -->
+    <table class="totals-table">
         <tr>
-            <td width="55%" valign="top">
-                <span style="font-size: 10px; font-weight: bold; color: #888888; text-transform: uppercase;">Scan To Verify</span><br><br>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Invoice:%20INV-2026-{{ order.id }}%0AAmount:%20Rs.{{ order.total_amount }}" width="80" height="80"><br><br>
-                <span style="font-size: 10px; color: #777777;">* Terms & Conditions apply. Items once sold<br>cannot be returned without original receipt.</span>
+            <td style="width: 60%;">
+                <div class="terms">
+                    <strong>Terms & Conditions:</strong><br>
+                    1. All disputes are subject to Nohar jurisdiction.<br>
+                    2. Items once sold cannot be returned without original receipt.
+                </div>
             </td>
-            <td width="45%" valign="top">
-                <table width="100%" cellpadding="8" cellspacing="0">
+            <td style="width: 40%;">
+                <table style="width: 100%;">
                     <tr>
-                        <td align="right" style="font-size: 12px; font-weight: bold; color: #555555; border-bottom: 1px solid #EEE;">Subtotal:</td>
-                        <td align="right" style="font-size: 13px; font-weight: bold; color: #111111; border-bottom: 1px solid #EEE;">₹{{ order.total_amount }}</td>
-                    </tr>
-                    {% if order.applied_coupon %}
-                    <tr>
-                        <td align="right" style="font-size: 12px; font-weight: bold; color: #555555; border-bottom: 1px solid #EEE;">Discount:</td>
-                        <td align="right" style="font-size: 12px; font-weight: bold; color: #27ae60; border-bottom: 1px solid #EEE;">- Applied</td>
-                    </tr>
-                    {% endif %}
-                    <tr>
-                        <td align="right" style="font-size: 12px; font-weight: bold; color: #555555;">Tax (Included):</td>
-                        <td align="right" style="font-size: 13px; font-weight: bold; color: #111111;">₹0.00</td>
+                        <td style="text-align: right; border-bottom: 1px solid #ecf0f1;">Subtotal:</td>
+                        <td style="text-align: right; border-bottom: 1px solid #ecf0f1;">₹190.00</td>
                     </tr>
                     <tr>
-                        <td align="right" bgcolor="#111111" style="color: #FFFFFF; font-size: 16px; font-weight: bold;">GRAND TOTAL:</td>
-                        <td align="right" bgcolor="#111111" style="color: #FFFFFF; font-size: 16px; font-weight: bold;">₹{{ order.total_amount }}</td>
+                        <td style="text-align: right; border-bottom: 1px solid #ecf0f1;">Tax (Included):</td>
+                        <td style="text-align: right; border-bottom: 1px solid #ecf0f1;">₹0.00</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-weight: bold;" class="grand-total">GRAND TOTAL:</td>
+                        <td style="text-align: right; font-weight: bold; color: #2C3E50;" class="grand-total">₹190.00</td>
                     </tr>
                 </table>
             </td>
         </tr>
     </table>
 
-    <!-- 5. Signatory -->
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 50px;">
+    <!-- SIGNATURE, BARCODE & QR SECTION -->
+    <table class="footer-section">
         <tr>
-            <td width="70%"></td>
-            <td width="30%" align="center" style="border-top: 1px solid #111111; padding-top: 8px;">
-                <span style="font-size: 10px; font-weight: bold; color: #555555; text-transform: uppercase;">Authorized Signatory</span>
+            <td style="width: 30%;">
+                <div style="font-size: 9px; font-weight: bold; color: #2C3E50; margin-bottom: 3px;">SCAN TO VERIFY</div>
+                <!-- Dynamic QR Code -->
+                <img src="data:image/png;base64,{{ qr_code_base64 }}" class="qr-code" alt="QR Code">
+            </td>
+            <td style="width: 40%; text-align: center;">
+                <!-- Dynamic Barcode -->
+                <img src="data:image/png;base64,{{ barcode_base64 }}" class="barcode" alt="Barcode"><br>
+                <span style="font-size: 10px; color: #7F8C8D;">{{ bill_no|default:"#INV-2026-2" }}</span>
+            </td>
+            <td style="width: 30%; text-align: right;">
+                <br><br><br>
+                <div class="sign-box">
+                    Authorized Signatory
+                </div>
             </td>
         </tr>
     </table>
 
-    <!-- 6. Footer -->
-    <div id="footer_content">
-        <div style="font-size: 9px; color: #888888; text-align: center; text-transform: uppercase; letter-spacing: 1px; border-top: 1px solid #DDD; padding-top: 10px;">
-            Thank you for shopping with Chachan General Store • This is a computer generated invoice
-        </div>
+    <!-- BOTTOM FOOTER -->
+    <div id="footerContent">
+        Thank you for shopping with Chachan General Store • This is a computer-generated document and does not require a physical signature.
     </div>
 
 </body>
