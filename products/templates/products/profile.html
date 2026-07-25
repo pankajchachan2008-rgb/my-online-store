@@ -3,7 +3,7 @@
 
 {% block content %}
 <style>
-    /* 🌟 Profile Sidebar CSS */
+    /* Profile & Form CSS */
     .profile-sidebar {
         background: #fff;
         border: 1px solid #E5E5E5;
@@ -25,18 +25,23 @@
         font-weight: bold;
         text-transform: uppercase;
     }
+    .custom-input {
+        border-radius: 0;
+        border: 1px solid #ddd;
+        font-size: 0.9rem;
+    }
+    .custom-input:focus {
+        border-color: #000;
+        box-shadow: none;
+    }
 
-    /* 🌟 Premium Order Card CSS */
+    /* Order Card & Timeline CSS */
     .order-card {
         border: 1px solid #E5E5E5;
         border-radius: 8px;
         margin-bottom: 25px;
         background: #fff;
         box-shadow: 0 2px 15px rgba(0,0,0,0.03);
-        transition: all 0.3s ease;
-    }
-    .order-card:hover {
-        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     }
     .order-header {
         background: #FAF4EF;
@@ -47,8 +52,7 @@
         justify-content: space-between;
         align-items: center;
     }
-
-    /* 🚚 Tracking Timeline CSS */
+    
     .tracking-timeline {
         display: flex;
         justify-content: space-between;
@@ -82,7 +86,6 @@
         justify-content: center;
         margin: 0 auto 10px;
         font-weight: bold;
-        transition: all 0.3s;
     }
     .track-text {
         font-size: 0.8rem;
@@ -91,20 +94,20 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    
-    /* Active & Cancelled States */
-    .track-step.active .track-icon {
-        background-color: #28a745;
-        box-shadow: 0 0 0 5px rgba(40, 167, 69, 0.2);
-    }
+    .track-step.active .track-icon { background-color: #28a745; box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2); }
     .track-step.active .track-text { color: #000; font-weight: 700; }
     
-    .track-step.cancelled .track-icon {
-        background-color: #dc3545;
-        box-shadow: 0 0 0 5px rgba(220, 53, 69, 0.2);
-    }
+    .track-step.cancelled .track-icon { background-color: #dc3545; box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.2); }
     .track-step.cancelled .track-text { color: #dc3545; font-weight: 700; }
 
+    /* Order Details Items */
+    .order-items-list {
+        background-color: #fcfcfc;
+        border: 1px dashed #ddd;
+        border-radius: 6px;
+        padding: 15px;
+    }
+    
     .btn-cancel {
         background: transparent;
         color: #dc3545;
@@ -116,47 +119,53 @@
         padding: 5px 15px;
         transition: 0.3s;
     }
-    .btn-cancel:hover {
-        background: #dc3545;
-        color: #fff;
-    }
+    .btn-cancel:hover { background: #dc3545; color: #fff; }
 </style>
 
 <div class="container my-5" style="max-width: 1200px;">
     <div class="row">
         
-        <!-- 📱 LEFT SIDEBAR: PROFILE DETAILS & SETTINGS -->
+        <!-- 📱 LEFT SIDEBAR: PROFILE DETAILS UPDATE -->
         <div class="col-lg-4 mb-4">
             <div class="profile-sidebar text-center position-sticky" style="top: 100px;">
-                <!-- User Avatar -->
                 <div class="profile-icon-circle">
                     {{ user.first_name|first|default:user.username|first }}
                 </div>
-                
-                <h4 class="fw-bold mb-1">{{ user.first_name }} {{ user.last_name }}</h4>
-                <p class="text-muted mb-4">{{ user.email }}</p>
+                <h5 class="fw-bold mb-0">{{ user.first_name }} {{ user.last_name }}</h5>
+                <p class="text-muted small mb-4">Joined: {{ user.date_joined|date:"M Y" }}</p>
                 
                 <hr>
-                
-                <!-- User Info List -->
-                <div class="text-start mb-4 px-2">
-                    <p class="mb-2" style="font-size: 0.9rem;"><strong>Username:</strong> {{ user.username }}</p>
-                    <p class="mb-2" style="font-size: 0.9rem;"><strong>Joined On:</strong> {{ user.date_joined|date:"d M, Y" }}</p>
-                </div>
 
-                <hr>
+                <!-- Update Details Form -->
+                <form method="POST" action="{% url 'profile' %}" class="text-start mt-3">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold mb-1">First Name</label>
+                        <input type="text" name="first_name" class="form-control custom-input" value="{{ user.first_name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold mb-1">Last Name</label>
+                        <input type="text" name="last_name" class="form-control custom-input" value="{{ user.last_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold mb-1">Email Address</label>
+                        <input type="email" name="email" class="form-control custom-input" value="{{ user.email }}" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100 text-uppercase fw-medium" style="font-size: 0.85rem;">
+                        Save Details
+                    </button>
+                </form>
+
+                <hr class="my-4">
                 
-                <!-- Action Buttons -->
-                <div class="d-grid gap-3 mt-4">
-                    <!-- Update Profile (Agar aapke paas profile update ka alag page nahi hai, to log yahi form dekhte the, maine link wahi rakha hai) -->
-                    
-                    <a href="{% url 'password_change' %}" class="btn btn-outline-dark text-uppercase fw-medium" style="font-size: 0.85rem;">
+                <!-- Danger / Auth Zone -->
+                <div class="d-grid gap-2">
+                    <a href="{% url 'password_change' %}" class="btn btn-outline-dark text-uppercase fw-medium" style="font-size: 0.8rem;">
                         Change Password
                     </a>
-                    
-                    <form action="{% url 'delete_account' %}" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete your account? This action cannot be undone.');">
+                    <form action="{% url 'delete_account' %}" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete your account?');">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger w-100 text-uppercase fw-medium" style="font-size: 0.85rem;">
+                        <button type="submit" class="btn btn-danger w-100 text-uppercase fw-medium" style="font-size: 0.8rem;">
                             Delete Account
                         </button>
                     </form>
@@ -164,38 +173,40 @@
             </div>
         </div>
 
-        <!-- 📦 RIGHT SIDE: ORDERS & TRACKING -->
+        <!-- 📦 RIGHT SIDE: SERIAL WISE ORDERS & TRACKING -->
         <div class="col-lg-8">
-            <h4 class="fw-bold mb-4 border-bottom pb-2">My Orders</h4>
+            <h4 class="fw-bold mb-4 border-bottom pb-2">Order History</h4>
 
             {% if orders %}
                 {% for order in orders %}
-                <div class="order-card">
-                    <!-- Order Header -->
+                <div class="order-card {% if order.status == 'Cancelled' %}opacity-75{% endif %}">
+                    
+                    <!-- Header -->
                     <div class="order-header">
                         <div>
-                            <span class="text-muted" style="font-size: 0.85rem; text-transform: uppercase;">Order ID</span><br>
-                            <strong style="font-size: 1.1rem;">#ORD-2026-{{ order.id }}</strong>
+                            <span class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">Order Placed</span><br>
+                            <strong style="font-size: 0.95rem;">{{ order.created_at|date:"d M Y, h:i A" }}</strong>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">Order ID</span><br>
+                            <strong style="font-size: 1rem;">#ORD-2026-{{ order.id }}</strong>
                         </div>
                         <div class="text-end">
-                            <span class="text-muted" style="font-size: 0.85rem; text-transform: uppercase;">Total Amount</span><br>
-                            <strong style="font-size: 1.1rem;">₹{{ order.total_amount }}</strong>
+                            <span class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">Total Amount</span><br>
+                            <strong style="font-size: 1.1rem; color: #111;">₹{{ order.total_amount }}</strong>
                         </div>
                     </div>
 
                     <div class="card-body p-4">
                         
-                        <!-- 🚚 Tracking Timeline -->
+                        <!-- Timeline -->
                         <div class="tracking-timeline">
                             {% if order.status == 'Cancelled' %}
-                                <!-- Cancelled UI -->
                                 <div class="track-step cancelled w-100">
                                     <div class="track-icon">✕</div>
                                     <div class="track-text">Order Cancelled</div>
-                                    <p class="text-muted mt-2" style="font-size: 0.8rem;">This order has been cancelled by you.</p>
                                 </div>
                             {% else %}
-                                <!-- Standard Tracking UI -->
                                 <div class="track-step {% if order.status in 'Pending,Processing,Shipped,Delivered' %}active{% endif %}">
                                     <div class="track-icon">✓</div>
                                     <div class="track-text">Pending</div>
@@ -215,25 +226,38 @@
                             {% endif %}
                         </div>
 
-                        <!-- Order Action Buttons -->
-                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                            <div>
-                                <span class="text-muted" style="font-size: 0.85rem;">Placed on: {{ order.created_at|date:"d M, Y" }}</span>
-                            </div>
-                            <div>
-                                <!-- Download Bill Button -->
+                        <!-- 🌟 NEW: Order Items Details -->
+                        <div class="order-items-list mt-4 mb-4">
+                            <h6 class="fw-bold mb-3" style="font-size: 0.85rem; text-transform: uppercase;">Items in this order:</h6>
+                            <ul class="list-unstyled mb-0">
+                                <!-- Django ForeignKey loop for order items -->
+                                {% for item in order.items.all %}
+                                <li class="d-flex justify-content-between text-muted mb-2 pb-2 border-bottom" style="font-size: 0.9rem;">
+                                    <span><strong>{{ forloop.counter }}.</strong> {{ item.product.name }} <span class="badge bg-secondary ms-1">Qty: {{ item.quantity }}</span></span>
+                                    <span class="fw-medium text-dark">₹{{ item.price }}</span>
+                                </li>
+                                {% empty %}
+                                <li class="text-muted small">Items details will be shown here.</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-end align-items-center pt-2">
+                            <!-- ✅ FIX: Invoice Button Cancelled Orders mein nahi dikhega -->
+                            {% if order.status != 'Cancelled' %}
                                 <a href="{% url 'download_invoice' order.id %}" class="btn btn-dark btn-sm text-uppercase fw-medium me-2" style="font-size: 0.8rem;">
-                                    ⬇ Invoice
+                                    ⬇ Download Invoice
                                 </a>
-                                
-                                <!-- Cancel Button (Only if Pending) -->
-                                {% if order.status == 'Pending' %}
+                            {% endif %}
+                            
+                            <!-- Cancel Button -->
+                            {% if order.status == 'Pending' %}
                                 <form action="{% url 'cancel_order' order.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this order?');">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-cancel">Cancel Order</button>
                                 </form>
-                                {% endif %}
-                            </div>
+                            {% endif %}
                         </div>
 
                     </div>
