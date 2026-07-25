@@ -140,7 +140,7 @@ def cart_detail(request):
         request.session['cart'] = cart
         request.session.modified = True
         
-    return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
+return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
 def checkout_page(request):
     cart = request.session.get('cart', {})
