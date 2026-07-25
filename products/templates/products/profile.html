@@ -231,7 +231,7 @@
                             <h6 class="fw-bold mb-3" style="font-size: 0.85rem; text-transform: uppercase;">Items in this order:</h6>
                             <ul class="list-unstyled mb-0">
                                 <!-- Django ForeignKey loop for order items -->
-                                {% for item in order.items.all %}
+                                {% for item in order.orderitem_set.all %}
                                 <li class="d-flex justify-content-between text-muted mb-2 pb-2 border-bottom" style="font-size: 0.9rem;">
                                     <span><strong>{{ forloop.counter }}.</strong> {{ item.product.name }} <span class="badge bg-secondary ms-1">Qty: {{ item.quantity }}</span></span>
                                     <span class="fw-medium text-dark">₹{{ item.price }}</span>
