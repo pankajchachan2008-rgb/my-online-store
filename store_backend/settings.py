@@ -31,7 +31,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Middleware rahega, par storage nahi
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -88,14 +88,18 @@ USE_TZ = True
 
 
 # =====================================================================
-#                 STATIC & MEDIA STORAGE (FIXED)
+#                 STATIC & MEDIA STORAGE (FIXED FOR CLOUDINARY)
 # =====================================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 MEDIA_URL = '/media/'
 
-# Yahan se humne WhiteNoise storage poori tarah hata diya hai
+# 🌟 DHYAN DEIN: Yeh line `django-cloudinary-storage` ki requirement hai!
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Django 4.2+ Storage Dictionary
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
