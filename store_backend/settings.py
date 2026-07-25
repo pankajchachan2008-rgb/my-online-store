@@ -9,16 +9,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-your-custom-secret-key-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Allowed hosts and trusted corporate endpoints
 ALLOWED_HOSTS = ['www.cgsmart.in', 'cgsmart.in', 'my-online-store-ggbj.onrender.com']
-# Ab Render ke domain ko bhi permission mil jayegi
 CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in', 'https://*.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
-    'cloudinary_storage', # Nayi line
+    'cloudinary_storage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -32,7 +31,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Static files serving engine
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Middleware rahega, par storage nahi
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -54,14 +53,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'products.context_processors.get_active_banners', # <--- Sahi format (Quote add kar diya hai)
+                'products.context_processors.get_active_banners',
             ],
         },
     },
 ]
-
-import dj_database_url
-import os
 
 # Database Configuration 
 DATABASES = {
@@ -90,40 +86,38 @@ TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
-# Static & Media Files Setup
-STATIC_URL = 'static/'
+
+# =====================================================================
+#                 STATIC & MEDIA STORAGE (FIXED)
+# =====================================================================
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+MEDIA_URL = '/media/'
 
+# Yahan se humne WhiteNoise storage poori tarah hata diya hai
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Authentication Redirections
+# =====================================================================
+#                 SECURITY HARDENING SETTINGS
+# =====================================================================
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# =====================================================================
-#                 🔒 ADVANCED SECURITY HARDENING SETTINGS
-# =====================================================================
-# Strict SSL Redirect & HTTPS Enforcement (Render Live Ke Liye)
 SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# HSTS (HTTP Strict Transport Security)
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Session & Cookie Security
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
@@ -131,32 +125,20 @@ CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
 
-# Browser Protection Headers
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_REFERRER_POLICY = "same-origin"
 
 # =====================================================================
-#                 📧 EMAIL OTP CONFIGURATION
+#                 EMAIL & CLOUDINARY CONFIGURATION
 # =====================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'pankajchachan2026@gmail.com'
-EMAIL_HOST_PASSWORD = 'oltqxsmoydkhgoah'  # Apne App Password se replace karein
-
-import os
-
-# Static files (CSS, JS) ki settings
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'  # <--- Yeh nayi line add karein
-
-# Media files (Images, Banners) jo Cloudinary par jayengi
-MEDIA_URL = '/media/'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+EMAIL_HOST_PASSWORD = 'oltqxsmoydkhgoah'  
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'mqge4pqj', 
