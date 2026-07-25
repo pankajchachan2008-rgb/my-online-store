@@ -235,31 +235,32 @@ def checkout_page(request):
 # 👤 5. Premium Profile Page
 @login_required(login_url='/login/')
 def profile_page(request):
-    # Agar user staff hai toh dashboard par bhejein
     if request.user.is_staff or request.user.is_superuser:
         return redirect('home')
         
-    # Profile update logic (Form Data)
+    # Profile fetch ya create karein
+    profile, created = CustomerProfile.objects.get_or_create(user=request.user)
+    
     if request.method == 'POST':
+        # User details update
         request.user.first_name = request.POST.get('first_name', '')
         request.user.last_name = request.POST.get('last_name', '')
         request.user.email = request.POST.get('email', '')
         request.user.save()
         
-        # CustomerProfile save karna (Error handle karne ke liye try-except)
-        try:
-            profile, created = CustomerProfile.objects.get_or_create(user=request.user)
-            profile.save()
-        except:
-            pass # Agar model mein field missmatch ho toh error nahi aayega
+        # Profile details (Mobile & Address) update
+        profile.mobile_number = request.POST.get('mobile_number', '')
+        profile.default_address = request.POST.get('address', '')
+        profile.save()
         
-        messages.success(request, "✅ Profile updated!")
+        messages.success(request, "✅ Aapki profile details successfully update ho gayi hain!")
         return redirect('profile')
 
-    # Orders fetch karna (Newest First)
+    # Orders fetch karein
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     
-    return render(request, 'products/profile.html', {'orders': orders})
+    # Context mein 'profile' bhej diya taaki HTML mein form fill ho sake
+    return render(request, 'products/profile.html', {'profile': profile, 'orders': orders})
 
 # 🗑️ Delete Account
 @login_required(login_url='/login/')

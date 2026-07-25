@@ -151,6 +151,17 @@
                         <label class="form-label text-muted small fw-bold mb-1">Email Address</label>
                         <input type="email" name="email" class="form-control custom-input" value="{{ user.email }}" required>
                     </div>
+                    
+                    <!-- 🌟 NEW: Mobile aur Address Fields wapas add kar diye -->
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold mb-1">Mobile Number</label>
+                        <input type="text" name="mobile_number" class="form-control custom-input" value="{{ profile.mobile_number|default:'' }}" placeholder="10-digit mobile number">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold mb-1">Default Address</label>
+                        <textarea name="address" class="form-control custom-input" rows="2" placeholder="Aapka poora address">{{ profile.default_address|default:'' }}</textarea>
+                    </div>
+                    
                     <button type="submit" class="btn btn-dark w-100 text-uppercase fw-medium" style="font-size: 0.85rem;">
                         Save Details
                     </button>
