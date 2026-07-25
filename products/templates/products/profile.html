@@ -28,6 +28,7 @@
         border-radius: 0;
         text-transform: uppercase;
         font-size: 0.9rem;
+        cursor: pointer;
     }
     .sidebar-menu .nav-link:hover { color: #2874f0; background-color: #f9f9f9; }
     .sidebar-menu .nav-link.active {
@@ -37,12 +38,7 @@
         font-weight: 600;
     }
     
-    /* Header User Info */
-    .user-info-header {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
+    .user-info-header { display: flex; align-items: center; gap: 15px; }
     .user-avatar {
         width: 50px;
         height: 50px;
@@ -55,6 +51,14 @@
         font-size: 1.5rem;
         font-weight: bold;
     }
+
+    /* Order Card UI */
+    .order-box { border: 1px solid #e0e0e0; border-radius: 4px; transition: box-shadow 0.2s; }
+    .order-box:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .order-header { background-color: #f5f7fa; padding: 12px 15px; border-bottom: 1px solid #e0e0e0; }
+    
+    /* Address Tag */
+    .address-tag { background: #f0f0f0; color: #878787; font-size: 0.7rem; padding: 3px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 </style>
 
 <div class="container my-4" style="max-width: 1200px;">
@@ -62,7 +66,6 @@
         
         <!-- 📱 LEFT SIDEBAR -->
         <div class="col-lg-3 mb-4">
-            <!-- User Hello Card -->
             <div class="profile-card user-info-header">
                 <div class="user-avatar">
                     {{ user.first_name|first|default:user.username|first }}
@@ -73,7 +76,6 @@
                 </div>
             </div>
             
-            <!-- Navigation Menu -->
             <div class="sidebar-menu nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <button class="nav-link active text-start" data-bs-toggle="pill" data-bs-target="#tab-profile" type="button">👤 Profile Information</button>
                 <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-orders" type="button">📦 My Orders</button>
@@ -87,7 +89,7 @@
         <div class="col-lg-9">
             <div class="profile-card p-4 tab-content" id="v-pills-tabContent" style="min-height: 500px;">
                 
-                <!-- TAB 1: PROFILE INFORMATION -->
+                <!-- ✅ TAB 1: PROFILE INFORMATION -->
                 <div class="tab-pane fade show active" id="tab-profile">
                     <h5 class="fw-bold mb-4 pb-2 border-bottom">Profile Information</h5>
                     <form method="POST" action="{% url 'profile' %}">
@@ -96,39 +98,193 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold">First Name</label>
-                                <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+                                <input type="text" name="first_name" class="form-control rounded-0" value="{{ user.first_name }}" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold">Last Name</label>
-                                <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                                <input type="text" name="last_name" class="form-control rounded-0" value="{{ user.last_name }}">
                             </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold">Email Address</label>
-                                <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                                <input type="email" name="email" class="form-control rounded-0" value="{{ user.email }}" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold">Mobile Number</label>
-                                <input type="text" name="mobile_number" class="form-control" value="{{ profile.mobile_number|default:'' }}">
+                                <input type="text" name="mobile_number" class="form-control rounded-0" value="{{ profile.mobile_number|default:'' }}">
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary px-4 py-2 fw-medium">SAVE CHANGES</button>
+                        <button type="submit" class="btn btn-primary px-4 py-2 fw-medium rounded-0" style="background: #2874f0; border:none;">SAVE CHANGES</button>
                     </form>
                 </div>
 
-                <!-- TAB 2: MY ORDERS (Yahan aapka purana order code aayega) -->
+                <!-- ✅ TAB 2: MY ORDERS -->
                 <div class="tab-pane fade" id="tab-orders">
                     <h5 class="fw-bold mb-4 pb-2 border-bottom">My Orders</h5>
-                    <!-- Hum isko next step mein Amazon ki tarah design karenge -->
-                    <p class="text-muted">Order history will be shown here.</p>
+                    
+                    {% for order in orders %}
+                    <div class="order-box mb-4">
+                        <div class="order-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small">ORDER PLACED</span><br>
+                                <strong style="font-size: 0.9rem;">{{ order.created_at|date:"d M Y" }}</strong>
+                            </div>
+                            <div>
+                                <span class="text-muted small">TOTAL</span><br>
+                                <strong style="font-size: 0.9rem;">₹{{ order.total_amount }}</strong>
+                            </div>
+                            <div class="text-end">
+                                <span class="text-muted small">ORDER ID</span><br>
+                                <strong style="font-size: 0.9rem;">#ORD-2026-{{ order.id }}</strong>
+                            </div>
+                        </div>
+                        
+                        <div class="p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <!-- Order Status Badge -->
+                                    {% if order.status == 'Delivered' %}
+                                        <h6 class="fw-bold text-success mb-1">🟢 Delivered</h6>
+                                    {% elif order.status == 'Cancelled' %}
+                                        <h6 class="fw-bold text-danger mb-1">🔴 Cancelled</h6>
+                                    {% else %}
+                                        <h6 class="fw-bold text-warning mb-1">🟡 {{ order.status }}</h6>
+                                    {% endif %}
+                                </div>
+                                
+                                <div>
+                                    {% if order.status != 'Cancelled' %}
+                                    <a href="{% url 'download_invoice' order.id %}" class="btn btn-outline-dark btn-sm rounded-0 me-2">Download Invoice</a>
+                                    {% endif %}
+                                    
+                                    {% if order.status == 'Pending' %}
+                                    <form action="{% url 'cancel_order' order.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-0">Cancel Order</button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Items List -->
+                            <div class="bg-light p-3 rounded">
+                                {% for item in order.orderitem_set.all %}
+                                <div class="d-flex justify-content-between mb-2 pb-2 {% if not forloop.last %}border-bottom{% endif %}">
+                                    <span style="font-size: 0.9rem;"><strong>{{ item.quantity }} x</strong> {{ item.product_name }}</span>
+                                    <span class="fw-medium text-dark" style="font-size: 0.9rem;">₹{{ item.price }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                        <div class="text-center py-5">
+                            <h2 class="text-muted">📦</h2>
+                            <h5 class="text-muted mt-2">No orders found</h5>
+                            <a href="{% url 'home' %}" class="btn btn-primary mt-3 px-4 rounded-0" style="background: #2874f0; border:none;">Shop Now</a>
+                        </div>
+                    {% endfor %}
                 </div>
 
-                <!-- TAB 3: MANAGE ADDRESSES -->
+                <!-- ✅ TAB 3: MANAGE ADDRESSES -->
                 <div class="tab-pane fade" id="tab-addresses">
-                    <h5 class="fw-bold mb-4 pb-2 border-bottom">Manage Addresses</h5>
-                    <!-- Hum isko next step mein build karenge -->
-                    <p class="text-muted">Your saved addresses will appear here.</p>
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                        <h5 class="fw-bold mb-0">Manage Addresses</h5>
+                        <!-- Add Address Trigger -->
+                        <button class="btn btn-outline-primary btn-sm rounded-0 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#addAddressForm">
+                            + ADD A NEW ADDRESS
+                        </button>
+                    </div>
+
+                    <!-- Collapsible Add Address Form -->
+                    <div class="collapse mb-4" id="addAddressForm">
+                        <div class="card card-body bg-light rounded-0" style="border: 1px solid #e0e0e0;">
+                            <h6 class="fw-bold mb-3 text-primary">ADD A NEW ADDRESS</h6>
+                            <form method="POST" action="{% url 'profile' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="add_address">
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <input type="text" name="name" class="form-control rounded-0" placeholder="Full Name" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" name="mobile" class="form-control rounded-0" placeholder="10-digit mobile number" required>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <input type="text" name="pincode" class="form-control rounded-0" placeholder="Pincode" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" name="locality" class="form-control rounded-0" placeholder="Locality / Area" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea name="full_address" class="form-control rounded-0" rows="3" placeholder="Address (House No, Building, Street)" required></textarea>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <input type="text" name="city" class="form-control rounded-0" placeholder="City/District/Town" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <select name="state" class="form-control rounded-0" required>
+                                            <option value="" disabled selected>--Select State--</option>
+                                            <option value="Rajasthan">Rajasthan</option>
+                                            <option value="Haryana">Haryana</option>
+                                            <option value="Delhi">Delhi</option>
+                                            <option value="Punjab">Punjab</option>
+                                            <option value="Gujarat">Gujarat</option>
+                                            <option value="Maharashtra">Maharashtra</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="text-muted small fw-bold d-block mb-2">Address Type</label>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="address_type" value="Home" checked>
+                                        <label class="form-check-label">Home (All day delivery)</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="address_type" value="Office">
+                                        <label class="form-check-label">Office (Delivery between 10 AM - 5 PM)</label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button type="submit" class="btn btn-primary px-4 fw-medium rounded-0" style="background: #2874f0; border:none;">SAVE</button>
+                                    <button type="button" class="btn btn-link text-muted ms-2" data-bs-toggle="collapse" data-bs-target="#addAddressForm">CANCEL</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Saved Addresses List -->
+                    {% for addr in addresses %}
+                    <div class="border rounded-0 p-3 mb-3 position-relative bg-white" style="border-color: #e0e0e0 !important;">
+                        <span class="address-tag mb-2 d-inline-block">{{ addr.address_type }}</span>
+                        
+                        <!-- Dropdown Menu for Edit/Delete (Visual only for now) -->
+                        <div class="dropdown position-absolute top-0 end-0 mt-3 me-3">
+                            <button class="btn btn-sm text-muted" type="button" data-bs-toggle="dropdown" style="font-size: 1.2rem; line-height: 1;">⋮</button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                <li><a class="dropdown-item small" href="#">Edit</a></li>
+                                <li><a class="dropdown-item text-danger small" href="#">Delete</a></li>
+                            </ul>
+                        </div>
+
+                        <p class="mb-1 text-dark" style="font-size: 1rem;"><span class="fw-bold">{{ addr.name }}</span> <span class="ms-3 fw-bold">{{ addr.mobile_number }}</span></p>
+                        <p class="text-muted mb-0" style="font-size: 0.9rem;">
+                            {{ addr.full_address }}, {{ addr.locality }}, <br>
+                            {{ addr.city }}, {{ addr.state }} - <span class="fw-bold text-dark">{{ addr.pincode }}</span>
+                        </p>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3082/3082383.png" alt="No Address" style="width: 60px; opacity: 0.3;" class="mb-3">
+                        <p class="text-muted">No saved addresses found.</p>
+                    </div>
+                    {% endfor %}
                 </div>
                 
             </div>
