@@ -54,29 +54,63 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: DELIVERY ADDRESS (Active State) -->
+                <!-- STEP 2: DELIVERY ADDRESS (Active State with Saved Addresses Integration) -->
                 <div class="checkout-box">
                     <div class="checkout-header">
                         <span class="step-num">2</span>
                         DELIVERY ADDRESS
                     </div>
                     <div class="checkout-body" style="background: #f5faff;">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="text-muted small fw-bold mb-1">Full Name</label>
-                                <input type="text" name="name" class="form-control-custom bg-white" required 
-                                       value="{% if user.is_authenticated %}{{ user.first_name }}{% endif %}" placeholder="Enter your full name">
+                        
+                        {% if saved_addresses %}
+                            <!-- 📍 Show Saved Addresses -->
+                            {% for addr in saved_addresses %}
+                            <div class="form-check border p-3 mb-3 bg-white shadow-sm" style="cursor: pointer; border-radius: 4px; {% if forloop.first %}border-color: #2874f0 !important;{% endif %}">
+                                <input class="form-check-input mt-2" type="radio" name="address_id" id="addr_{{ addr.id }}" value="{{ addr.id }}" {% if forloop.first %}checked{% endif %} required>
+                                
+                                <label class="form-check-label w-100 ms-2" for="addr_{{ addr.id }}" style="cursor: pointer;">
+                                    <span class="badge bg-secondary mb-1 px-2 py-1" style="font-size: 10px; letter-spacing: 0.5px;">{{ addr.address_type|upper }}</span><br>
+                                    <strong class="text-dark" style="font-size: 15px;">{{ addr.name }}</strong> <span class="fw-bold ms-3">{{ addr.mobile_number }}</span>
+                                    <p class="mb-0 text-muted small mt-2" style="line-height: 1.5;">
+                                        {{ addr.full_address }}, {{ addr.locality }}, <br>
+                                        {{ addr.city }}, {{ addr.state }} - <strong class="text-dark">{{ addr.pincode }}</strong>
+                                    </p>
+                                </label>
                             </div>
-                            <div class="col-md-6">
-                                <label class="text-muted small fw-bold mb-1">Mobile Number</label>
-                                <input type="text" name="mobile_number" class="form-control-custom bg-white" required 
-                                       value="{{ user.customerprofile.mobile_number|default:'' }}" placeholder="10-digit mobile number">
+                            {% endfor %}
+
+                            <!-- ➕ Add New Address Option -->
+                            <div class="form-check border p-3 bg-white shadow-sm" style="border-radius: 4px;">
+                                <input class="form-check-input mt-1" type="radio" name="address_id" id="new_addr" value="">
+                                <label class="form-check-label ms-2 fw-bold" for="new_addr" style="cursor: pointer; color: #2874f0;">
+                                    + Add a New Address
+                                </label>
                             </div>
-                            <div class="col-12 mt-3">
-                                <label class="text-muted small fw-bold mb-1">Complete Address</label>
-                                <textarea name="address" class="form-control-custom bg-white" rows="3" required placeholder="House No, Building Name, Street, Area, City, Pincode">{{ user.customerprofile.default_address|default:'' }}</textarea>
+                        {% else %}
+                            <div class="alert alert-info py-2 small mb-3 border-0 bg-white shadow-sm text-dark">
+                                You don't have any saved addresses. Please enter your delivery details below.
+                            </div>
+                        {% endif %}
+
+                        <!-- ✍️ MANUAL ADDRESS FORM -->
+                        <div id="manual_address_form" class="mt-4 {% if saved_addresses %}d-none{% endif %} p-4 bg-white border shadow-sm" style="border-radius: 4px;">
+                            <h6 class="fw-bold text-dark mb-4" style="font-size: 14px; text-transform: uppercase;">Add Delivery Details</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="text-muted small fw-bold mb-1">Full Name</label>
+                                    <input type="text" name="name" class="form-control-custom bg-white" {% if not saved_addresses %}required{% endif %} placeholder="Enter your full name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="text-muted small fw-bold mb-1">Mobile Number</label>
+                                    <input type="text" name="mobile_number" class="form-control-custom bg-white" {% if not saved_addresses %}required{% endif %} placeholder="10-digit mobile number">
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <label class="text-muted small fw-bold mb-1">Complete Address</label>
+                                    <textarea name="address" class="form-control-custom bg-white" rows="3" {% if not saved_addresses %}required{% endif %} placeholder="House No, Building Name, Street, Area, City, State, Pincode"></textarea>
+                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -170,4 +204,30 @@
     </form>
 </div>
 <div class="d-block d-lg-none" style="height: 80px;"></div>
+
+<!-- ⚙️ JavaScript for Address Form Toggle -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const addressRadios = document.querySelectorAll('input[name="address_id"]');
+        const manualForm = document.getElementById("manual_address_form");
+        
+        if (manualForm) {
+            const manualInputs = manualForm.querySelectorAll('input, textarea');
+            
+            addressRadios.forEach((elem) => {
+                elem.addEventListener("change", function(event) {
+                    if (event.target.value === "") {
+                        // "Add New Address" select kiya hai, form dikhayein
+                        manualForm.classList.remove("d-none");
+                        manualInputs.forEach(input => input.setAttribute('required', 'required'));
+                    } else {
+                        // Saved Address select kiya hai, form chupayein
+                        manualForm.classList.add("d-none");
+                        manualInputs.forEach(input => input.removeAttribute('required'));
+                    }
+                });
+            });
+        }
+    });
+</script>
 {% endblock %}
