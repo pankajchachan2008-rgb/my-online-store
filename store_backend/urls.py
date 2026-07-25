@@ -6,7 +6,7 @@ from django.views.static import serve
 from django.contrib.auth import views as auth_views
 from django.http import HttpResponse  # 🌟 NAYA IMPORT PING KE LIYE
 
-# Views functions imports
+# Views functions imports (FIXED: Added cancel_order here)
 from products.views import (
     product_list, add_to_cart, cart_detail, checkout_page,
     check_coupon_ajax, about_page, contact_page,
@@ -17,7 +17,8 @@ from products.views import (
     download_invoice,
     export_products_csv, import_products_csv,
     product_detail, 
-    update_cart_item # 🌟 Naya View Import Kiya
+    update_cart_item, # 🌟 Naya View Import Kiya
+    cancel_order # 🌟 FIX: Isko import list mein add kar diya
 )
 
 # 🌟 UPTIMEROBOT KE LIYE PING FUNCTION SEEDHA YAHI BANA DIYA
@@ -51,7 +52,9 @@ urlpatterns = [
     path('profile/', profile_page, name='profile'),
     path('profile/delete/', delete_account, name='delete_account'),
     path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html', success_url='/profile/'), name='password_change'),
-    path('cancel-order/<int:order_id>/', views.cancel_order, name='cancel_order'),
+    
+    # 🌟 FIX: views.cancel_order ki jagah sirf cancel_order likha hai
+    path('cancel-order/<int:order_id>/', cancel_order, name='cancel_order'),
     
     # ❤️ Wishlist
     path('wishlist/', view_wishlist, name='view_wishlist'),
