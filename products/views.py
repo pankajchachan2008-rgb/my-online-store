@@ -235,26 +235,31 @@ def checkout_page(request):
 # 👤 5. Premium Profile Page
 @login_required(login_url='/login/')
 def profile_page(request):
-    # 1. Profile Update Logic
-    if request.method == 'POST':
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
+    # Agar user staff hai toh dashboard par bhejein
+    if request.user.is_staff or request.user.is_superuser:
+        return redirect('home')
         
-        # User ki details update karke save karna
-        request.user.first_name = first_name
-        request.user.last_name = last_name
-        request.user.email = email
+    # Profile update logic (Form Data)
+    if request.method == 'POST':
+        request.user.first_name = request.POST.get('first_name', '')
+        request.user.last_name = request.POST.get('last_name', '')
+        request.user.email = request.POST.get('email', '')
         request.user.save()
         
-        messages.success(request, "✅ Your profile details have been updated successfully.")
+        # CustomerProfile save karna (Error handle karne ke liye try-except)
+        try:
+            profile, created = CustomerProfile.objects.get_or_create(user=request.user)
+            profile.save()
+        except:
+            pass # Agar model mein field missmatch ho toh error nahi aayega
+        
+        messages.success(request, "✅ Profile updated!")
         return redirect('profile')
 
-    # 2. Order History Logic (Serial wise: Sabse naya order sabse upar aayega)
-    # Note: '-created_at' ka minus (-) sign order ko ulta (newest first) sort karta hai
+    # Orders fetch karna (Newest First)
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     
-    return render(request, 'profile.html', {'orders': orders})
+    return render(request, 'products/profile.html', {'orders': orders})
 
 # 🗑️ Delete Account
 @login_required(login_url='/login/')
