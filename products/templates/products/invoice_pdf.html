@@ -21,12 +21,6 @@
             color: #2b2b2b;
         }
         
-        /* Red Theme Colors: 
-           Primary Red: #C0392B 
-           Dark Grey: #34495E 
-           Light Red BG: #FADBD8 
-        */
-
         .header-table {
             width: 100%;
             margin-bottom: 25px;
@@ -34,7 +28,7 @@
             padding-bottom: 15px;
         }
         .company-name {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             color: #C0392B;
             text-transform: uppercase;
@@ -43,12 +37,12 @@
         .tagline {
             font-size: 10px;
             color: #7F8C8D;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             margin-top: 4px;
         }
         .document-title {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             color: #34495E;
             text-align: right;
@@ -143,14 +137,10 @@
             width: 100%;
             margin-top: 10px;
         }
-        /* xhtml2pdf sometimes needs width/height defined in CSS AND HTML attributes */
         .qr-code {
             border: 1px solid #E5E7E9;
             padding: 4px;
             background-color: white;
-        }
-        .barcode-container {
-            text-align: center;
         }
         .sign-box {
             text-align: center;
@@ -174,15 +164,25 @@
 </head>
 <body>
 
-    <!-- HEADER SECTION -->
+    <!-- HEADER SECTION (UPDATED WITH LOGO & BARCODE) -->
     <table class="header-table">
         <tr>
-            <td style="width: 60%; vertical-align: bottom;">
+            <!-- 1. Store Logo -->
+            <td style="width: 15%; vertical-align: middle;">
+                <!-- DHYAN DEIN: 'dummyimage' wale URL ko hata kar yahan apne Cloudinary ya website ka direct logo URL daal lein -->
+                <img src="{{ logo_url|default:'https://www.cgsmart.in/static/logo.png&text=CGS' }}" width="65" height="65" alt="Store Logo">
+            </td>
+            
+            <!-- 2. Company Info -->
+            <td style="width: 45%; vertical-align: middle;">
                 <div class="company-name">{{ company_name|default:"Chachan General Store" }}</div>
                 <div class="tagline">{{ tagline|default:"Premium Corporate Retail & Essentials" }}</div>
             </td>
-            <td style="width: 40%; vertical-align: bottom;">
-                <div class="document-title">BILL OF SUPPLY</div>
+            
+            <!-- 3. Title & Barcode (Moved Here) -->
+            <td style="width: 40%; text-align: right; vertical-align: middle;">
+                <div class="document-title" style="margin-bottom: 5px;">BILL OF SUPPLY</div>
+                <img src="data:image/png;base64,{{ barcode_base64 }}" width="140" height="35" alt="Barcode">
             </td>
         </tr>
     </table>
@@ -280,18 +280,15 @@
         </tr>
     </table>
 
-    <!-- SIGNATURE, BARCODE & QR SECTION -->
+    <!-- SIGNATURE & QR SECTION (UPDATED) -->
     <table class="footer-section">
         <tr>
             <td style="width: 30%;">
                 <div style="font-size: 9px; font-weight: bold; color: #C0392B; margin-bottom: 5px;">SCAN TO VERIFY</div>
-                <!-- FIXED: Added hardcoded width and height for xhtml2pdf compatibility -->
-                <img src="data:image/png;base64,{{ qr_code_base64 }}" width="80" height="80" class="qr-code" alt="QR Code">
+                <img src="data:image/png;base64,{{ qr_code_base64 }}" width="75" height="75" class="qr-code" alt="QR Code">
             </td>
-            <td style="width: 40%;" class="barcode-container">
-                <!-- FIXED: Added hardcoded width and height -->
-                <img src="data:image/png;base64,{{ barcode_base64 }}" width="150" height="40" alt="Barcode"><br>
-                <div style="font-size: 10px; color: #34495E; margin-top: 4px; font-weight: bold;">{{ bill_no|default:"#INV-2026-2" }}</div>
+            <td style="width: 40%; text-align: center; vertical-align: bottom;">
+                <div style="font-size: 11px; color: #34495E; font-weight: bold; letter-spacing: 1px;">{{ bill_no|default:"#INV-2026-2" }}</div>
             </td>
             <td style="width: 30%; text-align: right; vertical-align: bottom;">
                 <div class="sign-box">
