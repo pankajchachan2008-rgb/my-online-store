@@ -518,3 +518,18 @@ def update_cart_item(request, item_key, action):
         request.session.modified = True
         
     return redirect('cart_detail')
+
+@login_required(login_url='/login/')
+def cancel_order(request, order_id):
+    # Sirf wahi user apna order cancel kar sakta hai jisne order place kiya ho
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # Order tabhi cancel ho sakta hai jab wo 'Pending' ho
+    if order.status == 'Pending':
+        order.status = 'Cancelled'
+        order.save()
+        messages.success(request, f"✅ Order #{order.id} successfully cancel ho gaya hai.")
+    else:
+        messages.error(request, f"❌ Order #{order.id} ab cancel nahi kiya ja sakta kyunki yeh '{order.status}' status mein hai.")
+        
+    return redirect('profile')

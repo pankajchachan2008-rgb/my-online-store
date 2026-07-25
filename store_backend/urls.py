@@ -51,6 +51,7 @@ urlpatterns = [
     path('profile/', profile_page, name='profile'),
     path('profile/delete/', delete_account, name='delete_account'),
     path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html', success_url='/profile/'), name='password_change'),
+    path('cancel-order/<int:order_id>/', views.cancel_order, name='cancel_order'),
     
     # ❤️ Wishlist
     path('wishlist/', view_wishlist, name='view_wishlist'),
