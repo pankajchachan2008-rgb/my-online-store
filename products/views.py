@@ -22,7 +22,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator 
 
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address # <-- Address add kiya
 from .serializers import OrderSerializer, ProductSerializer
 
 def ping(request):
@@ -238,29 +238,47 @@ def profile_page(request):
     if request.user.is_staff or request.user.is_superuser:
         return redirect('home')
         
-    # Profile fetch ya create karein
     profile, created = CustomerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
-        # User details update
-        request.user.first_name = request.POST.get('first_name', '')
-        request.user.last_name = request.POST.get('last_name', '')
-        request.user.email = request.POST.get('email', '')
-        request.user.save()
+        # Yahan hum check karenge ki kaunsa form submit hua hai
+        action = request.POST.get('action')
         
-        # Profile details (Mobile & Address) update
-        profile.mobile_number = request.POST.get('mobile_number', '')
-        profile.default_address = request.POST.get('address', '')
-        profile.save()
-        
-        messages.success(request, "✅ Aapki profile details successfully update ho gayi hain!")
+        if action == 'update_profile':
+            request.user.first_name = request.POST.get('first_name', '')
+            request.user.last_name = request.POST.get('last_name', '')
+            request.user.email = request.POST.get('email', '')
+            request.user.save()
+            
+            profile.mobile_number = request.POST.get('mobile_number', '')
+            profile.save()
+            messages.success(request, "✅ Profile updated successfully!")
+            
+        elif action == 'add_address':
+            Address.objects.create(
+                user=request.user,
+                name=request.POST.get('name'),
+                mobile_number=request.POST.get('mobile'),
+                pincode=request.POST.get('pincode'),
+                locality=request.POST.get('locality'),
+                full_address=request.POST.get('full_address'),
+                city=request.POST.get('city'),
+                state=request.POST.get('state'),
+                address_type=request.POST.get('address_type', 'Home')
+            )
+            messages.success(request, "✅ New address added!")
+            
         return redirect('profile')
 
-    # Orders fetch karein
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    addresses = Address.objects.filter(user=request.user)
     
-    # Context mein 'profile' bhej diya taaki HTML mein form fill ho sake
-    return render(request, 'products/profile.html', {'profile': profile, 'orders': orders})
+    context = {
+        'profile': profile,
+        'orders': orders,
+        'addresses': addresses
+    }
+    return render(request, 'products/profile.html', context)
 
 # 🗑️ Delete Account
 @login_required(login_url='/login/')

@@ -3,284 +3,135 @@
 
 {% block content %}
 <style>
-    /* Profile & Form CSS */
-    .profile-sidebar {
+    body { background-color: #f1f3f6; }
+    
+    .profile-card {
         background: #fff;
-        border: 1px solid #E5E5E5;
-        border-radius: 8px;
-        padding: 30px 20px;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+        border-radius: 4px;
+        box-shadow: 0 2px 4px 0 rgba(0,0,0,.08);
+        padding: 15px;
+        margin-bottom: 15px;
     }
-    .profile-icon-circle {
-        width: 80px;
-        height: 80px;
-        background: #000;
-        color: #fff;
-        font-size: 2.2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        margin: 0 auto 15px;
-        font-weight: bold;
-        text-transform: uppercase;
+    
+    /* Premium Sidebar Navigation */
+    .sidebar-menu {
+        background: #fff;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px 0 rgba(0,0,0,.08);
+        overflow: hidden;
     }
-    .custom-input {
+    .sidebar-menu .nav-link {
+        color: #878787;
+        padding: 15px 25px;
+        font-weight: 500;
+        border-bottom: 1px solid #f0f0f0;
         border-radius: 0;
-        border: 1px solid #ddd;
+        text-transform: uppercase;
         font-size: 0.9rem;
     }
-    .custom-input:focus {
-        border-color: #000;
-        box-shadow: none;
-    }
-
-    /* Order Card & Timeline CSS */
-    .order-card {
-        border: 1px solid #E5E5E5;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        background: #fff;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.03);
-    }
-    .order-header {
-        background: #FAF4EF;
-        padding: 15px 20px;
-        border-bottom: 1px solid #E5E5E5;
-        border-radius: 8px 8px 0 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .sidebar-menu .nav-link:hover { color: #2874f0; background-color: #f9f9f9; }
+    .sidebar-menu .nav-link.active {
+        color: #2874f0;
+        background-color: #e5edfa;
+        border-left: 4px solid #2874f0;
+        font-weight: 600;
     }
     
-    .tracking-timeline {
+    /* Header User Info */
+    .user-info-header {
         display: flex;
-        justify-content: space-between;
-        position: relative;
-        margin: 30px 10px 20px;
+        align-items: center;
+        gap: 15px;
     }
-    .tracking-timeline::before {
-        content: '';
-        position: absolute;
-        top: 15px;
-        left: 5%;
-        right: 5%;
-        height: 3px;
-        background-color: #E5E5E5;
-        z-index: 1;
-    }
-    .track-step {
-        position: relative;
-        z-index: 2;
-        text-align: center;
-        width: 25%;
-    }
-    .track-icon {
-        width: 35px;
-        height: 35px;
-        background-color: #E5E5E5;
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        background: #2874f0;
         color: #fff;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 10px;
+        font-size: 1.5rem;
         font-weight: bold;
     }
-    .track-text {
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: #666;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .track-step.active .track-icon { background-color: #28a745; box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2); }
-    .track-step.active .track-text { color: #000; font-weight: 700; }
-    
-    .track-step.cancelled .track-icon { background-color: #dc3545; box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.2); }
-    .track-step.cancelled .track-text { color: #dc3545; font-weight: 700; }
-
-    /* Order Details Items */
-    .order-items-list {
-        background-color: #fcfcfc;
-        border: 1px dashed #ddd;
-        border-radius: 6px;
-        padding: 15px;
-    }
-    
-    .btn-cancel {
-        background: transparent;
-        color: #dc3545;
-        border: 1px solid #dc3545;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        border-radius: 4px;
-        padding: 5px 15px;
-        transition: 0.3s;
-    }
-    .btn-cancel:hover { background: #dc3545; color: #fff; }
 </style>
 
-<div class="container my-5" style="max-width: 1200px;">
+<div class="container my-4" style="max-width: 1200px;">
     <div class="row">
         
-        <!-- 📱 LEFT SIDEBAR: PROFILE DETAILS UPDATE -->
-        <div class="col-lg-4 mb-4">
-            <div class="profile-sidebar text-center position-sticky" style="top: 100px;">
-                <div class="profile-icon-circle">
+        <!-- 📱 LEFT SIDEBAR -->
+        <div class="col-lg-3 mb-4">
+            <!-- User Hello Card -->
+            <div class="profile-card user-info-header">
+                <div class="user-avatar">
                     {{ user.first_name|first|default:user.username|first }}
                 </div>
-                <h5 class="fw-bold mb-0">{{ user.first_name }} {{ user.last_name }}</h5>
-                <p class="text-muted small mb-4">Joined: {{ user.date_joined|date:"M Y" }}</p>
-                
-                <hr>
-
-                <!-- Update Details Form -->
-                <form method="POST" action="{% url 'profile' %}" class="text-start mt-3">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold mb-1">First Name</label>
-                        <input type="text" name="first_name" class="form-control custom-input" value="{{ user.first_name }}" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold mb-1">Last Name</label>
-                        <input type="text" name="last_name" class="form-control custom-input" value="{{ user.last_name }}">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold mb-1">Email Address</label>
-                        <input type="email" name="email" class="form-control custom-input" value="{{ user.email }}" required>
-                    </div>
-                    
-                    <!-- 🌟 NEW: Mobile aur Address Fields wapas add kar diye -->
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold mb-1">Mobile Number</label>
-                        <input type="text" name="mobile_number" class="form-control custom-input" value="{{ profile.mobile_number|default:'' }}" placeholder="10-digit mobile number">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold mb-1">Default Address</label>
-                        <textarea name="address" class="form-control custom-input" rows="2" placeholder="Aapka poora address">{{ profile.default_address|default:'' }}</textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-dark w-100 text-uppercase fw-medium" style="font-size: 0.85rem;">
-                        Save Details
-                    </button>
-                </form>
-
-                <hr class="my-4">
-                
-                <!-- Danger / Auth Zone -->
-                <div class="d-grid gap-2">
-                    <a href="{% url 'password_change' %}" class="btn btn-outline-dark text-uppercase fw-medium" style="font-size: 0.8rem;">
-                        Change Password
-                    </a>
-                    <form action="{% url 'delete_account' %}" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete your account?');">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger w-100 text-uppercase fw-medium" style="font-size: 0.8rem;">
-                            Delete Account
-                        </button>
-                    </form>
+                <div>
+                    <span style="font-size: 0.8rem; color: #878787;">Hello,</span><br>
+                    <strong style="font-size: 1.1rem; color: #111;">{{ user.first_name }} {{ user.last_name }}</strong>
                 </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <div class="sidebar-menu nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link active text-start" data-bs-toggle="pill" data-bs-target="#tab-profile" type="button">👤 Profile Information</button>
+                <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-orders" type="button">📦 My Orders</button>
+                <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-addresses" type="button">📍 Manage Addresses</button>
+                <a href="{% url 'password_change' %}" class="nav-link text-start">🔐 Change Password</a>
+                <a href="{% url 'logout' %}" class="nav-link text-start text-danger">🚪 Logout</a>
             </div>
         </div>
 
-        <!-- 📦 RIGHT SIDE: SERIAL WISE ORDERS & TRACKING -->
-        <div class="col-lg-8">
-            <h4 class="fw-bold mb-4 border-bottom pb-2">Order History</h4>
-
-            {% if orders %}
-                {% for order in orders %}
-                <div class="order-card {% if order.status == 'Cancelled' %}opacity-75{% endif %}">
-                    
-                    <!-- Header -->
-                    <div class="order-header">
-                        <div>
-                            <span class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">Order Placed</span><br>
-                            <strong style="font-size: 0.95rem;">{{ order.created_at|date:"d M Y, h:i A" }}</strong>
+        <!-- 📦 RIGHT SIDE CONTENT AREA -->
+        <div class="col-lg-9">
+            <div class="profile-card p-4 tab-content" id="v-pills-tabContent" style="min-height: 500px;">
+                
+                <!-- TAB 1: PROFILE INFORMATION -->
+                <div class="tab-pane fade show active" id="tab-profile">
+                    <h5 class="fw-bold mb-4 pb-2 border-bottom">Profile Information</h5>
+                    <form method="POST" action="{% url 'profile' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_profile">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">First Name</label>
+                                <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Last Name</label>
+                                <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                            </div>
                         </div>
-                        <div class="text-center">
-                            <span class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">Order ID</span><br>
-                            <strong style="font-size: 1rem;">#ORD-2026-{{ order.id }}</strong>
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Email Address</label>
+                                <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small fw-bold">Mobile Number</label>
+                                <input type="text" name="mobile_number" class="form-control" value="{{ profile.mobile_number|default:'' }}">
+                            </div>
                         </div>
-                        <div class="text-end">
-                            <span class="text-muted" style="font-size: 0.8rem; text-transform: uppercase;">Total Amount</span><br>
-                            <strong style="font-size: 1.1rem; color: #111;">₹{{ order.total_amount }}</strong>
-                        </div>
-                    </div>
-
-                    <div class="card-body p-4">
-                        
-                        <!-- Timeline -->
-                        <div class="tracking-timeline">
-                            {% if order.status == 'Cancelled' %}
-                                <div class="track-step cancelled w-100">
-                                    <div class="track-icon">✕</div>
-                                    <div class="track-text">Order Cancelled</div>
-                                </div>
-                            {% else %}
-                                <div class="track-step {% if order.status in 'Pending,Processing,Shipped,Delivered' %}active{% endif %}">
-                                    <div class="track-icon">✓</div>
-                                    <div class="track-text">Pending</div>
-                                </div>
-                                <div class="track-step {% if order.status in 'Processing,Shipped,Delivered' %}active{% endif %}">
-                                    <div class="track-icon">📦</div>
-                                    <div class="track-text">Processing</div>
-                                </div>
-                                <div class="track-step {% if order.status in 'Shipped,Delivered' %}active{% endif %}">
-                                    <div class="track-icon">🚚</div>
-                                    <div class="track-text">Shipped</div>
-                                </div>
-                                <div class="track-step {% if order.status == 'Delivered' %}active{% endif %}">
-                                    <div class="track-icon">🏠</div>
-                                    <div class="track-text">Delivered</div>
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- 🌟 NEW: Order Items Details -->
-                        <div class="order-items-list mt-4 mb-4">
-                            <h6 class="fw-bold mb-3" style="font-size: 0.85rem; text-transform: uppercase;">Items in this order:</h6>
-                            <ul class="list-unstyled mb-0">
-                                <!-- Django ForeignKey loop for order items -->
-                                {% for item in order.orderitem_set.all %}
-                                <li class="d-flex justify-content-between text-muted mb-2 pb-2 border-bottom" style="font-size: 0.9rem;">
-                                    <span><strong>{{ forloop.counter }}.</strong> {{ item.product.name }} <span class="badge bg-secondary ms-1">Qty: {{ item.quantity }}</span></span>
-                                    <span class="fw-medium text-dark">₹{{ item.price }}</span>
-                                </li>
-                                {% empty %}
-                                <li class="text-muted small">Items details will be shown here.</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="d-flex justify-content-end align-items-center pt-2">
-                            <!-- ✅ FIX: Invoice Button Cancelled Orders mein nahi dikhega -->
-                            {% if order.status != 'Cancelled' %}
-                                <a href="{% url 'download_invoice' order.id %}" class="btn btn-dark btn-sm text-uppercase fw-medium me-2" style="font-size: 0.8rem;">
-                                    ⬇ Download Invoice
-                                </a>
-                            {% endif %}
-                            
-                            <!-- Cancel Button -->
-                            {% if order.status == 'Pending' %}
-                                <form action="{% url 'cancel_order' order.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this order?');">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn-cancel">Cancel Order</button>
-                                </form>
-                            {% endif %}
-                        </div>
-
-                    </div>
+                        <button type="submit" class="btn btn-primary px-4 py-2 fw-medium">SAVE CHANGES</button>
+                    </form>
                 </div>
-                {% endfor %}
-            {% else %}
-                <div class="text-center py-5" style="background: #fff; border: 1px solid #E5E5E5; border-radius: 8px;">
-                    <h1 class="mb-3" style="font-size: 3rem; color: #ccc;">🛍️</h1>
-                    <h5 class="text-muted">You haven't placed any orders yet.</h5>
-                    <a href="{% url 'home' %}" class="btn btn-dark mt-3 px-4 py-2 text-uppercase fw-medium" style="font-size: 0.85rem;">Start Shopping</a>
+
+                <!-- TAB 2: MY ORDERS (Yahan aapka purana order code aayega) -->
+                <div class="tab-pane fade" id="tab-orders">
+                    <h5 class="fw-bold mb-4 pb-2 border-bottom">My Orders</h5>
+                    <!-- Hum isko next step mein Amazon ki tarah design karenge -->
+                    <p class="text-muted">Order history will be shown here.</p>
                 </div>
-            {% endif %}
+
+                <!-- TAB 3: MANAGE ADDRESSES -->
+                <div class="tab-pane fade" id="tab-addresses">
+                    <h5 class="fw-bold mb-4 pb-2 border-bottom">Manage Addresses</h5>
+                    <!-- Hum isko next step mein build karenge -->
+                    <p class="text-muted">Your saved addresses will appear here.</p>
+                </div>
+                
+            </div>
         </div>
     </div>
 </div>
