@@ -238,6 +238,7 @@ def checkout_page(request):
 
 
 # 👤 5. Premium Profile Page
+# 👤 5. Premium Profile Page
 @login_required(login_url='/login/')
 def profile_page(request):
     if request.user.is_staff or request.user.is_superuser:
@@ -255,6 +256,11 @@ def profile_page(request):
             request.user.save()
             
             profile.mobile_number = request.POST.get('mobile_number', '')
+            
+            # 🌟 NAYA: Profile Photo Save Karne Ka Logic
+            if 'profile_photo' in request.FILES:
+                profile.profile_photo = request.FILES['profile_photo']
+                
             profile.save()
             messages.success(request, "✅ Profile updated successfully!")
             
