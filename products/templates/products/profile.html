@@ -5,78 +5,34 @@
 <style>
     body { background-color: #f1f3f6; }
     
-    .profile-card {
-        background: #fff;
-        border-radius: 4px;
-        box-shadow: 0 2px 4px 0 rgba(0,0,0,.08);
-        padding: 15px;
-        margin-bottom: 15px;
-    }
+    .profile-card { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); padding: 15px; margin-bottom: 15px; }
     
-    /* Premium Sidebar Navigation */
-    .sidebar-menu {
-        background: #fff;
-        border-radius: 4px;
-        box-shadow: 0 2px 4px 0 rgba(0,0,0,.08);
-        overflow: hidden;
-    }
-    .sidebar-menu .nav-link {
-        color: #878787;
-        padding: 15px 25px;
-        font-weight: 500;
-        border-bottom: 1px solid #f0f0f0;
-        border-radius: 0;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-        cursor: pointer;
-    }
+    .sidebar-menu { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); overflow: hidden; }
+    .sidebar-menu .nav-link { color: #878787; padding: 15px 25px; font-weight: 500; border-bottom: 1px solid #f0f0f0; border-radius: 0; text-transform: uppercase; font-size: 0.9rem; cursor: pointer; }
     .sidebar-menu .nav-link:hover { color: #2874f0; background-color: #f9f9f9; }
-    .sidebar-menu .nav-link.active {
-        color: #2874f0;
-        background-color: #e5edfa;
-        border-left: 4px solid #2874f0;
-        font-weight: 600;
-    }
+    .sidebar-menu .nav-link.active { color: #2874f0; background-color: #e5edfa; border-left: 4px solid #2874f0; font-weight: 600; }
     
     .user-info-header { display: flex; align-items: center; gap: 15px; }
     
-    /* 🌟 Avatar Image Fit (Profile Photo Ke Liye) */
-    .user-avatar {
-        width: 50px;
-        height: 50px;
-        background: #2874f0;
-        color: #fff;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        font-weight: bold;
-        overflow: hidden;
-    }
+    .user-avatar { width: 50px; height: 50px; background: #2874f0; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; overflow: hidden; }
     .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Order Card UI */
     .order-box { border: 1px solid #e0e0e0; border-radius: 4px; transition: box-shadow 0.2s; }
     .order-box:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .order-header { background-color: #f5f7fa; padding: 12px 15px; border-bottom: 1px solid #e0e0e0; }
     
-    /* 🌟 Tracking UI Box */
     .tracking-box { background-color: #e5f3fb; border: 1px dashed #2874f0; border-radius: 4px; padding: 12px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
 
-    /* Address Tag */
     .address-tag { background: #f0f0f0; color: #878787; font-size: 0.7rem; padding: 3px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 </style>
 
 <div class="container my-4" style="max-width: 1200px;">
     <div class="row">
         
-        <!-- 📱 LEFT SIDEBAR -->
         <div class="col-lg-3 mb-4">
             <div class="profile-card">
                 <div class="user-info-header mb-3">
                     <div class="user-avatar">
-                        <!-- 🌟 Profile Photo Show Karne Ka Logic -->
                         {% if profile.profile_photo %}
                             <img src="{{ profile.profile_photo.url }}" alt="Profile Photo">
                         {% else %}
@@ -89,7 +45,6 @@
                     </div>
                 </div>
                 
-                <!-- 🌟 Profile Completion Progress Bar -->
                 <div class="px-2">
                     <div class="d-flex justify-content-between small text-muted mb-1" style="font-size: 0.75rem;">
                         <span>Profile Completion</span>
@@ -110,15 +65,12 @@
             </div>
         </div>
 
-        <!-- 📦 RIGHT SIDE CONTENT AREA -->
         <div class="col-lg-9">
             <div class="profile-card p-4 tab-content" id="v-pills-tabContent" style="min-height: 500px;">
                 
-                <!-- ✅ TAB 1: PROFILE INFORMATION -->
                 <div class="tab-pane fade show active" id="tab-profile">
                     
-                    <!-- 🌟 Wallet Balance Card -->
-                    <div class="alert alert-info d-flex justify-content-between align-items-center rounded-0 border-0 shadow-sm mb-4 p-3" style="background-color: #e5edfa; border-left: 4px solid #2874f0 !important;">
+                    <div class="alert alert-info d-flex justify-content-between align-items-center rounded-0 border-0 shadow-sm mb-3 p-3" style="background-color: #e5edfa; border-left: 4px solid #2874f0 !important;">
                         <div>
                             <h6 class="fw-bold mb-0 text-dark" style="font-size: 15px;">🛍️ My Store Wallet Balance</h6>
                             <small class="text-muted">Use this balance for instant checkouts</small>
@@ -126,9 +78,43 @@
                         <h4 class="fw-bold mb-0" style="color: #2874f0;">₹{{ profile.wallet_balance }}</h4>
                     </div>
 
+                    <!-- 🌟 NAYA: Wallet Passbook UI -->
+                    <div class="mb-5">
+                        <a class="btn btn-sm btn-outline-primary rounded-0 fw-bold mb-2" data-bs-toggle="collapse" href="#collapsePassbook" role="button" aria-expanded="false" aria-controls="collapsePassbook">
+                            📖 View Wallet Passbook
+                        </a>
+                        <div class="collapse" id="collapsePassbook">
+                            <div class="card card-body rounded-0 border p-0 shadow-sm bg-white">
+                                <div class="bg-light p-2 border-bottom">
+                                    <h6 class="fw-bold mb-0 ms-2 text-dark" style="font-size: 14px; text-transform: uppercase;">Recent Transactions</h6>
+                                </div>
+                                <div class="p-3" style="max-height: 250px; overflow-y: auto;">
+                                    {% for txn in transactions %}
+                                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                            <div>
+                                                <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ txn.description }}</span><br>
+                                                <span class="text-muted" style="font-size: 0.75rem;">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                                            </div>
+                                            <div>
+                                                {% if txn.transaction_type == 'CREDIT' %}
+                                                    <span class="fw-bold text-success">+ ₹{{ txn.amount }}</span>
+                                                {% else %}
+                                                    <span class="fw-bold text-danger">- ₹{{ txn.amount }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <div class="text-center py-3">
+                                            <span class="text-muted small">No transactions yet.</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <h5 class="fw-bold mb-4 pb-2 border-bottom">Profile Information</h5>
                     
-                    <!-- 📸 Added enctype="multipart/form-data" for File Upload -->
                     <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="update_profile">
@@ -153,7 +139,6 @@
                             </div>
                         </div>
                         
-                        <!-- 🌟 Profile Photo Upload Input -->
                         <div class="mb-4">
                             <label class="form-label text-muted small fw-bold">Update Profile Photo</label>
                             <input type="file" name="profile_photo" class="form-control rounded-0" accept="image/*">
@@ -163,7 +148,6 @@
                     </form>
                 </div>
 
-                <!-- ✅ TAB 2: MY ORDERS WITH TRACKING INFO -->
                 <div class="tab-pane fade" id="tab-orders">
                     <h5 class="fw-bold mb-4 pb-2 border-bottom">My Orders</h5>
                     
@@ -187,7 +171,6 @@
                         <div class="p-3">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
-                                    <!-- Order Status Badge -->
                                     {% if order.status == 'Delivered' %}
                                         <h6 class="fw-bold text-success mb-1">🟢 Delivered</h6>
                                     {% elif order.status == 'Cancelled' %}
@@ -211,7 +194,6 @@
                                 </div>
                             </div>
 
-                            <!-- Items List -->
                             <div class="bg-light p-3 rounded">
                                 {% for item in order.orderitem_set.all %}
                                 <div class="d-flex justify-content-between mb-2 pb-2 {% if not forloop.last %}border-bottom{% endif %}">
@@ -221,7 +203,6 @@
                                 {% endfor %}
                             </div>
 
-                            <!-- 🌟 NAYA: Editable Live Tracking Box -->
                             {% if order.tracking_id %}
                             <div class="tracking-box mt-3">
                                 <div>
@@ -247,17 +228,14 @@
                     {% endfor %}
                 </div>
 
-                <!-- ✅ TAB 3: MANAGE ADDRESSES (Original Code) -->
                 <div class="tab-pane fade" id="tab-addresses">
                     <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
                         <h5 class="fw-bold mb-0">Manage Addresses</h5>
-                        <!-- Add Address Trigger -->
                         <button class="btn btn-outline-primary btn-sm rounded-0 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#addAddressForm">
                             + ADD A NEW ADDRESS
                         </button>
                     </div>
 
-                    <!-- Collapsible Add Address Form -->
                     <div class="collapse mb-4" id="addAddressForm">
                         <div class="card card-body bg-light rounded-0" style="border: 1px solid #e0e0e0;">
                             <h6 class="fw-bold mb-3 text-primary">ADD A NEW ADDRESS</h6>
@@ -319,12 +297,10 @@
                         </div>
                     </div>
 
-                    <!-- Saved Addresses List -->
                     {% for addr in addresses %}
                     <div class="border rounded-0 p-3 mb-3 position-relative bg-white" style="border-color: #e0e0e0 !important;">
                         <span class="address-tag mb-2 d-inline-block">{{ addr.address_type }}</span>
                         
-                        <!-- Dropdown Menu for Edit/Delete (Visual only for now) -->
                         <div class="dropdown position-absolute top-0 end-0 mt-3 me-3">
                             <button class="btn btn-sm text-muted" type="button" data-bs-toggle="dropdown" style="font-size: 1.2rem; line-height: 1;">⋮</button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">

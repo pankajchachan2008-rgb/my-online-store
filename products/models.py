@@ -203,3 +203,18 @@ class Wishlist(models.Model):
 
     class Meta:
         unique_together = ('user', 'product')
+
+# 🌟 NAYA: Wallet Transaction History Model
+class WalletTransaction(models.Model):
+    TRANSACTION_TYPES = (
+        ('CREDIT', 'Credit (Money Added)'),
+        ('DEBIT', 'Debit (Money Used)'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=255, help_text="e.g., Used for Order #123, Welcome Bonus, etc.")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.first_name} | {self.transaction_type} | ₹{self.amount}"

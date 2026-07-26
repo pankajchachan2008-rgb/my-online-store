@@ -22,7 +22,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator 
 
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction
 
 def ping(request):
     return HttpResponse("OK", status=200)
@@ -138,8 +138,7 @@ def cart_detail(request):
         
     return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
-# 🛍️ 4. Checkout Page (FIXED - Removed Duplicates)
-# 🛍️ 4. Checkout Page (Wallet Logic Added)
+# 🛍️ 4. Checkout Page
 def checkout_page(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -230,6 +229,15 @@ def checkout_page(request):
             customer_name=name, mobile_number=mobile, address=address,
             total_amount=final_total, applied_coupon=active_coupon, status='Pending'
         )
+
+        # 🌟 NAYA LOGIC: Passbook History Save Karna
+        if wallet_deducted > 0:
+            WalletTransaction.objects.create(
+                user=request.user,
+                transaction_type='DEBIT',
+                amount=wallet_deducted,
+                description=f"Used for Order #{order.id}"
+            )
         
         for pid, item in cart.items():
             if isinstance(item, dict):
@@ -257,11 +265,10 @@ def checkout_page(request):
         'final_total': final_total,
         'total_savings': total_savings,
         'saved_addresses': saved_addresses,
-        'profile': profile, # Profile pass kiya taaki wallet balance frontend pe dikhe
+        'profile': profile,
     }
     return render(request, 'products/checkout.html', context)
 
-# 👤 5. Premium Profile Page
 # 👤 5. Premium Profile Page
 @login_required(login_url='/login/')
 def profile_page(request):
@@ -306,11 +313,14 @@ def profile_page(request):
 
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     addresses = Address.objects.filter(user=request.user)
+    # 🌟 NAYA: Wallet Transactions ko fetch karna
+    transactions = WalletTransaction.objects.filter(user=request.user).order_by('-created_at')
     
     context = {
         'profile': profile,
         'orders': orders,
-        'addresses': addresses
+        'addresses': addresses,
+        'transactions': transactions 
     }
     return render(request, 'products/profile.html', context)
 
