@@ -618,3 +618,28 @@ def cancel_order(request, order_id):
     else:
         messages.error(request, f"❌ Order #{order.id} ab cancel nahi kiya ja sakta.")
     return redirect('profile')
+
+# 📍 Address Management Logic
+@login_required(login_url='/login/')
+def delete_address(request, address_id):
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    address.delete()
+    messages.success(request, "✅ Address deleted successfully!")
+    return redirect('profile')
+
+# (Edit ke liye hum simple update logic use karenge)
+@login_required(login_url='/login/')
+def edit_address(request, address_id):
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    if request.method == 'POST':
+        address.name = request.POST.get('name')
+        address.mobile_number = request.POST.get('mobile')
+        address.pincode = request.POST.get('pincode')
+        address.locality = request.POST.get('locality')
+        address.full_address = request.POST.get('full_address')
+        address.city = request.POST.get('city')
+        address.state = request.POST.get('state')
+        address.save()
+        messages.success(request, "✅ Address updated!")
+        return redirect('profile')
+    return render(request, 'products/edit_address.html', {'address': address})

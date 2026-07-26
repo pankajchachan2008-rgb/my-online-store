@@ -304,8 +304,8 @@
                         <div class="dropdown position-absolute top-0 end-0 mt-3 me-3">
                             <button class="btn btn-sm text-muted" type="button" data-bs-toggle="dropdown" style="font-size: 1.2rem; line-height: 1;">⋮</button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                <li><a class="dropdown-item small" href="#">Edit</a></li>
-                                <li><a class="dropdown-item text-danger small" href="#">Delete</a></li>
+                                <li><a class="dropdown-item small" href="{% url 'edit_address' addr.id %}">Edit</a></li>
+                                <li><a class="dropdown-item text-danger small" href="{% url 'delete_address' addr.id %}" onclick="return confirm('Delete this address?');">Delete</a></li>
                             </ul>
                         </div>
 

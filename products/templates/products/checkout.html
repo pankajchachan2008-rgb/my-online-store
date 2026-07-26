@@ -237,7 +237,7 @@
 
         msgDiv.innerHTML = '<span class="text-info">Checking...</span>';
 
-        fetch(`/check-coupon/?code=${code}&cart_total=${cartTotal}`)
+        fetch(`/check-coupon-ajax/?code=${code}&cart_total=${cartTotal}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'found') {

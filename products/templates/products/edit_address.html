@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 border p-4 bg-white shadow-sm">
+            <h5 class="fw-bold mb-4">Edit Address</h5>
+            <form method="POST">
+                {% csrf_token %}
+                <label class="small fw-bold text-muted">Full Name</label>
+                <input type="text" name="name" class="form-control mb-3" value="{{ address.name }}" required>
+                
+                <label class="small fw-bold text-muted">Mobile</label>
+                <input type="text" name="mobile" class="form-control mb-3" value="{{ address.mobile_number }}" required>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="small fw-bold text-muted">Pincode</label>
+                        <input type="text" name="pincode" class="form-control mb-3" value="{{ address.pincode }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small fw-bold text-muted">City</label>
+                        <input type="text" name="city" class="form-control mb-3" value="{{ address.city }}" required>
+                    </div>
+                </div>
+
+                <label class="small fw-bold text-muted">Full Address</label>
+                <textarea name="full_address" class="form-control mb-3" rows="3" required>{{ address.full_address }}</textarea>
+                
+                <label class="small fw-bold text-muted">State</label>
+                <select name="state" class="form-control mb-4" required>
+                    <option value="Rajasthan" {% if address.state == 'Rajasthan' %}selected{% endif %}>Rajasthan</option>
+                    <option value="Haryana" {% if address.state == 'Haryana' %}selected{% endif %}>Haryana</option>
+                    <option value="Delhi" {% if address.state == 'Delhi' %}selected{% endif %}>Delhi</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary w-100" style="background: #2874f0;">UPDATE ADDRESS</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

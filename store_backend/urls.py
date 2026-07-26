@@ -18,7 +18,8 @@ from products.views import (
     export_products_csv, import_products_csv,
     product_detail, 
     update_cart_item, # 🌟 Naya View Import Kiya
-    cancel_order # 🌟 FIX: Isko import list mein add kar diya
+    cancel_order, # 🌟 FIX: Isko import list mein add kar diya
+    delete_address, edit_address,
 )
 
 # 🌟 UPTIMEROBOT KE LIYE PING FUNCTION SEEDHA YAHI BANA DIYA
@@ -52,6 +53,8 @@ urlpatterns = [
     path('profile/', profile_page, name='profile'),
     path('profile/delete/', delete_account, name='delete_account'),
     path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html', success_url='/profile/'), name='password_change'),
+    path('delete-address/<int:address_id>/', delete_address, name='delete_address'),
+    path('edit-address/<int:address_id>/', edit_address, name='edit_address'),
     
     # 🌟 FIX: views.cancel_order ki jagah sirf cancel_order likha hai
     path('cancel-order/<int:order_id>/', cancel_order, name='cancel_order'),
