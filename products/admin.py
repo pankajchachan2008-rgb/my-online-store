@@ -24,10 +24,12 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ('price', 'last_moment_discount')
     inlines = [ProductVariantInline]
 
+# 🌟 NAYA: Updated Coupon Admin
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
-    list_display = ['code', 'mobile_number', 'discount_percentage', 'is_used']
-    search_fields = ('code', 'mobile_number')
+    list_display = ['code', 'discount_percentage', 'min_order_amount', 'is_active', 'valid_to']
+    list_filter = ['is_active']
+    search_fields = ['code']
 
 @admin.action(description="Print Shipping Labels (4x6 Thermal Format)")
 def print_shipping_labels(modeladmin, request, queryset):

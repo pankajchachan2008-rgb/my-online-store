@@ -20,7 +20,8 @@ from django.utils.http import urlencode
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator 
+from django.core.paginator import Paginator
+from django.utils import timezone # 🌟 NAYA IMPORT
 
 from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction
 
@@ -150,7 +151,6 @@ def checkout_page(request):
     hidden_discount_total = 0
     order_items_list = []
     
-    # Wallet aur Profile fetch karna
     profile = None
     wallet_balance = 0
     if request.user.is_authenticated:
@@ -202,13 +202,27 @@ def checkout_page(request):
             mobile = request.POST.get('mobile_number')
             address = request.POST.get('address')
         
-        active_coupon = Coupon.objects.filter(mobile_number=mobile, is_used=False).first()
-        if active_coupon:
-            final_total -= (final_total * active_coupon.discount_percentage) / 100
-            active_coupon.is_used = True
-            active_coupon.save()
+        # 🌟 NAYA LOGIC: Promo Code Verification Backend Side
+        promo_code = request.POST.get('promo_code', '').strip().upper()
+        active_coupon = None
+        coupon_discount_applied = 0
+        
+        if promo_code:
+            coupon = Coupon.objects.filter(code=promo_code, is_active=True).first()
+            if coupon:
+                now = timezone.now()
+                if (not coupon.valid_from or now >= coupon.valid_from) and \
+                   (not coupon.valid_to or now <= coupon.valid_to) and \
+                   (final_total >= coupon.min_order_amount):
+                    
+                    coupon_discount_applied = (final_total * coupon.discount_percentage) / 100
+                    if coupon.max_discount_amount and coupon_discount_applied > float(coupon.max_discount_amount):
+                        coupon_discount_applied = float(coupon.max_discount_amount)
+                    
+                    final_total -= coupon_discount_applied
+                    active_coupon = coupon
 
-        # 🌟 NAYA LOGIC: Wallet Deduction
+        # Wallet Deduction
         use_wallet = request.POST.get('use_wallet')
         wallet_deducted = 0
         
@@ -221,7 +235,7 @@ def checkout_page(request):
                 wallet_deducted = profile.wallet_balance
                 final_total -= profile.wallet_balance
                 profile.wallet_balance = 0
-            profile.save() # Updated balance database me save kar diya
+            profile.save()
 
         # Order Create karna
         order = Order.objects.create(
@@ -230,7 +244,6 @@ def checkout_page(request):
             total_amount=final_total, applied_coupon=active_coupon, status='Pending'
         )
 
-        # 🌟 NAYA LOGIC: Passbook History Save Karna
         if wallet_deducted > 0:
             WalletTransaction.objects.create(
                 user=request.user,
@@ -244,7 +257,8 @@ def checkout_page(request):
                 OrderItem.objects.create(order=order, product_name=item['name'], price=item['price'], quantity=item['quantity'])
             
         items_str = "\n".join(order_items_list)
-        wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n\n*Wallet Used:* ₹{wallet_deducted}\n*Delivery Charge:* ₹{delivery_fee}\n*Total Payable:* ₹{final_total}"
+        coupon_text = f"\n*Coupon Discount:* ₹{coupon_discount_applied}" if coupon_discount_applied > 0 else ""
+        wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n*Delivery Charge:* ₹{delivery_fee}{coupon_text}\n*Wallet Used:* ₹{wallet_deducted}\n*Total Payable:* ₹{final_total}"
         
         whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
 
@@ -288,7 +302,6 @@ def profile_page(request):
             
             profile.mobile_number = request.POST.get('mobile_number', '')
             
-            # 🌟 NAYA: Profile Photo Save Karne Ka Logic
             if 'profile_photo' in request.FILES:
                 profile.profile_photo = request.FILES['profile_photo']
                 
@@ -313,7 +326,6 @@ def profile_page(request):
 
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     addresses = Address.objects.filter(user=request.user)
-    # 🌟 NAYA: Wallet Transactions ko fetch karna
     transactions = WalletTransaction.objects.filter(user=request.user).order_by('-created_at')
     
     context = {
@@ -335,13 +347,41 @@ def delete_account(request):
         return redirect('home')
     return redirect('profile')
 
-# 🔍 6. AJAX Coupon Check
+# 🔍 6. AJAX NAYA UNIVERSAL COUPON CHECK
 def check_coupon_ajax(request):
-    mobile = request.GET.get('mobile', '')
-    coupon = Coupon.objects.filter(mobile_number=mobile, is_used=False).first()
-    if coupon:
-        return JsonResponse({'status': 'found', 'discount': coupon.discount_percentage, 'code': coupon.code})
-    return JsonResponse({'status': 'not_found'})
+    code = request.GET.get('code', '').strip().upper()
+    try:
+        cart_total = float(request.GET.get('cart_total', 0))
+    except ValueError:
+        cart_total = 0
+
+    if not code:
+        return JsonResponse({'status': 'not_found', 'message': 'Please enter a coupon code.'})
+
+    coupon = Coupon.objects.filter(code=code, is_active=True).first()
+
+    if not coupon:
+        return JsonResponse({'status': 'not_found', 'message': 'Invalid or expired coupon code.'})
+
+    now = timezone.now()
+    if coupon.valid_from and now < coupon.valid_from:
+        return JsonResponse({'status': 'error', 'message': 'Coupon is not yet active.'})
+    if coupon.valid_to and now > coupon.valid_to:
+        return JsonResponse({'status': 'error', 'message': 'Coupon has expired.'})
+
+    if cart_total < coupon.min_order_amount:
+        return JsonResponse({'status': 'error', 'message': f'Min. order amount of ₹{coupon.min_order_amount} required.'})
+
+    discount_amount = (cart_total * coupon.discount_percentage) / 100
+    if coupon.max_discount_amount and discount_amount > float(coupon.max_discount_amount):
+        discount_amount = float(coupon.max_discount_amount)
+
+    return JsonResponse({
+        'status': 'found', 
+        'discount_percentage': coupon.discount_percentage,
+        'discount_amount': discount_amount,
+        'message': f'Coupon {code} applied successfully!'
+    })
 
 # 📄 7. Static Pages
 def about_page(request): return render(request, 'products/about.html')
@@ -351,41 +391,36 @@ def custom_logout(request):
     logout(request)
     return redirect('home')
 
-# 🔧 Admin Maker Bypass
 def make_admin(request):
     if not User.objects.filter(username='admin').exists():
         User.objects.create_superuser('admin', 'admin@cgsmart.in', 'Admin@1234')
         return HttpResponse("""
             <div style='text-align:center; margin-top:50px; font-family:sans-serif;'>
                 <h2 style='color: green;'>✅ Admin Account Successfully Created!</h2>
-                <p><b>Username:</b> admin</p>
-                <p><b>Password:</b> Admin@1234</p>
                 <a href='/secret-cgs-main/' style='padding:10px 20px; background:#2874f0; color:white; text-decoration:none; border-radius:5px;'>Go to Admin Panel</a>
             </div>
         """)
     else:
         return HttpResponse("""
             <div style='text-align:center; margin-top:50px; font-family:sans-serif;'>
-                <h2 style='color: orange;'>⚠️ Admin Account Pehle Se Maujood Hai!</h2>
+                <h2 style='color: orange;'>⚠️ Admin Account Maujood Hai!</h2>
                 <a href='/secret-cgs-main/' style='padding:10px 20px; background:#2874f0; color:white; text-decoration:none; border-radius:5px;'>Go to Admin Panel</a>
             </div>
         """)
 
 def trigger_import(request): return render(request, 'products/import_trigger.html')
 
-# 🚀 8. STANDARD USERNAME/PASSWORD REGISTRATION
 def register_page(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Account successfully ban gaya hai! Ab aap username aur password se login kar sakte hain.')
+            messages.success(request, 'Account successfully ban gaya hai!')
             return redirect('login')
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-# 📡 9. ERP API Endpoints
 @api_view(['GET'])
 def get_pending_orders_api(request):
     orders = Order.objects.filter(status='Pending').order_by('-id')
@@ -421,14 +456,12 @@ def sync_products_from_erp_api(request):
             )
     return Response({'message': 'Product sync process successfully executed'})
 
-# 📄 10. Download Smart PDF Invoice
 @login_required(login_url='/login/')
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     items = OrderItem.objects.filter(order=order)
     
     bill_no = f"#INV-2026-{order.id}"
-
     qr = qrcode.make(bill_no)
     qr_buffer = BytesIO()
     qr.save(qr_buffer, format="PNG")
@@ -441,7 +474,6 @@ def download_invoice(request, order_id):
     barcode_base64 = base64.b64encode(bc_buffer.getvalue()).decode("utf-8")
     
     template_path = 'products/invoice_pdf.html'
-    
     context = {
         'order': order, 
         'items': items,
@@ -462,18 +494,16 @@ def download_invoice(request, order_id):
     
     template = get_template(template_path)
     html = template.render(context)
-    
     pisa_status = pisa.CreatePDF(html, dest=response)
     
     if pisa_status.err:
         return HttpResponse('Invoice generate karne mein error aayi: <pre>' + html + '</pre>')
     return response
 
-# 📥 11. EXPORT: Download products to Excel
 @login_required(login_url='/login/')
 def export_products_csv(request):
     if not request.user.is_superuser:
-        messages.error(request, "⛔ Access Denied! Sirf Admin is page ko access kar sakta hai.")
+        messages.error(request, "⛔ Access Denied!")
         return redirect('home')
 
     response = HttpResponse(content_type='text/csv')
@@ -490,56 +520,42 @@ def export_products_csv(request):
         
     return response
 
-# 📤 12. IMPORT: Upload updated Excel
 @login_required(login_url='/login/')
 def import_products_csv(request):
     if not request.user.is_superuser:
-        messages.error(request, "⛔ Access Denied! Sirf Admin is page ko access kar sakta hai.")
+        messages.error(request, "⛔ Access Denied!")
         return redirect('home')
 
     if request.method == 'POST' and request.FILES.get('csv_file'):
         csv_file = request.FILES['csv_file']
-        
         if not csv_file.name.endswith('.csv'):
             messages.error(request, "❌ Error: Sirf .csv file hi upload karein!")
             return redirect('import_products')
             
         decoded_file = csv_file.read().decode('utf-8').splitlines()
         reader = csv.DictReader(decoded_file)
-        
         success_count = 0
         error_count = 0
-        
         for row in reader:
             try:
                 product_id = row.get('ID')
                 if not product_id:
                     continue
-                    
                 product = Product.objects.get(id=product_id)
-                
-                if row.get('Price'):
-                    product.price = row['Price']
-                    
-                if row.get('Weight'):
-                    product.weight = row['Weight']
-                    
+                if row.get('Price'): product.price = row['Price']
+                if row.get('Weight'): product.weight = row['Weight']
                 cat_id = row.get('Category_ID')
                 if cat_id:
                     try:
                         category = Category.objects.get(id=cat_id)
                         product.category = category
-                    except Category.DoesNotExist:
-                        pass 
-                        
+                    except Category.DoesNotExist: pass 
                 product.save()
                 success_count += 1
-            except Product.DoesNotExist:
-                error_count += 1
-            except Exception as e:
-                error_count += 1
+            except Product.DoesNotExist: error_count += 1
+            except Exception as e: error_count += 1
                 
-        messages.success(request, f"✅ Bulk Update Complete! {success_count} products update hue. {error_count} errors ko skip kiya gaya.")
+        messages.success(request, f"✅ Bulk Update Complete! {success_count} products update hue.")
         return redirect('home')
         
     return render(request, 'products/import_csv.html')
@@ -549,10 +565,8 @@ def add_to_wishlist(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     wishlist_item, created = Wishlist.objects.get_or_create(user=request.user, product=product)
     
-    if created:
-        messages.success(request, f"{product.name} aapki Wishlist mein add ho gaya!")
-    else:
-        messages.info(request, "Yeh product pehle se aapki Wishlist mein hai.")
+    if created: messages.success(request, f"{product.name} aapki Wishlist mein add ho gaya!")
+    else: messages.info(request, "Yeh product pehle se aapki Wishlist mein hai.")
     return redirect('home')
 
 @login_required(login_url='/login/')
@@ -560,25 +574,18 @@ def view_wishlist(request):
     wishlist = Wishlist.objects.filter(user=request.user)
     return render(request, 'products/wishlist.html', {'wishlist': wishlist})
 
-# 🔍 Product Detail View
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'products/product_detail.html', {'product': product})
 
-# 🔄 NAYA FUNCTION: Cart Item Modify/Remove
 def update_cart_item(request, item_key, action):
     cart = request.session.get('cart', {})
-    
     if item_key in cart:
-        if action == 'increase':
-            cart[item_key]['quantity'] += 1
+        if action == 'increase': cart[item_key]['quantity'] += 1
         elif action == 'decrease':
-            if cart[item_key]['quantity'] > 1:
-                cart[item_key]['quantity'] -= 1
-            else:
-                cart.pop(item_key, None)
-        elif action == 'remove':
-            cart.pop(item_key, None)
+            if cart[item_key]['quantity'] > 1: cart[item_key]['quantity'] -= 1
+            else: cart.pop(item_key, None)
+        elif action == 'remove': cart.pop(item_key, None)
         
         request.session['cart'] = cart
         request.session.modified = True
@@ -588,12 +595,10 @@ def update_cart_item(request, item_key, action):
 @login_required(login_url='/login/')
 def cancel_order(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    
     if order.status == 'Pending':
         order.status = 'Cancelled'
         order.save()
         messages.success(request, f"✅ Order #{order.id} successfully cancel ho gaya hai.")
     else:
-        messages.error(request, f"❌ Order #{order.id} ab cancel nahi kiya ja sakta kyunki yeh '{order.status}' status mein hai.")
-        
+        messages.error(request, f"❌ Order #{order.id} ab cancel nahi kiya ja sakta.")
     return redirect('profile')

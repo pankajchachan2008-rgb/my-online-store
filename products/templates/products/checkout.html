@@ -7,11 +7,9 @@
     
     .checkout-box { background: #fff; border-radius: 2px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.15); margin-bottom: 15px; }
     
-    /* Active Step Header (Blue) */
     .checkout-header { background: #2874f0; color: #fff; padding: 15px 24px; font-size: 16px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; border-radius: 2px 2px 0 0; }
     .checkout-header .step-num { background: #fff; color: #2874f0; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; border-radius: 2px; font-size: 14px; margin-right: 15px; }
     
-    /* Completed/Inactive Step Header (White) */
     .checkout-header-inactive { background: #fff; color: #878787; padding: 15px 24px; font-size: 16px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0; }
     .checkout-header-inactive .step-num { background: #f0f0f0; color: #878787; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; border-radius: 2px; font-size: 14px; margin-right: 15px; }
     
@@ -20,7 +18,6 @@
     .form-control-custom { border: 1px solid #e0e0e0; border-radius: 2px; padding: 12px 15px; font-size: 14px; outline: none; transition: 0.3s; width: 100%; box-shadow: none; }
     .form-control-custom:focus { border-color: #2874f0; }
     
-    /* Price Details Card */
     .price-box { background: #fff; border-radius: 2px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.15); position: sticky; top: 100px; }
     .price-box-header { padding: 13px 24px; border-bottom: 1px solid #f0f0f0; color: #878787; text-transform: uppercase; font-weight: 600; font-size: 14px; }
     .price-box-body { padding: 0 24px; }
@@ -39,14 +36,11 @@
         {% csrf_token %}
         <div class="row align-items-start g-4">
             
-            <!-- LEFT SIDE: STEPS -->
             <div class="col-lg-8">
                 
-                <!-- STEP 1: LOGIN (Completed State) -->
                 <div class="checkout-box">
                     <div class="checkout-header-inactive">
-                        <span class="step-num">1</span>
-                        LOGIN 
+                        <span class="step-num">1</span> LOGIN 
                         <span class="ms-3 text-dark fw-bold" style="font-size: 14px; text-transform: none;">
                             {% if user.is_authenticated %}{{ user.first_name|default:user.username }}{% else %}Guest User{% endif %}
                         </span>
@@ -54,20 +48,13 @@
                     </div>
                 </div>
 
-                <!-- STEP 2: DELIVERY ADDRESS (Active State with Saved Addresses Integration) -->
                 <div class="checkout-box">
-                    <div class="checkout-header">
-                        <span class="step-num">2</span>
-                        DELIVERY ADDRESS
-                    </div>
+                    <div class="checkout-header"><span class="step-num">2</span> DELIVERY ADDRESS</div>
                     <div class="checkout-body" style="background: #f5faff;">
-                        
                         {% if saved_addresses %}
-                            <!-- 📍 Show Saved Addresses -->
                             {% for addr in saved_addresses %}
                             <div class="form-check border p-3 mb-3 bg-white shadow-sm" style="cursor: pointer; border-radius: 4px; {% if forloop.first %}border-color: #2874f0 !important;{% endif %}">
                                 <input class="form-check-input mt-2" type="radio" name="address_id" id="addr_{{ addr.id }}" value="{{ addr.id }}" {% if forloop.first %}checked{% endif %} required>
-                                
                                 <label class="form-check-label w-100 ms-2" for="addr_{{ addr.id }}" style="cursor: pointer;">
                                     <span class="badge bg-secondary mb-1 px-2 py-1" style="font-size: 10px; letter-spacing: 0.5px;">{{ addr.address_type|upper }}</span><br>
                                     <strong class="text-dark" style="font-size: 15px;">{{ addr.name }}</strong> <span class="fw-bold ms-3">{{ addr.mobile_number }}</span>
@@ -78,8 +65,6 @@
                                 </label>
                             </div>
                             {% endfor %}
-
-                            <!-- ➕ Add New Address Option -->
                             <div class="form-check border p-3 bg-white shadow-sm" style="border-radius: 4px;">
                                 <input class="form-check-input mt-1" type="radio" name="address_id" id="new_addr" value="">
                                 <label class="form-check-label ms-2 fw-bold" for="new_addr" style="cursor: pointer; color: #2874f0;">
@@ -92,7 +77,6 @@
                             </div>
                         {% endif %}
 
-                        <!-- ✍️ MANUAL ADDRESS FORM -->
                         <div id="manual_address_form" class="mt-4 {% if saved_addresses %}d-none{% endif %} p-4 bg-white border shadow-sm" style="border-radius: 4px;">
                             <h6 class="fw-bold text-dark mb-4" style="font-size: 14px; text-transform: uppercase;">Add Delivery Details</h6>
                             <div class="row g-3">
@@ -110,20 +94,29 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
-                <!-- STEP 3: ORDER SUMMARY (Completed State Preview) -->
                 <div class="checkout-box">
                     <div class="checkout-header-inactive">
-                        <span class="step-num">3</span>
-                        ORDER SUMMARY 
+                        <span class="step-num">3</span> ORDER SUMMARY 
                         <span class="ms-3 text-dark fw-bold" style="font-size: 14px; text-transform: none;">₹<span class="display-final-total">{{ final_total }}</span></span>
                     </div>
                 </div>
+
+                <!-- 🌟 NAYA: PROMO CODE SECTION -->
+                <div class="checkout-box">
+                    <div class="checkout-body p-3 bg-white">
+                        <label class="fw-bold mb-2 small text-muted">HAVE A PROMO CODE?</label>
+                        <div class="input-group">
+                            <input type="text" id="promo_code_input" class="form-control form-control-custom border-end-0" placeholder="Enter code here (e.g. WELCOME50)" style="text-transform: uppercase;">
+                            <button class="btn btn-dark px-4 rounded-0" type="button" onclick="applyPromoCode()">APPLY</button>
+                        </div>
+                        <div id="promo_message" class="small mt-2 fw-bold"></div>
+                        <input type="hidden" name="promo_code" id="applied_promo_code" value="">
+                    </div>
+                </div>
                 
-                <!-- 🌟 NAYA: STORE WALLET OPTION -->
                 {% if user.is_authenticated and profile.wallet_balance > 0 %}
                 <div class="checkout-box border border-primary" style="background-color: #f8faff;">
                     <div class="checkout-body p-3">
@@ -137,12 +130,8 @@
                 </div>
                 {% endif %}
 
-                <!-- STEP 4: PAYMENT OPTIONS -->
                 <div class="checkout-box">
-                    <div class="checkout-header-inactive">
-                        <span class="step-num">4</span>
-                        PAYMENT OPTIONS
-                    </div>
+                    <div class="checkout-header-inactive"><span class="step-num">4</span> PAYMENT OPTIONS</div>
                     <div class="checkout-body border-top bg-white">
                         <div class="form-check d-flex align-items-center mb-3">
                             <input class="form-check-input me-3" type="radio" name="payment_mode" id="cod" checked style="width: 18px; height: 18px;">
@@ -151,27 +140,21 @@
                             </label>
                         </div>
                         <p class="text-muted small ms-4 ps-2 mb-4">Clicking the button below will securely process your order via our official WhatsApp channel.</p>
-                        
                         <div class="text-end mt-4 d-none d-lg-block">
                             <button type="submit" class="btn-place-order" style="width: auto; padding: 16px 50px;">CONFIRM ORDER</button>
                         </div>
                     </div>
                 </div>
-                
             </div>
 
-            <!-- RIGHT SIDE: PRICE DETAILS -->
             <div class="col-lg-4">
                 <div class="price-box">
-                    <div class="price-box-header">
-                        PRICE DETAILS
-                    </div>
+                    <div class="price-box-header">PRICE DETAILS</div>
                     <div class="price-box-body">
                         <div class="price-row">
                             <span>Price (MRP)</span>
                             <span>₹{{ total_mrp|default:cart_total }}</span>
                         </div>
-                        
                         {% if total_savings > 0 %}
                         <div class="price-row" style="color: #388e3c;">
                             <span>Discount</span>
@@ -179,6 +162,12 @@
                         </div>
                         {% endif %}
                         
+                        <!-- 🌟 Coupon Discount Row (Hidden By Default) -->
+                        <div class="price-row" id="coupon_row" style="color: #388e3c; display: none;">
+                            <span>Coupon Applied</span>
+                            <span>− ₹<span id="display_coupon_discount">0</span></span>
+                        </div>
+
                         <div class="price-row border-dash">
                             <span>Delivery Charges</span>
                             {% if delivery_fee == 0 %}
@@ -187,21 +176,16 @@
                                 <span>₹{{ delivery_fee }}</span>
                             {% endif %}
                         </div>
-                        
                         <div class="total-row">
                             <span>Total Payable</span>
                             <span>₹<span class="display-final-total">{{ final_total }}</span></span>
                         </div>
-                        
                         {% if total_savings > 0 %}
-                        <p class="savings-text">
-                            You will save ₹{{ total_savings }} on this order
-                        </p>
+                        <p class="savings-text">You will save ₹{{ total_savings }} on this order</p>
                         {% endif %}
                     </div>
                 </div>
                 
-                <!-- Mobile Sticky Footer for Place Order -->
                 <div class="d-block d-lg-none p-3 mt-4" style="background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -211,31 +195,27 @@
                         <button type="submit" class="btn-place-order w-auto px-4">CONFIRM ORDER</button>
                     </div>
                 </div>
-                
             </div>
-            
         </div>
     </form>
 </div>
 <div class="d-block d-lg-none" style="height: 80px;"></div>
 
-<!-- ⚙️ JavaScript for Address Form Toggle & Wallet Calculation -->
+<!-- ⚙️ Combined JS -->
 <script>
+    let couponDiscountAmount = 0;
+
     document.addEventListener("DOMContentLoaded", function() {
         const addressRadios = document.querySelectorAll('input[name="address_id"]');
         const manualForm = document.getElementById("manual_address_form");
-        
         if (manualForm) {
             const manualInputs = manualForm.querySelectorAll('input, textarea');
-            
             addressRadios.forEach((elem) => {
                 elem.addEventListener("change", function(event) {
                     if (event.target.value === "") {
-                        // "Add New Address" select kiya hai, form dikhayein
                         manualForm.classList.remove("d-none");
                         manualInputs.forEach(input => input.setAttribute('required', 'required'));
                     } else {
-                        // Saved Address select kiya hai, form chupayein
                         manualForm.classList.add("d-none");
                         manualInputs.forEach(input => input.removeAttribute('required'));
                     }
@@ -244,24 +224,63 @@
         }
     });
 
-    // 🌟 NAYA: Wallet calculation logic
+    // 🌟 NAYA: Promo Code AJAX Function
+    function applyPromoCode() {
+        const code = document.getElementById('promo_code_input').value.trim();
+        const msgDiv = document.getElementById('promo_message');
+        const cartTotal = parseFloat("{{ final_total }}");
+
+        if (!code) {
+            msgDiv.innerHTML = '<span class="text-danger">Please enter a code.</span>';
+            return;
+        }
+
+        msgDiv.innerHTML = '<span class="text-info">Checking...</span>';
+
+        fetch(`/check-coupon/?code=${code}&cart_total=${cartTotal}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'found') {
+                    msgDiv.innerHTML = `<span class="text-success">✅ ${data.message} (Saved ₹${data.discount_amount})</span>`;
+                    document.getElementById('applied_promo_code').value = code;
+                    couponDiscountAmount = parseFloat(data.discount_amount);
+                    
+                    document.getElementById('coupon_row').style.display = 'flex';
+                    document.getElementById('display_coupon_discount').innerText = couponDiscountAmount.toFixed(2);
+                    
+                    calculateFinalTotal(); 
+                } else {
+                    msgDiv.innerHTML = `<span class="text-danger">❌ ${data.message}</span>`;
+                    document.getElementById('applied_promo_code').value = '';
+                    couponDiscountAmount = 0;
+                    document.getElementById('coupon_row').style.display = 'none';
+                    calculateFinalTotal();
+                }
+            })
+            .catch(error => {
+                msgDiv.innerHTML = '<span class="text-danger">Something went wrong!</span>';
+            });
+    }
+
+    // Wallet + Coupon Calculation
     function calculateFinalTotal() {
         const originalTotal = parseFloat("{{ final_total }}");
+        let newTotal = originalTotal - couponDiscountAmount;
+        if (newTotal < 0) newTotal = 0;
+
         const walletBalance = parseFloat("{{ profile.wallet_balance|default:0 }}");
         const useWalletCheckbox = document.getElementById("use_wallet");
         
         let displayTotalElements = document.querySelectorAll(".display-final-total");
-        let newTotal = originalTotal;
 
         if (useWalletCheckbox && useWalletCheckbox.checked) {
-            if (walletBalance >= originalTotal) {
+            if (walletBalance >= newTotal) {
                 newTotal = 0;
             } else {
-                newTotal = originalTotal - walletBalance;
+                newTotal = newTotal - walletBalance;
             }
         }
         
-        // Update all elements showing final total
         displayTotalElements.forEach(el => {
             el.innerText = newTotal.toFixed(2);
         });

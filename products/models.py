@@ -54,14 +54,18 @@ class ProductVariant(models.Model):
     def __str__(self):
         return f"{self.product.name} ({self.size_name})"
 
+# 🌟 NAYA: Universal Promo Code Model
 class Coupon(models.Model):
-    code = models.CharField(max_length=50, unique=True)
-    mobile_number = models.CharField(max_length=15)
-    discount_percentage = models.FloatField()
-    is_used = models.BooleanField(default=False)
+    code = models.CharField(max_length=50, unique=True, help_text="e.g., WELCOME50, DIWALI20")
+    discount_percentage = models.PositiveIntegerField(help_text="Discount in % (e.g., 10 for 10%)")
+    max_discount_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Maximum discount limit (e.g., 500)")
+    min_order_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, help_text="Minimum cart value to apply this coupon")
+    is_active = models.BooleanField(default=True)
+    valid_from = models.DateTimeField(null=True, blank=True)
+    valid_to = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return self.code
+        return f"{self.code} - {self.discount_percentage}% OFF"
 
 class Order(models.Model):
     STATUS_CHOICES = (
