@@ -222,3 +222,14 @@ class WalletTransaction(models.Model):
 
     def __str__(self):
         return f"{self.user.first_name} | {self.transaction_type} | ₹{self.amount}"
+
+# 🌟 NAYA: Store Settings Model (Admin se Invoice Customize karne ke liye)
+class StoreSetting(models.Model):
+    company_name = models.CharField(max_length=255, default="Chachan General Store")
+    tagline = models.CharField(max_length=255, default="Premium Corporate Retail & Essentials")
+    store_address = models.TextField(blank=True, null=True, help_text="Full address to print on Bill of Supply")
+    store_phone = models.CharField(max_length=20, blank=True, null=True)
+    gstin = models.CharField(max_length=50, blank=True, null=True, help_text="GST Number")
+    
+    def __str__(self):
+        return "Store Configuration Settings"

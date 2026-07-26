@@ -167,13 +167,9 @@
     <!-- HEADER SECTION -->
     <table class="header-table">
         <tr>
-            <!-- 1. Store Logo (Cloudinary Link Set) -->
+            <!-- 1. Store Logo -->
             <td style="width: 12%; vertical-align: middle;">
-                
-                <!-- 👇 YAHAN APNA CLOUDINARY KA LINK DAALNA HAI 👇 -->
                 <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" width="70" height="70" alt="Logo">
-                <!-- 👆 YAHAN APNA CLOUDINARY KA LINK DAALNA HAI 👆 -->
-                
             </td>
             
             <!-- 2. Company Info -->
@@ -186,7 +182,7 @@
             <td style="width: 40%; text-align: right; vertical-align: middle;">
                 <div class="document-title" style="margin-bottom: 5px;">BILL OF SUPPLY</div>
                 <img src="data:image/png;base64,{{ barcode_base64 }}" width="140" height="35" alt="Barcode"><br>
-                <div style="font-size: 10px; color: #34495E; font-weight: bold; letter-spacing: 1px; margin-top: 2px;">{{ bill_no|default:"#INV-2026-2" }}</div>
+                <div style="font-size: 10px; color: #34495E; font-weight: bold; letter-spacing: 1px; margin-top: 2px;">{{ bill_no }}</div>
             </td>
         </tr>
     </table>
@@ -198,10 +194,10 @@
             <td>
                 <div class="section-title">Dispatched From</div>
                 <div class="info-text">
-                    <strong>Chachan General Store (Main)</strong><br>
-                    GSTIN: 08AAAAA0000A1Z5<br>
-                    Nohar, Rajasthan, India<br>
-                    Email: support@chachanstore.com
+                    <strong>{{ company_name|default:"Chachan General Store" }}</strong><br>
+                    {% if gstin %}GSTIN: {{ gstin }}<br>{% endif %}
+                    {% if store_address %}{{ store_address }}<br>{% endif %}
+                    {% if store_phone %}Phone: {{ store_phone }}<br>{% endif %}
                 </div>
             </td>
             
@@ -209,9 +205,9 @@
             <td>
                 <div class="section-title">Billed To</div>
                 <div class="info-text">
-                    <strong>{{ customer_name|default:"Ramniwas" }}</strong><br>
-                    Phone: {{ customer_phone|default:"8619278033" }}<br>
-                    Address: {{ customer_address|default:"Nohar" }}
+                    <strong>{{ customer_name }}</strong><br>
+                    Phone: {{ customer_phone }}<br>
+                    Address: {{ customer_address }}
                 </div>
             </td>
 
@@ -219,9 +215,9 @@
             <td class="last">
                 <div class="section-title">Document Details</div>
                 <div class="info-text">
-                    <strong>Bill No:</strong> {{ bill_no|default:"#INV-2026-2" }}<br>
-                    <strong>Date:</strong> {{ date|default:"25 Jul, 2026" }}<br>
-                    <strong>Status:</strong> <span style="font-weight:bold; color: {% if status == 'Paid' %}green{% else %}#C0392B{% endif %};">{{ status|default:"Pending" }}</span>
+                    <strong>Bill No:</strong> {{ bill_no }}<br>
+                    <strong>Date:</strong> {{ date }}<br>
+                    <strong>Status:</strong> <span style="font-weight:bold; color: {% if status == 'Paid' %}green{% else %}#C0392B{% endif %};">{{ status }}</span>
                 </div>
             </td>
         </tr>
@@ -239,19 +235,22 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Django For Loop Example -->
-            <!-- {% for item in items %} -->
+            <!-- Django Dynamic For Loop -->
+            {% for item in items %}
             <tr>
-                <td class="center-align">1</td>
+                <td class="center-align">{{ forloop.counter }}</td>
                 <td>
-                    <strong>DABUR AMLA OIL</strong><br>
-                    <span style="font-size: 9px; color: #7F8C8D;">MRP: Rs. 207.00</span>
+                    <strong>{{ item.product_name }}</strong>
                 </td>
-                <td class="center-align">1</td>
-                <td class="right-align">Rs. 190.00</td>
-                <td class="right-align">Rs. 190.00</td>
+                <td class="center-align">{{ item.quantity }}</td>
+                <td class="right-align">Rs. {{ item.price }}</td>
+                <td class="right-align">Rs. {{ item.price }}</td>
             </tr>
-            <!-- {% endfor %} -->
+            {% empty %}
+            <tr>
+                <td colspan="5" class="center-align">No items found for this order.</td>
+            </tr>
+            {% endfor %}
         </tbody>
     </table>
 
@@ -261,15 +260,15 @@
             <td style="width: 55%; padding-right: 20px;">
                 <div class="terms-box">
                     <strong>Terms & Conditions:</strong><br>
-                    1. All disputes are subject to Nohar jurisdiction.<br>
-                    2. Items once sold cannot be returned without original receipt.
+                    1. All disputes are subject to local jurisdiction.<br>
+                    2. Items once sold cannot be returned without the original receipt.
                 </div>
             </td>
             <td style="width: 45%;">
                 <table class="totals-calc">
                     <tr>
                         <td class="right-align">Subtotal:</td>
-                        <td class="right-align" style="width: 40%;">Rs. 190.00</td>
+                        <td class="right-align" style="width: 40%;">Rs. {{ order.total_amount }}</td>
                     </tr>
                     <tr>
                         <td class="right-align">Tax (Included):</td>
@@ -277,7 +276,7 @@
                     </tr>
                     <tr class="grand-total-row">
                         <td class="right-align">GRAND TOTAL:</td>
-                        <td class="right-align">Rs. 190.00</td>
+                        <td class="right-align">Rs. {{ order.total_amount }}</td>
                     </tr>
                 </table>
             </td>
@@ -301,7 +300,7 @@
 
     <!-- BOTTOM FOOTER -->
     <div id="footerContent">
-        Thank you for shopping with Chachan General Store • This is a computer-generated document and does not require a physical signature.
+        Thank you for shopping with {{ company_name|default:"Chachan General Store" }} • This is a computer-generated document and does not require a physical signature.
     </div>
 
 </body>

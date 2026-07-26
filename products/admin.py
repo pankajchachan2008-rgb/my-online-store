@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant
+from .models import StoreSetting
 
 admin.site.register(Category)
 admin.site.register(CustomerProfile)
@@ -23,6 +24,10 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category',)
     list_editable = ('price', 'last_moment_discount')
     inlines = [ProductVariantInline]
+
+@admin.register(StoreSetting)
+class StoreSettingAdmin(admin.ModelAdmin):
+    list_display = ['company_name', 'store_phone', 'gstin']
 
 # 🌟 NAYA: Updated Coupon Admin
 @admin.register(Coupon)

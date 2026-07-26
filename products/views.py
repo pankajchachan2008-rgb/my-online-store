@@ -23,7 +23,7 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.utils import timezone # 🌟 NAYA IMPORT
 
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting
 
 def ping(request):
     return HttpResponse("OK", status=200)
@@ -456,12 +456,23 @@ def sync_products_from_erp_api(request):
             )
     return Response({'message': 'Product sync process successfully executed'})
 
+# 📄 10. Download Smart PDF Invoice / Bill of Supply
 @login_required(login_url='/login/')
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     items = OrderItem.objects.filter(order=order)
     
+    # 🌟 Admin panel se custom details fetch kar rahe hain
+    store_settings = StoreSetting.objects.first()
+    company_name = store_settings.company_name if store_settings else 'Chachan General Store'
+    tagline = store_settings.tagline if store_settings else 'Premium Corporate Retail & Essentials'
+    store_address = store_settings.store_address if store_settings else ''
+    store_phone = store_settings.store_phone if store_settings else ''
+    gstin = store_settings.gstin if store_settings else ''
+    
     bill_no = f"#INV-2026-{order.id}"
+
+    # QR & Barcode Setup
     qr = qrcode.make(bill_no)
     qr_buffer = BytesIO()
     qr.save(qr_buffer, format="PNG")
@@ -474,11 +485,15 @@ def download_invoice(request, order_id):
     barcode_base64 = base64.b64encode(bc_buffer.getvalue()).decode("utf-8")
     
     template_path = 'products/invoice_pdf.html'
+    
     context = {
         'order': order, 
         'items': items,
-        'company_name': 'Chachan General Store',
-        'tagline': 'Premium Corporate Retail & Essentials',
+        'company_name': company_name,
+        'tagline': tagline,
+        'store_address': store_address,
+        'store_phone': store_phone,
+        'gstin': gstin,
         'bill_no': bill_no,
         'customer_name': order.customer_name,
         'customer_phone': order.mobile_number,
@@ -490,14 +505,15 @@ def download_invoice(request, order_id):
     }
     
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="CGSmart_Invoice_{order.id}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="CGSmart_Bill_{order.id}.pdf"'
     
     template = get_template(template_path)
     html = template.render(context)
+    
     pisa_status = pisa.CreatePDF(html, dest=response)
     
     if pisa_status.err:
-        return HttpResponse('Invoice generate karne mein error aayi: <pre>' + html + '</pre>')
+        return HttpResponse('Document generate karne mein error aayi: <pre>' + html + '</pre>')
     return response
 
 @login_required(login_url='/login/')
