@@ -78,6 +78,10 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     applied_coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Processing')
+# 🌟 NAYA: Editable Tracking Details
+    courier_name = models.CharField(max_length=100, blank=True, null=True, help_text="E.g., Trackon, Delivery, etc.")
+    tracking_id = models.CharField(max_length=100, blank=True, null=True, help_text="Courier Tracking ID/AWB")
+    tracking_url = models.URLField(max_length=500, blank=True, null=True, help_text="Paste direct tracking link here")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

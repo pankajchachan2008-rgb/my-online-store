@@ -40,7 +40,7 @@
     
     .user-info-header { display: flex; align-items: center; gap: 15px; }
     
-    /* 🌟 NAYA: Avatar Image Fit (Profile Photo Ke Liye) */
+    /* 🌟 Avatar Image Fit (Profile Photo Ke Liye) */
     .user-avatar {
         width: 50px;
         height: 50px;
@@ -61,6 +61,9 @@
     .order-box:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     .order-header { background-color: #f5f7fa; padding: 12px 15px; border-bottom: 1px solid #e0e0e0; }
     
+    /* 🌟 Tracking UI Box */
+    .tracking-box { background-color: #e5f3fb; border: 1px dashed #2874f0; border-radius: 4px; padding: 12px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+
     /* Address Tag */
     .address-tag { background: #f0f0f0; color: #878787; font-size: 0.7rem; padding: 3px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 </style>
@@ -73,7 +76,7 @@
             <div class="profile-card">
                 <div class="user-info-header mb-3">
                     <div class="user-avatar">
-                        <!-- 🌟 NAYA: Profile Photo Show Karne Ka Logic -->
+                        <!-- 🌟 Profile Photo Show Karne Ka Logic -->
                         {% if profile.profile_photo %}
                             <img src="{{ profile.profile_photo.url }}" alt="Profile Photo">
                         {% else %}
@@ -86,7 +89,7 @@
                     </div>
                 </div>
                 
-                <!-- 🌟 NAYA: Profile Completion Progress Bar -->
+                <!-- 🌟 Profile Completion Progress Bar -->
                 <div class="px-2">
                     <div class="d-flex justify-content-between small text-muted mb-1" style="font-size: 0.75rem;">
                         <span>Profile Completion</span>
@@ -114,7 +117,7 @@
                 <!-- ✅ TAB 1: PROFILE INFORMATION -->
                 <div class="tab-pane fade show active" id="tab-profile">
                     
-                    <!-- 🌟 NAYA: Wallet Balance Card -->
+                    <!-- 🌟 Wallet Balance Card -->
                     <div class="alert alert-info d-flex justify-content-between align-items-center rounded-0 border-0 shadow-sm mb-4 p-3" style="background-color: #e5edfa; border-left: 4px solid #2874f0 !important;">
                         <div>
                             <h6 class="fw-bold mb-0 text-dark" style="font-size: 15px;">🛍️ My Store Wallet Balance</h6>
@@ -125,7 +128,7 @@
 
                     <h5 class="fw-bold mb-4 pb-2 border-bottom">Profile Information</h5>
                     
-                    <!-- 📸 NAYA: Added enctype="multipart/form-data" for File Upload -->
+                    <!-- 📸 Added enctype="multipart/form-data" for File Upload -->
                     <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="update_profile">
@@ -150,7 +153,7 @@
                             </div>
                         </div>
                         
-                        <!-- 🌟 NAYA: Profile Photo Upload Input -->
+                        <!-- 🌟 Profile Photo Upload Input -->
                         <div class="mb-4">
                             <label class="form-label text-muted small fw-bold">Update Profile Photo</label>
                             <input type="file" name="profile_photo" class="form-control rounded-0" accept="image/*">
@@ -160,7 +163,7 @@
                     </form>
                 </div>
 
-                <!-- ✅ TAB 2: MY ORDERS (Original Code) -->
+                <!-- ✅ TAB 2: MY ORDERS WITH TRACKING INFO -->
                 <div class="tab-pane fade" id="tab-orders">
                     <h5 class="fw-bold mb-4 pb-2 border-bottom">My Orders</h5>
                     
@@ -217,6 +220,22 @@
                                 </div>
                                 {% endfor %}
                             </div>
+
+                            <!-- 🌟 NAYA: Editable Live Tracking Box -->
+                            {% if order.tracking_id %}
+                            <div class="tracking-box mt-3">
+                                <div>
+                                    <span class="text-muted small fw-bold" style="text-transform: uppercase;">🚚 Delivery Partner: {{ order.courier_name|default:"Courier" }}</span><br>
+                                    <span class="text-dark fw-bold" style="font-size: 15px;">Tracking ID: {{ order.tracking_id }}</span>
+                                </div>
+                                {% if order.tracking_url %}
+                                <div>
+                                    <a href="{{ order.tracking_url }}" target="_blank" class="btn btn-primary btn-sm px-4 fw-bold rounded-0" style="background-color: #2874f0; border:none;">TRACK ORDER</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
                         </div>
                     </div>
                     {% empty %}
