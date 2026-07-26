@@ -119,10 +119,24 @@
                     <div class="checkout-header-inactive">
                         <span class="step-num">3</span>
                         ORDER SUMMARY 
-                        <span class="ms-3 text-dark fw-bold" style="font-size: 14px; text-transform: none;">₹{{ final_total }}</span>
+                        <span class="ms-3 text-dark fw-bold" style="font-size: 14px; text-transform: none;">₹<span class="display-final-total">{{ final_total }}</span></span>
                     </div>
                 </div>
                 
+                <!-- 🌟 NAYA: STORE WALLET OPTION -->
+                {% if user.is_authenticated and profile.wallet_balance > 0 %}
+                <div class="checkout-box border border-primary" style="background-color: #f8faff;">
+                    <div class="checkout-body p-3">
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input me-3 shadow-none border-primary" type="checkbox" name="use_wallet" id="use_wallet" style="width: 20px; height: 20px; cursor: pointer;" onchange="calculateFinalTotal()">
+                            <label class="form-check-label fw-bold text-primary w-100" for="use_wallet" style="font-size: 16px; cursor: pointer;">
+                                Use Store Wallet Balance (Available: ₹<span id="wallet_available">{{ profile.wallet_balance }}</span>)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- STEP 4: PAYMENT OPTIONS -->
                 <div class="checkout-box">
                     <div class="checkout-header-inactive">
@@ -176,7 +190,7 @@
                         
                         <div class="total-row">
                             <span>Total Payable</span>
-                            <span>₹{{ final_total }}</span>
+                            <span>₹<span class="display-final-total">{{ final_total }}</span></span>
                         </div>
                         
                         {% if total_savings > 0 %}
@@ -192,7 +206,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="text-muted" style="font-size: 12px;">Total Payable</div>
-                            <div class="fw-bold" style="font-size: 18px; color: #212121;">₹{{ final_total }}</div>
+                            <div class="fw-bold" style="font-size: 18px; color: #212121;">₹<span class="display-final-total">{{ final_total }}</span></div>
                         </div>
                         <button type="submit" class="btn-place-order w-auto px-4">CONFIRM ORDER</button>
                     </div>
@@ -205,7 +219,7 @@
 </div>
 <div class="d-block d-lg-none" style="height: 80px;"></div>
 
-<!-- ⚙️ JavaScript for Address Form Toggle -->
+<!-- ⚙️ JavaScript for Address Form Toggle & Wallet Calculation -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const addressRadios = document.querySelectorAll('input[name="address_id"]');
@@ -229,5 +243,28 @@
             });
         }
     });
+
+    // 🌟 NAYA: Wallet calculation logic
+    function calculateFinalTotal() {
+        const originalTotal = parseFloat("{{ final_total }}");
+        const walletBalance = parseFloat("{{ profile.wallet_balance|default:0 }}");
+        const useWalletCheckbox = document.getElementById("use_wallet");
+        
+        let displayTotalElements = document.querySelectorAll(".display-final-total");
+        let newTotal = originalTotal;
+
+        if (useWalletCheckbox && useWalletCheckbox.checked) {
+            if (walletBalance >= originalTotal) {
+                newTotal = 0;
+            } else {
+                newTotal = originalTotal - walletBalance;
+            }
+        }
+        
+        // Update all elements showing final total
+        displayTotalElements.forEach(el => {
+            el.innerText = newTotal.toFixed(2);
+        });
+    }
 </script>
 {% endblock %}

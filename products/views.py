@@ -139,6 +139,7 @@ def cart_detail(request):
     return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
 # 🛍️ 4. Checkout Page (FIXED - Removed Duplicates)
+# 🛍️ 4. Checkout Page (Wallet Logic Added)
 def checkout_page(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -149,6 +150,13 @@ def checkout_page(request):
     total_mrp = 0
     hidden_discount_total = 0
     order_items_list = []
+    
+    # Wallet aur Profile fetch karna
+    profile = None
+    wallet_balance = 0
+    if request.user.is_authenticated:
+        profile, _ = CustomerProfile.objects.get_or_create(user=request.user)
+        wallet_balance = profile.wallet_balance
     
     for pid, item in list(cart.items()):
         if isinstance(item, dict) and 'price' in item:
@@ -201,6 +209,22 @@ def checkout_page(request):
             active_coupon.is_used = True
             active_coupon.save()
 
+        # 🌟 NAYA LOGIC: Wallet Deduction
+        use_wallet = request.POST.get('use_wallet')
+        wallet_deducted = 0
+        
+        if use_wallet == 'on' and profile and profile.wallet_balance > 0:
+            if profile.wallet_balance >= final_total:
+                wallet_deducted = final_total
+                profile.wallet_balance -= final_total
+                final_total = 0
+            else:
+                wallet_deducted = profile.wallet_balance
+                final_total -= profile.wallet_balance
+                profile.wallet_balance = 0
+            profile.save() # Updated balance database me save kar diya
+
+        # Order Create karna
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             customer_name=name, mobile_number=mobile, address=address,
@@ -212,7 +236,7 @@ def checkout_page(request):
                 OrderItem.objects.create(order=order, product_name=item['name'], price=item['price'], quantity=item['quantity'])
             
         items_str = "\n".join(order_items_list)
-        wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n\n*Delivery Charge:* ₹{delivery_fee}\n*Total Payable:* ₹{final_total}"
+        wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n\n*Wallet Used:* ₹{wallet_deducted}\n*Delivery Charge:* ₹{delivery_fee}\n*Total Payable:* ₹{final_total}"
         
         whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
 
@@ -232,10 +256,10 @@ def checkout_page(request):
         'delivery_fee': delivery_fee,
         'final_total': final_total,
         'total_savings': total_savings,
-        'saved_addresses': saved_addresses
+        'saved_addresses': saved_addresses,
+        'profile': profile, # Profile pass kiya taaki wallet balance frontend pe dikhe
     }
     return render(request, 'products/checkout.html', context)
-
 
 # 👤 5. Premium Profile Page
 # 👤 5. Premium Profile Page
