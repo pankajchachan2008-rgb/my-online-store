@@ -140,12 +140,12 @@ SECURE_REFERRER_POLICY = "same-origin"
 # Email Configuration (Brevo)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_PORT = 2525  # Render is port ko block nahi karta
+EMAIL_PORT = 587  # Render is port ko block nahi karta
 EMAIL_HOST_USER = 'b368f6001@smtp-brevo.com'  # Wo email jisse aapne Brevo par login kiya hai
 EMAIL_HOST_PASSWORD = os.environ.get('BREVO_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-DEFAULT_FROM_EMAIL = 'pankajchachan2026@gmail.com'
+DEFAULT_FROM_EMAIL = 'support@cgsmart.in'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'mqge4pqj', 
