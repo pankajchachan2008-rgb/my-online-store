@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.views.static import serve
 from django.contrib.auth import views as auth_views
 from django.http import HttpResponse  # 🌟 NAYA IMPORT PING KE LIYE
+from products import views
 
 # Views functions imports (FIXED: Added cancel_order here)
 from products.views import (
@@ -48,6 +49,7 @@ urlpatterns = [
     
     # 🔐 Standard Auth URLs
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'),
     path('logout/', custom_logout, name='logout'),
     path('register/', register_page, name='register'),
     path('profile/', profile_page, name='profile'),

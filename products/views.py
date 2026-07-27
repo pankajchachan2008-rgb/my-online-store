@@ -18,9 +18,11 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.utils.http import urlencode
 from django.core.mail import send_mail
+from .models import OTPVerification
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from .forms import CustomRegisterForm
 from django.utils import timezone # 🌟 NAYA IMPORT
 
 from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting
@@ -412,13 +414,29 @@ def trigger_import(request): return render(request, 'products/import_trigger.htm
 
 def register_page(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Account successfully ban gaya hai!')
-            return redirect('login')
+            # 1. User ko database me save karein, par abhi activate na karein
+            user = form.save(commit=False)
+            user.is_active = False  # Bina OTP verify kiye user login na kar paye
+            user.save()
+
+            # 2. OTP Generate aur database me save karein
+            otp = str(random.randint(100000, 999999))
+            OTPVerification.objects.create(user=user, otp=otp)
+
+            # 3. User ko Email bhejein (yahan user.email form me hona zaroori hai)
+            subject = 'CGSmart - Account Verification OTP'
+            message = f'Hello {user.username},\n\nAapka account verification OTP hai: {otp}\n\nKripya is OTP ko website par daalkar apna account verify karein.'
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+
+            # 4. Session me user ki ID save karein aur Verify page par bhej dein
+            request.session['verify_user_id'] = user.id
+            messages.success(request, 'Account successfully ban gaya hai! Kripya apne email par aaya OTP daalein.')
+            return redirect('verify_otp')
     else:
-        form = UserCreationForm()
+        form = CustomRegisterForm()
+        
     return render(request, 'registration/register.html', {'form': form})
 
 @api_view(['GET'])
@@ -643,3 +661,30 @@ def edit_address(request, address_id):
         messages.success(request, "✅ Address updated!")
         return redirect('profile')
     return render(request, 'products/edit_address.html', {'address': address})
+
+def verify_otp(request):
+    user_id = request.session.get('verify_user_id')
+    if not user_id:
+        return redirect('login') # Agar direct access kare toh login par bhej do
+
+    user = User.objects.get(id=user_id)
+
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        try:
+            # Check karein ki OTP sahi hai ya nahi
+            otp_obj = OTPVerification.objects.get(user=user, otp=entered_otp)
+            otp_obj.is_verified = True
+            otp_obj.save()
+
+            # OTP sahi hai toh user ko active kar dein
+            user.is_active = True
+            user.save()
+
+            del request.session['verify_user_id'] # Session saaf kar dein
+            messages.success(request, 'Account successfully verified! Ab aap login kar sakte hain.')
+            return redirect('login')
+        except OTPVerification.DoesNotExist:
+            messages.error(request, 'Galat OTP! Kripya sahi OTP daalein.')
+
+    return render(request, 'products/verify_otp.html', {'email': user.email})
