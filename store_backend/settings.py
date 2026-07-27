@@ -145,7 +145,7 @@ EMAIL_HOST_USER = 'b368f6001@smtp-brevo.com'  # Wo email jisse aapne Brevo par l
 EMAIL_HOST_PASSWORD = os.environ.get('BREVO_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-DEFAULT_FROM_EMAIL = 'PANKAJCHACHAN2026@gmail.com'
+DEFAULT_FROM_EMAIL = 'pankajchachan2026@gmail.com'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'mqge4pqj', 
