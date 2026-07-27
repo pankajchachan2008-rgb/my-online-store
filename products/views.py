@@ -2,6 +2,8 @@ import csv
 import random
 import qrcode
 import barcode
+import requests  # Naya Import
+import os        # Naya Import
 from barcode.writer import ImageWriter
 from io import BytesIO
 import base64
@@ -23,12 +25,33 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from .forms import CustomRegisterForm
-from django.utils import timezone # 🌟 NAYA IMPORT
+from django.utils import timezone 
 
 from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting
 
-def ping(request):
-    return HttpResponse("OK", status=200)
+# --- HELPER FUNCTION FOR BREVO API ---
+def send_brevo_api_email(subject, message, to_email):
+    # Render environment variable se key uthayega
+    api_key = os.environ.get('BREVO_API_KEY') 
+    
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+    payload = {
+        "sender": {"email": "support@cgsmart.in", "name": "CGSmart Store"},
+        "to": [{"email": to_email}],
+        "subject": subject,
+        "htmlContent": message
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        return response.status_code
+    except Exception as e:
+        print(f"Email API error: {e}")
+        return None
 
 # 🏠 1. Homepage View
 def product_list(request):
@@ -204,7 +227,6 @@ def checkout_page(request):
             mobile = request.POST.get('mobile_number')
             address = request.POST.get('address')
         
-        # 🌟 NAYA LOGIC: Promo Code Verification Backend Side
         promo_code = request.POST.get('promo_code', '').strip().upper()
         active_coupon = None
         coupon_discount_applied = 0
@@ -416,21 +438,21 @@ def register_page(request):
     if request.method == 'POST':
         form = CustomRegisterForm(request.POST)
         if form.is_valid():
-            # 1. User ko database me save karein, par abhi activate na karein
             user = form.save(commit=False)
-            user.is_active = False  # Bina OTP verify kiye user login na kar paye
+            user.is_active = False 
             user.save()
 
-            # 2. OTP Generate aur database me save karein
             otp = str(random.randint(100000, 999999))
             OTPVerification.objects.create(user=user, otp=otp)
 
-            # 3. User ko Email bhejein (yahan user.email form me hona zaroori hai)
+            # --- API WALA CODE ---
             subject = 'CGSmart - Account Verification OTP'
             message = f'Hello {user.username},\n\nAapka account verification OTP hai: {otp}\n\nKripya is OTP ko website par daalkar apna account verify karein.'
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=True)
+            
+            # API call
+            send_brevo_api_email(subject, message, user.email)
+            # ---------------------
 
-            # 4. Session me user ki ID save karein aur Verify page par bhej dein
             request.session['verify_user_id'] = user.id
             messages.success(request, 'Account successfully ban gaya hai! Kripya apne email par aaya OTP daalein.')
             return redirect('verify_otp')
@@ -645,7 +667,6 @@ def delete_address(request, address_id):
     messages.success(request, "✅ Address deleted successfully!")
     return redirect('profile')
 
-# (Edit ke liye hum simple update logic use karenge)
 @login_required(login_url='/login/')
 def edit_address(request, address_id):
     address = get_object_or_404(Address, id=address_id, user=request.user)
@@ -665,23 +686,21 @@ def edit_address(request, address_id):
 def verify_otp(request):
     user_id = request.session.get('verify_user_id')
     if not user_id:
-        return redirect('login') # Agar direct access kare toh login par bhej do
+        return redirect('login') 
 
     user = User.objects.get(id=user_id)
 
     if request.method == 'POST':
         entered_otp = request.POST.get('otp')
         try:
-            # Check karein ki OTP sahi hai ya nahi
             otp_obj = OTPVerification.objects.get(user=user, otp=entered_otp)
             otp_obj.is_verified = True
             otp_obj.save()
 
-            # OTP sahi hai toh user ko active kar dein
             user.is_active = True
             user.save()
 
-            del request.session['verify_user_id'] # Session saaf kar dein
+            del request.session['verify_user_id']
             messages.success(request, 'Account successfully verified! Ab aap login kar sakte hain.')
             return redirect('login')
         except OTPVerification.DoesNotExist:
