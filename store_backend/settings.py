@@ -12,8 +12,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-your-custom-se
 DEBUG = True
 
 # Allowed hosts and trusted corporate endpoints
-ALLOWED_HOSTS = ['cgsmart.in', 'www.cgsmart.in', 'cgsmart.onrender.com']
-CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in', 'https://my-online-store-ggbj.onrender.com/']
+ALLOWED_HOSTS = ['cgsmart.in', 'www.cgsmart.in', 'https://my-online-store-ggbj.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in', 'https://my-online-store-ggbj.onrender.com']
 
 # Application definition
 INSTALLED_APPS = [
