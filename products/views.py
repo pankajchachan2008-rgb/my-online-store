@@ -428,7 +428,7 @@ def register_page(request):
             # 3. User ko Email bhejein (yahan user.email form me hona zaroori hai)
             subject = 'CGSmart - Account Verification OTP'
             message = f'Hello {user.username},\n\nAapka account verification OTP hai: {otp}\n\nKripya is OTP ko website par daalkar apna account verify karein.'
-            send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
 
             # 4. Session me user ki ID save karein aur Verify page par bhej dein
             request.session['verify_user_id'] = user.id
