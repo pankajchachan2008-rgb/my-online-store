@@ -9,11 +9,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-your-custom-secret-key-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # Allowed hosts and trusted corporate endpoints
-ALLOWED_HOSTS = ['cgsmart.in', 'www.cgsmart.in', 'https://my-online-store-ggbj.onrender.com']
-CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in', 'https://my-online-store-ggbj.onrender.com']
+ALLOWED_HOSTS = [
+    'cgsmart.in', 
+    'www.cgsmart.in', 
+    'my-online-store-ggbj.onrender.com' # Yahan se https:// hata diya
+]
+
+# CSRF Trusted Origins: Yahan https:// rehne dein, ye sahi hai
+CSRF_TRUSTED_ORIGINS = [
+    'https://cgsmart.in', 
+    'https://www.cgsmart.in', 
+    'https://my-online-store-ggbj.onrender.com'
+]
 
 # Application definition
 INSTALLED_APPS = [
