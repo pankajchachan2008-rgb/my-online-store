@@ -13,7 +13,7 @@ DEBUG = True
 
 # Allowed hosts and trusted corporate endpoints
 ALLOWED_HOSTS = ['cgsmart.in', 'www.cgsmart.in', 'cgsmart.onrender.com']
-CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in', 'https://*.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://cgsmart.in', 'https://www.cgsmart.in', 'https://my-online-store-ggbj.onrender.com/']
 
 # Application definition
 INSTALLED_APPS = [
