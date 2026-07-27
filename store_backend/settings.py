@@ -137,12 +137,15 @@ SECURE_REFERRER_POLICY = "same-origin"
 # =====================================================================
 #                 EMAIL & CLOUDINARY CONFIGURATION
 # =====================================================================
+# Email Configuration (Brevo)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
+EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_PORT = 2525  # Render is port ko block nahi karta
+EMAIL_HOST_USER = 'PANKAJCHACHAN2026@gmail.com'  # Wo email jisse aapne Brevo par login kiya hai
+EMAIL_HOST_PASSWORD = os.environ.get('BREVO_PASSWORD')
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'pankajchachan2026@gmail.com'
-EMAIL_HOST_PASSWORD = 'oltqxsmoydkhgoah'  
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = 'PANKAJCHACHAN2026@gmail.com'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'mqge4pqj', 
