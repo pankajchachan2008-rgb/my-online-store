@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CGSMART - Premium Online Store</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,10 +15,12 @@
     
     <style>
         :root {
-            --bg-light: #F8FAFC; /* Premium subtle gray background */
-            --text-dark: #1E293B; /* Soft slate instead of pure black */
-            --primary: #4F46E5; /* Premium Indigo */
+            --bg-light: #F8FAFC;
+            --text-dark: #0F172A;
+            --text-muted: #64748B;
+            --primary: #4F46E5;
             --primary-hover: #4338CA;
+            --surface: #FFFFFF;
         }
 
         body {
@@ -28,32 +30,93 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            /* Extra padding at bottom for mobile to prevent overlap with bottom nav */
+            padding-bottom: env(safe-area-inset-bottom); 
         }
 
         /* 💎 Premium Luxury Navbar */
         .premium-navbar {
-            background-color: #FFFFFF;
+            background-color: var(--surface);
             border-bottom: 1px solid #E2E8F0;
-            padding: 15px 0;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            padding: 12px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            z-index: 1040;
         }
         .brand-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             text-decoration: none !important;
         }
-        .brand-logo { height: 45px; width: auto; border-radius: 8px; }
+        .brand-logo { height: 40px; width: auto; border-radius: 8px; }
         .brand-name {
             font-family: 'Jost', sans-serif;
             font-weight: 700;
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            color: #0F172A;
+            color: var(--text-dark);
             margin: 0;
         }
-        .nav-link {
+
+        /* 📱 Mobile Offcanvas Sidebar (App-like Menu) */
+        .offcanvas {
+            border-right: none;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+        }
+        .offcanvas-header {
+            background-color: var(--surface);
+            border-bottom: 1px solid #E2E8F0;
+            padding: 20px;
+        }
+        .mobile-menu-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--text-dark);
+            font-weight: 500;
+            text-decoration: none;
+            border-bottom: 1px solid #F1F5F9;
+            transition: 0.3s;
+        }
+        .mobile-menu-link:hover, .mobile-menu-link:active {
+            background-color: #F8FAFC;
+            color: var(--primary);
+            padding-left: 25px;
+        }
+
+        /* 📱 Mobile Bottom Navigation Bar */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--surface);
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 calc(10px + env(safe-area-inset-bottom)) 0;
+            z-index: 1050;
+            border-top: 1px solid #E2E8F0;
+        }
+        .nav-item-bottom {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .nav-item-bottom.active { color: var(--primary); font-weight: 600; }
+        .nav-icon { font-size: 1.4rem; margin-bottom: 2px; }
+
+        /* Prevent content from hiding behind mobile bottom nav */
+        @media (max-width: 991px) { body { padding-bottom: 75px; } }
+
+        /* Desktop specific styles */
+        .nav-link-desktop {
             font-family: 'Jost', sans-serif;
             font-weight: 500;
             text-transform: uppercase;
@@ -62,12 +125,12 @@
             margin-left: 20px;
             transition: all 0.3s ease;
         }
-        .nav-link:hover { color: var(--primary) !important; font-weight: 600; }
-
+        .nav-link-desktop:hover { color: var(--primary) !important; font-weight: 600; }
+        
         .btn-luxury {
             background-color: var(--primary);
             color: #FFFFFF;
-            border-radius: 8px; /* Smooth corners */
+            border-radius: 8px;
             padding: 8px 20px;
             font-weight: 600;
             text-transform: uppercase;
@@ -80,65 +143,89 @@
             background-color: var(--primary-hover); 
             color: white; 
             transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
-        }
-
-        footer {
-            background-color: #0F172A;
-            color: #94A3B8;
-            font-size: 0.85rem;
-            padding: 24px 0;
         }
     </style>
 </head>
 <body>
 
-    <!-- 💎 Luxury Header -->
-    <nav class="navbar navbar-expand-lg premium-navbar sticky-top">
+    <!-- 💎 Luxury Header (Sticky) -->
+    <nav class="navbar premium-navbar sticky-top">
         <div class="container" style="max-width: 1400px;">
             
+            <!-- Mobile Toggle Button (Left Side) -->
+            <button class="navbar-toggler border-0 shadow-none p-0 me-2 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <span class="fs-2 text-dark">☰</span>
+            </button>
+            
             <!-- Logo + Brand Name -->
-            <a class="brand-container" href="{% url 'home' %}">
+            <a class="brand-container me-auto" href="{% url 'home' %}">
                 <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
-                <span class="brand-name d-none d-sm-block">Chachan General Store</span>
+                <span class="brand-name">CGSMART</span>
             </a>
 
-            <!-- 🌟 NAYA: CART BUTTON (Jo mobile aur desktop dono par hamesha samne dikhega) -->
-            <div class="d-flex align-items-center ms-auto ms-lg-4 order-lg-last">
-                <a class="btn btn-luxury me-2 d-flex align-items-center" href="{% url 'cart_detail' %}" style="padding: 8px 16px; font-size: 14px;">
-                    🛒 <span class="ms-1">Cart</span>
-                </a>
+            <!-- Desktop Menu (Hidden on Mobile) -->
+            <div class="d-none d-lg-flex align-items-center">
+                <a class="nav-link-desktop" href="{% url 'home' %}">Home</a>
+                <a class="nav-link-desktop" href="{% url 'about' %}">About</a>
+                <a class="nav-link-desktop" href="{% url 'contact' %}">Contact</a>
                 
-                <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-            
-            <!-- Baaki Menu Items -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'view_wishlist' %}">Wishlist</a></li>
+                <div class="ms-4 d-flex align-items-center gap-3">
+                    <a class="btn btn-light rounded-circle p-2 shadow-sm border" href="{% url 'view_wishlist' %}" title="Wishlist">❤️</a>
+                    <a class="btn btn-light rounded-circle p-2 shadow-sm border" href="{% url 'cart_detail' %}" title="Cart">🛒</a>
                     
                     {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
-                        <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-                            <a class="btn btn-outline-secondary btn-sm rounded-3 w-100" href="{% url 'logout' %}">Logout</a>
-                        </li>
+                        <a class="btn btn-outline-secondary btn-sm rounded-3 fw-bold px-3" href="{% url 'profile' %}">👤 Profile</a>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
-                            <a class="btn btn-luxury w-100" href="{% url 'register' %}">Sign Up</a>
-                        </li>
+                        <a class="btn btn-luxury" href="{% url 'login' %}">Login</a>
                     {% endif %}
-                </ul>
+                </div>
+            </div>
+            
+            <!-- Mobile Cart Icon (Right Side Header) -->
+            <div class="d-lg-none">
+                <a href="{% url 'cart_detail' %}" class="text-decoration-none position-relative p-2">
+                    <span class="fs-4">🛒</span>
+                    <!-- You can add dynamic cart count badge here later -->
+                </a>
             </div>
         </div>
     </nav>
 
-    <div class="container-fluid p-0">
+    <!-- 📱 Mobile Offcanvas Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-header">
+            <a class="brand-container" href="{% url 'home' %}">
+                <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
+                <span class="brand-name fs-5">CGSMART</span>
+            </a>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="d-flex flex-column h-100">
+                <div class="flex-grow-1 mt-2">
+                    <a href="{% url 'home' %}" class="mobile-menu-link">🏠 <span class="ms-3">Home</span></a>
+                    <a href="{% url 'home' %}" class="mobile-menu-link">🛍️ <span class="ms-3">Shop Products</span></a>
+                    <a href="{% url 'about' %}" class="mobile-menu-link">🏢 <span class="ms-3">About Us</span></a>
+                    <a href="{% url 'contact' %}" class="mobile-menu-link">📞 <span class="ms-3">Contact Support</span></a>
+                    <a href="{% url 'privacy_policy' %}" class="mobile-menu-link">📄 <span class="ms-3">Privacy Policy</span></a>
+                </div>
+                
+                <!-- Auth Section in Sidebar -->
+                <div class="p-4 bg-light border-top">
+                    {% if user.is_authenticated %}
+                        <p class="mb-3 fw-bold text-dark">Hi, {{ user.first_name|default:user.username }}!</p>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 fw-bold rounded-3">Log Out</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-luxury w-100 mb-2">Login to Account</a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary w-100 fw-bold rounded-3">Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container-fluid p-0 flex-grow-1">
         <div class="container mt-4 mb-5">
             {% if messages %}
                 {% for message in messages %}
@@ -154,83 +241,89 @@
         </div>
     </div>
 
-    <!-- 🛡️ TRUST SIGNALS -->
-    <div class="container-fluid bg-white py-4 mt-auto border-top">
+    <!-- 🛡️ TRUST SIGNALS (Footer Top) -->
+    <div class="container-fluid bg-white py-4 mt-auto border-top d-none d-md-block">
         <div class="container" style="max-width: 1400px;">
             <div class="row text-center g-4">
-                <div class="col-md-3 col-6">
-                    <div class="p-3">
-                        <span class="fs-2 mb-2 d-block">🔒</span>
-                        <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: #0F172A;">100% Secure Payments</h6>
-                        <p class="small text-muted mb-0">Your data is safe with us</p>
-                    </div>
+                <div class="col-md-3">
+                    <span class="fs-2 mb-2 d-block">🔒</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: #0F172A;">100% Secure Payments</h6>
+                    <p class="small text-muted mb-0">Your data is safe with us</p>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="p-3">
-                        <span class="fs-2 mb-2 d-block">💵</span>
-                        <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: #0F172A;">Cash on Delivery</h6>
-                        <p class="small text-muted mb-0">Pay when you receive</p>
-                    </div>
+                <div class="col-md-3">
+                    <span class="fs-2 mb-2 d-block">💵</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: #0F172A;">Cash on Delivery</h6>
+                    <p class="small text-muted mb-0">Pay when you receive</p>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="p-3">
-                        <span class="fs-2 mb-2 d-block">🚚</span>
-                        <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: #0F172A;">Fast Local Delivery</h6>
-                        <p class="small text-muted mb-0">Quick dispatch for all orders</p>
-                    </div>
+                <div class="col-md-3">
+                    <span class="fs-2 mb-2 d-block">🚚</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: #0F172A;">Fast Local Delivery</h6>
+                    <p class="small text-muted mb-0">Quick dispatch for all orders</p>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="p-3">
-                        <span class="fs-2 mb-2 d-block">⭐</span>
-                        <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: #0F172A;">Premium Quality</h6>
-                        <p class="small text-muted mb-0">Handpicked essentials</p>
-                    </div>
+                <div class="col-md-3">
+                    <span class="fs-2 mb-2 d-block">⭐</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: #0F172A;">Premium Quality</h6>
+                    <p class="small text-muted mb-0">Handpicked essentials</p>
                 </div>
             </div>
         </div>
     </div>
 
-<!-- 📄 UPDATED FOOTER WITH POLICY LINKS -->
-<footer class="text-white mt-auto py-5" style="background-color: #0F172A;">
-    <div class="container" style="max-width: 1400px;">
-        <div class="row g-4">
-            <!-- Brand Column -->
-            <div class="col-lg-4 mb-3">
-                <h5 class="fw-bold mb-3 text-uppercase">Chachan General Store</h5>
-                <p class="text-white-50 small">
-                    NOHAR's premium destination for quality essentials. 
-                    Delivering happiness to your doorstep with trust and speed.
-                </p>
+    <!-- 📄 FOOTER WITH POLICY LINKS -->
+    <footer class="text-white py-5" style="background-color: #0F172A; margin-bottom: env(safe-area-inset-bottom);">
+        <div class="container" style="max-width: 1400px;">
+            <div class="row g-4">
+                <div class="col-lg-4 mb-3">
+                    <h5 class="fw-bold mb-3 text-uppercase">CGSMART</h5>
+                    <p class="text-white-50 small">
+                        Jaipur's premium destination for quality essentials. 
+                        Delivering happiness to your doorstep with trust and speed.
+                    </p>
+                </div>
+                <div class="col-6 col-lg-4 mb-3">
+                    <h6 class="fw-bold mb-3 text-uppercase">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}" class="text-white-50 text-decoration-none mb-2 d-block">Home</a></li>
+                        <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none mb-2 d-block">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-4 mb-3">
+                    <h6 class="fw-bold mb-3 text-uppercase">Legal</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'privacy_policy' %}" class="text-white-50 text-decoration-none mb-2 d-block">Privacy Policy</a></li>
+                        <li><a href="{% url 'terms_conditions' %}" class="text-white-50 text-decoration-none mb-2 d-block">Terms & Conditions</a></li>
+                        <li><a href="{% url 'refund_policy' %}" class="text-white-50 text-decoration-none">Refund Policy</a></li>
+                    </ul>
+                </div>
             </div>
-            
-            <!-- Quick Links -->
-            <div class="col-lg-4 mb-3">
-                <h6 class="fw-bold mb-3 text-uppercase">Quick Links</h6>
-                <ul class="list-unstyled">
-                    <li><a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Home</a></li>
-                    <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none">About Us</a></li>
-                    <li><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none">Contact Support</a></li>
-                </ul>
-            </div>
-            
-            <!-- Policies -->
-            <div class="col-lg-4 mb-3">
-                <h6 class="fw-bold mb-3 text-uppercase">Customer Policies</h6>
-                <ul class="list-unstyled">
-                    <li><a href="{% url 'privacy_policy' %}" class="text-white-50 text-decoration-none">Privacy Policy</a></li>
-                    <li><a href="{% url 'terms_conditions' %}" class="text-white-50 text-decoration-none">Terms & Conditions</a></li>
-                    <li><a href="{% url 'refund_policy' %}" class="text-white-50 text-decoration-none">Return & Refund Policy</a></li>
-                </ul>
+            <hr class="my-4 border-secondary opacity-25">
+            <div class="text-center text-white-50 small pb-4 pb-lg-0">
+                <p class="mb-0">© 2026 CGSMART. All Rights Reserved.</p>
             </div>
         </div>
-        
-        <hr class="my-4 border-secondary">
-        
-        <div class="text-center text-white-50 small">
-            <p class="mb-0">© 2026 Chachan General Store. All Rights Reserved.</p>
-        </div>
+    </footer>
+
+    <!-- 📱 APP-STYLE BOTTOM NAVIGATION (Mobile Only) -->
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="{% url 'home' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'view_wishlist' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'view_wishlist' %}active{% endif %}">
+            <span class="nav-icon">❤️</span>
+            <span>Wishlist</span>
+        </a>
+        <a href="{% url 'cart_detail' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}">
+            <span class="nav-icon">🛒</span>
+            <span>Cart</span>
+        </a>
+        <a href="{% url 'profile' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+        </a>
     </div>
-</footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
