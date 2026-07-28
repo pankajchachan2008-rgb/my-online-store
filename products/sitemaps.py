@@ -7,17 +7,21 @@ class ProductSitemap(Sitemap):
     priority = 0.9
 
     def items(self):
+        # Saare products list karein
         return Product.objects.all()
 
-    def location(self, obj):
-        return reverse('product_detail', args=[obj.id])
+    def lastmod(self, obj):
+        # Agar aapke model mein 'updated_at' field hai toh uska use karein, 
+        # warna 'created_at' use karein
+        return obj.created_at 
 
 class StaticViewSitemap(Sitemap):
-    priority = 0.7
-    changefreq = "weekly"
+    priority = 0.5
+    changefreq = 'weekly'
 
     def items(self):
-        return ['product_list', 'about', 'contact', 'login', 'register']
+        # Yahan apni website ke sabhi static pages ke 'name' likhein
+        return ['home', 'about', 'contact', 'privacy_policy', 'terms_conditions', 'refund_policy']
 
     def location(self, item):
         return reverse(item)
