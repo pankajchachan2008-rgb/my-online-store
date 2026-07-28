@@ -7,8 +7,11 @@ class ProductSitemap(Sitemap):
     priority = 0.9
 
     def items(self):
-        # Yahan sirf '-id' hona chahiye, 'created_at' bilkul nahi
         return Product.objects.all().order_by('-id')
+
+    # 🌟 NAYA FUNCTION: Product ka URL banane ke liye
+    def location(self, item):
+        return reverse('product_detail', args=[item.id])
 
 class StaticViewSitemap(Sitemap):
     priority = 0.5
