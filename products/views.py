@@ -27,7 +27,7 @@ from django.core.paginator import Paginator
 from .forms import CustomRegisterForm
 from django.utils import timezone 
 
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand
 
 # --- HELPER FUNCTION FOR BREVO API ---
 def send_brevo_api_email(subject, message, to_email):
@@ -53,12 +53,15 @@ def send_brevo_api_email(subject, message, to_email):
         return None
 
 # 🏠 1. Homepage View
+# 🏠 1. Updated Homepage View (Brand filtering ke sath)
 def product_list(request):
     search_query = request.GET.get('search', '').strip()
     category_id = request.GET.get('category')
+    brand_id = request.GET.get('brand') # 🌟 NAYA
     sort = request.GET.get('sort')
     
     categories = Category.objects.all()
+    brands = Brand.objects.all() # 🌟 NAYA
     products = Product.objects.all()
     banners = Banner.objects.filter(is_active=True).order_by('-id')
 
@@ -73,6 +76,16 @@ def product_list(request):
             active_category = None
     else:
         active_category = None
+
+    # 🌟 NAYA: Brand Filter Logic
+    if brand_id:
+        try:
+            products = products.filter(brand_id=brand_id)
+            active_brand = int(brand_id)
+        except ValueError:
+            active_brand = None
+    else:
+        active_brand = None
     
     if sort == 'low_to_high':
         products = products.order_by('price')
@@ -88,8 +101,10 @@ def product_list(request):
     return render(request, 'products/product_list.html', {
         'products': page_obj,  
         'categories': categories,
+        'brands': brands, # 🌟 NAYA
         'banners': banners,
         'active_category': active_category,
+        'active_brand': active_brand, # 🌟 NAYA
         'search_query': search_query,
         'current_sort': sort
     })
