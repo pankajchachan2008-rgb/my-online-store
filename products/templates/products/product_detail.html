@@ -16,6 +16,7 @@
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: #F8FAFC;">
                 <div class="card-body p-4 d-flex align-items-center justify-content-center" style="height: 450px;">
                     {% if product.image %}
+                        <!-- 🌟 NAYA: loading="lazy" added for Speed Optimization -->
                         <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%; object-fit: contain; mix-blend-mode: multiply;" loading="lazy">
                     {% else %}
                         <img src="https://placehold.co/400x400/E2E8F0/64748B?text=No+Image" class="img-fluid rounded-3" loading="lazy">
@@ -52,6 +53,7 @@
                     {% csrf_token %}
                     
                     {% if product.variants.exists %}
+                        <!-- Agar Varieties (Variants) hain -->
                         <h5 class="fw-bold mb-3">Select Variety:</h5>
                         <div class="mb-4">
                             <select name="variant_id" id="variantSelect" class="form-select form-select-lg border-2 shadow-none focus-ring" required onchange="updatePrice()">
@@ -71,6 +73,7 @@
                         </div>
                         
                     {% else %}
+                        <!-- Normal Product (Bina Variant ke) -->
                         <div class="d-flex align-items-baseline mb-4">
                             <span class="fs-1 fw-bold text-dark">₹{{ product.price }}</span>
                             {% if product.mrp and product.mrp > product.price %}
@@ -80,6 +83,7 @@
                         </div>
                     {% endif %}
 
+                    <!-- Buttons -->
                     <div class="d-flex gap-3 mt-4">
                         <button type="submit" class="btn btn-primary btn-lg flex-grow-1 fw-bold text-uppercase rounded-3" style="background-color: #4F46E5; border: none; letter-spacing: 1px;">
                             🛒 Add To Cart
@@ -90,7 +94,7 @@
                     </div>
                 </form>
 
-                <!-- 🛡️ TRUST SIGNALS -->
+                <!-- 🛡️ TRUST SIGNALS & SECURE BADGES -->
                 <div class="mt-4 p-3 bg-light rounded-3 border">
                     <p class="small text-muted fw-bold mb-2 text-center text-uppercase" style="letter-spacing: 1px;">Guaranteed Safe & Secure Checkout</p>
                     <div class="d-flex justify-content-center gap-3 align-items-center flex-wrap">
@@ -100,71 +104,127 @@
                     </div>
                 </div>
 
-                <!-- ⭐ CUSTOMER REVIEWS -->
+                <!-- Delivery Features -->
+                <div class="d-flex gap-4 mt-4 pt-3 border-top">
+                    <div class="d-flex align-items-center text-muted">
+                        <span class="fs-4 me-2">🚚</span> <small class="fw-medium">Fast Delivery</small>
+                    </div>
+                    <div class="d-flex align-items-center text-muted">
+                        <span class="fs-4 me-2">🛡️</span> <small class="fw-medium">Secure Payment</small>
+                    </div>
+                    <div class="d-flex align-items-center text-muted">
+                        <span class="fs-4 me-2">✅</span> <small class="fw-medium">Verified Quality</small>
+                    </div>
+                </div>
+
+                <!-- ⭐ CUSTOMER REVIEWS SECTION -->
                 <div class="mt-5 pt-4 border-top">
                     <h4 class="fw-bold mb-4">Customer Reviews ({{ review_count }})</h4>
+                    
+                    <!-- Review Form -->
                     {% if user.is_authenticated %}
                         <div class="bg-white p-4 rounded-4 shadow-sm border mb-4">
                             <h6 class="fw-bold mb-3">Write a Review</h6>
                             <form method="POST">
                                 {% csrf_token %}
                                 <div class="mb-3">
-                                    <label class="form-label text-muted small fw-medium">Rating</label>
+                                    <label class="form-label text-muted small fw-medium">Rating (1 to 5 Stars)</label>
                                     <select name="rating" class="form-select border-2 shadow-none" required>
-                                        <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
-                                        <option value="4">⭐⭐⭐⭐ (4/5)</option>
-                                        <option value="3">⭐⭐⭐ (3/5)</option>
+                                        <option value="5">⭐⭐⭐⭐⭐ (5/5) - Excellent!</option>
+                                        <option value="4">⭐⭐⭐⭐ (4/5) - Very Good</option>
+                                        <option value="3">⭐⭐⭐ (3/5) - Average</option>
+                                        <option value="2">⭐⭐ (2/5) - Poor</option>
+                                        <option value="1">⭐ (1/5) - Terrible</option>
                                     </select>
                                 </div>
-                                <textarea name="comment" class="form-control mb-3" rows="2" placeholder="Write a review..."></textarea>
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-medium">Your Comment (Optional)</label>
+                                    <textarea name="comment" class="form-control border-2 shadow-none" rows="3" placeholder="What did you like about this product?"></textarea>
+                                </div>
                                 <button type="submit" class="btn btn-dark fw-bold px-4">Submit Review</button>
                             </form>
                         </div>
-                    {% endif %}
-                    {% for review in reviews %}
-                        <div class="bg-white p-3 rounded-3 border mb-2 shadow-sm">
-                            <strong>{{ review.user.username }}</strong> - {{ review.rating }} Stars
-                            <p class="mb-0">{{ review.comment }}</p>
+                    {% else %}
+                        <div class="alert alert-light border text-center p-4 rounded-4 mb-4">
+                            Please <a href="{% url 'login' %}" class="fw-bold text-primary">Login</a> to leave a review for this product.
                         </div>
-                    {% endfor %}
+                    {% endif %}
+
+                    <!-- Display Existing Reviews -->
+                    <div class="reviews-list mt-4">
+                        {% for review in reviews %}
+                            <div class="review-card bg-white p-4 rounded-4 border mb-3 shadow-sm">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-bold text-dark fs-5">
+                                        {{ review.user.first_name|default:review.user.username }} 
+                                        <span class="badge bg-success ms-2" style="font-size: 0.7rem;">Verified Buyer</span>
+                                    </div>
+                                    <div class="text-muted small">{{ review.created_at|date:"M d, Y" }}</div>
+                                </div>
+                                <div class="text-warning mb-2" style="font-size: 1.1rem; letter-spacing: 2px;">
+                                    {% if review.rating == 5 %}★★★★★
+                                    {% elif review.rating == 4 %}★★★★<span class="text-light">★</span>
+                                    {% elif review.rating == 3 %}★★★<span class="text-light">★★</span>
+                                    {% elif review.rating == 2 %}★★<span class="text-light">★★★</span>
+                                    {% else %}★<span class="text-light">★★★★</span>
+                                    {% endif %}
+                                </div>
+                                {% if review.comment %}
+                                    <p class="text-muted mb-0" style="line-height: 1.6;">"{{ review.comment }}"</p>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                            <p class="text-muted font-italic">No reviews yet. Be the first one to review this product!</p>
+                        {% endfor %}
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
+<!-- Dynamic Price Update Script -->
 <script>
     function updatePrice() {
         var select = document.getElementById("variantSelect");
         var price = select.options[select.selectedIndex].getAttribute("data-price");
-        if(price) document.getElementById("displayPrice").innerText = "₹" + price;
+        if(price) {
+            document.getElementById("displayPrice").innerText = "₹" + price;
+        }
     }
 </script>
 
-<!-- 🌟 FINAL HARDENED SCHEMA -->
+<!-- 🌟 NAYA: Google Rich Results (Schema Markup) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
   "@type": "Product",
-  "name": "{{ product.name|default:'Product'|escapejs }}",
-  "image": "{% if product.image %}{{ product.image.url }}{% else %}https://www.cgsmart.in/static/logo.png{% endif %}",
-  "description": "{{ product.description|default:'Quality essentials at CGSMART'|escapejs }}",
-  "sku": "{{ product.sku|default:product.id|escapejs }}",
+  "name": "{{ product.name }}",
+  "image": "{% if product.image %}{{ product.image.url }}{% endif %}",
+  "description": "{{ product.description|escapejs }}",
+  "sku": "{{ product.sku|default:product.id }}",
+  {% if product.brand %}
   "brand": {
     "@type": "Brand",
-    "name": "{{ product.brand.name|default:'CGSMART'|escapejs }}"
+    "name": "{{ product.brand.name }}"
   },
+  {% endif %}
+  {% if review_count > 0 %}
   "aggregateRating": {
     "@type": "AggregateRating",
-    "ratingValue": "{{ avg_rating|default:'4.5' }}",
-    "reviewCount": "{{ review_count|default:'1' }}"
+    "ratingValue": "{{ avg_rating }}",
+    "reviewCount": "{{ review_count }}"
   },
+  {% endif %}
   "offers": {
     "@type": "Offer",
-    "url": "{{ request.build_absolute_uri|escapejs }}",
+    "url": "{{ request.build_absolute_uri }}",
     "priceCurrency": "INR",
-    "price": "{{ product.price|default:'0.00' }}",
-    "availability": "https://schema.org/InStock"
+    "price": "{{ product.price }}",
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition"
   }
 }
 </script>
+{% endblock %}
