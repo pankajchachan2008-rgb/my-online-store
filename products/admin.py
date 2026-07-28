@@ -4,24 +4,28 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-from .models import Category, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant
+from .models import Category, Brand, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant
 from .models import StoreSetting
 
+# Basic Models Registration
 admin.site.register(Category)
+admin.site.register(Brand)  # 🌟 NAYA: Brand model yahan register kiya
 admin.site.register(CustomerProfile)
 admin.site.register(Banner)  
 admin.site.register(ProductVariant)
 
+# Product Variant ko Inline banaya taaki Product ke andar hi add kar sakein
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
     extra = 1
+    show_change_link = True
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    # Added last_moment_discount in list_display and list_editable
-    list_display = ('sku', 'name', 'category', 'price', 'last_moment_discount') 
-    search_fields = ('name', 'sku', 'category__name')
-    list_filter = ('category',)
+    # 🌟 NAYA: 'brand' ko list_display aur list_filter mein add kiya
+    list_display = ('sku', 'name', 'category', 'brand', 'price', 'last_moment_discount') 
+    search_fields = ('name', 'sku', 'category__name', 'brand__name')
+    list_filter = ('category', 'brand')
     list_editable = ('price', 'last_moment_discount')
     inlines = [ProductVariantInline]
 
@@ -29,13 +33,14 @@ class ProductAdmin(admin.ModelAdmin):
 class StoreSettingAdmin(admin.ModelAdmin):
     list_display = ['company_name', 'store_phone', 'gstin']
 
-# 🌟 NAYA: Updated Coupon Admin
+# Updated Coupon Admin
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
     list_display = ['code', 'discount_percentage', 'min_order_amount', 'is_active', 'valid_to']
     list_filter = ['is_active']
     search_fields = ['code']
 
+# Custom Admin Action for Shipping Labels
 @admin.action(description="Print Shipping Labels (4x6 Thermal Format)")
 def print_shipping_labels(modeladmin, request, queryset):
     template_path = 'admin/products/shipping_label.html'
@@ -49,6 +54,7 @@ def print_shipping_labels(modeladmin, request, queryset):
         return HttpResponse('Error generating label')
     return response
 
+# Order Items ko Order ke andar Inline dikhane ke liye
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
@@ -62,6 +68,7 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderItemInline]
     actions = [print_shipping_labels]
 
+# Custom User Admin setup (Profile ko inline merge karne ke liye)
 class ProfileInline(admin.StackedInline):
     model = CustomerProfile
     can_delete = False

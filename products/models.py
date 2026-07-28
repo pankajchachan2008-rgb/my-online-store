@@ -12,11 +12,26 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+# Category model ke theek neeche yeh add karein
+class Brand(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+# Apne existing Product model mein brand field add karein:
 class Product(models.Model):
     sku = models.CharField(max_length=50, unique=True, null=True, blank=True)
     name = models.CharField(max_length=200)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')    
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    
+    # 👇 YEH NAYI LINE ADD KAREIN 👇
+    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    # 👆 ------------------------ 👆
+    
     description = models.TextField(blank=True, null=True)
+    # ... baki saari existing fields (mrp, price, image, etc.) same rahengi
     
     # MRP Field add kiya for real calculations
     mrp = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 

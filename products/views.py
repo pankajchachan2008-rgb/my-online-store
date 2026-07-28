@@ -616,27 +616,56 @@ def import_products_csv(request):
         decoded_file = csv_file.read().decode('utf-8').splitlines()
         reader = csv.DictReader(decoded_file)
         success_count = 0
-        error_count = 0
+        
         for row in reader:
             try:
-                product_id = row.get('ID')
-                if not product_id:
-                    continue
-                product = Product.objects.get(id=product_id)
-                if row.get('Price'): product.price = row['Price']
-                if row.get('Weight'): product.weight = row['Weight']
-                cat_id = row.get('Category_ID')
-                if cat_id:
-                    try:
-                        category = Category.objects.get(id=cat_id)
-                        product.category = category
-                    except Category.DoesNotExist: pass 
-                product.save()
-                success_count += 1
-            except Product.DoesNotExist: error_count += 1
-            except Exception as e: error_count += 1
+                # 1. Category Handle (Agar nahi hai toh naya banayega)
+                cat_name = row.get('Category_Name')
+                category = None
+                if cat_name:
+                    category, _ = Category.objects.get_or_create(name=cat_name.strip())
+                    
+                # 2. Brand/Company Handle
+                brand_name = row.get('Company_Brand')
+                brand = None
+                if brand_name:
+                    brand, _ = Brand.objects.get_or_create(name=brand_name.strip())
+
+                # 3. Product Create ya Update (SKU ke base par)
+                sku = row.get('SKU')
+                if not sku:
+                    continue # SKU mandatory hai bulk add ke liye
+                    
+                product, created = Product.objects.update_or_create(
+                    sku=sku,
+                    defaults={
+                        'name': row.get('Product_Name', 'Unknown Product'),
+                        'category': category,
+                        'brand': brand,
+                        'mrp': row.get('MRP') or 0,
+                        'price': row.get('Price') or 0,
+                        'description': row.get('Description', '')
+                    }
+                )
                 
-        messages.success(request, f"✅ Bulk Update Complete! {success_count} products update hue.")
+                # 4. Varieties (Variants) Handle Karein
+                variant_size = row.get('Variant_Size')
+                variant_price = row.get('Variant_Price')
+                
+                if variant_size and variant_price:
+                    ProductVariant.objects.update_or_create(
+                        product=product,
+                        size_name=variant_size.strip(),
+                        defaults={
+                            'price': variant_price,
+                            'stock': row.get('Variant_Stock') or 0
+                        }
+                    )
+                success_count += 1
+            except Exception as e:
+                print(f"Error processing row: {e}")
+                
+        messages.success(request, f"✅ Bulk Import Complete! {success_count} items efficiently processed/created.")
         return redirect('home')
         
     return render(request, 'products/import_csv.html')
