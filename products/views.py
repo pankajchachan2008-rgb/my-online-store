@@ -27,7 +27,7 @@ from django.core.paginator import Paginator
 from .forms import CustomRegisterForm
 from django.utils import timezone 
 
-from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand
+from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand, Review
 
 # --- HELPER FUNCTION FOR BREVO API ---
 def send_brevo_api_email(subject, message, to_email):
@@ -701,7 +701,37 @@ def view_wishlist(request):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, 'products/product_detail.html', {'product': product})
+    reviews = product.reviews.all().order_by('-created_at')
+    
+    # Average Rating Calculate karna
+    avg_rating = 0
+    if reviews.exists():
+        avg_rating = sum(r.rating for r in reviews) / reviews.count()
+    
+    if request.method == 'POST':
+        if not request.user.is_authenticated:
+            messages.error(request, "Review dene ke liye pehle login karein.")
+            return redirect('login')
+            
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        
+        if rating:
+            Review.objects.create(
+                product=product,
+                user=request.user,
+                rating=int(rating),
+                comment=comment
+            )
+            messages.success(request, "Aapka review successfully submit ho gaya! Thank you.")
+            return redirect('product_detail', product_id=product.id)
+            
+    return render(request, 'products/product_detail.html', {
+        'product': product,
+        'reviews': reviews,
+        'avg_rating': round(avg_rating, 1),
+        'review_count': reviews.count()
+    })
 
 def update_cart_item(request, item_key, action):
     cart = request.session.get('cart', {})

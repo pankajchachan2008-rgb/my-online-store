@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-from .models import Category, Brand, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant
+from .models import Category, Brand, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant, Review
 from .models import StoreSetting
 
 # Basic Models Registration
@@ -78,3 +78,9 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('product', 'user', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at')
+    search_fields = ('product__name', 'user__username')
