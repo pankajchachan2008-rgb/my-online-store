@@ -7,8 +7,8 @@ class ProductSitemap(Sitemap):
     priority = 0.9
 
     def items(self):
-        # Saare products list karein
-        return Product.objects.all()
+        # Yahan .order_by('-created_at') add karein
+        return Product.objects.all().order_by('-created_at')
 
     def lastmod(self, obj):
         # Agar aapke model mein 'updated_at' field hai toh uska use karein, 
