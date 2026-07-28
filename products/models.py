@@ -97,6 +97,12 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
 
+# 👇 YEH 3 LINES ADD KAREIN 👇
+    @property
+    def total_price(self):
+        return self.price * self.quantity
+    # 👆 ---------------------- 👆
+
     def __str__(self):
         return f"{self.quantity} x {self.product_name}"
 
