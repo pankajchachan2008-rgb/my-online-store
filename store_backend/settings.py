@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'cloudinary',
     'rest_framework',
     'products',
+    'django.contrib.sitemaps',
 ]
 
 MIDDLEWARE = [

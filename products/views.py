@@ -2,8 +2,8 @@ import csv
 import random
 import qrcode
 import barcode
-import requests  # Naya Import
-import os        # Naya Import
+import requests
+import os
 from barcode.writer import ImageWriter
 from io import BytesIO
 import base64
@@ -31,7 +31,6 @@ from .models import Product, Category, Coupon, Order, OrderItem, CustomerProfile
 
 # --- HELPER FUNCTION FOR BREVO API ---
 def send_brevo_api_email(subject, message, to_email):
-    # Render environment variable se key uthayega
     api_key = os.environ.get('BREVO_API_KEY') 
     
     url = "https://api.brevo.com/v3/smtp/email"
@@ -407,9 +406,21 @@ def check_coupon_ajax(request):
         'message': f'Coupon {code} applied successfully!'
     })
 
-# 📄 7. Static Pages
-def about_page(request): return render(request, 'products/about.html')
-def contact_page(request): return render(request, 'products/contact.html')
+# 📄 7. Static & Policy Pages (Naye Views Added)
+def about_page(request): 
+    return render(request, 'products/about.html')
+
+def contact_page(request): 
+    return render(request, 'products/contact.html')
+
+def privacy_policy(request): 
+    return render(request, 'policies/privacy.html')
+
+def terms_conditions(request): 
+    return render(request, 'policies/terms.html')
+
+def refund_policy(request): 
+    return render(request, 'policies/refund.html')
 
 def custom_logout(request):
     logout(request)
@@ -432,7 +443,8 @@ def make_admin(request):
             </div>
         """)
 
-def trigger_import(request): return render(request, 'products/import_trigger.html')
+def trigger_import(request): 
+    return render(request, 'products/import_trigger.html')
 
 def register_page(request):
     if request.method == 'POST':
@@ -545,7 +557,8 @@ def download_invoice(request, order_id):
     }
     
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="CGSmart_Bill_{order.id}.pdf"'
+    # Document ka naam "Bill_of_Supply" rakha gaya hai
+    response['Content-Disposition'] = f'attachment; filename="CGSmart_Bill_of_Supply_{order.id}.pdf"'
     
     template = get_template(template_path)
     html = template.render(context)

@@ -4,10 +4,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from django.contrib.auth import views as auth_views
-from django.http import HttpResponse  # 🌟 NAYA IMPORT PING KE LIYE
+from django.http import HttpResponse  
+
+# 🌟 NAYE IMPORTS SEO AUR STATIC PAGES KE LIYE
+from django.contrib.sitemaps.views import sitemap
+from django.views.generic import TemplateView
+from products.sitemaps import ProductSitemap, StaticViewSitemap
+
 from products import views
 
-# Views functions imports (FIXED: Added cancel_order here)
+# Views functions imports
 from products.views import (
     product_list, add_to_cart, cart_detail, checkout_page,
     check_coupon_ajax, about_page, contact_page,
@@ -18,16 +24,23 @@ from products.views import (
     download_invoice,
     export_products_csv, import_products_csv,
     product_detail, 
-    update_cart_item, # 🌟 Naya View Import Kiya
-    cancel_order, # 🌟 FIX: Isko import list mein add kar diya
+    update_cart_item, 
+    cancel_order, 
     delete_address, edit_address,
+    privacy_policy, terms_conditions, refund_policy, # 🌟 NAYE POLICY PAGES IMPORT
 )
 
-# 🌟 UPTIMEROBOT KE LIYE PING FUNCTION SEEDHA YAHI BANA DIYA
+# 🌟 UPTIMEROBOT KE LIYE PING FUNCTION
 def ping(request):
     return HttpResponse("OK", status=200)
 
-# EK HI URLPATTERNS LIST (Sab isi ke andar aayega)
+# 🌟 SITEMAP DICTIONARY
+sitemaps = {
+    'products': ProductSitemap,
+    'static': StaticViewSitemap,
+}
+
+# EK HI URLPATTERNS LIST
 urlpatterns = [
     path('secret-cgs-main/', admin.site.urls),
     path('', product_list, name='home'),
@@ -38,7 +51,7 @@ urlpatterns = [
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('cart/', cart_detail, name='cart_detail'),
     
-    # 🌟 NAYI LINE: Cart update (+, -, remove) ke liye rasta
+    # 🌟 Cart update (+, -, remove) ke liye rasta
     path('cart/update/<str:item_key>/<str:action>/', update_cart_item, name='update_cart_item'),
     
     path('checkout/', checkout_page, name='checkout'),
@@ -46,6 +59,13 @@ urlpatterns = [
     
     path('about/', about_page, name='about'),
     path('contact/', contact_page, name='contact'),
+
+    # 🌟 NAYE: SEO & Policy URLs
+    path('privacy-policy/', privacy_policy, name='privacy_policy'),
+    path('terms-conditions/', terms_conditions, name='terms_conditions'),
+    path('refund-policy/', refund_policy, name='refund_policy'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
     
     # 🔐 Standard Auth URLs
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
@@ -58,7 +78,6 @@ urlpatterns = [
     path('delete-address/<int:address_id>/', delete_address, name='delete_address'),
     path('edit-address/<int:address_id>/', edit_address, name='edit_address'),
     
-    # 🌟 FIX: views.cancel_order ki jagah sirf cancel_order likha hai
     path('cancel-order/<int:order_id>/', cancel_order, name='cancel_order'),
     
     # ❤️ Wishlist
@@ -78,7 +97,7 @@ urlpatterns = [
     # 📄 Invoices
     path('invoice/<int:order_id>/download/', download_invoice, name='download_invoice'),
     
-    # 🌟 UPTIMEROBOT KA PING URL YAHAN JOD DIYA
+    # 🌟 UPTIMEROBOT KA PING URL
     path('ping/', ping, name='ping'),
     
     # 🌟 Static & Media

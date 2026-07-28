@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /secret-cgs-main/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /profile/
+
+Sitemap: https://www.cgsmart.in/sitemap.xml
