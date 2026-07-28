@@ -93,18 +93,28 @@
 </head>
 <body>
 
+<!-- 💎 Luxury Header -->
     <nav class="navbar navbar-expand-lg premium-navbar sticky-top">
         <div class="container" style="max-width: 1400px;">
             
+            <!-- Logo + Brand Name -->
             <a class="brand-container" href="{% url 'home' %}">
                 <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
-                <span class="brand-name">Chachan General Store</span>
+                <span class="brand-name d-none d-sm-block">Chachan General Store</span>
             </a>
 
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <!-- 🌟 NAYA: CART BUTTON (Jo mobile aur desktop dono par hamesha samne dikhega) -->
+            <div class="d-flex align-items-center ms-auto order-lg-last">
+                <a class="btn btn-luxury me-2 d-flex align-items-center" href="{% url 'cart_detail' %}" style="padding: 8px 16px; font-size: 14px;">
+                    🛒 <span class="ms-1">Cart</span>
+                </a>
+                
+                <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
             
+            <!-- Baaki Menu Items -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
@@ -114,19 +124,15 @@
                     
                     {% if user.is_authenticated %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
-                        <li class="nav-item ms-3">
-                            <a class="btn btn-outline-secondary btn-sm rounded-3" href="{% url 'logout' %}">Logout</a>
+                        <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                            <a class="btn btn-outline-secondary btn-sm rounded-3 w-100" href="{% url 'logout' %}">Logout</a>
                         </li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-item ms-3">
-                            <a class="btn btn-luxury" href="{% url 'register' %}">Sign Up</a>
+                        <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                            <a class="btn btn-luxury w-100" href="{% url 'register' %}">Sign Up</a>
                         </li>
                     {% endif %}
-                    
-                    <li class="nav-item ms-3">
-                        <a class="nav-link btn btn-dark text-white px-3 rounded-3" href="{% url 'cart_detail' %}" style="color: white !important;">Cart</a>
-                    </li>
                 </ul>
             </div>
         </div>
