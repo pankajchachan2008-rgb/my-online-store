@@ -285,6 +285,18 @@ def checkout_page(request):
         
         whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
 
+        # --- NAYA: ORDER CONFIRMATION EMAIL WALA LOGIC YAHAN ADD KIYA HAI ---
+        if request.user.is_authenticated and request.user.email:
+            subject = f"Order Confirmation - Order #{order.id}"
+            message = f"""
+            <h3>Hello {name},</h3>
+            <p>Aapka order <strong>#{order.id}</strong> successfully receive ho gaya hai!</p>
+            <p><strong>Total Amount:</strong> ₹{final_total}</p>
+            <p>Hum jaldi hi aapke order ko process karenge. CGSmart choose karne ke liye shukriya.</p>
+            """
+            send_brevo_api_email(subject, message, request.user.email)
+        # -------------------------------------------------------------------
+
         request.session['cart'] = {}
         return render(request, 'products/order_success.html', {
             'order': order, 

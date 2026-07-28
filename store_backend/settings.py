@@ -170,3 +170,39 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+
+# 1. Admin setup (500 errors ke liye email alerts)
+ADMINS = [
+    ('Admin', 'admin@cgsmart.in'), # Apna email yahan dalen
+]
+
+# 2. Logging Configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'django_error.log'),
+            'formatter': 'verbose',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
