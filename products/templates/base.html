@@ -4,7 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CGSMART - Premium Online Store</title>
+    
+    <!-- 🌟 Dynamic SEO Meta Tags -->
+    <title>{% block title %}CGSMART - Premium Online Store & Essentials{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Shop premium quality products, groceries, and essentials at Chachan General Store (CGSmart) in Nohar. Fast delivery and secure payments.{% endblock %}">
+    <meta name="keywords" content="CGSmart, Chachan General Store, Nohar online store, buy groceries online, premium essentials, local online store">
+    
+    <!-- 📱 Open Graph / WhatsApp / Facebook Share Tags -->
+    <meta property="og:title" content="{% block og_title %}CGSMART - Premium Online Store{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Discover premium quality essentials in Nohar with fast delivery.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:type" content="website">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
