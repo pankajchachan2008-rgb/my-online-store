@@ -2,26 +2,19 @@
 {% load static %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
-    /* 🌿 Premium Soft Minimalist Background */
-    body { 
-        font-family: 'Jost', sans-serif; 
-        background-color: #FAF4EF; 
-        color: #111111;
-    }
-    
-    /* 🖼️ Refined Banner */
+    /* 🖼️ Refined Premium Banner */
     .banner-container {
-        border: 1px solid #000000;
-        margin-bottom: 25px;
-        background: #000;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        background: #F1F5F9;
         overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        border: none;
     }
     .banner-media {
         width: 100%;
-        max-height: 280px;
+        max-height: 320px;
         display: block;
         object-fit: cover;
     }
@@ -29,137 +22,151 @@
     /* 🔍 Elegant Search Bar */
     .search-box {
         background: #FFFFFF;
-        border: 1px solid #000000;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
         display: flex;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        transition: all 0.3s ease;
+    }
+    .search-box:focus-within {
+        border-color: #4F46E5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
     .search-input {
         border: none !important;
         box-shadow: none !important;
         background: transparent;
         font-weight: 500;
-        border-radius: 0;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        padding: 10px 15px;
     }
     .btn-search {
-        background: #000000;
+        background: #4F46E5; /* Premium Indigo */
         color: #FFFFFF;
         font-weight: 600;
-        text-transform: uppercase;
         border-radius: 0;
-        padding: 8px 25px;
-        font-size: 0.85rem;
+        padding: 10px 25px;
+        font-size: 0.9rem;
         transition: all 0.3s ease;
+        border: none;
     }
-    .btn-search:hover { background: #333333; color: white; }
+    .btn-search:hover { background: #4338CA; color: white; }
 
     /* 🏷️ Clean Sidebar (Fixed Scrolling) */
     .sidebar {
         background: #FFFFFF;
-        border: 1px solid #000000;
-        padding: 20px;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 24px;
         position: sticky;
-        top: 85px; /* Navbar height ke hisaab se adjust kiya */
-        max-height: calc(100vh - 120px); /* Screen height se bada nahi hoga */
-        overflow-y: auto; /* Scroll enable kiya */
+        top: 85px; 
+        max-height: calc(100vh - 120px); 
+        overflow-y: auto; 
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
     }
-    /* Sidebar ka custom premium scrollbar */
     .sidebar::-webkit-scrollbar { width: 4px; }
-    .sidebar::-webkit-scrollbar-thumb { background: #000000; border-radius: 10px; }
-    .sidebar::-webkit-scrollbar-track { background: #f1f1f1; }
+    .sidebar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+    .sidebar::-webkit-scrollbar-track { background: #F8FAFC; }
 
     .sidebar-title {
+        font-family: 'Jost', sans-serif;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
         font-size: 1rem;
         margin-bottom: 15px;
-        border-bottom: 1px solid #E5E5E5;
-        padding-bottom: 10px;
+        border-bottom: 1px solid #F1F5F9;
+        padding-bottom: 12px;
+        color: #0F172A;
     }
     .cat-link {
         display: block;
-        padding: 8px 12px;
-        color: #333333;
+        padding: 10px 12px;
+        color: #475569;
         font-weight: 500;
         text-decoration: none;
-        margin-bottom: 5px;
-        background: transparent;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        transition: all 0.2s;
+        margin-bottom: 4px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
     }
-    .cat-link:hover { color: #000; font-weight: 600; padding-left: 15px; }
-    .cat-link.active { background: #000000; color: #FFFFFF; font-weight: 600; }
+    .cat-link:hover { background: #F8FAFC; color: #4F46E5; padding-left: 18px; }
+    .cat-link.active { background: #EEF2FF; color: #4F46E5; font-weight: 600; }
 
     /* 📱 Mobile Horizontal Category Scroll */
     .mobile-cat-scroll {
         display: flex;
         overflow-x: auto;
         gap: 10px;
-        padding-bottom: 5px;
+        padding-bottom: 10px;
         margin-bottom: 20px;
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: none; /* Firefox ke liye scrollbar hide */
+        scrollbar-width: none; 
     }
-    .mobile-cat-scroll::-webkit-scrollbar { display: none; /* Chrome/Safari ke liye scrollbar hide */ }
+    .mobile-cat-scroll::-webkit-scrollbar { display: none; }
     
     .mobile-cat-btn {
-        border: 1px solid #000;
-        padding: 6px 16px;
-        color: #000;
+        border: 1px solid #E2E8F0;
+        border-radius: 20px;
+        padding: 8px 18px;
+        color: #475569;
         text-decoration: none;
         white-space: nowrap;
-        font-weight: 600;
+        font-weight: 500;
         font-size: 0.85rem;
-        text-transform: uppercase;
         background: #fff;
         transition: 0.3s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
-    .mobile-cat-btn.active { background: #000; color: #fff; }
+    .mobile-cat-btn.active { background: #4F46E5; color: #fff; border-color: #4F46E5; }
 
     /* 📦 Premium Modern Product Cards */
     .product-card {
         background: #FFFFFF;
-        border: 1px solid #000000;
-        border-radius: 0;
-        padding: 0;
+        border: 1px solid #F1F5F9;
+        border-radius: 16px;
+        padding: 12px;
         height: 100%;
         display: flex;
         flex-direction: column;
         transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
     .product-card:hover {
-        box-shadow: 4px 4px 0px #000000;
-        transform: translateY(-2px);
+        box-shadow: 0 12px 20px -8px rgba(0,0,0,0.08);
+        transform: translateY(-4px);
+        border-color: #E2E8F0;
     }
     .img-box {
-        background: #FFFFFF;
-        border-bottom: 1px solid #EEEEEE;
+        background: #F8FAFC;
+        border-radius: 12px;
         height: 180px;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 15px;
         position: relative;
+        margin-bottom: 12px;
     }
     .img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
     
     .product-name {
+        font-family: 'Jost', sans-serif;
         font-weight: 600;
-        font-size: 0.95rem;
-        color: #111;
+        font-size: 1rem;
+        color: #0F172A;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        height: 2.7rem;
         line-height: 1.4;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
     }
     .product-desc {
-        font-size: 0.75rem;
-        color: #777;
-        margin-bottom: 8px;
+        font-size: 0.8rem;
+        color: #64748B;
+        margin-bottom: 10px;
         height: 1.2rem;
         overflow: hidden;
     }
@@ -167,23 +174,21 @@
     .price-tag { 
         font-weight: 700; 
         font-size: 1.15rem; 
-        color: #000000; 
+        color: #0F172A; 
     }
     
     .btn-cart {
-        background: #000000;
+        background: #1E293B; /* Slate dark */
         color: #FFFFFF;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border-radius: 0;
+        font-weight: 500;
+        border-radius: 8px;
         border: none;
         padding: 10px;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         transition: 0.3s ease;
         margin-top: 5px;
     }
-    .btn-cart:hover { background: #333333; color: white; }
+    .btn-cart:hover { background: #4F46E5; color: white; }
 </style>
 
 <div class="container-fluid px-4 my-4" style="max-width: 1400px;">
@@ -256,20 +261,20 @@
             <!-- SEARCH & SORT -->
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-4">
                 <form method="GET" action="" class="search-box w-100" style="max-width: 500px;">
-                    <input type="text" name="search" class="form-control search-input" placeholder="Search premium essentials..." value="{{ search_query }}">
+                    <input type="text" name="search" class="form-control search-input w-100" placeholder="Search premium essentials..." value="{{ search_query }}">
                     <button type="submit" class="btn btn-search">Search</button>
                 </form>
                 <div class="dropdown">
-                    <button class="btn btn-search dropdown-toggle" type="button" data-bs-toggle="dropdown" style="background: transparent; color: #000; border: 1px solid #000;">SORT BY</button>
-                    <ul class="dropdown-menu rounded-0 mt-1" style="border: 1px solid #000;">
-                        <li><a class="dropdown-item fw-medium" href="?sort=low_to_high">LOW TO HIGH</a></li>
-                        <li><a class="dropdown-item fw-medium" href="?sort=high_to_low">HIGH TO LOW</a></li>
+                    <button class="btn btn-outline-secondary dropdown-toggle rounded-3 border-secondary" type="button" data-bs-toggle="dropdown">SORT BY</button>
+                    <ul class="dropdown-menu rounded-3 mt-1 shadow-sm border-0">
+                        <li><a class="dropdown-item fw-medium" href="?sort=low_to_high">Low to High</a></li>
+                        <li><a class="dropdown-item fw-medium" href="?sort=high_to_low">High to Low</a></li>
                     </ul>
                 </div>
             </div>
 
             <!-- PRODUCTS GRID -->
-            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 mb-5">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 mb-5">
                 {% for product in products %}
                 <div class="col">
                     <div class="product-card">
@@ -280,7 +285,7 @@
                                 
                                 <!-- Dynamic Discount Badge -->
                                 {% if product.discount_percentage > 0 %}
-                                    <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-2 py-1" style="font-size: 0.75rem; border: 1px solid #000; box-shadow: 2px 2px 0px #000; z-index: 2;">
+                                    <span class="badge bg-danger position-absolute top-0 start-0 m-2 px-2 py-1 rounded-2 shadow-sm" style="font-size: 0.75rem; z-index: 2;">
                                         {{ product.discount_percentage }}% OFF
                                     </span>
                                 {% endif %}
@@ -288,31 +293,30 @@
                                 {% if product.image %}
                                     <img src="{{ product.image.url }}" alt="{{ product.name }}">
                                 {% else %}
-                                    <img src="https://placehold.co/300x200/000000/FFFFFF?text={{ product.name|urlencode }}" alt="{{ product.name }}">
+                                    <img src="https://placehold.co/300x200/F8FAFC/64748B?text={{ product.name|urlencode }}" alt="{{ product.name }}">
                                 {% endif %}
                             </div>
-                            <div class="p-3 pb-1 d-flex flex-column">
-                                <!-- YAHAN CHANGE KIYA HAI: <strong> tag add kiya gaya hai -->
-                                <div class="product-name text-dark" title="{{ product.name }}"><strong>{{ product.name }}</strong></div>
+                            <div class="px-2 pb-1 d-flex flex-column">
+                                <div class="product-name" title="{{ product.name }}"><strong>{{ product.name }}</strong></div>
                                 <div class="product-desc">{{ product.description|default:"Premium Quality Essential"|truncatechars:35 }}</div>
                                 
                                 <!-- Product Price added for grid view -->
                                 <div class="price-tag mt-1">
                                     ₹{{ product.price }} 
                                     {% if product.mrp and product.mrp > product.price %}
-                                        <small class="text-muted text-decoration-line-through fs-6 ms-1">₹{{ product.mrp }}</small>
+                                        <small class="text-muted text-decoration-line-through fs-6 ms-1 fw-normal">₹{{ product.mrp }}</small>
                                     {% endif %}
                                 </div>
                             </div>
                         </a>
                         
                         <!-- Add to Cart aur Wishlist Button -->
-                        <div class="px-3 pb-3 d-flex flex-column flex-grow-1 mt-auto">
+                        <div class="px-2 pb-2 d-flex flex-column flex-grow-1 mt-auto">
                             <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto">
                                 {% csrf_token %}
                                 
                                 {% if product.variants.exists %}
-                                    <select name="variant_id" class="form-select form-select-sm mb-2 rounded-0 border-dark" required>
+                                    <select name="variant_id" class="form-select form-select-sm mb-2 rounded-2 border-secondary" required>
                                         <option value="" disabled selected>Select Size</option>
                                         {% for variant in product.variants.all %}
                                             <option value="{{ variant.id }}">{{ variant.size_name }} - ₹{{ variant.price }}</option>
@@ -320,9 +324,9 @@
                                     </select>
                                 {% endif %}
                                 
-                                <div class="d-flex flex-column gap-2">
+                                <div class="d-flex flex-column gap-2 mt-2">
                                     <button type="submit" class="btn btn-cart w-100">Add To Cart</button>
-                                    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger w-100 btn-sm rounded-0 text-uppercase fw-bold" style="border: 2px solid #dc3545;">❤️ Wishlist</a>
+                                    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger w-100 btn-sm rounded-2 fw-medium text-uppercase" style="border: 1px solid #dc3545;">❤️ Wishlist</a>
                                 </div>
                             </form>
                         </div>
@@ -332,9 +336,9 @@
                 {% endfor %}
             </div>
 
-            <!-- 🌟 PAGINATION NAVIGATION -->
+            <!-- 🌟 PAGINATION NAVIGATION (Query params preserved perfectly) -->
             <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-center">
+                <ul class="pagination justify-content-center shadow-sm" style="border-radius: 8px;">
                     {% if products.has_previous %}
                         <li class="page-item">
                             <a class="page-link text-dark" href="?page=1{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">&laquo; First</a>
@@ -345,7 +349,7 @@
                     {% endif %}
 
                     <li class="page-item active">
-                        <span class="page-link bg-dark text-white border-dark">Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
+                        <span class="page-link text-white border-0" style="background-color: #4F46E5;">Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
                     </li>
 
                     {% if products.has_next %}

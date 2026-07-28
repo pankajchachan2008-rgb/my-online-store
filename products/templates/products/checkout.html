@@ -3,32 +3,78 @@
 {% block content %}
 
 <style>
-    body { background-color: #f1f3f6; font-family: 'Jost', sans-serif; }
+    .checkout-box { 
+        background: #fff; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+        border: 1px solid #E2E8F0;
+        margin-bottom: 20px; 
+        overflow: hidden;
+    }
     
-    .checkout-box { background: #fff; border-radius: 2px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.15); margin-bottom: 15px; }
+    .checkout-header { 
+        background: #FFFFFF; 
+        color: #0F172A; 
+        padding: 16px 24px; 
+        font-size: 15px; 
+        font-weight: 700; 
+        letter-spacing: 0.5px;
+        display: flex; 
+        align-items: center; 
+        border-bottom: 1px solid #E2E8F0;
+    }
+    .checkout-header .step-num { 
+        background: #EEF2FF; 
+        color: var(--primary); 
+        width: 28px; height: 28px; 
+        display: inline-flex; justify-content: center; align-items: center; 
+        border-radius: 6px; font-size: 13px; margin-right: 15px; font-weight: 700;
+    }
     
-    .checkout-header { background: #2874f0; color: #fff; padding: 15px 24px; font-size: 16px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; border-radius: 2px 2px 0 0; }
-    .checkout-header .step-num { background: #fff; color: #2874f0; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; border-radius: 2px; font-size: 14px; margin-right: 15px; }
-    
-    .checkout-header-inactive { background: #fff; color: #878787; padding: 15px 24px; font-size: 16px; font-weight: 600; text-transform: uppercase; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0; }
-    .checkout-header-inactive .step-num { background: #f0f0f0; color: #878787; width: 24px; height: 24px; display: inline-flex; justify-content: center; align-items: center; border-radius: 2px; font-size: 14px; margin-right: 15px; }
+    .checkout-header-inactive { 
+        background: #FFFFFF; 
+        color: #64748B; 
+        padding: 16px 24px; 
+        font-size: 15px; 
+        font-weight: 600; 
+        display: flex; align-items: center; 
+    }
+    .checkout-header-inactive .step-num { 
+        background: #F1F5F9; color: #94A3B8; 
+        width: 28px; height: 28px; display: inline-flex; justify-content: center; align-items: center; border-radius: 6px; font-size: 13px; margin-right: 15px; 
+    }
     
     .checkout-body { padding: 24px; }
     
-    .form-control-custom { border: 1px solid #e0e0e0; border-radius: 2px; padding: 12px 15px; font-size: 14px; outline: none; transition: 0.3s; width: 100%; box-shadow: none; }
-    .form-control-custom:focus { border-color: #2874f0; }
+    .form-control-custom { 
+        border: 1px solid #CBD5E1; 
+        border-radius: 8px; 
+        padding: 12px 16px; 
+        font-size: 14px; outline: none; transition: 0.3s; width: 100%; box-shadow: none; 
+    }
+    .form-control-custom:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
     
-    .price-box { background: #fff; border-radius: 2px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.15); position: sticky; top: 100px; }
-    .price-box-header { padding: 13px 24px; border-bottom: 1px solid #f0f0f0; color: #878787; text-transform: uppercase; font-weight: 600; font-size: 14px; }
+    .price-box { background: #fff; border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: sticky; top: 100px; }
+    .price-box-header { padding: 16px 24px; border-bottom: 1px solid #E2E8F0; color: #475569; font-weight: 700; font-size: 13px; letter-spacing: 0.5px; }
     .price-box-body { padding: 0 24px; }
-    .price-row { display: flex; justify-content: space-between; padding: 20px 0; font-size: 15px; color: #212121; }
-    .border-dash { border-bottom: 1px dashed #e0e0e0; }
-    .total-row { display: flex; justify-content: space-between; padding: 20px 0; font-weight: 600; font-size: 18px; border-top: 1px dashed #e0e0e0; border-bottom: 1px dashed #e0e0e0; margin-bottom: 15px;}
+    .price-row { display: flex; justify-content: space-between; padding: 18px 0; font-size: 14px; color: #334155; }
+    .border-dash { border-bottom: 1px dashed #CBD5E1; }
+    .total-row { display: flex; justify-content: space-between; padding: 18px 0; font-weight: 700; font-size: 17px; color: #0F172A; border-top: 1px dashed #CBD5E1; border-bottom: 1px dashed #CBD5E1; margin-bottom: 15px;}
     
-    .btn-place-order { background: #fb641b; color: #fff; border-radius: 2px; font-size: 16px; font-weight: 600; padding: 16px 30px; border: none; width: 100%; box-shadow: 0 1px 2px 0 rgba(0,0,0,.2); text-transform: uppercase; transition: 0.3s; }
-    .btn-place-order:hover { background: #df5815; color: white; }
+    .btn-place-order { 
+        background: var(--primary); 
+        color: #fff; 
+        border-radius: 8px; 
+        font-size: 15px; font-weight: 600; letter-spacing: 0.5px;
+        padding: 16px 30px; border: none; width: 100%; transition: 0.3s; 
+    }
+    .btn-place-order:hover { background: var(--primary-hover); color: white; transform: translateY(-1px); box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); }
     
-    .savings-text { color: #388e3c; font-weight: 600; font-size: 15px; margin-bottom: 20px; }
+    .savings-text { color: #059669; font-weight: 600; font-size: 14px; margin-bottom: 20px; background: #ECFDF5; padding: 10px; border-radius: 8px; text-align: center; }
+
+    /* Custom Radio Address Selection */
+    .form-check.border { border-width: 2px !important; border-color: #F1F5F9 !important; transition: all 0.2s; }
+    .form-check.border:has(input:checked) { border-color: var(--primary) !important; background-color: #F5F6FF !important; }
 </style>
 
 <div class="container mt-4 mb-5" style="max-width: 1200px;">
@@ -37,59 +83,58 @@
         <div class="row align-items-start g-4">
             
             <div class="col-lg-8">
-                
                 <div class="checkout-box">
                     <div class="checkout-header-inactive">
                         <span class="step-num">1</span> LOGIN 
-                        <span class="ms-3 text-dark fw-bold" style="font-size: 14px; text-transform: none;">
+                        <span class="ms-3 text-dark fw-bold">
                             {% if user.is_authenticated %}{{ user.first_name|default:user.username }}{% else %}Guest User{% endif %}
                         </span>
-                        <span class="ms-auto" style="color: #2874f0; font-size: 14px;">✔</span>
+                        <span class="ms-auto" style="color: var(--primary); font-size: 14px;">✔</span>
                     </div>
                 </div>
 
                 <div class="checkout-box">
                     <div class="checkout-header"><span class="step-num">2</span> DELIVERY ADDRESS</div>
-                    <div class="checkout-body" style="background: #f5faff;">
+                    <div class="checkout-body" style="background: #F8FAFC;">
                         {% if saved_addresses %}
                             {% for addr in saved_addresses %}
-                            <div class="form-check border p-3 mb-3 bg-white shadow-sm" style="cursor: pointer; border-radius: 4px; {% if forloop.first %}border-color: #2874f0 !important;{% endif %}">
+                            <div class="form-check border p-4 mb-3 bg-white shadow-sm rounded-3" style="cursor: pointer;">
                                 <input class="form-check-input mt-2" type="radio" name="address_id" id="addr_{{ addr.id }}" value="{{ addr.id }}" {% if forloop.first %}checked{% endif %} required>
                                 <label class="form-check-label w-100 ms-2" for="addr_{{ addr.id }}" style="cursor: pointer;">
-                                    <span class="badge bg-secondary mb-1 px-2 py-1" style="font-size: 10px; letter-spacing: 0.5px;">{{ addr.address_type|upper }}</span><br>
-                                    <strong class="text-dark" style="font-size: 15px;">{{ addr.name }}</strong> <span class="fw-bold ms-3">{{ addr.mobile_number }}</span>
-                                    <p class="mb-0 text-muted small mt-2" style="line-height: 1.5;">
+                                    <span class="badge bg-secondary mb-2 px-2 py-1 rounded-2" style="font-size: 10px;">{{ addr.address_type|upper }}</span><br>
+                                    <strong class="text-dark" style="font-size: 15px;">{{ addr.name }}</strong> <span class="fw-bold ms-3 text-muted">{{ addr.mobile_number }}</span>
+                                    <p class="mb-0 text-muted small mt-2" style="line-height: 1.6;">
                                         {{ addr.full_address }}, {{ addr.locality }}, <br>
                                         {{ addr.city }}, {{ addr.state }} - <strong class="text-dark">{{ addr.pincode }}</strong>
                                     </p>
                                 </label>
                             </div>
                             {% endfor %}
-                            <div class="form-check border p-3 bg-white shadow-sm" style="border-radius: 4px;">
+                            <div class="form-check border p-3 bg-white shadow-sm rounded-3">
                                 <input class="form-check-input mt-1" type="radio" name="address_id" id="new_addr" value="">
-                                <label class="form-check-label ms-2 fw-bold" for="new_addr" style="cursor: pointer; color: #2874f0;">
+                                <label class="form-check-label ms-2 fw-bold" for="new_addr" style="cursor: pointer; color: var(--primary);">
                                     + Add a New Address
                                 </label>
                             </div>
                         {% else %}
-                            <div class="alert alert-info py-2 small mb-3 border-0 bg-white shadow-sm text-dark">
+                            <div class="alert alert-info py-3 small mb-3 border-0 bg-white shadow-sm text-dark rounded-3">
                                 You don't have any saved addresses. Please enter your delivery details below.
                             </div>
                         {% endif %}
 
-                        <div id="manual_address_form" class="mt-4 {% if saved_addresses %}d-none{% endif %} p-4 bg-white border shadow-sm" style="border-radius: 4px;">
-                            <h6 class="fw-bold text-dark mb-4" style="font-size: 14px; text-transform: uppercase;">Add Delivery Details</h6>
+                        <div id="manual_address_form" class="mt-4 {% if saved_addresses %}d-none{% endif %} p-4 bg-white border shadow-sm rounded-3">
+                            <h6 class="fw-bold text-dark mb-4" style="font-size: 14px;">ADD DELIVERY DETAILS</h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="text-muted small fw-bold mb-1">Full Name</label>
+                                    <label class="text-muted small fw-medium mb-1">Full Name</label>
                                     <input type="text" name="name" class="form-control-custom bg-white" {% if not saved_addresses %}required{% endif %} placeholder="Enter your full name">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="text-muted small fw-bold mb-1">Mobile Number</label>
+                                    <label class="text-muted small fw-medium mb-1">Mobile Number</label>
                                     <input type="text" name="mobile_number" class="form-control-custom bg-white" {% if not saved_addresses %}required{% endif %} placeholder="10-digit mobile number">
                                 </div>
                                 <div class="col-12 mt-3">
-                                    <label class="text-muted small fw-bold mb-1">Complete Address</label>
+                                    <label class="text-muted small fw-medium mb-1">Complete Address</label>
                                     <textarea name="address" class="form-control-custom bg-white" rows="3" {% if not saved_addresses %}required{% endif %} placeholder="House No, Building Name, Street, Area, City, State, Pincode"></textarea>
                                 </div>
                             </div>
@@ -100,29 +145,28 @@
                 <div class="checkout-box">
                     <div class="checkout-header-inactive">
                         <span class="step-num">3</span> ORDER SUMMARY 
-                        <span class="ms-3 text-dark fw-bold" style="font-size: 14px; text-transform: none;">₹<span class="display-final-total">{{ final_total }}</span></span>
+                        <span class="ms-3 text-dark fw-bold">₹<span class="display-final-total">{{ final_total }}</span></span>
                     </div>
                 </div>
 
-                <!-- 🌟 NAYA: PROMO CODE SECTION -->
                 <div class="checkout-box">
-                    <div class="checkout-body p-3 bg-white">
+                    <div class="checkout-body p-4 bg-white">
                         <label class="fw-bold mb-2 small text-muted">HAVE A PROMO CODE?</label>
-                        <div class="input-group">
-                            <input type="text" id="promo_code_input" class="form-control form-control-custom border-end-0" placeholder="Enter code here (e.g. WELCOME50)" style="text-transform: uppercase;">
-                            <button class="btn btn-dark px-4 rounded-0" type="button" onclick="applyPromoCode()">APPLY</button>
+                        <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                            <input type="text" id="promo_code_input" class="form-control border-0 bg-light p-3" placeholder="Enter code here" style="text-transform: uppercase; font-size: 14px;">
+                            <button class="btn btn-dark px-4 border-0" type="button" onclick="applyPromoCode()">APPLY</button>
                         </div>
-                        <div id="promo_message" class="small mt-2 fw-bold"></div>
+                        <div id="promo_message" class="small mt-2 fw-medium"></div>
                         <input type="hidden" name="promo_code" id="applied_promo_code" value="">
                     </div>
                 </div>
                 
                 {% if user.is_authenticated and profile.wallet_balance > 0 %}
-                <div class="checkout-box border border-primary" style="background-color: #f8faff;">
-                    <div class="checkout-body p-3">
+                <div class="checkout-box border-2" style="background-color: #F5F6FF; border-color: var(--primary);">
+                    <div class="checkout-body p-4">
                         <div class="form-check d-flex align-items-center">
-                            <input class="form-check-input me-3 shadow-none border-primary" type="checkbox" name="use_wallet" id="use_wallet" style="width: 20px; height: 20px; cursor: pointer;" onchange="calculateFinalTotal()">
-                            <label class="form-check-label fw-bold text-primary w-100" for="use_wallet" style="font-size: 16px; cursor: pointer;">
+                            <input class="form-check-input me-3 shadow-none" type="checkbox" name="use_wallet" id="use_wallet" style="width: 22px; height: 22px; cursor: pointer;" onchange="calculateFinalTotal()">
+                            <label class="form-check-label fw-bold w-100" for="use_wallet" style="font-size: 15px; cursor: pointer; color: var(--primary);">
                                 Use Store Wallet Balance (Available: ₹<span id="wallet_available">{{ profile.wallet_balance }}</span>)
                             </label>
                         </div>
@@ -132,16 +176,16 @@
 
                 <div class="checkout-box">
                     <div class="checkout-header-inactive"><span class="step-num">4</span> PAYMENT OPTIONS</div>
-                    <div class="checkout-body border-top bg-white">
+                    <div class="checkout-body border-top bg-white p-4">
                         <div class="form-check d-flex align-items-center mb-3">
-                            <input class="form-check-input me-3" type="radio" name="payment_mode" id="cod" checked style="width: 18px; height: 18px;">
-                            <label class="form-check-label fw-medium" for="cod" style="font-size: 16px; color: #212121;">
+                            <input class="form-check-input me-3" type="radio" name="payment_mode" id="cod" checked style="width: 20px; height: 20px;">
+                            <label class="form-check-label fw-bold text-dark" for="cod" style="font-size: 15px;">
                                 Pay via WhatsApp
                             </label>
                         </div>
-                        <p class="text-muted small ms-4 ps-2 mb-4">Clicking the button below will securely process your order via our official WhatsApp channel.</p>
+                        <p class="text-muted small ms-4 ps-3 mb-4">Clicking the button below will securely process your order via our official WhatsApp channel.</p>
                         <div class="text-end mt-4 d-none d-lg-block">
-                            <button type="submit" class="btn-place-order" style="width: auto; padding: 16px 50px;">CONFIRM ORDER</button>
+                            <button type="submit" class="btn-place-order" style="width: auto;">CONFIRM ORDER</button>
                         </div>
                     </div>
                 </div>
@@ -153,27 +197,26 @@
                     <div class="price-box-body">
                         <div class="price-row">
                             <span>Price (MRP)</span>
-                            <span>₹{{ total_mrp|default:cart_total }}</span>
+                            <span class="fw-medium">₹{{ total_mrp|default:cart_total }}</span>
                         </div>
                         {% if total_savings > 0 %}
-                        <div class="price-row" style="color: #388e3c;">
+                        <div class="price-row" style="color: #059669;">
                             <span>Discount</span>
-                            <span>− ₹{{ total_savings }}</span>
+                            <span class="fw-medium">− ₹{{ total_savings }}</span>
                         </div>
                         {% endif %}
                         
-                        <!-- 🌟 Coupon Discount Row (Hidden By Default) -->
-                        <div class="price-row" id="coupon_row" style="color: #388e3c; display: none;">
+                        <div class="price-row" id="coupon_row" style="color: #059669; display: none;">
                             <span>Coupon Applied</span>
-                            <span>− ₹<span id="display_coupon_discount">0</span></span>
+                            <span class="fw-medium">− ₹<span id="display_coupon_discount">0</span></span>
                         </div>
 
                         <div class="price-row border-dash">
                             <span>Delivery Charges</span>
                             {% if delivery_fee == 0 %}
-                                <span style="color: #388e3c;">Free</span>
+                                <span style="color: #059669;" class="fw-medium">Free</span>
                             {% else %}
-                                <span>₹{{ delivery_fee }}</span>
+                                <span class="fw-medium">₹{{ delivery_fee }}</span>
                             {% endif %}
                         </div>
                         <div class="total-row">
@@ -186,11 +229,11 @@
                     </div>
                 </div>
                 
-                <div class="d-block d-lg-none p-3 mt-4" style="background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;">
+                <div class="d-block d-lg-none p-3 mt-4" style="background: #fff; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="text-muted" style="font-size: 12px;">Total Payable</div>
-                            <div class="fw-bold" style="font-size: 18px; color: #212121;">₹<span class="display-final-total">{{ final_total }}</span></div>
+                            <div class="text-muted fw-medium" style="font-size: 12px;">Total Payable</div>
+                            <div class="fw-bold text-dark" style="font-size: 18px;">₹<span class="display-final-total">{{ final_total }}</span></div>
                         </div>
                         <button type="submit" class="btn-place-order w-auto px-4">CONFIRM ORDER</button>
                     </div>
@@ -199,9 +242,9 @@
         </div>
     </form>
 </div>
-<div class="d-block d-lg-none" style="height: 80px;"></div>
+<div class="d-block d-lg-none" style="height: 100px;"></div>
 
-<!-- ⚙️ Combined JS -->
+<!-- JS is exactly the same logic -->
 <script>
     let couponDiscountAmount = 0;
 
@@ -224,17 +267,12 @@
         }
     });
 
-    // 🌟 NAYA: Promo Code AJAX Function
     function applyPromoCode() {
         const code = document.getElementById('promo_code_input').value.trim();
         const msgDiv = document.getElementById('promo_message');
         const cartTotal = parseFloat("{{ final_total }}");
 
-        if (!code) {
-            msgDiv.innerHTML = '<span class="text-danger">Please enter a code.</span>';
-            return;
-        }
-
+        if (!code) { msgDiv.innerHTML = '<span class="text-danger">Please enter a code.</span>'; return; }
         msgDiv.innerHTML = '<span class="text-info">Checking...</span>';
 
         fetch(`/check-coupon-ajax/?code=${code}&cart_total=${cartTotal}`)
@@ -244,10 +282,8 @@
                     msgDiv.innerHTML = `<span class="text-success">✅ ${data.message} (Saved ₹${data.discount_amount})</span>`;
                     document.getElementById('applied_promo_code').value = code;
                     couponDiscountAmount = parseFloat(data.discount_amount);
-                    
                     document.getElementById('coupon_row').style.display = 'flex';
                     document.getElementById('display_coupon_discount').innerText = couponDiscountAmount.toFixed(2);
-                    
                     calculateFinalTotal(); 
                 } else {
                     msgDiv.innerHTML = `<span class="text-danger">❌ ${data.message}</span>`;
@@ -257,12 +293,9 @@
                     calculateFinalTotal();
                 }
             })
-            .catch(error => {
-                msgDiv.innerHTML = '<span class="text-danger">Something went wrong!</span>';
-            });
+            .catch(error => { msgDiv.innerHTML = '<span class="text-danger">Something went wrong!</span>'; });
     }
 
-    // Wallet + Coupon Calculation
     function calculateFinalTotal() {
         const originalTotal = parseFloat("{{ final_total }}");
         let newTotal = originalTotal - couponDiscountAmount;
@@ -270,20 +303,13 @@
 
         const walletBalance = parseFloat("{{ profile.wallet_balance|default:0 }}");
         const useWalletCheckbox = document.getElementById("use_wallet");
-        
         let displayTotalElements = document.querySelectorAll(".display-final-total");
 
         if (useWalletCheckbox && useWalletCheckbox.checked) {
-            if (walletBalance >= newTotal) {
-                newTotal = 0;
-            } else {
-                newTotal = newTotal - walletBalance;
-            }
+            if (walletBalance >= newTotal) { newTotal = 0; } 
+            else { newTotal = newTotal - walletBalance; }
         }
-        
-        displayTotalElements.forEach(el => {
-            el.innerText = newTotal.toFixed(2);
-        });
+        displayTotalElements.forEach(el => { el.innerText = newTotal.toFixed(2); });
     }
 </script>
 {% endblock %}
