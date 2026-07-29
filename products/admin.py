@@ -22,13 +22,19 @@ class ProductVariantInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    # 🌟 NAYA: 'brand' ko list_display aur list_filter mein add kiya
+    # 'category' aur 'brand' yahan dikhenge zaroor, par dropdown nahi banenge
     list_display = ('sku', 'name', 'category', 'brand', 'price', 'last_moment_discount') 
+    
     search_fields = ('name', 'sku', 'category__name', 'brand__name')
     list_filter = ('category', 'brand')
-    # 🌟 GAMECHANGER: category aur brand ko direct yahan se edit karne ke liye add kiya 👇
-    list_editable = ('category', 'brand', 'price', 'last_moment_discount')
+    
+    # ⚠️ CRASH FIX: Yahan se category aur brand hata diya hai taaki OOM (Out of Memory) na ho
+    list_editable = ('price', 'last_moment_discount')
+    
     inlines = [ProductVariantInline]
+    
+    # 🌟 NAYA FIX: Ek page par sirf 25 products dikhayega, isse Admin panel makkhan ki tarah fast chalega
+    list_per_page = 25
 
 @admin.register(StoreSetting)
 class StoreSettingAdmin(admin.ModelAdmin):
