@@ -26,7 +26,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('sku', 'name', 'category', 'brand', 'price', 'last_moment_discount') 
     search_fields = ('name', 'sku', 'category__name', 'brand__name')
     list_filter = ('category', 'brand')
-    list_editable = ('price', 'last_moment_discount')
+    # 🌟 GAMECHANGER: category aur brand ko direct yahan se edit karne ke liye add kiya 👇
+    list_editable = ('category', 'brand', 'price', 'last_moment_discount')
     inlines = [ProductVariantInline]
 
 @admin.register(StoreSetting)
