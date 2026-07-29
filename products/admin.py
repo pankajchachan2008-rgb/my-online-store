@@ -22,19 +22,20 @@ class ProductVariantInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    # 'category' aur 'brand' yahan dikhenge zaroor, par dropdown nahi banenge
     list_display = ('sku', 'name', 'category', 'brand', 'price', 'last_moment_discount') 
-    
     search_fields = ('name', 'sku', 'category__name', 'brand__name')
     list_filter = ('category', 'brand')
     
-    # ⚠️ CRASH FIX: Yahan se category aur brand hata diya hai taaki OOM (Out of Memory) na ho
-    list_editable = ('price', 'last_moment_discount')
+    # 🌟 TRICK 1: Database ko fast karne ke liye (Memory bachayega)
+    list_select_related = ('category', 'brand')
+    
+    # 🌟 TRICK 2: WAPAS ON KIYA! Ab aap direct wahin se update kar sakte hain 👇
+    list_editable = ('category', 'brand', 'price', 'last_moment_discount')
     
     inlines = [ProductVariantInline]
     
-    # 🌟 NAYA FIX: Ek page par sirf 25 products dikhayega, isse Admin panel makkhan ki tarah fast chalega
-    list_per_page = 25
+    # 🌟 TRICK 3: Ek page par sirf 15 products! Ab server kabhi OOM crash nahi hoga.
+    list_per_page = 15
 
 @admin.register(StoreSetting)
 class StoreSettingAdmin(admin.ModelAdmin):
