@@ -98,7 +98,7 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     applied_coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Processing')
-# 🌟 NAYA: Editable Tracking Details
+    # 🌟 NAYA: Editable Tracking Details
     courier_name = models.CharField(max_length=100, blank=True, null=True, help_text="E.g., Trackon, Delivery, etc.")
     tracking_id = models.CharField(max_length=100, blank=True, null=True, help_text="Courier Tracking ID/AWB")
     tracking_url = models.URLField(max_length=500, blank=True, null=True, help_text="Paste direct tracking link here")
@@ -113,7 +113,7 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
 
-# 👇 YEH 3 LINES ADD KAREIN 👇
+    # 👇 YEH 3 LINES ADD KAREIN 👇
     @property
     def total_price(self):
         return self.price * self.quantity
@@ -219,8 +219,11 @@ class Banner(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # 🌟 YEH FIX HUA HAI TAQI BINA TITLE WALE BANNERS CRASH NA HON 🌟
     def __str__(self):
-        return self.title
+        if self.title:
+            return self.title
+        return f"Banner #{self.id}"
 
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
