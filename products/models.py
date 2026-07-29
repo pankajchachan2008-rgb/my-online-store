@@ -197,7 +197,7 @@ def save_user_profile(sender, instance, **kwargs):
         instance.customerprofile.save()
 
 class Banner(models.Model):
-    title = models.CharField(max_length=200, help_text="Festival ya Offer ka naam")
+    title = models.CharField(max_length=200, blank=True, null=True)
     
     # 🌟 Image Banner ke liye (PNG/JPG) - Yeh default Image Storage use karega
     image = models.ImageField(

@@ -199,8 +199,10 @@
             {% endif %}
 
             <div class="carousel-caption-custom">
-                <!-- Title admin panel se fetch hoga, nahi toh "New Arrivals" dikhayega -->
-                <h2>{{ banner.title|default:"New Arrivals" }}</h2>
+                <!-- 🌟 CHANGE HERE: Title sirf tabhi dikhega jab aap admin panel se daalenge -->
+                {% if banner.title %}
+                    <h2>{{ banner.title }}</h2>
+                {% endif %}
                 <a href="#full-collection" class="btn btn-light rounded-pill px-5 py-3 text-uppercase fw-bold shadow-lg" style="letter-spacing: 2px;">Shop Now</a>
             </div>
         </div>
