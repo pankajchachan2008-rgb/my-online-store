@@ -22,14 +22,13 @@
     <!-- Premium Fonts: Inter for clean readability, Jost for headings -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-light: #F8FAFC;
+            --bg-light: #FAFAFA; /* Brighter, airy background */
             --text-dark: #0F172A;
             --text-muted: #64748B;
-            /* 🌟 Premium Colors */
             --primary-blue: #002D62; 
             --accent-gold: #D4AF37;
             --surface: #FFFFFF;
@@ -43,28 +42,29 @@
             flex-direction: column;
             min-height: 100vh;
             padding-bottom: env(safe-area-inset-bottom); 
+            line-height: 1.6;
         }
 
-        /* 💎 Premium Luxury Navbar */
+        /* 💎 Premium Luxury Navbar - More Airy */
         .premium-navbar {
             background-color: var(--primary-blue);
             border-bottom: 4px solid var(--accent-gold);
-            padding: 15px 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            padding: 22px 0; /* Increased padding for luxury feel */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             z-index: 1040;
         }
         
         .brand-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             text-decoration: none !important;
         }
         
         .brand-logo { 
-            height: 45px; 
+            height: 55px; /* Larger logo image */
             width: auto; 
-            border-radius: 8px;
+            border-radius: 12px;
             border: 2px solid var(--accent-gold);
         }
         
@@ -73,22 +73,24 @@
             flex-direction: column;
         }
 
+        /* 🌟 MUCH BIGGER LOGO TEXT FOR BRAND RECALL */
         .brand-name {
             font-family: 'Jost', sans-serif;
             font-weight: 800;
-            font-size: 1.5rem;
-            letter-spacing: 1px;
+            font-size: 2.2rem; /* Scaled up significantly */
+            letter-spacing: 3px;
             color: var(--accent-gold);
             margin: 0;
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
         .brand-tagline {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: #E2E8F0;
             margin: 0;
             font-style: italic;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            opacity: 0.9;
         }
 
         /* Desktop specific styles */
@@ -96,9 +98,10 @@
             font-family: 'Jost', sans-serif;
             font-weight: 500;
             text-transform: uppercase;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
             color: #FFFFFF !important;
-            margin-left: 20px;
+            margin-left: 25px;
             transition: all 0.3s ease;
         }
         
@@ -111,10 +114,11 @@
             background-color: var(--accent-gold);
             color: var(--primary-blue);
             border-radius: 30px;
-            padding: 8px 24px;
+            padding: 10px 28px;
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.85rem;
+            letter-spacing: 1px;
             border: none;
             transition: all 0.3s ease;
             box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
@@ -128,80 +132,85 @@
         }
 
         .header-icon-btn {
-            background: rgba(255,255,255,0.1);
+            background: transparent;
             color: white;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
             transition: 0.3s;
+            font-size: 1.1rem;
         }
         
         .header-icon-btn:hover {
             background: var(--accent-gold);
             border-color: var(--accent-gold);
+            color: var(--primary-blue);
         }
 
         /* 📱 Mobile Specific Fixes */
-        .navbar-toggler-icon-custom {
-            color: white;
-            font-size: 1.8rem;
+        @media (max-width: 768px) {
+            .brand-name { font-size: 1.8rem; letter-spacing: 2px; }
+            .brand-logo { height: 45px; }
+            .premium-navbar { padding: 15px 0; }
         }
+        
+        .navbar-toggler-icon-custom { color: white; font-size: 1.8rem; }
 
         /* Offcanvas Sidebar */
         .offcanvas { border-right: none; box-shadow: 4px 0 15px rgba(0,0,0,0.05); }
-        .offcanvas-header { background-color: var(--primary-blue); border-bottom: 3px solid var(--accent-gold); padding: 20px; }
-        .mobile-menu-link { display: flex; align-items: center; padding: 14px 20px; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 1px solid #F1F5F9; transition: 0.3s; }
+        .offcanvas-header { background-color: var(--primary-blue); border-bottom: 3px solid var(--accent-gold); padding: 25px 20px; }
+        .mobile-menu-link { display: flex; align-items: center; padding: 16px 20px; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 1px solid #F1F5F9; transition: 0.3s; font-size: 1.05rem; }
         .mobile-menu-link:hover { background-color: #F8FAFC; color: var(--primary-blue); padding-left: 25px; }
 
         /* Mobile Bottom Nav */
-        .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--surface); box-shadow: 0 -4px 15px rgba(0,0,0,0.06); display: flex; justify-content: space-around; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)) 0; z-index: 1050; border-top: 1px solid #E2E8F0; }
-        .nav-item-bottom { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-muted); font-size: 0.75rem; font-weight: 500; transition: 0.2s; }
-        .nav-item-bottom.active { color: var(--primary-blue); font-weight: 600; }
-        .nav-icon { font-size: 1.4rem; margin-bottom: 2px; }
+        .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--surface); box-shadow: 0 -10px 20px rgba(0,0,0,0.05); display: flex; justify-content: space-around; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; z-index: 1050; border-top: 1px solid #F1F5F9; }
+        .nav-item-bottom { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94A3B8; font-size: 0.75rem; font-weight: 500; transition: 0.2s; letter-spacing: 0.5px; text-transform: uppercase; }
+        .nav-item-bottom.active { color: var(--primary-blue); font-weight: 700; }
+        .nav-icon { font-size: 1.4rem; margin-bottom: 4px; }
 
-        @media (max-width: 991px) { body { padding-bottom: 75px; } }
+        @media (max-width: 991px) { body { padding-bottom: 85px; } }
     </style>
 </head>
 <body>
 
     <!-- 💎 Luxury Header (Sticky) -->
     <nav class="navbar premium-navbar sticky-top">
-        <div class="container" style="max-width: 1400px;">
+        <div class="container" style="max-width: 1400px; padding: 0 25px;">
             
             <!-- Mobile Toggle Button (Left Side) -->
-            <button class="navbar-toggler border-0 shadow-none p-0 me-2 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+            <button class="navbar-toggler border-0 shadow-none p-0 me-3 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
                 <span class="navbar-toggler-icon-custom">☰</span>
             </button>
             
-            <!-- Logo + Brand Name + Tagline -->
+            <!-- 🌟 ENHANCED BRAND LOGO -->
             <a class="brand-container me-auto" href="{% url 'home' %}">
                 <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
                 <div class="brand-text-wrapper">
-                    <span class="brand-name">CGSMART</span>
-                    <span class="brand-tagline d-none d-sm-block">Nohar's Premium Essentials Store</span>
+                    <h1 class="brand-name">CGSMART<span style="color: #FFFFFF; font-size: 2.5rem; line-height: 0;">.</span></h1>
+                    <span class="brand-tagline d-none d-sm-block">Nohar's Premium Essentials</span>
                 </div>
             </a>
 
-            <!-- Desktop Menu (Hidden on Mobile) -->
+            <!-- Desktop Menu -->
             <div class="d-none d-lg-flex align-items-center">
                 <a class="nav-link-desktop" href="{% url 'home' %}">Home</a>
                 <a class="nav-link-desktop" href="{% url 'about' %}">About</a>
                 <a class="nav-link-desktop" href="{% url 'contact' %}">Contact</a>
                 
-                <div class="ms-4 d-flex align-items-center gap-3">
-                    <a class="btn header-icon-btn rounded-circle p-2 shadow-sm" href="{% url 'view_wishlist' %}" title="Wishlist">❤️</a>
-                    <a class="btn header-icon-btn rounded-circle p-2 shadow-sm" href="{% url 'cart_detail' %}" title="Cart">🛒</a>
+                <div class="ms-5 d-flex align-items-center gap-3">
+                    <a class="btn header-icon-btn rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" href="{% url 'view_wishlist' %}" title="Wishlist">❤️</a>
+                    <a class="btn header-icon-btn rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" href="{% url 'cart_detail' %}" title="Cart">🛒</a>
                     
                     {% if user.is_authenticated %}
-                        <a class="btn-gold" href="{% url 'profile' %}">👤 Profile</a>
+                        <a class="btn-gold ms-2" href="{% url 'profile' %}">👤 Profile</a>
                     {% else %}
-                        <a class="btn-gold" href="{% url 'login' %}">Login</a>
+                        <a class="btn-gold ms-2" href="{% url 'login' %}">Login</a>
                     {% endif %}
                 </div>
             </div>
             
-            <!-- Mobile Cart Icon (Right Side Header) -->
+            <!-- Mobile Cart Icon -->
             <div class="d-lg-none">
                 <a href="{% url 'cart_detail' %}" class="text-decoration-none position-relative p-2 text-white">
-                    <span class="fs-4">🛒</span>
+                    <span class="fs-3">🛒</span>
                 </a>
             </div>
         </div>
@@ -212,7 +221,7 @@
         <div class="offcanvas-header">
             <a class="brand-container" href="{% url 'home' %}">
                 <div class="brand-text-wrapper">
-                    <span class="brand-name">CGSMART</span>
+                    <h1 class="brand-name" style="font-size: 1.8rem;">CGSMART.</h1>
                     <span class="brand-tagline">Premium Essentials</span>
                 </div>
             </a>
@@ -228,14 +237,13 @@
                     <a href="{% url 'privacy_policy' %}" class="mobile-menu-link">📄 <span class="ms-3">Privacy Policy</span></a>
                 </div>
                 
-                <!-- Auth Section in Sidebar -->
                 <div class="p-4 bg-light border-top">
                     {% if user.is_authenticated %}
-                        <p class="mb-3 fw-bold text-dark">Hi, {{ user.first_name|default:user.username }}!</p>
-                        <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 fw-bold rounded-3">Log Out</a>
+                        <p class="mb-3 fw-bold text-dark fs-5">Hi, {{ user.first_name|default:user.username }}!</p>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 fw-bold rounded-3 py-2">Log Out</a>
                     {% else %}
-                        <a href="{% url 'login' %}" class="btn-gold d-block text-center mb-2">Login to Account</a>
-                        <a href="{% url 'register' %}" class="btn btn-outline-primary w-100 fw-bold rounded-3">Sign Up</a>
+                        <a href="{% url 'login' %}" class="btn-gold d-block text-center mb-3 py-2">Login to Account</a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary w-100 fw-bold rounded-3 py-2">Sign Up</a>
                     {% endif %}
                 </div>
             </div>
@@ -244,9 +252,8 @@
 
     <!-- MAIN CONTENT -->
     <div class="container-fluid p-0 flex-grow-1">
-        <!-- Messages System -->
         {% if messages %}
-        <div class="container mt-3">
+        <div class="container mt-4">
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm border-0" role="alert">
                     {{ message }}
@@ -256,33 +263,32 @@
         </div>
         {% endif %}
 
-        <!-- Child Templates Inject Here -->
         {% block content %}
         {% endblock %}
     </div>
 
     <!-- 🛡️ TRUST SIGNALS (Footer Top) -->
-    <div class="container-fluid bg-white py-4 mt-auto border-top border-bottom d-none d-md-block">
+    <div class="container-fluid bg-white py-5 mt-auto border-top border-bottom d-none d-md-block">
         <div class="container" style="max-width: 1400px;">
             <div class="row text-center g-4">
                 <div class="col-md-3">
-                    <span class="fs-2 mb-2 d-block">🔒</span>
-                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue);">100% Secure Payments</h6>
+                    <span class="fs-1 mb-3 d-block">🔒</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue); font-size: 1.1rem;">100% Secure Payments</h6>
                     <p class="small text-muted mb-0">Your data is safe with us</p>
                 </div>
                 <div class="col-md-3">
-                    <span class="fs-2 mb-2 d-block">💵</span>
-                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue);">Cash on Delivery</h6>
+                    <span class="fs-1 mb-3 d-block">💵</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue); font-size: 1.1rem;">Cash on Delivery</h6>
                     <p class="small text-muted mb-0">Pay when you receive</p>
                 </div>
                 <div class="col-md-3">
-                    <span class="fs-2 mb-2 d-block">🚚</span>
-                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue);">Fast Local Delivery</h6>
+                    <span class="fs-1 mb-3 d-block">🚚</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue); font-size: 1.1rem;">Fast Local Delivery</h6>
                     <p class="small text-muted mb-0">Quick dispatch across Nohar</p>
                 </div>
                 <div class="col-md-3">
-                    <span class="fs-2 mb-2 d-block">⭐</span>
-                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue);">Premium Quality</h6>
+                    <span class="fs-1 mb-3 d-block">⭐</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue); font-size: 1.1rem;">Premium Quality</h6>
                     <p class="small text-muted mb-0">Handpicked essentials</p>
                 </div>
             </div>
@@ -291,35 +297,35 @@
 
     <!-- 📄 FOOTER -->
     <footer class="text-white py-5" style="background-color: var(--primary-blue); margin-bottom: env(safe-area-inset-bottom);">
-        <div class="container" style="max-width: 1400px;">
-            <div class="row g-4">
-                <div class="col-lg-4 mb-3">
-                    <h5 class="fw-bold mb-3 text-uppercase" style="color: var(--accent-gold);">CGSMART</h5>
-                    <p class="text-white-50 small">
-                        Nohar's premium destination for quality essentials. 
+        <div class="container" style="max-width: 1400px; padding: 0 25px;">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <h5 class="fw-bold mb-4 text-uppercase" style="color: var(--accent-gold); font-size: 1.5rem; letter-spacing: 2px;">CGSMART.</h5>
+                    <p class="text-white-50" style="line-height: 1.8;">
+                        Nohar's premium destination for quality fashion, skincare, and daily essentials. 
                         Delivering happiness to your doorstep with trust and speed.
                     </p>
                 </div>
-                <div class="col-6 col-lg-4 mb-3">
-                    <h6 class="fw-bold mb-3 text-uppercase text-white">Quick Links</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="{% url 'home' %}" class="text-white-50 text-decoration-none mb-2 d-block">Home</a></li>
-                        <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none mb-2 d-block">About Us</a></li>
-                        <li><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none">Contact Support</a></li>
+                <div class="col-6 col-lg-4">
+                    <h6 class="fw-bold mb-4 text-uppercase text-white" style="letter-spacing: 1px;">Quick Links</h6>
+                    <ul class="list-unstyled" style="line-height: 2;">
+                        <li><a href="{% url 'home' %}" class="text-white-50 text-decoration-none transition">Home</a></li>
+                        <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none transition">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none transition">Contact Support</a></li>
                     </ul>
                 </div>
-                <div class="col-6 col-lg-4 mb-3">
-                    <h6 class="fw-bold mb-3 text-uppercase text-white">Legal</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="{% url 'privacy_policy' %}" class="text-white-50 text-decoration-none mb-2 d-block">Privacy Policy</a></li>
-                        <li><a href="{% url 'terms_conditions' %}" class="text-white-50 text-decoration-none mb-2 d-block">Terms & Conditions</a></li>
-                        <li><a href="{% url 'refund_policy' %}" class="text-white-50 text-decoration-none">Refund Policy</a></li>
+                <div class="col-6 col-lg-4">
+                    <h6 class="fw-bold mb-4 text-uppercase text-white" style="letter-spacing: 1px;">Legal</h6>
+                    <ul class="list-unstyled" style="line-height: 2;">
+                        <li><a href="{% url 'privacy_policy' %}" class="text-white-50 text-decoration-none transition">Privacy Policy</a></li>
+                        <li><a href="{% url 'terms_conditions' %}" class="text-white-50 text-decoration-none transition">Terms & Conditions</a></li>
+                        <li><a href="{% url 'refund_policy' %}" class="text-white-50 text-decoration-none transition">Refund Policy</a></li>
                     </ul>
                 </div>
             </div>
-            <hr class="my-4 border-light opacity-25">
-            <div class="text-center text-white-50 small pb-4 pb-lg-0">
-                <p class="mb-0">© 2026 CGSMART. All Rights Reserved.</p>
+            <hr class="my-5 border-light opacity-25">
+            <div class="text-center text-white-50 pb-4 pb-lg-0">
+                <p class="mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">© 2026 CGSMART. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
@@ -327,20 +333,16 @@
     <!-- 📱 APP-STYLE BOTTOM NAVIGATION -->
     <div class="mobile-bottom-nav d-lg-none">
         <a href="{% url 'home' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-            <span class="nav-icon">🏠</span>
-            <span>Home</span>
+            <span class="nav-icon">🏠</span><span>Home</span>
         </a>
         <a href="{% url 'view_wishlist' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'view_wishlist' %}active{% endif %}">
-            <span class="nav-icon">❤️</span>
-            <span>Wishlist</span>
+            <span class="nav-icon">❤️</span><span>Wishlist</span>
         </a>
         <a href="{% url 'cart_detail' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}">
-            <span class="nav-icon">🛒</span>
-            <span>Cart</span>
+            <span class="nav-icon">🛒</span><span>Cart</span>
         </a>
         <a href="{% url 'profile' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
-            <span class="nav-icon">👤</span>
-            <span>Profile</span>
+            <span class="nav-icon">👤</span><span>Profile</span>
         </a>
     </div>
 
