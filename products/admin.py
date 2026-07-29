@@ -6,6 +6,7 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from .models import Category, Brand, Product, Coupon, Order, OrderItem, CustomerProfile, Banner, ProductVariant, Review
 from .models import StoreSetting
+from django.utils.html import format_html
 
 # Basic Models Registration
 admin.site.register(Category)
@@ -22,20 +23,28 @@ class ProductVariantInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('sku', 'name', 'category', 'brand', 'price', 'last_moment_discount') 
+    # 🌟 NAYA: 'product_image' ko list_display mein 2nd number par add kiya
+    list_display = ('sku', 'product_image', 'name', 'category', 'brand', 'price', 'last_moment_discount') 
+    
     search_fields = ('name', 'sku', 'category__name', 'brand__name')
     list_filter = ('category', 'brand')
-    
-    # 🌟 TRICK 1: Database ko fast karne ke liye (Memory bachayega)
     list_select_related = ('category', 'brand')
     
-    # 🌟 TRICK 2: WAPAS ON KIYA! Ab aap direct wahin se update kar sakte hain 👇
+    # Category, brand aur prices yahan se directly edit honge
     list_editable = ('category', 'brand', 'price', 'last_moment_discount')
     
     inlines = [ProductVariantInline]
+    list_per_page = 15  # Server crash se bachane ke liye limit
+
+    # 🌟 NAYA FUNCTION: Har product ki choti photo dikhane ke liye
+    def product_image(self, obj):
+        if obj.image:
+            # 50x50 size ki round-corner photo dikhayega
+            return format_html('<img src="{}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" />', obj.image.url)
+        return "No Image"
     
-    # 🌟 TRICK 3: Ek page par sirf 15 products! Ab server kabhi OOM crash nahi hoga.
-    list_per_page = 15
+    # Admin panel mein column ka naam 'Image' set karne ke liye
+    product_image.short_description = 'Image'
 
 @admin.register(StoreSetting)
 class StoreSettingAdmin(admin.ModelAdmin):
