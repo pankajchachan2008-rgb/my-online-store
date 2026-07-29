@@ -3,13 +3,13 @@
 
 {% block content %}
 <style>
-    /* 🌟 LIFESTYLE CAROUSEL HERO */
+    /* 🌟 DYNAMIC LIFESTYLE CAROUSEL HERO */
     .lifestyle-carousel .carousel-item {
         height: 65vh;
         min-height: 450px;
         background-color: #0F172A;
     }
-    .lifestyle-carousel img {
+    .lifestyle-carousel img, .lifestyle-carousel video {
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -17,7 +17,7 @@
         transition: transform 10s ease;
     }
     .lifestyle-carousel .carousel-item.active img {
-        transform: scale(1.05);
+        transform: scale(1.05); /* Premium zoom effect only for images */
     }
     .carousel-caption-custom {
         position: absolute;
@@ -39,7 +39,7 @@
         text-shadow: 2px 4px 15px rgba(0,0,0,0.4);
     }
     
-    /* 🌟 SLEEK HORIZONTAL PILLS (Replaces Sidebar) */
+    /* 🌟 SLEEK HORIZONTAL FILTERS */
     .filter-wrapper {
         background: #FFFFFF;
         border-bottom: 1px solid #E2E8F0;
@@ -97,7 +97,7 @@
     
     .img-box-elegant {
         background: #F1F5F9;
-        height: 350px; /* Taller, premium feel */
+        height: 350px; 
         width: 100%;
         overflow: hidden;
         border-radius: 12px; 
@@ -144,7 +144,6 @@
         margin-bottom: 12px;
     }
 
-    /* Action Buttons */
     .btn-elegant-cart {
         background: #1E293B;
         color: #FFFFFF;
@@ -170,7 +169,6 @@
         margin-bottom: 50px;
     }
 
-    /* Mobile Adjustments */
     @media (max-width: 768px) {
         .carousel-caption-custom h2 { font-size: 2.2rem; letter-spacing: 2px; }
         .img-box-elegant { height: 260px; }
@@ -178,45 +176,65 @@
     }
 </style>
 
-<!-- 🌟 1. LIFESTYLE IMAGERY CAROUSEL HERO -->
+<!-- 🌟 1. DYNAMIC ADMIN CONTROLLED CAROUSEL -->
+{% if banners %}
 <div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel">
+    <!-- Indicators -->
     <div class="carousel-indicators">
-        <button type="button" data-bs-target="#lifestyleCarousel" data-bs-slide-to="0" class="active"></button>
-        <button type="button" data-bs-target="#lifestyleCarousel" data-bs-slide-to="1"></button>
-        <button type="button" data-bs-target="#lifestyleCarousel" data-bs-slide-to="2"></button>
+        {% for banner in banners %}
+            <button type="button" data-bs-target="#lifestyleCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
+        {% endfor %}
     </div>
+    
     <div class="carousel-inner">
-        <div class="carousel-item active" data-bs-interval="4000">
-            <!-- Fashion Imagery -->
+        {% for banner in banners %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="5000">
+            
+            {% if banner.animated_file %}
+                <video class="d-block w-100" autoplay loop muted playsinline poster="{% static 'main_banner.png' %}">
+                    <source src="{{ banner.animated_file.url }}" type="video/mp4">
+                </video>
+            {% elif banner.image %}
+                <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}">
+            {% endif %}
+
+            <div class="carousel-caption-custom">
+                <!-- Title admin panel se fetch hoga, nahi toh "New Arrivals" dikhayega -->
+                <h2>{{ banner.title|default:"New Arrivals" }}</h2>
+                <a href="#full-collection" class="btn btn-light rounded-pill px-5 py-3 text-uppercase fw-bold shadow-lg" style="letter-spacing: 2px;">Shop Now</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Arrow Controls -->
+    {% if banners|length > 1 %}
+    <button class="carousel-control-prev" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="prev" style="width: 5%;">
+        <span class="carousel-control-prev-icon" aria-hidden="true" style="width: 3rem; height: 3rem;"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="next" style="width: 5%;">
+        <span class="carousel-control-next-icon" aria-hidden="true" style="width: 3rem; height: 3rem;"></span>
+    </button>
+    {% endif %}
+</div>
+{% else %}
+<!-- FALLBACK: Agar admin se koi banner upload nahi hai, toh yeh default dikhega -->
+<div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
             <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070" alt="Premium Fashion">
             <div class="carousel-caption-custom">
                 <h2>The Style Edit</h2>
                 <a href="#full-collection" class="btn btn-light rounded-pill px-5 py-3 text-uppercase fw-bold shadow-lg" style="letter-spacing: 2px;">Shop Now</a>
             </div>
         </div>
-        <div class="carousel-item" data-bs-interval="4000">
-            <!-- Skincare Imagery -->
-            <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=2070" alt="Luxury Skincare">
-            <div class="carousel-caption-custom">
-                <h2>Glow & Care</h2>
-                <a href="#full-collection" class="btn btn-light rounded-pill px-5 py-3 text-uppercase fw-bold shadow-lg" style="letter-spacing: 2px;">Discover Skincare</a>
-            </div>
-        </div>
-        <div class="carousel-item" data-bs-interval="4000">
-            <!-- Essentials Imagery -->
-            <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2070" alt="Daily Essentials">
-            <div class="carousel-caption-custom">
-                <h2>Everyday Elegance</h2>
-                <a href="#full-collection" class="btn btn-light rounded-pill px-5 py-3 text-uppercase fw-bold shadow-lg" style="letter-spacing: 2px;">View Essentials</a>
-            </div>
-        </div>
     </div>
 </div>
+{% endif %}
 
-<!-- 🌟 2. SLEEK HORIZONTAL FILTERS (Replaces Desktop Sidebar & Mobile Dropdowns) -->
+<!-- 🌟 2. SLEEK HORIZONTAL FILTERS -->
 <div class="filter-wrapper shadow-sm">
     <div class="container-fluid" style="max-width: 1400px;">
-        
         <!-- Category Row -->
         <h6 class="filter-title">Categories</h6>
         <div class="category-scroller mb-3">
@@ -236,48 +254,16 @@
                 </a>
             {% endfor %}
         </div>
-
     </div>
 </div>
 
 <div class="container-fluid px-4 mb-5" style="max-width: 1400px;" id="full-collection">
     
-    <!-- EXISTING BACKEND DYNAMIC BANNERS (If you upload custom banners from Admin) -->
-    {% if banners %}
-    <div id="backendBannerCarousel" class="carousel slide mb-5" data-bs-ride="carousel" style="border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-        <div class="carousel-inner">
-            {% for banner in banners %}
-            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                {% if banner.animated_file %}
-                    <video class="d-block w-100" autoplay loop muted playsinline style="max-height: 400px; object-fit: cover;">
-                        <source src="{{ banner.animated_file.url }}" type="video/mp4">
-                    </video>
-                {% elif banner.image %}
-                    <img src="{{ banner.image.url }}" class="d-block w-100" alt="{{ banner.title|default:'Store Banner' }}" style="max-height: 400px; object-fit: cover;">
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-        {% if banners|length > 1 %}
-        <button class="carousel-control-prev" type="button" data-bs-target="#backendBannerCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#backendBannerCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-        {% endif %}
-    </div>
-    {% endif %}
-
-
     <!-- 🌟 3. TRENDING BESTSELLERS SHOWCASE -->
     {% if not active_category and not active_brand and not search_query %}
     <div class="mb-5 pb-5 border-bottom">
         <h3 class="section-heading">Trending Bestsellers</h3>
-        
-        <!-- Used g-4 / g-xl-5 for airy spacing between cards -->
         <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-xl-5">
-            <!-- Django slice to show only first 4 products here -->
             {% for product in products|slice:":4" %}
             <div class="col">
                 <div class="h-100 d-flex flex-column">
@@ -288,22 +274,18 @@
                                     {{ product.discount_percentage }}% OFF
                                 </span>
                             {% endif %}
-
                             {% if product.image %}
                                 <img src="{{ product.image.url }}" alt="{{ product.name }}">
                             {% else %}
                                 <img src="https://placehold.co/400x500/F8FAFC/64748B?text={{ product.name|urlencode }}" alt="{{ product.name }}">
                             {% endif %}
                         </div>
-                        
                         <div class="product-brand-title">{{ product.brand.name|default:"Premium" }}</div>
                         <h4 class="product-name-elegant">{{ product.name }}</h4>
-                        
                         <div class="d-flex justify-content-center align-items-center mb-2">
                             <span class="text-warning" style="font-size: 0.85rem; letter-spacing: 2px;">★★★★★</span>
                             <span class="text-muted ms-2 fw-medium" style="font-size: 0.75rem;">(4.8)</span>
                         </div>
-                        
                         <div class="product-price-elegant">
                             ₹{{ product.price }} 
                             {% if product.mrp and product.mrp > product.price %}
@@ -318,14 +300,12 @@
     </div>
     {% endif %}
 
-
     <!-- 🌟 4. FULL CATALOG & SEARCH BAR -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-4">
         <h4 class="fw-bold m-0 text-uppercase" style="font-family: 'Jost', sans-serif; letter-spacing: 2px; color: #0F172A;">
             {% if active_category %}Filtered Collection{% else %}The Complete Collection{% endif %}
         </h4>
         
-        <!-- Elegant Search & Sort -->
         <form method="GET" action="" class="d-flex flex-column flex-sm-row gap-3 w-100" style="max-width: 600px;">
             {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
             {% if active_brand %}<input type="hidden" name="brand" value="{{ active_brand }}">{% endif %}
@@ -337,7 +317,6 @@
                 <option value="low_to_high">Price: Low to High</option>
                 <option value="high_to_low">Price: High to Low</option>
             </select>
-            
             <button type="submit" class="d-none">Submit</button>
         </form>
     </div>
@@ -354,21 +333,17 @@
                                 {{ product.discount_percentage }}% OFF
                             </span>
                         {% endif %}
-
                         {% if product.image %}
                             <img src="{{ product.image.url }}" alt="{{ product.name }}">
                         {% else %}
                             <img src="https://placehold.co/400x500/F8FAFC/64748B?text={{ product.name|urlencode }}" alt="{{ product.name }}">
                         {% endif %}
                     </div>
-                    
                     <div class="product-brand-title">{{ product.brand.name|default:"Premium" }}</div>
                     <h4 class="product-name-elegant">{{ product.name }}</h4>
-                    
                     <div class="d-flex justify-content-center align-items-center mb-2">
                         <span class="text-warning" style="font-size: 0.85rem; letter-spacing: 2px;">★★★★★</span>
                     </div>
-                    
                     <div class="product-price-elegant">
                         ₹{{ product.price }} 
                         {% if product.mrp and product.mrp > product.price %}
@@ -377,11 +352,9 @@
                     </div>
                 </a>
                 
-                <!-- UNTOUCHED CART FORM LOGIC -->
                 <div class="px-2 pb-2 d-flex flex-column flex-grow-1 mt-auto">
                     <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto">
                         {% csrf_token %}
-                        
                         {% if product.variants.exists %}
                             <select name="variant_id" class="form-select form-select-sm mb-3 rounded-2 text-center border-secondary shadow-sm" style="font-weight: 500;" required>
                                 <option value="" disabled selected>Select Size</option>
@@ -390,14 +363,12 @@
                                 {% endfor %}
                             </select>
                         {% endif %}
-                        
                         <div class="d-flex flex-column gap-2 mt-2">
                             <button type="submit" class="btn-elegant-cart w-100 shadow-sm">Add To Bag</button>
                             <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger w-100 btn-sm rounded-2 fw-bold text-uppercase py-2" style="border: 1px solid #dc3545; letter-spacing: 1px;">❤️ Wishlist</a>
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
         {% endfor %}
@@ -407,12 +378,8 @@
     <nav aria-label="Page navigation" class="mt-5 pt-4 border-top">
         <ul class="pagination justify-content-center gap-2">
             {% if products.has_previous %}
-                <li class="page-item">
-                    <a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page=1{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">&laquo; First</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.previous_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">Prev</a>
-                </li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page=1{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">&laquo; First</a></li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.previous_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">Prev</a></li>
             {% endif %}
 
             <li class="page-item active">
@@ -420,9 +387,7 @@
             </li>
 
             {% if products.has_next %}
-                <li class="page-item">
-                    <a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.next_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">Next</a>
-                </li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.next_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">Next</a></li>
             {% endif %}
         </ul>
     </nav>
