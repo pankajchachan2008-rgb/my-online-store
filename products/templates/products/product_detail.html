@@ -9,6 +9,60 @@
 {% block og_image %}{% if product.image %}{{ product.image.url }}{% endif %}{% endblock %}
 
 {% block content %}
+<style>
+    /* 🌟 PREMIUM STICKY BOTTOM CART FOR MOBILE */
+    .sticky-bottom-cart {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #FFFFFF;
+        padding: 12px 20px;
+        border-top: 1px solid #E2E8F0;
+        z-index: 1050;
+        box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.1);
+        transform: translateY(100%);
+        animation: slideUp 0.5s forwards ease-out;
+    }
+    
+    @keyframes slideUp {
+        to { transform: translateY(0); }
+    }
+
+    .btn-sticky-cart {
+        background-color: #0F172A; /* Deep Blue */
+        color: #FFFFFF;
+        font-family: 'Jost', sans-serif;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 30px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-sticky-cart:hover {
+        background-color: #D4AF37; /* Premium Gold */
+        color: #0F172A;
+    }
+
+    .sticky-price {
+        font-family: 'Jost', sans-serif;
+        color: #0F172A;
+        font-size: 1.4rem;
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    /* Mobile view mein page ke end mein thodi jagah dena taaki footer chhupe nahi */
+    @media (max-width: 768px) {
+        body {
+            padding-bottom: 80px; 
+        }
+    }
+</style>
+
 <div class="container py-5" style="max-width: 1200px;">
     <div class="row g-5">
         <!-- 📸 Product Image Gallery -->
@@ -49,7 +103,8 @@
                 <hr class="my-4 border-secondary opacity-25">
 
                 <!-- 🛒 Add to Cart Form -->
-                <form action="{% url 'add_to_cart' product.id %}" method="POST" class="bg-white p-4 rounded-4 shadow-sm border" style="border-color: #E2E8F0 !important;">
+                <!-- 🌟 NAYA FIX: id="addToCartForm" add kiya -->
+                <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST" class="bg-white p-4 rounded-4 shadow-sm border" style="border-color: #E2E8F0 !important;">
                     {% csrf_token %}
                     
                     {% if product.variants.exists %}
@@ -184,13 +239,36 @@
     </div>
 </div>
 
+<!-- 📱 STICKY ADD TO CART (Only visible on Mobile screens) -->
+<div class="sticky-bottom-cart d-block d-md-none">
+    <div class="d-flex justify-content-between align-items-center">
+        <!-- Price Section -->
+        <div>
+            <span class="text-muted d-block" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">Total Price</span>
+            <span class="sticky-price" id="stickyPrice">₹{{ product.price }}</span>
+        </div>
+        
+        <!-- Smart Submit Button -->
+        <button type="submit" form="addToCartForm" class="btn-sticky-cart shadow-sm">
+            Add To Bag
+        </button>
+    </div>
+</div>
+
 <!-- Dynamic Price Update Script -->
 <script>
     function updatePrice() {
         var select = document.getElementById("variantSelect");
         var price = select.options[select.selectedIndex].getAttribute("data-price");
         if(price) {
+            // Main page ka price update
             document.getElementById("displayPrice").innerText = "₹" + price;
+            
+            // Mobile sticky bar ka price bhi update karega
+            var stickyPriceEl = document.getElementById("stickyPrice");
+            if(stickyPriceEl) {
+                stickyPriceEl.innerText = "₹" + price;
+            }
         }
     }
 </script>
