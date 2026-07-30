@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.utils.html import format_html
+from django.urls import path
+from django.template.response import TemplateResponse
+from django.db.models import Sum
 
 from .models import (
     Category, Brand, Product, Coupon, Order, OrderItem,
@@ -12,17 +15,59 @@ from .models import (
 )
 
 # -----------------------------
+# 🌟 CUSTOM ERP DASHBOARD INTEGRATION
+# -----------------------------
+# Premium Admin Headers
+admin.site.site_header = "CGSMART ERP Dashboard"
+admin.site.site_title = "CGSMART Admin"
+admin.site.index_title = "Welcome to CGSMART Admin"
+
+# Default get_urls ko save karke usme apna naya dashboard URL jodna
+original_get_urls = admin.site.get_urls
+
+def custom_get_urls():
+    urls = original_get_urls()
+    custom_urls = [
+        path('dashboard/', admin.site.admin_view(dashboard_view), name="dashboard"),
+    ]
+    return custom_urls + urls
+
+def dashboard_view(request):
+    # Sales summary
+    sales_total = Order.objects.aggregate(total=Sum('total_amount'))['total'] or 0
+    order_count = Order.objects.count()
+
+    # Top products (OrderItem se sum nikalna kyunki product_name CharField hai)
+    top_products = OrderItem.objects.values('product_name').annotate(sold=Sum('quantity')).order_by('-sold')[:5]
+
+    # Coupon usage
+    coupon_usage = Coupon.objects.filter(is_active=True).count()
+
+    context = dict(
+        admin.site.each_context(request),
+        sales_total=sales_total,
+        order_count=order_count,
+        top_products=top_products,
+        coupon_usage=coupon_usage,
+    )
+    return TemplateResponse(request, "admin/dashboard.html", context)
+
+# Naye URLs ko default admin par set karna
+admin.site.get_urls = custom_get_urls
+
+
+# -----------------------------
 # Basic Models Registration
 # -----------------------------
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name',) # ⚠️ 'created_at' hata diya kyunki models.py mein nahi tha
+    list_display = ('name',) 
     search_fields = ('name',)
     ordering = ('name',)
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
-    list_display = ('name',) # ⚠️ 'created_at' hata diya kyunki models.py mein nahi tha
+    list_display = ('name',) 
     search_fields = ('name',)
     ordering = ('name',)
 

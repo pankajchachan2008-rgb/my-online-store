@@ -1,0 +1,88 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<style>
+    /* Premium ERP Dashboard Styling */
+    .erp-card-container { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 40px; }
+    .erp-card { 
+        flex: 1; 
+        min-width: 200px;
+        background: #0F172A; /* Deep Blue */
+        color: white; 
+        padding: 25px 20px; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    .erp-card:hover { transform: translateY(-5px); }
+    .erp-card h3 { 
+        color: #94A3B8; 
+        margin-top: 0; 
+        font-size: 0.9rem; 
+        text-transform: uppercase; 
+        letter-spacing: 2px;
+    }
+    .erp-card p { 
+        font-size: 2.2rem; 
+        font-weight: 700; 
+        margin: 10px 0 0 0; 
+        color: #D4AF37; /* Premium Gold */
+    }
+    .product-list { list-style: none; padding: 0; }
+    .product-list li { 
+        background: #FFFFFF; 
+        margin-bottom: 12px; 
+        padding: 18px 20px; 
+        border-radius: 8px; 
+        border: 1px solid #E2E8F0; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
+        font-weight: 600;
+        color: #1E293B;
+    }
+    .sold-badge { 
+        background: #D4AF37; 
+        color: #0F172A; 
+        padding: 6px 15px; 
+        border-radius: 20px; 
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+    .dashboard-header {
+        color: #0F172A; 
+        font-weight: 800; 
+        margin-bottom: 25px;
+        letter-spacing: 1px;
+    }
+</style>
+
+<h1 class="dashboard-header">📊 Executive Sales Dashboard</h1>
+
+<div class="erp-card-container">
+  <div class="erp-card">
+    <h3>Total Sales</h3>
+    <p>₹{{ sales_total }}</p>
+  </div>
+  <div class="erp-card">
+    <h3>Total Orders</h3>
+    <p>{{ order_count }}</p>
+  </div>
+  <div class="erp-card">
+    <h3>Active Coupons</h3>
+    <p>{{ coupon_usage }}</p>
+  </div>
+</div>
+
+<h2 style="color: #0F172A; font-weight: 700; margin-bottom: 20px;">🔥 Top Selling Products</h2>
+<ul class="product-list">
+  {% for product in top_products %}
+    <li>
+        <span>{{ product.product_name }}</span>
+        <span class="sold-badge">Sold: {{ product.sold }} Units</span>
+    </li>
+  {% empty %}
+    <li><span style="color: #64748B;">No sales data available yet.</span></li>
+  {% endfor %}
+</ul>
+{% endblock %}
