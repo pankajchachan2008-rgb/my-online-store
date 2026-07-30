@@ -8,6 +8,7 @@ from django.utils.html import format_html
 from django.urls import path
 from django.template.response import TemplateResponse
 from django.db.models import Sum
+from django.db.models.functions import TruncMonth # 🌟 NAYA: Chart ke liye import add kiya
 
 from .models import (
     Category, Brand, Product, Coupon, Order, OrderItem,
@@ -43,12 +44,21 @@ def dashboard_view(request):
     # Coupon usage
     coupon_usage = Coupon.objects.filter(is_active=True).count()
 
+    # 📈 Monthly sales trend (Chart Data)
+    monthly_sales = (
+        Order.objects.annotate(month=TruncMonth('created_at'))
+        .values('month')
+        .annotate(total=Sum('total_amount'))
+        .order_by('month')
+    )
+
     context = dict(
         admin.site.each_context(request),
         sales_total=sales_total,
         order_count=order_count,
         top_products=top_products,
         coupon_usage=coupon_usage,
+        monthly_sales=list(monthly_sales), # 🌟 NAYA: Chart ka data template mein bheja
     )
     return TemplateResponse(request, "admin/dashboard.html", context)
 

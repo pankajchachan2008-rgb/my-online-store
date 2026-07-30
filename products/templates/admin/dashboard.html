@@ -55,6 +55,14 @@
         margin-bottom: 25px;
         letter-spacing: 1px;
     }
+    .chart-container {
+        background: #FFFFFF;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 40px;
+    }
 </style>
 
 <h1 class="dashboard-header">📊 Executive Sales Dashboard</h1>
@@ -62,7 +70,7 @@
 <div class="erp-card-container">
   <div class="erp-card">
     <h3>Total Sales</h3>
-    <p>₹{{ sales_total }}</p>
+    <p>₹ {{ sales_total }}</p>
   </div>
   <div class="erp-card">
     <h3>Total Orders</h3>
@@ -72,6 +80,11 @@
     <h3>Active Coupons</h3>
     <p>{{ coupon_usage }}</p>
   </div>
+</div>
+
+<h2 style="color: #0F172A; font-weight: 700; margin-bottom: 20px;">📈 Monthly Sales Trend</h2>
+<div class="chart-container">
+    <canvas id="salesChart" width="400" height="120"></canvas>
 </div>
 
 <h2 style="color: #0F172A; font-weight: 700; margin-bottom: 20px;">🔥 Top Selling Products</h2>
@@ -85,4 +98,48 @@
     <li><span style="color: #64748B;">No sales data available yet.</span></li>
   {% endfor %}
 </ul>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  const salesData = {
+    labels: [{% for item in monthly_sales %}"{{ item.month|date:'M Y' }}",{% endfor %}],
+    datasets: [{
+      label: 'Revenue (₹)',
+      data: [{% for item in monthly_sales %}{{ item.total }},{% endfor %}],
+      backgroundColor: 'rgba(212, 175, 55, 0.2)', // Premium Gold transparent background
+      borderColor: '#D4AF37', // Premium Gold solid border
+      borderWidth: 3,
+      fill: true,
+      tension: 0.4, // Makes the line smoothly curved
+      pointBackgroundColor: '#0F172A', // Deep Blue points
+      pointBorderColor: '#D4AF37',
+      pointRadius: 5
+    }]
+  };
+  new Chart(ctx, {
+    type: 'line',
+    data: salesData,
+    options: { 
+        responsive: true, 
+        plugins: { 
+            legend: { 
+                position: 'top',
+                labels: { font: { size: 14, weight: 'bold' }, color: '#0F172A' }
+            } 
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: '#E2E8F0' },
+                ticks: { color: '#64748B' }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { color: '#64748B' }
+            }
+        }
+    }
+  });
+</script>
 {% endblock %}
