@@ -787,12 +787,15 @@
 
             // When the user stops speaking and a result is returned
             recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript; // Convert voice to text
-                searchInput.value = transcript; // Put text in the search bar
+                let transcript = event.results[0][0].transcript;
+                // 🌟 FIX: Full stop (.), Question mark (?), aur Extra space saaf karein
+                transcript = transcript.replace(/[.?!]/g, '').trim();
+
+                searchInput.value = transcript;
                 voiceSearchBtn.innerHTML = "🎤";
-                
-                // Automatically submit the form
-                filterForm.submit(); 
+    
+                // Form submit
+                filterForm.submit();
             };
 
             // Error handling (e.g., if mic permission is denied)

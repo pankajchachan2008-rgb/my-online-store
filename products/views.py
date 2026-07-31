@@ -63,7 +63,7 @@ def product_list(request):
     banners = Banner.objects.filter(is_active=True).order_by('-id')
 
     # Basic Search & Sort
-    search_query = request.GET.get('search', '').strip()
+    search_query = request.GET.get('search', '').strip(' .') # Extra dots bhi hata dega
     sort = request.GET.get('sort')
     
     # Core Filters
