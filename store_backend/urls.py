@@ -94,6 +94,10 @@ urlpatterns = [
     path('api/orders/update/<int:order_id>/', update_order_status_api, name='api_update_order'),
     path('api/products/sync/', sync_products_from_erp_api, name='api_sync_products'),
 
+    path('cart-ajax/summary/', views.cart_summary_ajax, name='cart_summary_ajax'),
+    path('cart-ajax/add/<int:product_id>/', views.add_to_cart_ajax, name='add_to_cart_ajax'),
+    path('cart-ajax/remove/<int:product_id>/', views.remove_from_cart_ajax, name='remove_from_cart_ajax'),
+
     # 📄 Invoices
     path('invoice/<int:order_id>/download/', download_invoice, name='download_invoice'),
     

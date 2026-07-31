@@ -1,4 +1,5 @@
 import csv
+import json # NAYA IMPORT AJAX KE LIYE
 import random
 import qrcode
 import barcode
@@ -13,6 +14,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt # NAYA IMPORT AJAX KE LIYE
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -158,7 +160,7 @@ def product_list(request):
     }
     return render(request, 'products/product_list.html', context)
 
-# 🛒 2. Add to Cart
+# 🛒 2. Add to Cart (Standard Fallback)
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     variant_id = request.POST.get('variant_id')
@@ -835,3 +837,65 @@ def verify_otp(request):
             messages.error(request, 'Galat OTP! Kripya sahi OTP daalein.')
 
     return render(request, 'products/verify_otp.html', {'email': user.email})
+
+# -------------------------------------------------------------
+# 🌟 NAYA: AJAX CART FUNCTIONS (SESSION SAFE)
+# -------------------------------------------------------------
+def cart_summary_ajax(request):
+    cart = request.session.get('cart', {})
+    items = 0
+    total = 0.0
+    for pid, item in cart.items():
+        if isinstance(item, dict) and 'price' in item and 'quantity' in item:
+            items += item['quantity']
+            total += float(item['price']) * int(item['quantity'])
+    return JsonResponse({'items': items, 'total': total})
+
+@csrf_exempt
+def add_to_cart_ajax(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        cart = request.session.get('cart', {})
+        
+        try:
+            data = json.loads(request.body)
+            qty = int(data.get('quantity', 1))
+            variant_id = data.get('variant_id') 
+        except:
+            qty = 1
+            variant_id = None
+            
+        if variant_id:
+            cart_key = f"{product_id}_{variant_id}"
+            variant = get_object_or_404(ProductVariant, id=variant_id)
+            item_name = f"{product.name} ({variant.size_name})"
+            item_price = float(variant.price)
+        else:
+            cart_key = str(product_id)
+            item_name = product.name
+            item_price = float(product.price)
+        
+        if cart_key in cart:
+            cart[cart_key]['quantity'] += qty
+        else:
+            cart[cart_key] = {
+                'name': item_name, 
+                'price': item_price, 
+                'quantity': qty
+            }
+            
+        request.session['cart'] = cart
+        request.session.modified = True
+        
+        return cart_summary_ajax(request)
+
+@csrf_exempt
+def remove_from_cart_ajax(request, product_id):
+    if request.method == 'POST':
+        cart = request.session.get('cart', {})
+        cart_key = str(product_id)
+        if cart_key in cart:
+            cart.pop(cart_key, None)
+            request.session['cart'] = cart
+            request.session.modified = True
+        return cart_summary_ajax(request)

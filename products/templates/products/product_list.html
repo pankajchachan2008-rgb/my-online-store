@@ -238,23 +238,82 @@
     }
     .btn-clear-filter:hover { background: #E2E8F0; color: #0F172A; }
 
+    /* 🌟 Filter Collapse Animation */
+    .filter-content-wrapper {
+        max-height: 1200px;
+        overflow: hidden;
+        transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
+        opacity: 1;
+    }
+    .filter-content-wrapper.collapsed {
+        max-height: 0;
+        opacity: 0;
+        pointer-events: none;
+        margin-top: 0;
+    }
+    .toggle-filter-btn {
+        background: #F1F5F9;
+        color: #0F172A;
+        border: 1px solid #CBD5E1;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .toggle-filter-btn:hover {
+        background: #E2E8F0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    /* 🌟 STICKY CART BAR (AJAX) */
+    .sticky-cart {
+        position: fixed;
+        bottom: 60px;
+        left: 10px;
+        right: 10px;
+        background: #003366;
+        color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        font-family: 'Poppins', sans-serif;
+        z-index: 1000;
+    }
+    .sticky-cart .cart-icon { position: relative; font-size: 22px; }
+    .sticky-cart .cart-badge {
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        background: #ffcc00;
+        color: #003366;
+        font-weight: 700;
+        border-radius: 50%;
+        padding: 4px 6px;
+        font-size: 12px;
+    }
+    .sticky-cart .cart-info { flex: 1; text-align: center; font-size: 14px; font-weight: 500; }
+    .sticky-cart .view-cart-btn {
+        background: #ffcc00; color: #003366; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; transition: 0.3s ease;
+    }
+    .sticky-cart .view-cart-btn:hover { background: #ffd633; }
+
     /* 📱 MOBILE VIEW FIXES */
     @media (max-width: 768px) {
-        .lifestyle-carousel .carousel-item {
-            height: 40vh; 
-            min-height: 280px; 
-        }
-        .carousel-caption-custom h2 { 
-            font-size: 2rem; 
-            letter-spacing: 2px; 
-            margin-bottom: 15px; 
-        }
-        .carousel-caption-custom .btn {
-            padding: 10px 30px !important; 
-            font-size: 0.9rem;
-        }
+        .lifestyle-carousel .carousel-item { height: 40vh; min-height: 280px; }
+        .carousel-caption-custom h2 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 15px; }
+        .carousel-caption-custom .btn { padding: 10px 30px !important; font-size: 0.9rem; }
         .img-box-elegant { height: 260px; }
         .section-heading { font-size: 1.6rem; margin-bottom: 30px; }
+        .sticky-cart { bottom: 70px; padding: 10px 14px; }
+        .sticky-cart .cart-info { font-size: 13px; }
     }
 </style>
 
@@ -377,126 +436,136 @@
     </div>
     {% endif %}
 
-    <!-- 🌟 4. ADVANCED FILTER & SEARCH BAR -->
+    <!-- 🌟 4. ADVANCED SMART FILTER BAR -->
     <div class="premium-filter-bar">
-        <h4 class="fw-bold m-0 text-uppercase mb-4" style="font-family: 'Jost', sans-serif; letter-spacing: 2px; color: #0F172A;">
-            🔍 Search & Filter Collection
-        </h4>
-        <form method="GET" action="#full-collection">
-            <div class="filter-grid">
-                
-                <!-- Search -->
-                <div style="grid-column: 1 / -1;">
-                    <input type="text" name="search" class="filter-input" placeholder="Search premium essentials..." value="{{ search_query }}">
-                </div>
-                
-                <!-- Category -->
-                <div>
-                    <label class="filter-label">Category</label>
-                    <select name="category" class="filter-select">
-                        <option value="">All Categories</option>
-                        {% for cat in categories %}
-                            <option value="{{ cat.id }}" {% if active_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <!-- Brand -->
-                <div>
-                    <label class="filter-label">Brand</label>
-                    <select name="brand" class="filter-select">
-                        <option value="">All Brands</option>
-                        {% for brand in brands %}
-                            <option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+        <!-- Header with Smart Toggle Button -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold m-0 text-uppercase" style="font-family: 'Jost', sans-serif; letter-spacing: 2px; color: #0F172A; font-size: 1.2rem;">
+                🔍 Search & Filter
+            </h4>
+            <button type="button" id="toggleFilterBtn" class="toggle-filter-btn shadow-sm">
+                <span id="toggleFilterText">Hide Filters</span> <span id="toggleFilterIcon">▲</span>
+            </button>
+        </div>
 
-                <!-- Sort -->
-                <div>
-                    <label class="filter-label">Sort By</label>
-                    <select name="sort" class="filter-select">
-                        <option value="">Latest First</option>
-                        <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
-                        <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
-                    </select>
-                </div>
+        <!-- Collapsible Content Area -->
+        <div id="filterContent" class="filter-content-wrapper">
+            <form method="GET" action="#full-collection">
+                <div class="filter-grid">
+                    
+                    <!-- Search -->
+                    <div style="grid-column: 1 / -1;">
+                        <input type="text" name="search" class="filter-input" placeholder="Search premium essentials..." value="{{ search_query }}">
+                    </div>
+                    
+                    <!-- Category -->
+                    <div>
+                        <label class="filter-label">Category</label>
+                        <select name="category" class="filter-select">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if active_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Brand -->
+                    <div>
+                        <label class="filter-label">Brand</label>
+                        <select name="brand" class="filter-select">
+                            <option value="">All Brands</option>
+                            {% for brand in brands %}
+                                <option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-                <!-- Discount -->
-                <div>
-                    <label class="filter-label">Discount</label>
-                    <select name="discount" class="filter-select">
-                        <option value="">Any Discount</option>
-                        <option value="10" {% if active_discount == '10' %}selected{% endif %}>10% or more</option>
-                        <option value="20" {% if active_discount == '20' %}selected{% endif %}>20% or more</option>
-                        <option value="30" {% if active_discount == '30' %}selected{% endif %}>30% or more</option>
-                        <option value="50" {% if active_discount == '50' %}selected{% endif %}>50% or more</option>
-                    </select>
-                </div>
+                    <!-- Sort -->
+                    <div>
+                        <label class="filter-label">Sort By</label>
+                        <select name="sort" class="filter-select">
+                            <option value="">Latest First</option>
+                            <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
+                        </select>
+                    </div>
 
-                <!-- Rating -->
-                <div>
-                    <label class="filter-label">Rating</label>
-                    <select name="rating" class="filter-select">
-                        <option value="">Any Rating</option>
-                        <option value="4" {% if active_rating == '4' %}selected{% endif %}>4★ & Above</option>
-                        <option value="3" {% if active_rating == '3' %}selected{% endif %}>3★ & Above</option>
-                    </select>
-                </div>
+                    <!-- Discount -->
+                    <div>
+                        <label class="filter-label">Discount</label>
+                        <select name="discount" class="filter-select">
+                            <option value="">Any Discount</option>
+                            <option value="10" {% if active_discount == '10' %}selected{% endif %}>10% or more</option>
+                            <option value="20" {% if active_discount == '20' %}selected{% endif %}>20% or more</option>
+                            <option value="30" {% if active_discount == '30' %}selected{% endif %}>30% or more</option>
+                            <option value="50" {% if active_discount == '50' %}selected{% endif %}>50% or more</option>
+                        </select>
+                    </div>
 
-                <!-- Availability -->
-                <div>
-                    <label class="filter-label">Availability</label>
-                    <select name="availability" class="filter-select">
-                        <option value="">All Items</option>
-                        <option value="in_stock" {% if active_availability == 'in_stock' %}selected{% endif %}>In Stock Only</option>
-                    </select>
-                </div>
+                    <!-- Rating -->
+                    <div>
+                        <label class="filter-label">Rating</label>
+                        <select name="rating" class="filter-select">
+                            <option value="">Any Rating</option>
+                            <option value="4" {% if active_rating == '4' %}selected{% endif %}>4★ & Above</option>
+                            <option value="3" {% if active_rating == '3' %}selected{% endif %}>3★ & Above</option>
+                        </select>
+                    </div>
 
-                <!-- Size -->
-                <div>
-                    <label class="filter-label">Size</label>
-                    <select name="size" class="filter-select">
-                        <option value="">Any Size</option>
-                        <option value="S" {% if active_size == 'S' %}selected{% endif %}>Small (S)</option>
-                        <option value="M" {% if active_size == 'M' %}selected{% endif %}>Medium (M)</option>
-                        <option value="L" {% if active_size == 'L' %}selected{% endif %}>Large (L)</option>
-                        <option value="XL" {% if active_size == 'XL' %}selected{% endif %}>Extra Large (XL)</option>
-                    </select>
-                </div>
+                    <!-- Availability -->
+                    <div>
+                        <label class="filter-label">Availability</label>
+                        <select name="availability" class="filter-select">
+                            <option value="">All Items</option>
+                            <option value="in_stock" {% if active_availability == 'in_stock' %}selected{% endif %}>In Stock Only</option>
+                        </select>
+                    </div>
 
-                <!-- Color -->
-                <div>
-                    <label class="filter-label">Color</label>
-                    <select name="color" class="filter-select">
-                        <option value="">Any Color</option>
-                        <option value="Black" {% if active_color == 'Black' %}selected{% endif %}>Black</option>
-                        <option value="White" {% if active_color == 'White' %}selected{% endif %}>White</option>
-                        <option value="Blue" {% if active_color == 'Blue' %}selected{% endif %}>Blue</option>
-                        <option value="Red" {% if active_color == 'Red' %}selected{% endif %}>Red</option>
-                    </select>
-                </div>
+                    <!-- Size -->
+                    <div>
+                        <label class="filter-label">Size</label>
+                        <select name="size" class="filter-select">
+                            <option value="">Any Size</option>
+                            <option value="S" {% if active_size == 'S' %}selected{% endif %}>Small (S)</option>
+                            <option value="M" {% if active_size == 'M' %}selected{% endif %}>Medium (M)</option>
+                            <option value="L" {% if active_size == 'L' %}selected{% endif %}>Large (L)</option>
+                            <option value="XL" {% if active_size == 'XL' %}selected{% endif %}>Extra Large (XL)</option>
+                        </select>
+                    </div>
 
-                <!-- Min Price -->
-                <div>
-                    <label class="filter-label">Min Price (₹)</label>
-                    <input type="number" name="min_price" class="filter-input" placeholder="e.g. 100" value="{{ min_price|default:'' }}">
-                </div>
+                    <!-- Color -->
+                    <div>
+                        <label class="filter-label">Color</label>
+                        <select name="color" class="filter-select">
+                            <option value="">Any Color</option>
+                            <option value="Black" {% if active_color == 'Black' %}selected{% endif %}>Black</option>
+                            <option value="White" {% if active_color == 'White' %}selected{% endif %}>White</option>
+                            <option value="Blue" {% if active_color == 'Blue' %}selected{% endif %}>Blue</option>
+                            <option value="Red" {% if active_color == 'Red' %}selected{% endif %}>Red</option>
+                        </select>
+                    </div>
 
-                <!-- Max Price -->
-                <div>
-                    <label class="filter-label">Max Price (₹)</label>
-                    <input type="number" name="max_price" class="filter-input" placeholder="e.g. 5000" value="{{ max_price|default:'' }}">
-                </div>
+                    <!-- Min Price -->
+                    <div>
+                        <label class="filter-label">Min Price (₹)</label>
+                        <input type="number" name="min_price" class="filter-input" placeholder="e.g. 100" value="{{ min_price|default:'' }}">
+                    </div>
 
-                <!-- Buttons -->
-                <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 10px;">
-                    <button type="submit" class="btn-apply-filter w-100">Apply Filters</button>
-                    <a href="?" class="btn-clear-filter w-100">Clear All</a>
-                </div>
+                    <!-- Max Price -->
+                    <div>
+                        <label class="filter-label">Max Price (₹)</label>
+                        <input type="number" name="max_price" class="filter-input" placeholder="e.g. 5000" value="{{ max_price|default:'' }}">
+                    </div>
 
-            </div>
-        </form>
+                    <!-- Buttons -->
+                    <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 15px;">
+                        <button type="submit" class="btn-apply-filter w-100">Apply Filters</button>
+                        <a href="?" class="btn-clear-filter w-100">Clear All</a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- 🌟 MAIN PRODUCT GRID -->
@@ -531,6 +600,7 @@
                 </a>
                 
                 <div class="px-2 pb-2 d-flex flex-column flex-grow-1 mt-auto">
+                    <!-- Note: form action preserved for fallback, but AJAX overrides it -->
                     <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto">
                         {% csrf_token %}
                         {% if product.variants.exists %}
@@ -542,7 +612,7 @@
                             </select>
                         {% endif %}
                         <div class="d-flex flex-column gap-2 mt-2">
-                            <button type="submit" class="btn-elegant-cart w-100 shadow-sm">Add To Bag</button>
+                            <button type="submit" class="btn-elegant-cart add-to-cart-ajax w-100 shadow-sm">Add To Bag</button>
                             <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger w-100 btn-sm rounded-2 fw-bold text-uppercase py-2" style="border: 1px solid #dc3545; letter-spacing: 1px;">❤️ Wishlist</a>
                         </div>
                     </form>
@@ -574,6 +644,120 @@
             {% endif %}
         </ul>
     </nav>
-
 </div>
+
+<!-- 🌟 STICKY CART BAR HTML -->
+<div id="stickyCart" class="sticky-cart" style="display:none;">
+    <div class="cart-icon">
+        🛒 <span id="cartBadge" class="cart-badge">0</span>
+    </div>
+    <div class="cart-info">
+        <span id="cartSummary">0 Items | ₹0.00</span>
+    </div>
+    <button class="view-cart-btn" onclick="window.location.href='{% url 'cart_detail' %}'">
+        VIEW CART
+    </button>
+</div>
+
+<!-- 🌟 COMBINED SCRIPTS (AJAX CART + SMART FILTER) -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // --- 1. SMART FILTER AUTO-COLLAPSE LOGIC ---
+        const filterContent = document.getElementById("filterContent");
+        const toggleFilterBtn = document.getElementById("toggleFilterBtn");
+        const toggleFilterText = document.getElementById("toggleFilterText");
+        const toggleFilterIcon = document.getElementById("toggleFilterIcon");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let hasActiveFilters = false;
+        for (const [key, value] of urlParams.entries()) {
+            if (value && key !== 'page') {
+                hasActiveFilters = true;
+                break;
+            }
+        }
+
+        if (hasActiveFilters) {
+            filterContent.classList.add("collapsed");
+            toggleFilterText.innerText = "Show Filters";
+            toggleFilterIcon.innerText = "▼";
+        }
+
+        toggleFilterBtn.addEventListener("click", function() {
+            filterContent.classList.toggle("collapsed");
+            if (filterContent.classList.contains("collapsed")) {
+                toggleFilterText.innerText = "Show Filters";
+                toggleFilterIcon.innerText = "▼";
+            } else {
+                toggleFilterText.innerText = "Hide Filters";
+                toggleFilterIcon.innerText = "▲";
+            }
+        });
+
+        // --- 2. AJAX CART LOGIC ---
+        function updateCartBar(items, total) {
+            const cartBar = document.getElementById("stickyCart");
+            const cartBadge = document.getElementById("cartBadge");
+            const cartSummary = document.getElementById("cartSummary");
+
+            if (items > 0) {
+                cartBar.style.display = "flex";
+                cartBadge.textContent = items;
+                cartSummary.textContent = `${items} Items | ₹${parseFloat(total).toFixed(2)}`;
+            } else {
+                cartBar.style.display = "none";
+            }
+        }
+
+        function refreshCartBar() {
+            fetch('/cart-ajax/summary/')
+                .then(response => response.json())
+                .then(data => { updateCartBar(data.items, data.total); })
+                .catch(error => console.error('Error:', error));
+        }
+        
+        // Load cart state instantly
+        refreshCartBar();
+
+        document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                
+                const form = this.closest('form');
+                const actionUrl = form.getAttribute('action'); 
+                const productId = actionUrl.split('/').filter(Boolean).pop(); 
+                
+                let variantId = null;
+                const variantSelect = form.querySelector('select[name="variant_id"]');
+                if (variantSelect) {
+                    if (!variantSelect.value) {
+                        alert("Please select a Size/Variant first.");
+                        return;
+                    }
+                    variantId = variantSelect.value;
+                }
+
+                fetch(`/cart-ajax/add/${productId}/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quantity: 1, variant_id: variantId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateCartBar(data.items, data.total);
+                    const originalText = this.innerHTML;
+                    this.innerHTML = "ADDED! ✔️";
+                    this.style.background = "#059669"; 
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.style.background = ""; 
+                    }, 1500);
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+
+    });
+</script>
 {% endblock %}
