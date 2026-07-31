@@ -404,7 +404,7 @@
             <div class="col">
                 <div class="h-100 d-flex flex-column">
                     <a href="{% url 'product_detail' product.id %}" class="elegant-card text-center mb-2">
-                        <div class="img-box-elegant">
+                        <div class="img-box-elegant position-relative">
                             {% if product.discount_percentage > 0 %}
                                 <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 shadow" style="font-size: 0.75rem; z-index: 2;">
                                     {{ product.discount_percentage }}% OFF
@@ -562,7 +562,7 @@
 
                     <!-- Buttons -->
                     <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 15px;">
-                        <button type="submit" class="btn-apply-filter w-100">Apply Filters</button>
+                        <button type="button" class="btn-apply-filter w-100" onclick="this.closest('form').submit();">Apply Filters</button>
                         <a href="?" class="btn-clear-filter w-100">Clear All</a>
                     </div>
 
@@ -574,10 +574,35 @@
     <!-- 🌟 MAIN PRODUCT GRID -->
     <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-xl-5 mb-5">
         {% for product in products %}
+        
+        <!-- 🎯 PREMIUM FEATURE 1: VERTICAL BANNER (Grid ke beech mein, 4th item ki jagah) -->
+        {% if forloop.counter == 4 and banners|length > 1 %}
+        <div class="col d-none d-md-block">
+            <div class="h-100 rounded-4 overflow-hidden shadow-sm position-relative border-0" style="background: #0F172A;">
+                {% if banners.1.image %}
+                    <img src="{{ banners.1.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8;" alt="Promo">
+                {% endif %}
+                <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3">
+                    <h4 class="text-white fw-bold text-uppercase" style="letter-spacing: 2px;">{{ banners.1.title|default:"Special Offer" }}</h4>
+                    <a href="#full-collection" class="btn btn-outline-light btn-sm mt-2 rounded-pill px-4">Explore</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Original Product Card -->
         <div class="col">
             <div class="h-100 d-flex flex-column">
                 <a href="{% url 'product_detail' product.id %}" class="elegant-card text-center mb-2">
-                    <div class="img-box-elegant">
+                    <div class="img-box-elegant position-relative">
+                        
+                        <!-- 🎯 PREMIUM FEATURE 2: FOMO / SCARCITY TAG (Stock kam hone par) -->
+                        {% if product.stock and product.stock < 5 %}
+                            <span class="badge bg-warning text-dark position-absolute bottom-0 start-50 translate-middle-x mb-2 px-3 py-1 shadow-sm rounded-pill" style="font-size: 0.75rem; z-index: 2; width: max-content;">
+                                ⏳ Only {{ product.stock }} Left!
+                            </span>
+                        {% endif %}
+
                         {% if product.discount_percentage > 0 %}
                             <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 shadow" style="font-size: 0.75rem; z-index: 2;">
                                 {{ product.discount_percentage }}% OFF
@@ -621,6 +646,22 @@
                 </div>
             </div>
         </div>
+
+        <!-- 🎯 PREMIUM FEATURE 3: FULL WIDTH HORIZONTAL BANNER (8th item ke baad) -->
+        {% if forloop.counter == 8 and banners|length > 2 %}
+        <div class="col-12 mt-4 mb-4">
+            <div class="rounded-4 overflow-hidden shadow-sm position-relative" style="height: 180px; background: #0F172A;">
+                {% if banners.2.image %}
+                    <img src="{{ banners.2.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.7;" alt="Promo">
+                {% endif %}
+                <div class="position-absolute top-50 start-50 translate-middle text-center w-100">
+                    <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 3px;">{{ banners.2.title|default:"Mega Savings" }}</h3>
+                    <p class="text-white-50 mb-0">Use Code <strong>CGSMART10</strong> for extra discount!</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         {% empty %}
         <div class="col-12 text-center py-5">
             <h4 class="text-muted">No products found matching your filters.</h4>
@@ -765,40 +806,42 @@
         const searchInput = document.getElementById("searchInput");
         const filterForm = searchInput.closest('form');
 
-        // Check if the browser supports the Web Speech API
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const recognition = new SpeechRecognition();
             
-            recognition.continuous = false; // Stop listening after one phrase
+            recognition.continuous = false; 
             recognition.interimResults = false;
-            recognition.lang = 'en-IN'; // Set to Indian English
+            recognition.lang = 'en-IN'; 
 
-            // Mic button click event
             voiceSearchBtn.addEventListener("click", function(e) {
                 e.preventDefault();
-                recognition.start(); // Turn on the mic
-                
-                // Visual feedback to the user
+                recognition.start(); 
                 voiceSearchBtn.innerHTML = "🔴"; 
                 searchInput.placeholder = "Listening...";
                 searchInput.style.borderColor = "#059669";
             });
 
-            // When the user stops speaking and a result is returned
             recognition.onresult = function(event) {
                 let transcript = event.results[0][0].transcript;
-                // 🌟 FIX: Full stop (.), Question mark (?), aur Extra space saaf karein
-                transcript = transcript.replace(/[.?!]/g, '').trim();
+                
+                // 🌟 FIX 1: Aggressive Safai (Sirf English letters, numbers aur spaces bachenge)
+                transcript = transcript.replace(/[^a-zA-Z0-9\s]/g, '').trim();
 
                 searchInput.value = transcript;
                 voiceSearchBtn.innerHTML = "🎤";
     
-                // Form submit
-                filterForm.submit();
+                // 🌟 FIX 2: Human-like Submit
+                const submitBtn = filterForm.querySelector('.btn-apply-filter');
+                if (submitBtn) {
+                    setTimeout(() => {
+                        submitBtn.click(); 
+                    }, 200); 
+                } else {
+                    filterForm.submit(); 
+                }
             };
 
-            // Error handling (e.g., if mic permission is denied)
             recognition.onerror = function(event) {
                 console.error("Speech recognition error", event.error);
                 voiceSearchBtn.innerHTML = "🎤";
@@ -809,14 +852,12 @@
                 }
             };
             
-            // When listening ends automatically
             recognition.onend = function() {
                 voiceSearchBtn.innerHTML = "🎤";
                 searchInput.style.borderColor = "";
                 searchInput.placeholder = "Search premium essentials...";
             };
         } else {
-            // Hide the button if the browser doesn't support Voice Search
             voiceSearchBtn.style.display = "none"; 
             console.log("Voice search is not supported in this browser.");
         }
