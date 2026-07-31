@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Verify OTP | CGSMART{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 500px;">
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold" style="color: #0F172A; font-family: 'Jost', sans-serif;">Check Your Email ✉️</h2>
+            <p class="text-muted">Ek 6-digit OTP <strong>{{ email }}</strong> par bheja gaya hai.</p>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-4 text-center">
+                <label class="form-label fw-bold small text-uppercase text-muted" style="letter-spacing: 1px;">Enter OTP</label>
+                <input type="text" name="otp" class="form-control form-control-lg bg-light border-0 text-center fw-bold" placeholder="• • • • • •" required maxlength="6" pattern="\d{6}" style="font-size: 1.5rem; letter-spacing: 8px;">
+            </div>
+            
+            <button type="submit" class="btn btn-lg w-100 fw-bold text-dark shadow-sm" style="background-color: #ffcc00; letter-spacing: 1px;">VERIFY OTP</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -899,3 +899,107 @@ def remove_from_cart_ajax(request, product_id):
             request.session['cart'] = cart
             request.session.modified = True
         return cart_summary_ajax(request)
+
+# -------------------------------------------------------------
+# 🌟 FORGOT PASSWORD / USERNAME (OTP BASED) LOGIC
+# -------------------------------------------------------------
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            # Check if user exists with this email
+            user = User.objects.get(email=email)
+            
+            # Generate 6-digit OTP
+            otp = str(random.randint(100000, 999999))
+            
+            # Remove old OTPs and create a new one
+            OTPVerification.objects.filter(user=user).delete()
+            OTPVerification.objects.create(user=user, otp=otp, is_verified=False)
+            
+            # Send Email (Uses your existing Brevo API)
+            subject = 'CGSmart - Password Reset & Account Details'
+            message = f"""
+            <h3>Hello {user.first_name or 'Customer'},</h3>
+            <p>Aapne apna password reset karne ki request ki hai.</p>
+            <p><b>Aapka Username hai:</b> {user.username} (Agar aap bhool gaye the)</p>
+            <br>
+            <h2 style="color: #003366; letter-spacing: 2px;">OTP: {otp}</h2>
+            <br>
+            <p>Kripya is OTP ko website par daalkar apna naya password set karein. Agar aapne yeh request nahi ki hai, toh is email ko ignore karein.</p>
+            """
+            
+            send_brevo_api_email(subject, message, user.email)
+            
+            # Save email in session for the next step
+            request.session['reset_user_email'] = user.email
+            messages.success(request, 'Password reset OTP aur Username aapke email par bhej diya gaya hai.')
+            return redirect('reset_verify_otp')
+            
+        except User.DoesNotExist:
+            messages.error(request, 'Is email address se koi account nahi mila. Kripya sahi email daalein.')
+            
+    return render(request, 'registration/forgot_password.html')
+
+
+def reset_verify_otp(request):
+    email = request.session.get('reset_user_email')
+    if not email:
+        return redirect('forgot_password')
+        
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        try:
+            user = User.objects.get(email=email)
+            otp_obj = OTPVerification.objects.get(user=user, otp=entered_otp)
+            
+            # Mark OTP as verified
+            otp_obj.is_verified = True
+            otp_obj.save()
+            
+            # Grant permission to set new password
+            request.session['can_reset_password'] = True 
+            messages.success(request, 'OTP verified! Ab aap naya password set kar sakte hain.')
+            return redirect('set_new_password')
+            
+        except (User.DoesNotExist, OTPVerification.DoesNotExist):
+            messages.error(request, 'Galat OTP! Kripya sahi OTP daalein.')
+            
+    return render(request, 'registration/reset_verify_otp.html', {'email': email})
+
+
+def set_new_password(request):
+    # Security check: User shouldn't access this page directly without OTP verification
+    if not request.session.get('can_reset_password'):
+        return redirect('forgot_password')
+        
+    email = request.session.get('reset_user_email')
+    
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        if password != confirm_password:
+            messages.error(request, 'Passwords match nahi kar rahe hain. Dubara try karein.')
+        elif len(password) < 8:
+            messages.error(request, 'Password kam se kam 8 characters ka hona chahiye.')
+        else:
+            try:
+                user = User.objects.get(email=email)
+                user.set_password(password) # Encrypts and saves the new password
+                user.save()
+                
+                # Cleanup session variables for security
+                del request.session['reset_user_email']
+                del request.session['can_reset_password']
+                
+                # Also delete the used OTP from database
+                OTPVerification.objects.filter(user=user).delete()
+                
+                messages.success(request, 'Aapka password successfully change ho gaya hai! Ab aap apne username aur naye password se login kar sakte hain.')
+                return redirect('login')
+                
+            except User.DoesNotExist:
+                messages.error(request, 'Error finding user.')
+    
+    return render(request, 'registration/set_new_password.html')
