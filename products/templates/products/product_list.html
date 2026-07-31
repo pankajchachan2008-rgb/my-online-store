@@ -436,7 +436,7 @@
     </div>
     {% endif %}
 
-    <!-- 🌟 4. ADVANCED SMART FILTER BAR -->
+    <!-- 🌟 4. ADVANCED SMART FILTER BAR WITH VOICE SEARCH -->
     <div class="premium-filter-bar">
         <!-- Header with Smart Toggle Button -->
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -453,9 +453,12 @@
             <form method="GET" action="#full-collection">
                 <div class="filter-grid">
                     
-                    <!-- Search -->
-                    <div style="grid-column: 1 / -1;">
-                        <input type="text" name="search" class="filter-input" placeholder="Search premium essentials..." value="{{ search_query }}">
+                    <!-- Search with Voice Command -->
+                    <div style="grid-column: 1 / -1; position: relative; display: flex; align-items: center;">
+                        <input type="text" id="searchInput" name="search" class="filter-input" placeholder="Search premium essentials..." value="{{ search_query }}" style="padding-right: 45px;">
+                        <button type="button" id="voiceSearchBtn" style="position: absolute; right: 10px; background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.3s;" title="Search by Voice">
+                            🎤
+                        </button>
                     </div>
                     
                     <!-- Category -->
@@ -600,7 +603,6 @@
                 </a>
                 
                 <div class="px-2 pb-2 d-flex flex-column flex-grow-1 mt-auto">
-                    <!-- Note: form action preserved for fallback, but AJAX overrides it -->
                     <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto">
                         {% csrf_token %}
                         {% if product.variants.exists %}
@@ -659,7 +661,7 @@
     </button>
 </div>
 
-<!-- 🌟 COMBINED SCRIPTS (AJAX CART + SMART FILTER) -->
+<!-- 🌟 COMBINED SCRIPTS (AJAX CART + SMART FILTER + VOICE SEARCH) -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
@@ -757,6 +759,64 @@
                 .catch(error => console.error('Error:', error));
             });
         });
+
+        // --- 3. VOICE SEARCH (SPEECH RECOGNITION) LOGIC ---
+        const voiceSearchBtn = document.getElementById("voiceSearchBtn");
+        const searchInput = document.getElementById("searchInput");
+        const filterForm = searchInput.closest('form');
+
+        // Check if the browser supports the Web Speech API
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            
+            recognition.continuous = false; // Stop listening after one phrase
+            recognition.interimResults = false;
+            recognition.lang = 'en-IN'; // Set to Indian English
+
+            // Mic button click event
+            voiceSearchBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                recognition.start(); // Turn on the mic
+                
+                // Visual feedback to the user
+                voiceSearchBtn.innerHTML = "🔴"; 
+                searchInput.placeholder = "Listening...";
+                searchInput.style.borderColor = "#059669";
+            });
+
+            // When the user stops speaking and a result is returned
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript; // Convert voice to text
+                searchInput.value = transcript; // Put text in the search bar
+                voiceSearchBtn.innerHTML = "🎤";
+                
+                // Automatically submit the form
+                filterForm.submit(); 
+            };
+
+            // Error handling (e.g., if mic permission is denied)
+            recognition.onerror = function(event) {
+                console.error("Speech recognition error", event.error);
+                voiceSearchBtn.innerHTML = "🎤";
+                searchInput.placeholder = "Search premium essentials...";
+                searchInput.style.borderColor = "";
+                if (event.error === 'not-allowed') {
+                    alert("Please allow microphone access to use Voice Search.");
+                }
+            };
+            
+            // When listening ends automatically
+            recognition.onend = function() {
+                voiceSearchBtn.innerHTML = "🎤";
+                searchInput.style.borderColor = "";
+                searchInput.placeholder = "Search premium essentials...";
+            };
+        } else {
+            // Hide the button if the browser doesn't support Voice Search
+            voiceSearchBtn.style.display = "none"; 
+            console.log("Voice search is not supported in this browser.");
+        }
 
     });
 </script>
