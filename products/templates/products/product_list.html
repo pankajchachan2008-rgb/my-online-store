@@ -8,18 +8,18 @@
         height: 65vh;
         min-height: 450px;
         background-color: #0F172A;
-        overflow: hidden; /* Added to contain zoomed images */
+        overflow: hidden;
     }
     .lifestyle-carousel img, .lifestyle-carousel video {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: center center; /* 🌟 IMAGE KO CENTER MEIN LOCK KAREGA */
+        object-position: center center;
         opacity: 0.65;
         transition: transform 10s ease;
     }
     .lifestyle-carousel .carousel-item.active img {
-        transform: scale(1.05); /* Premium zoom effect only for images */
+        transform: scale(1.05); 
     }
     .carousel-caption-custom {
         position: absolute;
@@ -172,19 +172,85 @@
         margin-bottom: 50px;
     }
 
-    /* 📱 🌟 MOBILE VIEW PERFECT FIXES 🌟 */
+    /* 🌟 ADVANCED FILTER BAR STYLES */
+    .premium-filter-bar {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin-bottom: 40px;
+    }
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 15px;
+        align-items: end;
+    }
+    .filter-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .filter-select, .filter-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        color: #0F172A;
+        outline: none;
+        transition: 0.3s;
+    }
+    .filter-select:focus, .filter-input:focus { border-color: #0F172A; }
+    
+    .btn-apply-filter {
+        background: #0F172A;
+        color: #FFFFFF;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        height: 42px;
+    }
+    .btn-apply-filter:hover { background: #1E293B; }
+    .btn-clear-filter {
+        background: #F1F5F9;
+        color: #64748B;
+        border: 1px solid #CBD5E1;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: 0.3s;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-clear-filter:hover { background: #E2E8F0; color: #0F172A; }
+
+    /* 📱 MOBILE VIEW FIXES */
     @media (max-width: 768px) {
         .lifestyle-carousel .carousel-item {
-            height: 40vh; /* Banner ko mobile ke liye perfect height dena */
-            min-height: 280px; /* Bada shrink hone se rokena */
+            height: 40vh; 
+            min-height: 280px; 
         }
         .carousel-caption-custom h2 { 
-            font-size: 2rem; /* Mobile par font size adjust kiya */
+            font-size: 2rem; 
             letter-spacing: 2px; 
             margin-bottom: 15px; 
         }
         .carousel-caption-custom .btn {
-            padding: 10px 30px !important; /* Button ko mobile size diya */
+            padding: 10px 30px !important; 
             font-size: 0.9rem;
         }
         .img-box-elegant { height: 260px; }
@@ -195,7 +261,6 @@
 <!-- 🌟 1. DYNAMIC ADMIN CONTROLLED CAROUSEL -->
 {% if banners %}
 <div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel">
-    <!-- Indicators -->
     <div class="carousel-indicators">
         {% for banner in banners %}
             <button type="button" data-bs-target="#lifestyleCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
@@ -205,7 +270,6 @@
     <div class="carousel-inner">
         {% for banner in banners %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="5000">
-            
             {% if banner.animated_file %}
                 <video class="d-block w-100" autoplay loop muted playsinline poster="{% static 'main_banner.png' %}">
                     <source src="{{ banner.animated_file.url }}" type="video/mp4">
@@ -215,7 +279,6 @@
             {% endif %}
 
             <div class="carousel-caption-custom">
-                <!-- 🌟 CHANGE HERE: Title sirf tabhi dikhega jab aap admin panel se daalenge -->
                 {% if banner.title %}
                     <h2>{{ banner.title }}</h2>
                 {% endif %}
@@ -225,7 +288,6 @@
         {% endfor %}
     </div>
 
-    <!-- Arrow Controls -->
     {% if banners|length > 1 %}
     <button class="carousel-control-prev" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="prev" style="width: 5%;">
         <span class="carousel-control-prev-icon" aria-hidden="true" style="width: 3rem; height: 3rem;"></span>
@@ -236,7 +298,6 @@
     {% endif %}
 </div>
 {% else %}
-<!-- FALLBACK: Agar admin se koi banner upload nahi hai, toh yeh default dikhega -->
 <div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel">
     <div class="carousel-inner">
         <div class="carousel-item active">
@@ -253,7 +314,6 @@
 <!-- 🌟 2. SLEEK HORIZONTAL FILTERS -->
 <div class="filter-wrapper shadow-sm">
     <div class="container-fluid" style="max-width: 1400px;">
-        <!-- Category Row -->
         <h6 class="filter-title">Categories</h6>
         <div class="category-scroller mb-3">
             <a href="?" class="cat-pill {% if not active_category %}active{% endif %}">All Categories</a>
@@ -262,7 +322,6 @@
             {% endfor %}
         </div>
 
-        <!-- Brand Row -->
         <h6 class="filter-title mt-2">Top Brands</h6>
         <div class="category-scroller pb-2">
             <a href="?{% if active_category %}category={{ active_category }}{% endif %}" class="cat-pill {% if not active_brand %}active{% endif %}">All Brands</a>
@@ -318,28 +377,129 @@
     </div>
     {% endif %}
 
-    <!-- 🌟 4. FULL CATALOG & SEARCH BAR -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-4">
-        <h4 class="fw-bold m-0 text-uppercase" style="font-family: 'Jost', sans-serif; letter-spacing: 2px; color: #0F172A;">
-            {% if active_category %}Filtered Collection{% else %}The Complete Collection{% endif %}
+    <!-- 🌟 4. ADVANCED FILTER & SEARCH BAR -->
+    <div class="premium-filter-bar">
+        <h4 class="fw-bold m-0 text-uppercase mb-4" style="font-family: 'Jost', sans-serif; letter-spacing: 2px; color: #0F172A;">
+            🔍 Search & Filter Collection
         </h4>
-        
-        <form method="GET" action="" class="d-flex flex-column flex-sm-row gap-3 w-100" style="max-width: 600px;">
-            {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
-            {% if active_brand %}<input type="hidden" name="brand" value="{{ active_brand }}">{% endif %}
-            
-            <input type="text" name="search" class="form-control rounded-pill px-4 py-2 shadow-sm" placeholder="Search premium essentials..." value="{{ search_query }}" style="border: 1px solid #CBD5E1; font-weight: 500;">
-            
-            <select name="sort" class="form-select rounded-pill px-4 py-2 shadow-sm w-auto" onchange="this.form.submit()" style="border: 1px solid #CBD5E1; font-weight: 500; cursor: pointer;">
-                <option value="">Sort By</option>
-                <option value="low_to_high">Price: Low to High</option>
-                <option value="high_to_low">Price: High to Low</option>
-            </select>
-            <button type="submit" class="d-none">Submit</button>
+        <form method="GET" action="#full-collection">
+            <div class="filter-grid">
+                
+                <!-- Search -->
+                <div style="grid-column: 1 / -1;">
+                    <input type="text" name="search" class="filter-input" placeholder="Search premium essentials..." value="{{ search_query }}">
+                </div>
+                
+                <!-- Category -->
+                <div>
+                    <label class="filter-label">Category</label>
+                    <select name="category" class="filter-select">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if active_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Brand -->
+                <div>
+                    <label class="filter-label">Brand</label>
+                    <select name="brand" class="filter-select">
+                        <option value="">All Brands</option>
+                        {% for brand in brands %}
+                            <option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Sort -->
+                <div>
+                    <label class="filter-label">Sort By</label>
+                    <select name="sort" class="filter-select">
+                        <option value="">Latest First</option>
+                        <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- Discount -->
+                <div>
+                    <label class="filter-label">Discount</label>
+                    <select name="discount" class="filter-select">
+                        <option value="">Any Discount</option>
+                        <option value="10" {% if active_discount == '10' %}selected{% endif %}>10% or more</option>
+                        <option value="20" {% if active_discount == '20' %}selected{% endif %}>20% or more</option>
+                        <option value="30" {% if active_discount == '30' %}selected{% endif %}>30% or more</option>
+                        <option value="50" {% if active_discount == '50' %}selected{% endif %}>50% or more</option>
+                    </select>
+                </div>
+
+                <!-- Rating -->
+                <div>
+                    <label class="filter-label">Rating</label>
+                    <select name="rating" class="filter-select">
+                        <option value="">Any Rating</option>
+                        <option value="4" {% if active_rating == '4' %}selected{% endif %}>4★ & Above</option>
+                        <option value="3" {% if active_rating == '3' %}selected{% endif %}>3★ & Above</option>
+                    </select>
+                </div>
+
+                <!-- Availability -->
+                <div>
+                    <label class="filter-label">Availability</label>
+                    <select name="availability" class="filter-select">
+                        <option value="">All Items</option>
+                        <option value="in_stock" {% if active_availability == 'in_stock' %}selected{% endif %}>In Stock Only</option>
+                    </select>
+                </div>
+
+                <!-- Size -->
+                <div>
+                    <label class="filter-label">Size</label>
+                    <select name="size" class="filter-select">
+                        <option value="">Any Size</option>
+                        <option value="S" {% if active_size == 'S' %}selected{% endif %}>Small (S)</option>
+                        <option value="M" {% if active_size == 'M' %}selected{% endif %}>Medium (M)</option>
+                        <option value="L" {% if active_size == 'L' %}selected{% endif %}>Large (L)</option>
+                        <option value="XL" {% if active_size == 'XL' %}selected{% endif %}>Extra Large (XL)</option>
+                    </select>
+                </div>
+
+                <!-- Color -->
+                <div>
+                    <label class="filter-label">Color</label>
+                    <select name="color" class="filter-select">
+                        <option value="">Any Color</option>
+                        <option value="Black" {% if active_color == 'Black' %}selected{% endif %}>Black</option>
+                        <option value="White" {% if active_color == 'White' %}selected{% endif %}>White</option>
+                        <option value="Blue" {% if active_color == 'Blue' %}selected{% endif %}>Blue</option>
+                        <option value="Red" {% if active_color == 'Red' %}selected{% endif %}>Red</option>
+                    </select>
+                </div>
+
+                <!-- Min Price -->
+                <div>
+                    <label class="filter-label">Min Price (₹)</label>
+                    <input type="number" name="min_price" class="filter-input" placeholder="e.g. 100" value="{{ min_price|default:'' }}">
+                </div>
+
+                <!-- Max Price -->
+                <div>
+                    <label class="filter-label">Max Price (₹)</label>
+                    <input type="number" name="max_price" class="filter-input" placeholder="e.g. 5000" value="{{ max_price|default:'' }}">
+                </div>
+
+                <!-- Buttons -->
+                <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 10px;">
+                    <button type="submit" class="btn-apply-filter w-100">Apply Filters</button>
+                    <a href="?" class="btn-clear-filter w-100">Clear All</a>
+                </div>
+
+            </div>
         </form>
     </div>
 
-    <!-- MAIN PRODUCT GRID -->
+    <!-- 🌟 MAIN PRODUCT GRID -->
     <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-xl-5 mb-5">
         {% for product in products %}
         <div class="col">
@@ -389,6 +549,11 @@
                 </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <h4 class="text-muted">No products found matching your filters.</h4>
+            <a href="?" class="btn btn-dark mt-3 px-4 py-2">Clear Filters</a>
+        </div>
         {% endfor %}
     </div>
 
@@ -396,8 +561,8 @@
     <nav aria-label="Page navigation" class="mt-5 pt-4 border-top">
         <ul class="pagination justify-content-center gap-2">
             {% if products.has_previous %}
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page=1{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">&laquo; First</a></li>
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.previous_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">Prev</a></li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page=1{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}{% if active_discount %}&discount={{active_discount}}{% endif %}{% if active_rating %}&rating={{active_rating}}{% endif %}{% if active_availability %}&availability={{active_availability}}{% endif %}{% if active_color %}&color={{active_color}}{% endif %}{% if active_size %}&size={{active_size}}{% endif %}{% if min_price %}&min_price={{min_price}}{% endif %}{% if max_price %}&max_price={{max_price}}{% endif %}">&laquo; First</a></li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.previous_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}{% if active_discount %}&discount={{active_discount}}{% endif %}{% if active_rating %}&rating={{active_rating}}{% endif %}{% if active_availability %}&availability={{active_availability}}{% endif %}{% if active_color %}&color={{active_color}}{% endif %}{% if active_size %}&size={{active_size}}{% endif %}{% if min_price %}&min_price={{min_price}}{% endif %}{% if max_price %}&max_price={{max_price}}{% endif %}">Prev</a></li>
             {% endif %}
 
             <li class="page-item active">
@@ -405,7 +570,7 @@
             </li>
 
             {% if products.has_next %}
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.next_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}">Next</a></li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.next_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}{% if active_discount %}&discount={{active_discount}}{% endif %}{% if active_rating %}&rating={{active_rating}}{% endif %}{% if active_availability %}&availability={{active_availability}}{% endif %}{% if active_color %}&color={{active_color}}{% endif %}{% if active_size %}&size={{active_size}}{% endif %}{% if min_price %}&min_price={{min_price}}{% endif %}{% if max_price %}&max_price={{max_price}}{% endif %}">Next</a></li>
             {% endif %}
         </ul>
     </nav>

@@ -52,41 +52,81 @@ def send_brevo_api_email(subject, message, to_email):
         print(f"Email API error: {e}")
         return None
 
-# 🏠 1. Homepage View
-# 🏠 1. Updated Homepage View (Brand filtering ke sath)
+# 🏠 1. Updated Homepage View (Advanced Filtering Ke Sath)
 def product_list(request):
-    search_query = request.GET.get('search', '').strip()
-    category_id = request.GET.get('category')
-    brand_id = request.GET.get('brand') # 🌟 NAYA
-    sort = request.GET.get('sort')
-    
+    # Base Queries
     categories = Category.objects.all()
-    brands = Brand.objects.all() # 🌟 NAYA
+    brands = Brand.objects.all()
     products = Product.objects.all()
     banners = Banner.objects.filter(is_active=True).order_by('-id')
 
+    # Basic Search & Sort
+    search_query = request.GET.get('search', '').strip()
+    sort = request.GET.get('sort')
+    
+    # Core Filters
+    category_id = request.GET.get('category')
+    brand_id = request.GET.get('brand')
+    
+    # Advanced Filters
+    discount = request.GET.get('discount')
+    rating = request.GET.get('rating')
+    availability = request.GET.get('availability')
+    color = request.GET.get('color')
+    size = request.GET.get('size')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    # --- APPLYING FILTERS ---
+    
     if search_query:
         products = products.filter(name__icontains=search_query)
-        
+
+    active_category = None
     if category_id:
         try:
             products = products.filter(category_id=category_id)
             active_category = int(category_id)
         except ValueError:
-            active_category = None
-    else:
-        active_category = None
+            pass
 
-    # 🌟 NAYA: Brand Filter Logic
+    active_brand = None
     if brand_id:
         try:
             products = products.filter(brand_id=brand_id)
             active_brand = int(brand_id)
         except ValueError:
-            active_brand = None
-    else:
-        active_brand = None
-    
+            pass
+
+    # Advanced Database Filtering (Try-except handles missing model fields safely)
+    if discount:
+        try: products = products.filter(discount_percentage__gte=discount)
+        except: pass
+        
+    if rating:
+        try: products = products.filter(reviews__rating__gte=rating)
+        except: pass
+        
+    if availability == 'in_stock':
+        try: products = products.filter(stock__gt=0)
+        except: pass
+        
+    if color:
+        try: products = products.filter(color__icontains=color)
+        except: pass
+        
+    if size:
+        try: products = products.filter(size__icontains=size)
+        except: pass
+        
+    if min_price and max_price:
+        try: products = products.filter(price__range=(min_price, max_price))
+        except: pass
+
+    # Removing Duplicates (Crucial for joined queries like reviews)
+    products = products.distinct()
+
+    # --- SORTING ---
     if sort == 'low_to_high':
         products = products.order_by('price')
     elif sort == 'high_to_low':
@@ -94,20 +134,29 @@ def product_list(request):
     else:
         products = products.order_by('-id')
     
+    # --- PAGINATION ---
     paginator = Paginator(products, 20) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
         
-    return render(request, 'products/product_list.html', {
+    context = {
         'products': page_obj,  
         'categories': categories,
-        'brands': brands, # 🌟 NAYA
+        'brands': brands, 
         'banners': banners,
         'active_category': active_category,
-        'active_brand': active_brand, # 🌟 NAYA
+        'active_brand': active_brand, 
         'search_query': search_query,
-        'current_sort': sort
-    })
+        'current_sort': sort,
+        'active_discount': discount,
+        'active_rating': rating,
+        'active_availability': availability,
+        'active_color': color,
+        'active_size': size,
+        'min_price': min_price,
+        'max_price': max_price,
+    }
+    return render(request, 'products/product_list.html', context)
 
 # 🛒 2. Add to Cart
 def add_to_cart(request, product_id):
@@ -260,7 +309,6 @@ def checkout_page(request):
                     final_total -= coupon_discount_applied
                     active_coupon = coupon
 
-        # Wallet Deduction
         use_wallet = request.POST.get('use_wallet')
         wallet_deducted = 0
         
@@ -275,7 +323,6 @@ def checkout_page(request):
                 profile.wallet_balance = 0
             profile.save()
 
-        # Order Create karna
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
             customer_name=name, mobile_number=mobile, address=address,
@@ -300,7 +347,6 @@ def checkout_page(request):
         
         whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
 
-        # --- NAYA: ORDER CONFIRMATION EMAIL WALA LOGIC YAHAN ADD KIYA HAI ---
         if request.user.is_authenticated and request.user.email:
             subject = f"Order Confirmation - Order #{order.id}"
             message = f"""
@@ -310,7 +356,6 @@ def checkout_page(request):
             <p>Hum jaldi hi aapke order ko process karenge. CGSmart choose karne ke liye shukriya.</p>
             """
             send_brevo_api_email(subject, message, request.user.email)
-        # -------------------------------------------------------------------
 
         request.session['cart'] = {}
         return render(request, 'products/order_success.html', {
@@ -386,7 +431,6 @@ def profile_page(request):
     }
     return render(request, 'products/profile.html', context)
 
-# 🗑️ Delete Account
 @login_required(login_url='/login/')
 def delete_account(request):
     if request.method == 'POST':
@@ -397,7 +441,6 @@ def delete_account(request):
         return redirect('home')
     return redirect('profile')
 
-# 🔍 6. AJAX NAYA UNIVERSAL COUPON CHECK
 def check_coupon_ajax(request):
     code = request.GET.get('code', '').strip().upper()
     try:
@@ -433,7 +476,6 @@ def check_coupon_ajax(request):
         'message': f'Coupon {code} applied successfully!'
     })
 
-# 📄 7. Static & Policy Pages (Naye Views Added)
 def about_page(request): 
     return render(request, 'products/about.html')
 
@@ -484,13 +526,10 @@ def register_page(request):
             otp = str(random.randint(100000, 999999))
             OTPVerification.objects.create(user=user, otp=otp)
 
-            # --- API WALA CODE ---
             subject = 'CGSmart - Account Verification OTP'
             message = f'Hello {user.username},\n\nAapka account verification OTP hai: {otp}\n\nKripya is OTP ko website par daalkar apna account verify karein.'
             
-            # API call
             send_brevo_api_email(subject, message, user.email)
-            # ---------------------
 
             request.session['verify_user_id'] = user.id
             messages.success(request, 'Account successfully ban gaya hai! Kripya apne email par aaya OTP daalein.')
@@ -535,13 +574,11 @@ def sync_products_from_erp_api(request):
             )
     return Response({'message': 'Product sync process successfully executed'})
 
-# 📄 10. Download Smart PDF Invoice / Bill of Supply
 @login_required(login_url='/login/')
 def download_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     items = OrderItem.objects.filter(order=order)
     
-    # 🌟 Admin panel se custom details fetch kar rahe hain
     store_settings = StoreSetting.objects.first()
     company_name = store_settings.company_name if store_settings else 'Chachan General Store'
     tagline = store_settings.tagline if store_settings else 'Premium Corporate Retail & Essentials'
@@ -551,7 +588,6 @@ def download_invoice(request, order_id):
     
     bill_no = f"#INV-2026-{order.id}"
 
-    # QR & Barcode Setup
     qr = qrcode.make(bill_no)
     qr_buffer = BytesIO()
     qr.save(qr_buffer, format="PNG")
@@ -584,7 +620,6 @@ def download_invoice(request, order_id):
     }
     
     response = HttpResponse(content_type='application/pdf')
-    # Document ka naam "Bill_of_Supply" rakha gaya hai
     response['Content-Disposition'] = f'attachment; filename="CGSmart_Bill_of_Supply_{order.id}.pdf"'
     
     template = get_template(template_path)
@@ -634,22 +669,19 @@ def import_products_csv(request):
         
         for row in reader:
             try:
-                # 1. Category Handle (Agar nahi hai toh naya banayega)
                 cat_name = row.get('Category_Name')
                 category = None
                 if cat_name:
                     category, _ = Category.objects.get_or_create(name=cat_name.strip())
                     
-                # 2. Brand/Company Handle
                 brand_name = row.get('Company_Brand')
                 brand = None
                 if brand_name:
                     brand, _ = Brand.objects.get_or_create(name=brand_name.strip())
 
-                # 3. Product Create ya Update (SKU ke base par)
                 sku = row.get('SKU')
                 if not sku:
-                    continue # SKU mandatory hai bulk add ke liye
+                    continue 
                     
                 product, created = Product.objects.update_or_create(
                     sku=sku,
@@ -663,7 +695,6 @@ def import_products_csv(request):
                     }
                 )
                 
-                # 4. Varieties (Variants) Handle Karein
                 variant_size = row.get('Variant_Size')
                 variant_price = row.get('Variant_Price')
                 
@@ -703,7 +734,6 @@ def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = product.reviews.all().order_by('-created_at')
     
-    # Average Rating Calculate karna
     avg_rating = 0
     if reviews.exists():
         avg_rating = sum(r.rating for r in reviews) / reviews.count()
@@ -758,7 +788,6 @@ def cancel_order(request, order_id):
         messages.error(request, f"❌ Order #{order.id} ab cancel nahi kiya ja sakta.")
     return redirect('profile')
 
-# 📍 Address Management Logic
 @login_required(login_url='/login/')
 def delete_address(request, address_id):
     address = get_object_or_404(Address, id=address_id, user=request.user)
