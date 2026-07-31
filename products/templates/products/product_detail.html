@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-<!-- 🌟 NAYA: Product Specific SEO -->
+<!-- 🌟 Product Specific SEO -->
 {% block title %}{{ product.name }} - Buy Online at CGSMART{% endblock %}
 {% block meta_description %}Buy {{ product.name }} online at the best price. {{ product.description|truncatechars:100 }}{% endblock %}
 {% block og_title %}{{ product.name }} | CGSMART{% endblock %}
@@ -30,7 +30,7 @@
     }
 
     .btn-sticky-cart {
-        background-color: #0F172A; /* Deep Blue */
+        background-color: #0F172A; 
         color: #FFFFFF;
         font-family: 'Jost', sans-serif;
         font-weight: 600;
@@ -43,7 +43,7 @@
     }
 
     .btn-sticky-cart:hover {
-        background-color: #D4AF37; /* Premium Gold */
+        background-color: #D4AF37; 
         color: #0F172A;
     }
 
@@ -55,27 +55,51 @@
         line-height: 1.1;
     }
 
-    /* Mobile view mein page ke end mein thodi jagah dena taaki footer chhupe nahi */
     @media (max-width: 768px) {
-        body {
-            padding-bottom: 80px; 
-        }
+        body { padding-bottom: 80px; }
+    }
+
+    /* 🌟 NEW: IMAGE ZOOM CSS */
+    .zoom-container {
+        position: relative;
+        overflow: hidden;
+        cursor: crosshair; /* Zoom icon on cursor */
+        height: 450px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 1rem;
+        background: #F8FAFC;
+    }
+    .zoom-image {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        mix-blend-mode: multiply;
+        transition: transform 0.2s ease-out; /* Smooth enter/exit */
     }
 </style>
 
 <div class="container py-5" style="max-width: 1200px;">
     <div class="row g-5">
-        <!-- 📸 Product Image Gallery -->
+        
+        <!-- 📸 Product Image Gallery (With Hover Zoom & Click Modal) -->
         <div class="col-lg-5">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: #F8FAFC;">
-                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="height: 450px;">
-                    {% if product.image %}
-                        <!-- 🌟 NAYA: loading="lazy" added for Speed Optimization -->
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid" style="max-height: 100%; object-fit: contain; mix-blend-mode: multiply;" loading="lazy">
-                    {% else %}
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-2">
+                {% if product.image %}
+                    <!-- Hover Zoom Container -->
+                    <div class="zoom-container" id="zoomContainer" data-bs-toggle="modal" data-bs-target="#imageModal" title="Click to view full screen">
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="zoom-image" id="zoomImage" loading="lazy">
+                    </div>
+                    <!-- Hint Text -->
+                    <div class="text-center mt-2 text-muted small fw-medium">
+                        🔍 Hover to zoom | Click to expand
+                    </div>
+                {% else %}
+                    <div class="zoom-container">
                         <img src="https://placehold.co/400x400/E2E8F0/64748B?text=No+Image" class="img-fluid rounded-3" loading="lazy">
-                    {% endif %}
-                </div>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
@@ -103,12 +127,11 @@
                 <hr class="my-4 border-secondary opacity-25">
 
                 <!-- 🛒 Add to Cart Form -->
-                <!-- 🌟 NAYA FIX: id="addToCartForm" add kiya -->
                 <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST" class="bg-white p-4 rounded-4 shadow-sm border" style="border-color: #E2E8F0 !important;">
                     {% csrf_token %}
                     
                     {% if product.variants.exists %}
-                        <!-- Agar Varieties (Variants) hain -->
+                        <!-- Varieties (Variants) -->
                         <h5 class="fw-bold mb-3">Select Variety:</h5>
                         <div class="mb-4">
                             <select name="variant_id" id="variantSelect" class="form-select form-select-lg border-2 shadow-none focus-ring" required onchange="updatePrice()">
@@ -128,7 +151,7 @@
                         </div>
                         
                     {% else %}
-                        <!-- Normal Product (Bina Variant ke) -->
+                        <!-- Normal Product -->
                         <div class="d-flex align-items-baseline mb-4">
                             <span class="fs-1 fw-bold text-dark">₹{{ product.price }}</span>
                             {% if product.mrp and product.mrp > product.price %}
@@ -176,7 +199,6 @@
                 <div class="mt-5 pt-4 border-top">
                     <h4 class="fw-bold mb-4">Customer Reviews ({{ review_count }})</h4>
                     
-                    <!-- Review Form -->
                     {% if user.is_authenticated %}
                         <div class="bg-white p-4 rounded-4 shadow-sm border mb-4">
                             <h6 class="fw-bold mb-3">Write a Review</h6>
@@ -255,16 +277,30 @@
     </div>
 </div>
 
+<!-- 🖼️ FULL SCREEN IMAGE MODAL -->
+{% if product.image %}
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content bg-transparent border-0">
+      <div class="modal-header border-0 pb-0 justify-content-end">
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff; border-radius: 50%; opacity: 1; padding: 10px; margin: 10px;"></button>
+      </div>
+      <div class="modal-body text-center p-0">
+        <img src="{{ product.image.url }}" class="img-fluid rounded" style="max-height: 85vh; object-fit: contain;">
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 <!-- Dynamic Price Update Script -->
 <script>
     function updatePrice() {
         var select = document.getElementById("variantSelect");
         var price = select.options[select.selectedIndex].getAttribute("data-price");
         if(price) {
-            // Main page ka price update
             document.getElementById("displayPrice").innerText = "₹" + price;
             
-            // Mobile sticky bar ka price bhi update karega
             var stickyPriceEl = document.getElementById("stickyPrice");
             if(stickyPriceEl) {
                 stickyPriceEl.innerText = "₹" + price;
@@ -273,7 +309,38 @@
     }
 </script>
 
-<!-- 🌟 NAYA: Google Rich Results (Schema Markup) -->
+<!-- 🌟 NEW: INNER HOVER ZOOM JAVASCRIPT -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const container = document.getElementById('zoomContainer');
+        const img = document.getElementById('zoomImage');
+        
+        if (container && img) {
+            container.addEventListener('mousemove', function(e) {
+                // Get container dimensions and mouse position
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Convert mouse position to percentages
+                const xPercent = (x / rect.width) * 100;
+                const yPercent = (y / rect.height) * 100;
+                
+                // Move the transform origin to the mouse position and scale
+                img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+                img.style.transform = "scale(2.5)"; // Adjust 2.5 to increase/decrease zoom level
+            });
+            
+            // Reset image when mouse leaves
+            container.addEventListener('mouseleave', function() {
+                img.style.transformOrigin = "center center";
+                img.style.transform = "scale(1)";
+            });
+        }
+    });
+</script>
+
+<!-- Google Rich Results (Schema Markup) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
