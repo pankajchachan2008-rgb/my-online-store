@@ -59,6 +59,7 @@ urlpatterns = [
     
     path('about/', about_page, name='about'),
     path('contact/', contact_page, name='contact'),
+    path('ai-assistant/', views.ai_assistant_chat, name='ai_assistant_chat'),
 
     # 🌟 NAYE: SEO & Policy URLs
     path('privacy-policy/', privacy_policy, name='privacy_policy'),
