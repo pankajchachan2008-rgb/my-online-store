@@ -13,7 +13,15 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-# Category model ke theek neeche yeh add karein
+# 👇 🌟 YEH NAYA SUBCATEGORY MODEL ADD KIYA HAI 🌟 👇
+class SubCategory(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
+    name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return f"{self.category.name} -> {self.name}"
+# 👆 -------------------------------------------- 👆
+
 class Brand(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -21,18 +29,18 @@ class Brand(models.Model):
     def __str__(self):
         return self.name
 
-# Apne existing Product model mein brand field add karein:
 class Product(models.Model):
     sku = models.CharField(max_length=50, unique=True, null=True, blank=True)
     name = models.CharField(max_length=200)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     
-    # 👇 YEH NAYI LINE ADD KAREIN 👇
+    # 👇 🌟 NAYA: PRODUCT KO SUBCATEGORY SE JODNE WALI FIELD 🌟 👇
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    # 👆 ---------------------------------------------------- 👆
+    
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
-    # 👆 ------------------------ 👆
     
     description = models.TextField(blank=True, null=True)
-    # ... baki saari existing fields (mrp, price, image, etc.) same rahengi
     
     # MRP Field add kiya for real calculations
     mrp = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
@@ -113,16 +121,14 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
 
-    # 👇 YEH 3 LINES ADD KAREIN 👇
     @property
     def total_price(self):
         return self.price * self.quantity
-    # 👆 ---------------------- 👆
 
     def __str__(self):
         return f"{self.quantity} x {self.product_name}"
 
-# 1. Upgarded CustomerProfile Model (REPLACE THIS)
+# 1. Upgarded CustomerProfile Model 
 class CustomerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile_number = models.CharField(max_length=15, blank=True, null=True)
@@ -152,7 +158,7 @@ class CustomerProfile(models.Model):
         return f"{self.user.username}'s Profile"
 
 
-# 2. NAYA Address Model (Multiple Addresses ke liye) - ADD THIS
+# 2. NAYA Address Model (Multiple Addresses ke liye)
 class Address(models.Model):
     ADDRESS_TYPES = (
         ('Home', 'Home (All day delivery)'),
@@ -174,7 +180,7 @@ class Address(models.Model):
         return f"{self.name} - {self.city}"
 
 
-# 3. NAYA RecentlyViewed Model - ADD THIS
+# 3. NAYA RecentlyViewed Model 
 class RecentlyViewed(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recently_viewed')
     product = models.ForeignKey(Product, on_delete=models.CASCADE) 

@@ -5,80 +5,171 @@
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-    body { font-family: 'Jost', sans-serif; background-color: #FAF4EF; }
+    /* 🌟 PREMIUM LOGIN BACKGROUND */
+    body { font-family: 'Jost', sans-serif; background-color: #F8FAFC; }
     
-    .auth-card {
+    .login-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+        padding: 40px 20px;
+    }
+
+    /* 🌟 ELEGANT CARD WITH ROUNDED CORNERS & SOFT SHADOW */
+    .login-card {
         background: #FFFFFF;
-        border: 1px solid #000000;
-        box-shadow: 6px 6px 0px #000000;
-        padding: 40px;
-        max-width: 450px;
-        margin: 60px auto;
-        border-radius: 0;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 83, 156, 0.08);
+        display: flex;
+        max-width: 900px;
+        width: 100%;
+        overflow: hidden;
+        border: 1px solid #E2E8F0;
+    }
+
+    /* 🌟 NAYA: SIDE PANEL (Trust & Branding) */
+    .login-side-panel {
+        background: linear-gradient(135deg, #00539C 0%, #003A70 100%);
+        color: #FFFFFF;
+        width: 45%;
+        padding: 50px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .login-side-title {
+        font-weight: 700;
+        font-size: 2.2rem;
+        line-height: 1.2;
+        margin-bottom: 20px;
+    }
+
+    .trust-feature {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        opacity: 0.9;
+    }
+
+    /* 🌟 FORM SECTION */
+    .login-form-section {
+        width: 55%;
+        padding: 50px;
+        background: #FFFFFF;
     }
 
     .auth-title {
         font-weight: 700;
-        font-size: 2rem;
-        text-transform: uppercase;
-        margin-bottom: 25px;
-        text-align: center;
-        letter-spacing: 1px;
+        font-size: 1.8rem;
+        color: #0F172A;
+        margin-bottom: 5px;
+    }
+
+    .auth-subtitle {
+        color: #64748B;
+        font-size: 0.9rem;
+        margin-bottom: 30px;
     }
 
     /* Django Form Styling Override */
-    .auth-card form p { margin-bottom: 15px; text-align: left; }
-    .auth-card form label { font-weight: 600; margin-bottom: 5px; display: block; }
-    .auth-card form input {
+    .login-form-section form p { margin-bottom: 18px; text-align: left; }
+    .login-form-section form label { font-weight: 600; color: #334155; margin-bottom: 6px; display: block; font-size: 0.9rem; }
+    .login-form-section form input {
         width: 100%;
-        border: 1px solid #000000;
-        border-radius: 0;
-        padding: 10px 15px;
+        border: 1px solid #CBD5E1;
+        border-radius: 10px;
+        padding: 12px 15px;
         outline: none;
         font-family: inherit;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: #F8FAFC;
     }
-    .auth-card form input:focus { border-width: 2px; }
-    .auth-card .helptext { font-size: 0.75rem; color: #666; margin-top: 4px; display: block; }
-    .auth-card ul.errorlist { color: red; font-size: 0.8rem; list-style: none; padding-left: 0; }
+    .login-form-section form input:focus {
+        border-color: #00539C;
+        background: #FFFFFF;
+        box-shadow: 0 0 0 3px rgba(0, 83, 156, 0.1);
+    }
+    .login-form-section .helptext { font-size: 0.75rem; color: #64748B; margin-top: 4px; display: block; }
+    .login-form-section ul.errorlist { color: #DC2626; font-size: 0.8rem; list-style: none; padding-left: 0; margin-bottom: 10px; }
 
+    /* 🌟 PREMIUM BUTTON */
     .btn-auth {
-        background: #000000;
+        background: #00539C;
         color: #FFFFFF;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 1px;
-        border-radius: 0;
+        border-radius: 10px;
         border: none;
-        padding: 12px;
+        padding: 14px;
         transition: 0.3s ease;
         width: 100%;
-        margin-top: 15px;
+        margin-top: 10px;
+        font-size: 1rem;
     }
-    .btn-auth:hover { background: #333333; color: white; }
+    .btn-auth:hover { 
+        background: #003A70; 
+        transform: translateY(-2px); 
+        box-shadow: 0 6px 15px rgba(0, 83, 156, 0.2); 
+    }
     
-    .auth-link { color: #000; font-weight: 600; text-decoration: underline; }
-    .auth-link:hover { color: #555; }
+    .auth-link { color: #00539C; font-weight: 600; text-decoration: none; transition: 0.2s; }
+    .auth-link:hover { color: #D4AF37; }
+
+    /* MOBILE RESPONSIVENESS */
+    @media (max-width: 768px) {
+        .login-card { flex-direction: column; }
+        .login-side-panel { display: none; } /* Hide side panel on mobile */
+        .login-form-section { width: 100%; padding: 40px 25px; }
+    }
 </style>
 
-<div class="container">
-    <div class="auth-card">
-        <h3 class="auth-title">Account Login</h3>
+<div class="login-wrapper">
+    <div class="login-card">
         
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn-auth">Login</button>
-            
-            <!-- 🌟 NAYA FORGOT PASSWORD LINK -->
-            <div class="mt-3 text-center">
-                <a href="{% url 'forgot_password' %}" class="auth-link" style="font-size: 0.9rem;">Forgot Password / Username?</a>
+        <!-- 🌟 NAYA: PREMIUM SIDE PANEL -->
+        <div class="login-side-panel d-none d-lg-flex">
+            <div>
+                <h2 class="login-side-title">Welcome to<br>CGSMART.</h2>
+                <p style="font-size: 1.05rem; opacity: 0.8; margin-bottom: 40px;">Log in to access your premium shopping experience and exclusive offers.</p>
+                
+                <div class="trust-feature"><span>🔒</span> 100% Secure Login</div>
+                <div class="trust-feature"><span>🚚</span> Fast Local Delivery</div>
+                <div class="trust-feature"><span>💎</span> Quality Assured Products</div>
             </div>
-        </form>
-        
-        <div class="mt-4 pt-3 text-center" style="border-top: 1px dashed #ccc;">
-            <p class="mb-1 text-muted">Naya account banayein?</p>
-            <a href="{% url 'register' %}" class="auth-link">Sign Up</a>
+            <div>
+                <span style="font-size: 0.8rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 2px;">Chachan General Store, Nohar</span>
+            </div>
         </div>
+
+        <!-- 🌟 FORM SECTION -->
+        <div class="login-form-section">
+            <h3 class="auth-title">Sign In</h3>
+            <p class="auth-subtitle">Enter your details to securely access your account.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-auth">Secure Login</button>
+                
+                <!-- FORGOT PASSWORD LINK -->
+                <div class="mt-3 text-center">
+                    <a href="{% url 'forgot_password' %}" class="auth-link" style="font-size: 0.9rem;">Forgot Password / Username?</a>
+                </div>
+            </form>
+            
+            <div class="mt-4 pt-4 text-center" style="border-top: 1px solid #E2E8F0;">
+                <p class="mb-1 text-muted">Don't have an account?</p>
+                <a href="{% url 'register' %}" class="auth-link">Create Account</a>
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}
