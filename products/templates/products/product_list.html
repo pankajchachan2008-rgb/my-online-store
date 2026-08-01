@@ -8,14 +8,15 @@
 
     /* 🌟 DYNAMIC LIFESTYLE CAROUSEL HERO */
     .lifestyle-carousel .carousel-item {
-        height: 65vh;
-        min-height: 450px;
+        height: 45vh; /* Reduced height for better app feel */
+        min-height: 280px;
         background-color: #0F172A;
         overflow: hidden;
+        border-radius: 0 0 20px 20px;
     }
     .lifestyle-carousel img, .lifestyle-carousel video {
         width: 100%; height: 100%; object-fit: cover; object-position: center center;
-        opacity: 0.65; transition: transform 10s ease;
+        opacity: 0.75; transition: transform 10s ease;
     }
     .lifestyle-carousel .carousel-item.active img { transform: scale(1.05); }
     .carousel-caption-custom {
@@ -23,57 +24,63 @@
         text-align: center; color: white; width: 100%; padding: 0 20px; z-index: 10;
     }
     .carousel-caption-custom h2 {
-        font-family: 'Jost', sans-serif; font-size: 4rem; font-weight: 700;
-        letter-spacing: 5px; text-transform: uppercase; margin-bottom: 25px;
-        text-shadow: 2px 4px 15px rgba(0,0,0,0.4);
+        font-family: 'Jost', sans-serif; font-size: 3rem; font-weight: 800;
+        letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px;
+        text-shadow: 2px 4px 15px rgba(0,0,0,0.5);
     }
 
-    /* 🌟 APP-STYLE STICKY CATEGORY SCROLLER */
-    .sticky-cat-bar {
-        background: #FFFFFF;
-        position: sticky;
-        top: 0;
-        z-index: 1020;
-        border-bottom: 1px solid #EAEAEA;
-        padding: 12px 0;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    /* ⚡ PREMIUM FLASH SALE BANNER */
+    .flash-banner {
+        background: linear-gradient(135deg, #FF416C 0%, #FF4B2B 100%);
+        color: white; border-radius: 16px; padding: 20px;
+        display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 8px 20px rgba(255, 75, 43, 0.2);
+        margin-top: -30px; position: relative; z-index: 20;
+        flex-wrap: wrap; gap: 15px;
     }
-    .category-scroller {
-        display: flex; overflow-x: auto; gap: 12px; scrollbar-width: none; padding: 0 20px;
+    .flash-timer {
+        background: #FFFFFF; color: #FF4B2B; font-weight: 800;
+        padding: 8px 16px; border-radius: 8px; font-size: 1.2rem;
+        letter-spacing: 2px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
     }
-    .category-scroller::-webkit-scrollbar { display: none; }
-    .cat-pill {
-        padding: 8px 24px; border: 1px solid #EAEAEA; border-radius: 40px;
-        color: #475569; text-decoration: none; font-weight: 600; white-space: nowrap;
-        font-size: 0.85rem; letter-spacing: 0.5px; background: #FFFFFF; transition: all 0.2s ease;
+
+    /* 🌟 APP-STYLE CATEGORY TRIGGER BUTTONS */
+    .action-bar-top {
+        display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto;
+        padding-bottom: 5px; scrollbar-width: none;
     }
-    .cat-pill:hover { background-color: #F8FAFC; border-color: #CBD5E1; color: #0F172A; }
-    .cat-pill.active {
-        background-color: #E8F3FF; color: #00539C; border-color: #00539C;
+    .action-bar-top::-webkit-scrollbar { display: none; }
+    
+    .btn-app-category {
+        background: #FFFFFF; border: 1px solid #E2E8F0; padding: 12px 24px;
+        border-radius: 50px; font-weight: 700; color: #0F172A; white-space: nowrap;
+        display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        transition: 0.3s; text-decoration: none; cursor: pointer;
     }
+    .btn-app-category:hover { background: #E8F3FF; border-color: #00539C; color: #00539C; }
 
     /* 🌟 JIO-MART STYLE PRODUCT CARDS */
     .jio-card {
-        background: #FFFFFF; border-radius: 12px; padding: 12px;
+        background: #FFFFFF; border-radius: 16px; padding: 12px;
         border: 1px solid #EAEAEA; position: relative; height: 100%;
         display: flex; flex-direction: column; transition: box-shadow 0.3s ease;
     }
-    .jio-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-color: #E2E8F0; }
+    .jio-card:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.06); border-color: #CBD5E1; }
     
     .jio-img-box {
-        height: 150px; width: 100%; display: flex; align-items: center;
+        height: 160px; width: 100%; display: flex; align-items: center;
         justify-content: center; margin-bottom: 12px; position: relative;
     }
     .jio-img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
     
     .jio-discount-badge {
         position: absolute; top: 0; left: 0; background: #00A100;
-        color: #FFF; font-size: 0.65rem; font-weight: 700; padding: 3px 6px;
-        border-radius: 4px; z-index: 2;
+        color: #FFF; font-size: 0.7rem; font-weight: 700; padding: 4px 8px;
+        border-radius: 6px; z-index: 2;
     }
 
     .jio-wishlist-icon {
-        position: absolute; top: 0; right: 0; color: #D1D5DB; font-size: 1.2rem;
+        position: absolute; top: 0; right: 0; color: #D1D5DB; font-size: 1.3rem;
         z-index: 2; transition: 0.2s; text-decoration: none;
     }
     .jio-wishlist-icon:hover { color: #EF4444; }
@@ -96,24 +103,48 @@
     .jio-btn-add:hover { background: #00539C; color: #FFF; }
 
     /* Price Section */
-    .jio-price-row {
-        display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; flex-wrap: wrap;
-    }
-    .jio-price { font-size: 1.2rem; font-weight: 800; color: #0F172A; }
+    .jio-price-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+    .jio-price { font-size: 1.25rem; font-weight: 800; color: #0F172A; }
     .jio-mrp { font-size: 0.8rem; color: #94A3B8; text-decoration: line-through; }
-    .jio-discount-text { font-size: 0.75rem; color: #00A100; font-weight: 700; }
 
-    /* Title & Tags */
+    /* Title */
     .jio-title {
-        font-size: 0.9rem; color: #334155; font-weight: 500; line-height: 1.4;
+        font-size: 0.95rem; color: #334155; font-weight: 600; line-height: 1.4;
         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
         overflow: hidden; margin-bottom: auto;
     }
-    
-    .jio-tag {
-        font-size: 0.75rem; color: #64748B; display: flex; align-items: center;
-        gap: 4px; margin-top: 10px; font-weight: 600;
+
+    /* 🌟 COMPACT SMART FILTER BAR */
+    .premium-filter-bar {
+        background: #FFFFFF; border-radius: 16px; padding: 20px;
+        margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #EAEAEA;
     }
+    .filter-input, .filter-select {
+        border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 15px; font-size: 0.95rem; width: 100%;
+        background: #F8FAFC; outline: none; transition: border-color 0.3s;
+    }
+    .filter-input:focus, .filter-select:focus { border-color: #00539C; }
+    .btn-apply-filter { background: #0F172A; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; width: 100%; }
+    .filter-content-wrapper { max-height: 1200px; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 1; }
+    .filter-content-wrapper.collapsed { max-height: 0; opacity: 0; pointer-events: none; margin-top: 0 !important; }
+
+    /* 🌟 CATEGORY OFFCANVAS (LEFT-RIGHT APP STYLE) */
+    .app-category-modal { border-top-left-radius: 20px; border-top-right-radius: 20px; height: 85vh !important; }
+    .cat-nav-left { width: 35%; background: #F8FAFC; border-right: 1px solid #EAEAEA; overflow-y: auto; }
+    .cat-nav-left .nav-link {
+        color: #475569; font-weight: 600; padding: 16px 15px; border-radius: 0;
+        border-bottom: 1px solid #EAEAEA; text-align: left; font-size: 0.9rem;
+    }
+    .cat-nav-left .nav-link.active { background: #FFFFFF; color: #00539C; border-left: 4px solid #00539C; font-weight: 800; }
+    .cat-content-right { width: 65%; overflow-y: auto; padding: 20px; background: #FFFFFF; }
+    
+    .subcat-card {
+        background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px;
+        padding: 10px; text-align: center; text-decoration: none; display: block;
+        transition: 0.3s; color: #0F172A; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+    .subcat-card:hover { border-color: #00539C; background: #F0F7FF; }
+    .subcat-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
 
     /* 🌟 APP-STYLE FLOATING PILL CART */
     .floating-cart-pill {
@@ -129,38 +160,16 @@
         display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
     }
 
-    /* 🌟 COMPACT SMART FILTER BAR */
-    .premium-filter-bar {
-        background: #FFFFFF; border-radius: 12px; padding: 20px;
-        margin-top: 20px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        border: 1px solid #EAEAEA;
-    }
-    .filter-input, .filter-select {
-        border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 15px; font-size: 0.9rem; width: 100%;
-        background: #F8FAFC; outline: none;
-    }
-    .btn-apply-filter { background: #0F172A; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; width: 100%; }
-    .filter-content-wrapper { max-height: 1200px; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 1; }
-    .filter-content-wrapper.collapsed { max-height: 0; opacity: 0; pointer-events: none; margin-top: 0 !important; }
-
-    /* 📱 MOBILE VIEW FIXES */
     @media (max-width: 768px) {
-        .lifestyle-carousel .carousel-item { height: 40vh; min-height: 280px; }
-        .carousel-caption-custom h2 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 15px; }
-        .jio-img-box { height: 120px; }
+        .jio-img-box { height: 130px; }
         .floating-cart-pill { bottom: 90px; }
+        .carousel-caption-custom h2 { font-size: 2rem; }
     }
 </style>
 
-<!-- 🌟 1. DYNAMIC ADMIN CONTROLLED CAROUSEL -->
+<!-- 🌟 1. HERO CAROUSEL -->
 {% if banners %}
 <div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-        {% for banner in banners %}
-            <button type="button" data-bs-target="#lifestyleCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
-        {% endfor %}
-    </div>
-    
     <div class="carousel-inner">
         {% for banner in banners %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="5000">
@@ -173,23 +182,11 @@
             {% endif %}
 
             <div class="carousel-caption-custom">
-                {% if banner.title %}
-                    <h2>{{ banner.title }}</h2>
-                {% endif %}
-                <a href="#full-collection" class="btn btn-light rounded-pill px-5 py-3 text-uppercase fw-bold shadow-lg" style="letter-spacing: 2px;">Shop Now</a>
+                {% if banner.title %}<h2>{{ banner.title }}</h2>{% endif %}
             </div>
         </div>
         {% endfor %}
     </div>
-
-    {% if banners|length > 1 %}
-    <button class="carousel-control-prev" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="prev" style="width: 5%;">
-        <span class="carousel-control-prev-icon" aria-hidden="true" style="width: 3rem; height: 3rem;"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="next" style="width: 5%;">
-        <span class="carousel-control-next-icon" aria-hidden="true" style="width: 3rem; height: 3rem;"></span>
-    </button>
-    {% endif %}
 </div>
 {% else %}
 <div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel">
@@ -197,55 +194,70 @@
         <div class="carousel-item active">
             <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070" alt="Premium Fashion">
             <div class="carousel-caption-custom">
-                <h2>The Style Edit</h2>
-                <a href="#full-collection" class="btn btn-light rounded-pill px-5 py-3 text-uppercase fw-bold shadow-lg" style="letter-spacing: 2px;">Shop Now</a>
+                <h2>Premium Store</h2>
             </div>
         </div>
     </div>
 </div>
 {% endif %}
 
-<!-- 🌟 APP-STYLE STICKY CATEGORY SCROLLER -->
-<div class="sticky-cat-bar" id="full-collection">
-    <div class="container-fluid" style="max-width: 1400px;">
-        <div class="category-scroller">
-            <a href="?" class="cat-pill {% if not active_category and not active_brand %}active{% endif %}">⚡ Quick Shop All</a>
-            {% for cat in categories %}
-                <a href="?category={{ cat.id }}{% if active_brand %}&brand={{ active_brand }}{% endif %}" class="cat-pill {% if active_category == cat.id %}active{% endif %}">{{ cat.name }}</a>
-            {% endfor %}
-            {% for brand in brands %}
-                <a href="?brand={{ brand.id }}{% if active_category %}&category={{ active_category }}{% endif %}" class="cat-pill {% if active_brand == brand.id %}active{% endif %}">{{ brand.name }}</a>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-
 <div class="container-fluid px-3 px-md-4" style="max-width: 1400px;">
 
-    <!-- 🌟 ADVANCED SMART FILTER BAR WITH VOICE SEARCH -->
+    <!-- ⚡ 2. FLASH SALE BANNER -->
+    <div class="flash-banner">
+        <div>
+            <h3 class="fw-bold mb-1" style="font-family: 'Jost', sans-serif;">⚡ Mega Flash Sale</h3>
+            <p class="mb-0 fs-6 opacity-75">Unbeatable prices on your daily needs!</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-white fw-bold">Ends in:</span>
+            <div class="flash-timer" id="flashTimer">12:45:30</div>
+        </div>
+    </div>
+
+    <!-- 🌟 3. APP-STYLE QUICK ACTION BAR -->
+    <div class="action-bar-top mt-4">
+        <!-- Open App Categories Bottom Sheet -->
+        <div class="btn-app-category shadow-sm" data-bs-toggle="offcanvas" data-bs-target="#appCategoriesModal">
+            <span class="fs-4">🛍️</span> Shop by Category
+        </div>
+        <a href="?sort=low_to_high" class="btn-app-category shadow-sm">
+            <span class="fs-4">🔥</span> Top Offers
+        </a>
+        <a href="?discount=20" class="btn-app-category shadow-sm">
+            <span class="fs-4">🏷️</span> 20%+ Discount
+        </a>
+    </div>
+
+    <!-- 🌟 4. ADVANCED SMART FILTER BAR WITH VOICE SEARCH -->
     <div class="premium-filter-bar">
-        <!-- Header with Smart Toggle Button -->
         <div class="d-flex justify-content-between align-items-center">
             
-            <!-- Compact Search Form -->
-            <form method="GET" action="#full-collection" class="flex-grow-1 me-3 position-relative d-flex align-items-center m-0">
+            <!-- Voice Search Form -->
+            <form method="GET" action="" class="flex-grow-1 me-3 position-relative d-flex align-items-center m-0">
                 <span class="position-absolute ms-3 text-muted fs-5">🔍</span>
-                <input type="text" id="searchInput" name="search" class="filter-input ps-5 rounded-pill border-secondary" placeholder="Search for groceries, essentials..." value="{{ search_query }}">
+                <input type="text" id="searchInput" name="search" class="filter-input ps-5 border-secondary" placeholder="Search for groceries, fashion, electronics..." value="{{ search_query }}">
                 <button type="button" id="voiceSearchBtn" class="position-absolute end-0 me-3 bg-transparent border-0 fs-5" title="Search by Voice">🎤</button>
             </form>
             
-            <button type="button" id="toggleFilterBtn" class="btn btn-light border shadow-sm rounded-pill d-flex align-items-center gap-2 px-3 py-2 text-dark fw-bold">
-                <span id="toggleFilterText" class="d-none d-md-block">Filters</span> <span id="toggleFilterIcon">▼</span>
+            <button type="button" id="toggleFilterBtn" class="btn btn-light border shadow-sm rounded-3 d-flex align-items-center gap-2 px-3 py-2 text-dark fw-bold" style="height: 48px;">
+                <span class="d-none d-md-block">Filters</span> <span id="toggleFilterIcon">▼</span>
             </button>
         </div>
 
-        <!-- Collapsible Content Area -->
-        <div id="filterContent" class="filter-content-wrapper mt-4">
-            <form method="GET" action="#full-collection">
-                <!-- Keep search if applying other filters -->
+        <div id="filterContent" class="filter-content-wrapper collapsed mt-4">
+            <form method="GET" action="">
                 <input type="hidden" name="search" value="{{ search_query }}">
-                
                 <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <label class="small text-muted fw-bold mb-1 text-uppercase">Brand</label>
+                        <select name="brand" class="filter-select">
+                            <option value="">All Brands</option>
+                            {% for brand in brands %}
+                                <option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <div class="col-6 col-md-3">
                         <label class="small text-muted fw-bold mb-1 text-uppercase">Sort</label>
                         <select name="sort" class="filter-select">
@@ -259,30 +271,19 @@
                         <select name="discount" class="filter-select">
                             <option value="">Any</option>
                             <option value="10" {% if active_discount == '10' %}selected{% endif %}>10%+</option>
-                            <option value="20" {% if active_discount == '20' %}selected{% endif %}>20%+</option>
                             <option value="50" {% if active_discount == '50' %}selected{% endif %}>50%+</option>
                         </select>
                     </div>
-                    <div class="col-6 col-md-3">
-                        <label class="small text-muted fw-bold mb-1 text-uppercase">Size</label>
-                        <select name="size" class="filter-select">
-                            <option value="">Any Size</option>
-                            <option value="S" {% if active_size == 'S' %}selected{% endif %}>S</option>
-                            <option value="M" {% if active_size == 'M' %}selected{% endif %}>M</option>
-                            <option value="L" {% if active_size == 'L' %}selected{% endif %}>L</option>
-                            <option value="XL" {% if active_size == 'XL' %}selected{% endif %}>XL</option>
-                        </select>
-                    </div>
                     <div class="col-6 col-md-3 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn-apply-filter flex-grow-1 shadow-sm">Apply</button>
-                        <a href="?" class="btn btn-light border py-2 px-3 rounded-3 fw-bold text-muted">Clear</a>
+                        <button type="submit" class="btn-apply-filter shadow-sm">Apply</button>
+                        <a href="?" class="btn btn-light border py-2 px-3 rounded-3 fw-bold text-muted d-flex align-items-center">Clear</a>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 🌟 MAIN PRODUCT GRID -->
+    <!-- 🌟 5. CLEAN PRODUCT GRID (No mid-grid banners) -->
     {% if search_query %}
         <p class="text-muted small fw-bold mb-3 ms-2">Showing results for '{{ search_query }}'</p>
     {% endif %}
@@ -290,37 +291,17 @@
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3 mb-5">
         {% for product in products %}
         
-        <!-- 🎯 PREMIUM FEATURE 1: VERTICAL BANNER (Grid ke beech mein, 4th item ki jagah) -->
-        {% if forloop.counter == 4 and banners|length > 1 %}
-        <div class="col d-none d-md-block">
-            <div class="h-100 rounded-4 overflow-hidden shadow-sm position-relative border-0" style="background: #0F172A;">
-                {% if banners.1.image %}
-                    <img src="{{ banners.1.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8;" alt="Promo">
-                {% endif %}
-                <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3">
-                    <h4 class="text-white fw-bold text-uppercase" style="letter-spacing: 2px;">{{ banners.1.title|default:"Special Offer" }}</h4>
-                    <a href="#full-collection" class="btn btn-outline-light btn-sm mt-2 rounded-pill px-4">Explore</a>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
         <!-- 🌟 JIO-MART STYLE PRODUCT CARD -->
         <div class="col">
             <div class="jio-card shadow-sm border-0">
-                <!-- Wishlist Heart -->
                 <a href="{% url 'add_to_wishlist' product.id %}" class="jio-wishlist-icon">🤍</a>
 
-                <!-- Image Box -->
                 <a href="{% url 'product_detail' product.id %}" class="jio-img-box text-decoration-none">
-                    
-                    <!-- 🎯 PREMIUM FEATURE 2: FOMO / SCARCITY TAG -->
                     {% if product.stock and product.stock < 5 %}
                         <span class="badge position-absolute bottom-0 start-50 translate-middle-x mb-1 px-3 py-1 shadow-sm rounded-pill" style="font-size: 0.7rem; background: #F59E0B; color: #fff; z-index: 2; width: max-content;">
                             ⏳ Only {{ product.stock }} Left!
                         </span>
                     {% endif %}
-
                     {% if product.discount_percentage > 0 %}
                         <span class="jio-discount-badge shadow-sm">{{ product.discount_percentage }}% OFF</span>
                     {% endif %}
@@ -332,7 +313,7 @@
                     {% endif %}
                 </a>
 
-                <!-- Add to Cart Form + Variant Row -->
+                <!-- Add to Cart Form -->
                 <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-2 mb-2">
                     {% csrf_token %}
                     <div class="jio-action-row">
@@ -350,7 +331,6 @@
                     </div>
                 </form>
 
-                <!-- Pricing & Title -->
                 <a href="{% url 'product_detail' product.id %}" class="text-decoration-none d-flex flex-column flex-grow-1">
                     <div class="jio-price-row">
                         <span class="jio-price">₹{{ product.price }}</span>
@@ -358,34 +338,15 @@
                             <span class="jio-mrp">₹{{ product.mrp }}</span>
                         {% endif %}
                     </div>
-                    
                     <div class="jio-title">{{ product.name }}</div>
-                    
-                    <div class="jio-tag"><span class="text-warning fs-6">⚡</span> Quick</div>
                 </a>
             </div>
         </div>
 
-        <!-- 🎯 PREMIUM FEATURE 3: FULL WIDTH HORIZONTAL BANNER (8th item ke baad) -->
-        {% if forloop.counter == 8 and banners|length > 2 %}
-        <div class="col-12 mt-4 mb-4">
-            <div class="rounded-4 overflow-hidden shadow-sm position-relative" style="height: 180px; background: #0F172A;">
-                {% if banners.2.image %}
-                    <img src="{{ banners.2.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.7;" alt="Promo">
-                {% endif %}
-                <div class="position-absolute top-50 start-50 translate-middle text-center w-100">
-                    <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 3px;">{{ banners.2.title|default:"Mega Savings" }}</h3>
-                    <p class="text-white-50 mb-0">Use Code <strong class="text-warning">CGSMART10</strong> for extra discount!</p>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
         {% empty %}
         <div class="col-12 text-center py-5">
-            <h4 class="text-muted fw-bold">Oops! No items found.</h4>
-            <p class="text-muted">Try removing some filters or searching again.</p>
-            <a href="?" class="btn btn-primary mt-3 px-4 py-2 fw-bold rounded-pill">Clear All Filters</a>
+            <h4 class="text-muted fw-bold mb-3">Oops! No items found.</h4>
+            <a href="?" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm" style="background: #00539C; border: none;">Clear All Filters</a>
         </div>
         {% endfor %}
     </div>
@@ -408,6 +369,117 @@
     </nav>
 </div>
 
+<!-- 🌟 APP-STYLE CATEGORIES OFFCANVAS (Left-Main, Right-Subcategories) -->
+<!-- Note: Modify these hardcoded subcategories later dynamically via your Django models -->
+<div class="offcanvas offcanvas-bottom app-category-modal" tabindex="-1" id="appCategoriesModal">
+    <div class="offcanvas-header border-bottom shadow-sm z-3">
+        <h5 class="fw-bold m-0" style="font-family: 'Jost', sans-serif;">Shop By Category</h5>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    
+    <div class="offcanvas-body p-0 d-flex position-relative">
+        <!-- LEFT: Main Categories List -->
+        <div class="cat-nav-left">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#subcat-apparel" type="button" role="tab">👕 Fashion & Apparel</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#subcat-grocery" type="button" role="tab">🌾 Grocery & Staples</button>
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#subcat-personal" type="button" role="tab">🧴 Personal Care</button>
+                
+                <!-- Dynamic Main Categories (Without subcategories visual layout) -->
+                {% for cat in categories %}
+                    <!-- We only show this if it doesn't match our hardcoded premium layout above -->
+                    {% if cat.name != "Fashion" and cat.name != "Grocery" %}
+                        <a href="?category={{ cat.id }}" class="nav-link text-dark">{{ cat.name }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- RIGHT: Subcategories Grid -->
+        <div class="cat-content-right">
+            <div class="tab-content" id="v-pills-tabContent">
+                
+                <!-- Subcategories for Fashion -->
+                <div class="tab-pane fade show active" id="subcat-apparel" role="tabpanel">
+                    <h6 class="fw-bold mb-3 text-muted">Fashion Options</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a href="?search=Men" class="subcat-card">
+                                <span class="subcat-icon">👨</span>
+                                <span class="fw-bold fs-6">Men's Wear</span>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="?search=Women" class="subcat-card">
+                                <span class="subcat-icon">👩</span>
+                                <span class="fw-bold fs-6">Women's Wear</span>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="?search=Kids" class="subcat-card">
+                                <span class="subcat-icon">👶</span>
+                                <span class="fw-bold fs-6">Kids Wear</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subcategories for Grocery -->
+                <div class="tab-pane fade" id="subcat-grocery" role="tabpanel">
+                    <h6 class="fw-bold mb-3 text-muted">Daily Needs</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a href="?search=Dal" class="subcat-card">
+                                <span class="subcat-icon">🥣</span>
+                                <span class="fw-bold fs-6">Dals & Pulses</span>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="?search=Oil" class="subcat-card">
+                                <span class="subcat-icon">🛢️</span>
+                                <span class="fw-bold fs-6">Cooking Oil</span>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="?search=Rice" class="subcat-card">
+                                <span class="subcat-icon">🍚</span>
+                                <span class="fw-bold fs-6">Rice & Flour</span>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="?search=Masala" class="subcat-card">
+                                <span class="subcat-icon">🌶️</span>
+                                <span class="fw-bold fs-6">Spices & Masala</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subcategories for Personal Care -->
+                <div class="tab-pane fade" id="subcat-personal" role="tabpanel">
+                    <h6 class="fw-bold mb-3 text-muted">Self Care</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a href="?search=Shampoo" class="subcat-card">
+                                <span class="subcat-icon">🧴</span>
+                                <span class="fw-bold fs-6">Hair Care</span>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="?search=Soap" class="subcat-card">
+                                <span class="subcat-icon">🧼</span>
+                                <span class="fw-bold fs-6">Soaps & Body</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- 🌟 APP-STYLE FLOATING PILL CART (AJAX) -->
 <a href="{% url 'cart_detail' %}" id="stickyCart" class="floating-cart-pill" style="display:none;">
     <div class="d-flex align-items-center gap-3">
@@ -420,11 +492,24 @@
     <div class="fw-bold fs-4" style="line-height: 1;">›</div>
 </a>
 
-<!-- 🌟 COMBINED SCRIPTS (AJAX CART + SMART FILTER + VOICE SEARCH) -->
+<!-- 🌟 SCRIPTS: AJAX CART + SMART FILTER + VOICE SEARCH + TIMER -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
-        // --- 1. SMART FILTER AUTO-COLLAPSE LOGIC ---
+        // --- Fake Timer Logic for Flash Sale ---
+        let timerDisplay = document.getElementById('flashTimer');
+        let timeLeft = 3600 * 2 + 15 * 60 + 30; // 2 hours, 15 mins, 30 secs
+        setInterval(function () {
+            let hours = Math.floor(timeLeft / 3600);
+            let minutes = Math.floor((timeLeft % 3600) / 60);
+            let seconds = timeLeft % 60;
+            if(timerDisplay) {
+                timerDisplay.innerText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            if (timeLeft > 0) timeLeft--;
+        }, 1000);
+
+        // --- SMART FILTER COLLAPSE ---
         const filterContent = document.getElementById("filterContent");
         const toggleFilterBtn = document.getElementById("toggleFilterBtn");
         const toggleFilterIcon = document.getElementById("toggleFilterIcon");
@@ -438,20 +523,16 @@
         }
 
         if (hasActiveFilters) {
-            filterContent.classList.add("collapsed");
-            toggleFilterIcon.innerText = "▼";
+            filterContent.classList.remove("collapsed");
+            toggleFilterIcon.innerText = "▲";
         }
 
         toggleFilterBtn.addEventListener("click", function() {
             filterContent.classList.toggle("collapsed");
-            if (filterContent.classList.contains("collapsed")) {
-                toggleFilterIcon.innerText = "▼";
-            } else {
-                toggleFilterIcon.innerText = "▲";
-            }
+            toggleFilterIcon.innerText = filterContent.classList.contains("collapsed") ? "▼" : "▲";
         });
 
-        // --- 2. AJAX CART LOGIC (FLOATING PILL) ---
+        // --- AJAX CART LOGIC (FLOATING PILL) ---
         function updateCartBar(items, total) {
             const cartBar = document.getElementById("stickyCart");
             const cartSummary = document.getElementById("cartSummary");
@@ -483,10 +564,7 @@
                 
                 let variantId = null;
                 const variantSelect = form.querySelector('select[name="variant_id"]');
-                if (variantSelect) {
-                    if (!variantSelect.value) { alert("Please select a size first."); return; }
-                    variantId = variantSelect.value;
-                }
+                if (variantSelect) { variantId = variantSelect.value; }
 
                 fetch(`/cart-ajax/add/${productId}/`, {
                     method: 'POST',
@@ -512,7 +590,7 @@
             });
         });
 
-        // --- 3. VOICE SEARCH (SPEECH RECOGNITION) LOGIC ---
+        // --- VOICE SEARCH LOGIC ---
         const voiceSearchBtn = document.getElementById("voiceSearchBtn");
         const searchInput = document.getElementById("searchInput");
         const filterForm = searchInput.closest('form');
@@ -522,7 +600,6 @@
             const recognition = new SpeechRecognition();
             
             recognition.continuous = false; 
-            recognition.interimResults = false;
             recognition.lang = 'en-IN'; 
 
             voiceSearchBtn.addEventListener("click", function(e) {
@@ -530,34 +607,24 @@
                 recognition.start(); 
                 voiceSearchBtn.innerHTML = "🔴"; 
                 searchInput.placeholder = "Listening...";
-                searchInput.classList.add("border-success");
             });
 
             recognition.onresult = function(event) {
                 let transcript = event.results[0][0].transcript;
-                
-                // Aggressive Safai
                 transcript = transcript.replace(/[^a-zA-Z0-9\s]/g, '').trim();
-
                 searchInput.value = transcript;
                 voiceSearchBtn.innerHTML = "🎤";
-    
-                // Human-like Submit
-                setTimeout(() => {
-                    filterForm.submit(); 
-                }, 200); 
+                
+                setTimeout(() => { filterForm.submit(); }, 200);
             };
 
             recognition.onerror = function(event) {
-                console.error("Speech recognition error", event.error);
                 voiceSearchBtn.innerHTML = "🎤";
-                searchInput.placeholder = "Search for groceries, essentials...";
-                searchInput.classList.remove("border-success");
+                searchInput.placeholder = "Search for groceries, fashion...";
             };
             
             recognition.onend = function() {
                 voiceSearchBtn.innerHTML = "🎤";
-                searchInput.classList.remove("border-success");
             };
         } else {
             voiceSearchBtn.style.display = "none"; 
