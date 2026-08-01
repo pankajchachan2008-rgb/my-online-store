@@ -3,6 +3,9 @@
 
 {% block content %}
 <style>
+    /* 🌟 GENERAL APP-STYLE BACKGROUND */
+    body { background-color: #F6F8FC; }
+
     /* 🌟 DYNAMIC LIFESTYLE CAROUSEL HERO */
     .lifestyle-carousel .carousel-item {
         height: 65vh;
@@ -11,309 +14,141 @@
         overflow: hidden;
     }
     .lifestyle-carousel img, .lifestyle-carousel video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center center;
-        opacity: 0.65;
-        transition: transform 10s ease;
+        width: 100%; height: 100%; object-fit: cover; object-position: center center;
+        opacity: 0.65; transition: transform 10s ease;
     }
-    .lifestyle-carousel .carousel-item.active img {
-        transform: scale(1.05); 
-    }
+    .lifestyle-carousel .carousel-item.active img { transform: scale(1.05); }
     .carousel-caption-custom {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        color: white;
-        width: 100%;
-        padding: 0 20px;
-        z-index: 10;
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        text-align: center; color: white; width: 100%; padding: 0 20px; z-index: 10;
     }
     .carousel-caption-custom h2 {
-        font-family: 'Jost', sans-serif;
-        font-size: 4rem;
-        font-weight: 700;
-        letter-spacing: 5px;
-        text-transform: uppercase;
-        margin-bottom: 25px;
+        font-family: 'Jost', sans-serif; font-size: 4rem; font-weight: 700;
+        letter-spacing: 5px; text-transform: uppercase; margin-bottom: 25px;
         text-shadow: 2px 4px 15px rgba(0,0,0,0.4);
     }
-    
-    /* 🌟 SLEEK HORIZONTAL FILTERS */
-    .filter-wrapper {
+
+    /* 🌟 APP-STYLE STICKY CATEGORY SCROLLER */
+    .sticky-cat-bar {
         background: #FFFFFF;
-        border-bottom: 1px solid #E2E8F0;
-        padding: 25px 0;
-        margin-bottom: 40px;
-    }
-    .filter-title {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        color: #94A3B8;
-        margin-bottom: 10px;
-        padding-left: 20px;
-        font-weight: 700;
+        position: sticky;
+        top: 0;
+        z-index: 1020;
+        border-bottom: 1px solid #EAEAEA;
+        padding: 12px 0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
     }
     .category-scroller {
-        display: flex;
-        overflow-x: auto;
-        gap: 15px;
-        scrollbar-width: none;
-        padding: 0 20px 15px 20px;
+        display: flex; overflow-x: auto; gap: 12px; scrollbar-width: none; padding: 0 20px;
     }
     .category-scroller::-webkit-scrollbar { display: none; }
-    
     .cat-pill {
-        padding: 10px 28px;
-        border: 1px solid #CBD5E1;
-        border-radius: 40px;
-        color: #475569;
-        text-decoration: none;
-        font-weight: 500;
-        white-space: nowrap;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        background: #FFFFFF;
-        transition: all 0.3s ease;
+        padding: 8px 24px; border: 1px solid #EAEAEA; border-radius: 40px;
+        color: #475569; text-decoration: none; font-weight: 600; white-space: nowrap;
+        font-size: 0.85rem; letter-spacing: 0.5px; background: #FFFFFF; transition: all 0.2s ease;
     }
-    .cat-pill:hover, .cat-pill.active {
-        background-color: #0F172A;
-        color: #FFFFFF;
-        border-color: #0F172A;
-        box-shadow: 0 4px 10px rgba(15,23,42,0.15);
+    .cat-pill:hover { background-color: #F8FAFC; border-color: #CBD5E1; color: #0F172A; }
+    .cat-pill.active {
+        background-color: #E8F3FF; color: #00539C; border-color: #00539C;
     }
 
-    /* 🌟 AIRY ELEGANT PRODUCT CARDS */
-    .elegant-card {
-        background: transparent;
-        border: none;
-        text-decoration: none;
-        display: block;
-        transition: transform 0.4s ease;
+    /* 🌟 JIO-MART STYLE PRODUCT CARDS */
+    .jio-card {
+        background: #FFFFFF; border-radius: 12px; padding: 12px;
+        border: 1px solid #EAEAEA; position: relative; height: 100%;
+        display: flex; flex-direction: column; transition: box-shadow 0.3s ease;
     }
-    .elegant-card:hover { transform: translateY(-6px); }
+    .jio-card:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-color: #E2E8F0; }
     
-    .img-box-elegant {
-        background: #F1F5F9;
-        height: 350px; 
-        width: 100%;
-        overflow: hidden;
-        border-radius: 12px; 
-        position: relative;
-        margin-bottom: 18px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    .jio-img-box {
+        height: 150px; width: 100%; display: flex; align-items: center;
+        justify-content: center; margin-bottom: 12px; position: relative;
     }
-    .img-box-elegant img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        mix-blend-mode: multiply;
-        transition: transform 0.8s ease;
+    .jio-img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
+    
+    .jio-discount-badge {
+        position: absolute; top: 0; left: 0; background: #00A100;
+        color: #FFF; font-size: 0.65rem; font-weight: 700; padding: 3px 6px;
+        border-radius: 4px; z-index: 2;
     }
-    .elegant-card:hover .img-box-elegant img {
-        transform: scale(1.05);
+
+    .jio-wishlist-icon {
+        position: absolute; top: 0; right: 0; color: #D1D5DB; font-size: 1.2rem;
+        z-index: 2; transition: 0.2s; text-decoration: none;
+    }
+    .jio-wishlist-icon:hover { color: #EF4444; }
+
+    /* Action Row: Variant & Add Button */
+    .jio-action-row {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-bottom: 12px; gap: 8px;
+    }
+    .jio-variant-select {
+        font-size: 0.8rem; color: #475569; border: 1px solid #E2E8F0;
+        border-radius: 6px; padding: 4px; width: 100%; max-width: 90px;
+        outline: none; background: #F8FAFC;
+    }
+    .jio-btn-add {
+        border: 1px solid #00539C; color: #00539C; background: #F0F7FF;
+        padding: 6px 18px; border-radius: 8px; font-weight: 700;
+        font-size: 0.85rem; transition: 0.2s ease; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .jio-btn-add:hover { background: #00539C; color: #FFF; }
+
+    /* Price Section */
+    .jio-price-row {
+        display: flex; align-items: baseline; gap: 6px; margin-bottom: 4px; flex-wrap: wrap;
+    }
+    .jio-price { font-size: 1.2rem; font-weight: 800; color: #0F172A; }
+    .jio-mrp { font-size: 0.8rem; color: #94A3B8; text-decoration: line-through; }
+    .jio-discount-text { font-size: 0.75rem; color: #00A100; font-weight: 700; }
+
+    /* Title & Tags */
+    .jio-title {
+        font-size: 0.9rem; color: #334155; font-weight: 500; line-height: 1.4;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        overflow: hidden; margin-bottom: auto;
     }
     
-    .product-brand-title {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        color: #64748B;
-        margin-bottom: 5px;
-        font-weight: 600;
-    }
-    .product-name-elegant {
-        font-family: 'Jost', sans-serif;
-        font-size: 1.15rem;
-        font-weight: 600;
-        color: #0F172A;
-        margin-bottom: 6px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        line-height: 1.4;
-        height: 3.2rem;
-    }
-    .product-price-elegant {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #0F172A;
-        margin-bottom: 12px;
+    .jio-tag {
+        font-size: 0.75rem; color: #64748B; display: flex; align-items: center;
+        gap: 4px; margin-top: 10px; font-weight: 600;
     }
 
-    .btn-elegant-cart {
-        background: #1E293B;
-        color: #FFFFFF;
-        font-weight: 600;
-        border-radius: 8px;
-        border: none;
-        padding: 12px;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        transition: all 0.3s ease;
+    /* 🌟 APP-STYLE FLOATING PILL CART */
+    .floating-cart-pill {
+        position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+        background: #00539C; color: #FFFFFF; border-radius: 50px; padding: 10px 24px;
+        display: flex; align-items: center; justify-content: space-between; gap: 15px;
+        min-width: 240px; box-shadow: 0 8px 25px rgba(0, 83, 156, 0.4); z-index: 1000;
+        text-decoration: none; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .btn-elegant-cart:hover { background: #4F46E5; color: white; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
-
-    .section-heading {
-        font-family: 'Jost', sans-serif;
-        font-size: 2.2rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 3px;
-        color: #0F172A;
-        text-align: center;
-        margin-bottom: 50px;
+    .floating-cart-pill:hover { color: #FFF; transform: translateX(-50%) scale(1.05); }
+    .floating-cart-icon {
+        background: #FFF; color: #00539C; width: 32px; height: 32px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
     }
 
-    /* 🌟 ADVANCED FILTER BAR STYLES */
+    /* 🌟 COMPACT SMART FILTER BAR */
     .premium-filter-bar {
-        background: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        margin-bottom: 40px;
+        background: #FFFFFF; border-radius: 12px; padding: 20px;
+        margin-top: 20px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        border: 1px solid #EAEAEA;
     }
-    .filter-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 15px;
-        align-items: end;
+    .filter-input, .filter-select {
+        border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px 15px; font-size: 0.9rem; width: 100%;
+        background: #F8FAFC; outline: none;
     }
-    .filter-label {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #64748B;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 8px;
-        display: block;
-    }
-    .filter-select, .filter-input {
-        width: 100%;
-        padding: 10px 15px;
-        border: 1px solid #CBD5E1;
-        border-radius: 8px;
-        font-family: 'Poppins', sans-serif;
-        font-size: 0.9rem;
-        color: #0F172A;
-        outline: none;
-        transition: 0.3s;
-    }
-    .filter-select:focus, .filter-input:focus { border-color: #0F172A; }
-    
-    .btn-apply-filter {
-        background: #0F172A;
-        color: #FFFFFF;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.3s;
-        height: 42px;
-    }
-    .btn-apply-filter:hover { background: #1E293B; }
-    .btn-clear-filter {
-        background: #F1F5F9;
-        color: #64748B;
-        border: 1px solid #CBD5E1;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: 600;
-        text-decoration: none;
-        text-align: center;
-        transition: 0.3s;
-        height: 42px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .btn-clear-filter:hover { background: #E2E8F0; color: #0F172A; }
-
-    /* 🌟 Filter Collapse Animation */
-    .filter-content-wrapper {
-        max-height: 1200px;
-        overflow: hidden;
-        transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
-        opacity: 1;
-    }
-    .filter-content-wrapper.collapsed {
-        max-height: 0;
-        opacity: 0;
-        pointer-events: none;
-        margin-top: 0;
-    }
-    .toggle-filter-btn {
-        background: #F1F5F9;
-        color: #0F172A;
-        border: 1px solid #CBD5E1;
-        padding: 8px 18px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .toggle-filter-btn:hover {
-        background: #E2E8F0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    /* 🌟 STICKY CART BAR (AJAX) */
-    .sticky-cart {
-        position: fixed;
-        bottom: 60px;
-        left: 10px;
-        right: 10px;
-        background: #003366;
-        color: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 18px;
-        font-family: 'Poppins', sans-serif;
-        z-index: 1000;
-    }
-    .sticky-cart .cart-icon { position: relative; font-size: 22px; }
-    .sticky-cart .cart-badge {
-        position: absolute;
-        top: -6px;
-        right: -10px;
-        background: #ffcc00;
-        color: #003366;
-        font-weight: 700;
-        border-radius: 50%;
-        padding: 4px 6px;
-        font-size: 12px;
-    }
-    .sticky-cart .cart-info { flex: 1; text-align: center; font-size: 14px; font-weight: 500; }
-    .sticky-cart .view-cart-btn {
-        background: #ffcc00; color: #003366; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; transition: 0.3s ease;
-    }
-    .sticky-cart .view-cart-btn:hover { background: #ffd633; }
+    .btn-apply-filter { background: #0F172A; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; width: 100%; }
+    .filter-content-wrapper { max-height: 1200px; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 1; }
+    .filter-content-wrapper.collapsed { max-height: 0; opacity: 0; pointer-events: none; margin-top: 0 !important; }
 
     /* 📱 MOBILE VIEW FIXES */
     @media (max-width: 768px) {
         .lifestyle-carousel .carousel-item { height: 40vh; min-height: 280px; }
         .carousel-caption-custom h2 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 15px; }
-        .carousel-caption-custom .btn { padding: 10px 30px !important; font-size: 0.9rem; }
-        .img-box-elegant { height: 260px; }
-        .section-heading { font-size: 1.6rem; margin-bottom: 30px; }
-        .sticky-cart { bottom: 70px; padding: 10px 14px; }
-        .sticky-cart .cart-info { font-size: 13px; }
+        .jio-img-box { height: 120px; }
+        .floating-cart-pill { bottom: 90px; }
     }
 </style>
 
@@ -370,209 +205,89 @@
 </div>
 {% endif %}
 
-<!-- 🌟 2. SLEEK HORIZONTAL FILTERS -->
-<div class="filter-wrapper shadow-sm">
+<!-- 🌟 APP-STYLE STICKY CATEGORY SCROLLER -->
+<div class="sticky-cat-bar" id="full-collection">
     <div class="container-fluid" style="max-width: 1400px;">
-        <h6 class="filter-title">Categories</h6>
-        <div class="category-scroller mb-3">
-            <a href="?" class="cat-pill {% if not active_category %}active{% endif %}">All Categories</a>
+        <div class="category-scroller">
+            <a href="?" class="cat-pill {% if not active_category and not active_brand %}active{% endif %}">⚡ Quick Shop All</a>
             {% for cat in categories %}
                 <a href="?category={{ cat.id }}{% if active_brand %}&brand={{ active_brand }}{% endif %}" class="cat-pill {% if active_category == cat.id %}active{% endif %}">{{ cat.name }}</a>
             {% endfor %}
-        </div>
-
-        <h6 class="filter-title mt-2">Top Brands</h6>
-        <div class="category-scroller pb-2">
-            <a href="?{% if active_category %}category={{ active_category }}{% endif %}" class="cat-pill {% if not active_brand %}active{% endif %}">All Brands</a>
             {% for brand in brands %}
-                <a href="?brand={{ brand.id }}{% if active_category %}&category={{ active_category }}{% endif %}" class="cat-pill {% if active_brand == brand.id %}active{% endif %}">
-                    {{ brand.name }}
-                </a>
+                <a href="?brand={{ brand.id }}{% if active_category %}&category={{ active_category }}{% endif %}" class="cat-pill {% if active_brand == brand.id %}active{% endif %}">{{ brand.name }}</a>
             {% endfor %}
         </div>
     </div>
 </div>
 
-<div class="container-fluid px-4 mb-5" style="max-width: 1400px;" id="full-collection">
-    
-    <!-- 🌟 3. TRENDING BESTSELLERS SHOWCASE -->
-    {% if not active_category and not active_brand and not search_query %}
-    <div class="mb-5 pb-5 border-bottom">
-        <h3 class="section-heading">Trending Bestsellers</h3>
-        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-xl-5">
-            {% for product in products|slice:":4" %}
-            <div class="col">
-                <div class="h-100 d-flex flex-column">
-                    <a href="{% url 'product_detail' product.id %}" class="elegant-card text-center mb-2">
-                        <div class="img-box-elegant position-relative">
-                            {% if product.discount_percentage > 0 %}
-                                <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 shadow" style="font-size: 0.75rem; z-index: 2;">
-                                    {{ product.discount_percentage }}% OFF
-                                </span>
-                            {% endif %}
-                            {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                            {% else %}
-                                <img src="https://placehold.co/400x500/F8FAFC/64748B?text={{ product.name|urlencode }}" alt="{{ product.name }}">
-                            {% endif %}
-                        </div>
-                        <div class="product-brand-title">{{ product.brand.name|default:"Premium" }}</div>
-                        <h4 class="product-name-elegant">{{ product.name }}</h4>
-                        <div class="d-flex justify-content-center align-items-center mb-2">
-                            <span class="text-warning" style="font-size: 0.85rem; letter-spacing: 2px;">★★★★★</span>
-                            <span class="text-muted ms-2 fw-medium" style="font-size: 0.75rem;">(4.8)</span>
-                        </div>
-                        <div class="product-price-elegant">
-                            ₹{{ product.price }} 
-                            {% if product.mrp and product.mrp > product.price %}
-                                <small class="text-muted text-decoration-line-through fw-light ms-2" style="font-size: 0.9rem;">₹{{ product.mrp }}</small>
-                            {% endif %}
-                        </div>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
+<div class="container-fluid px-3 px-md-4" style="max-width: 1400px;">
 
-    <!-- 🌟 4. ADVANCED SMART FILTER BAR WITH VOICE SEARCH -->
+    <!-- 🌟 ADVANCED SMART FILTER BAR WITH VOICE SEARCH -->
     <div class="premium-filter-bar">
         <!-- Header with Smart Toggle Button -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-bold m-0 text-uppercase" style="font-family: 'Jost', sans-serif; letter-spacing: 2px; color: #0F172A; font-size: 1.2rem;">
-                🔍 Search & Filter
-            </h4>
-            <button type="button" id="toggleFilterBtn" class="toggle-filter-btn shadow-sm">
-                <span id="toggleFilterText">Hide Filters</span> <span id="toggleFilterIcon">▲</span>
+        <div class="d-flex justify-content-between align-items-center">
+            
+            <!-- Compact Search Form -->
+            <form method="GET" action="#full-collection" class="flex-grow-1 me-3 position-relative d-flex align-items-center m-0">
+                <span class="position-absolute ms-3 text-muted fs-5">🔍</span>
+                <input type="text" id="searchInput" name="search" class="filter-input ps-5 rounded-pill border-secondary" placeholder="Search for groceries, essentials..." value="{{ search_query }}">
+                <button type="button" id="voiceSearchBtn" class="position-absolute end-0 me-3 bg-transparent border-0 fs-5" title="Search by Voice">🎤</button>
+            </form>
+            
+            <button type="button" id="toggleFilterBtn" class="btn btn-light border shadow-sm rounded-pill d-flex align-items-center gap-2 px-3 py-2 text-dark fw-bold">
+                <span id="toggleFilterText" class="d-none d-md-block">Filters</span> <span id="toggleFilterIcon">▼</span>
             </button>
         </div>
 
         <!-- Collapsible Content Area -->
-        <div id="filterContent" class="filter-content-wrapper">
+        <div id="filterContent" class="filter-content-wrapper mt-4">
             <form method="GET" action="#full-collection">
-                <div class="filter-grid">
-                    
-                    <!-- Search with Voice Command -->
-                    <div style="grid-column: 1 / -1; position: relative; display: flex; align-items: center;">
-                        <input type="text" id="searchInput" name="search" class="filter-input" placeholder="Search premium essentials..." value="{{ search_query }}" style="padding-right: 45px;">
-                        <button type="button" id="voiceSearchBtn" style="position: absolute; right: 10px; background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.3s;" title="Search by Voice">
-                            🎤
-                        </button>
-                    </div>
-                    
-                    <!-- Category -->
-                    <div>
-                        <label class="filter-label">Category</label>
-                        <select name="category" class="filter-select">
-                            <option value="">All Categories</option>
-                            {% for cat in categories %}
-                                <option value="{{ cat.id }}" {% if active_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    
-                    <!-- Brand -->
-                    <div>
-                        <label class="filter-label">Brand</label>
-                        <select name="brand" class="filter-select">
-                            <option value="">All Brands</option>
-                            {% for brand in brands %}
-                                <option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Sort -->
-                    <div>
-                        <label class="filter-label">Sort By</label>
+                <!-- Keep search if applying other filters -->
+                <input type="hidden" name="search" value="{{ search_query }}">
+                
+                <div class="row g-3">
+                    <div class="col-6 col-md-3">
+                        <label class="small text-muted fw-bold mb-1 text-uppercase">Sort</label>
                         <select name="sort" class="filter-select">
-                            <option value="">Latest First</option>
-                            <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
-                            <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="">Latest</option>
+                            <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Low to High</option>
+                            <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>High to Low</option>
                         </select>
                     </div>
-
-                    <!-- Discount -->
-                    <div>
-                        <label class="filter-label">Discount</label>
+                    <div class="col-6 col-md-3">
+                        <label class="small text-muted fw-bold mb-1 text-uppercase">Discount</label>
                         <select name="discount" class="filter-select">
-                            <option value="">Any Discount</option>
-                            <option value="10" {% if active_discount == '10' %}selected{% endif %}>10% or more</option>
-                            <option value="20" {% if active_discount == '20' %}selected{% endif %}>20% or more</option>
-                            <option value="30" {% if active_discount == '30' %}selected{% endif %}>30% or more</option>
-                            <option value="50" {% if active_discount == '50' %}selected{% endif %}>50% or more</option>
+                            <option value="">Any</option>
+                            <option value="10" {% if active_discount == '10' %}selected{% endif %}>10%+</option>
+                            <option value="20" {% if active_discount == '20' %}selected{% endif %}>20%+</option>
+                            <option value="50" {% if active_discount == '50' %}selected{% endif %}>50%+</option>
                         </select>
                     </div>
-
-                    <!-- Rating -->
-                    <div>
-                        <label class="filter-label">Rating</label>
-                        <select name="rating" class="filter-select">
-                            <option value="">Any Rating</option>
-                            <option value="4" {% if active_rating == '4' %}selected{% endif %}>4★ & Above</option>
-                            <option value="3" {% if active_rating == '3' %}selected{% endif %}>3★ & Above</option>
-                        </select>
-                    </div>
-
-                    <!-- Availability -->
-                    <div>
-                        <label class="filter-label">Availability</label>
-                        <select name="availability" class="filter-select">
-                            <option value="">All Items</option>
-                            <option value="in_stock" {% if active_availability == 'in_stock' %}selected{% endif %}>In Stock Only</option>
-                        </select>
-                    </div>
-
-                    <!-- Size -->
-                    <div>
-                        <label class="filter-label">Size</label>
+                    <div class="col-6 col-md-3">
+                        <label class="small text-muted fw-bold mb-1 text-uppercase">Size</label>
                         <select name="size" class="filter-select">
                             <option value="">Any Size</option>
-                            <option value="S" {% if active_size == 'S' %}selected{% endif %}>Small (S)</option>
-                            <option value="M" {% if active_size == 'M' %}selected{% endif %}>Medium (M)</option>
-                            <option value="L" {% if active_size == 'L' %}selected{% endif %}>Large (L)</option>
-                            <option value="XL" {% if active_size == 'XL' %}selected{% endif %}>Extra Large (XL)</option>
+                            <option value="S" {% if active_size == 'S' %}selected{% endif %}>S</option>
+                            <option value="M" {% if active_size == 'M' %}selected{% endif %}>M</option>
+                            <option value="L" {% if active_size == 'L' %}selected{% endif %}>L</option>
+                            <option value="XL" {% if active_size == 'XL' %}selected{% endif %}>XL</option>
                         </select>
                     </div>
-
-                    <!-- Color -->
-                    <div>
-                        <label class="filter-label">Color</label>
-                        <select name="color" class="filter-select">
-                            <option value="">Any Color</option>
-                            <option value="Black" {% if active_color == 'Black' %}selected{% endif %}>Black</option>
-                            <option value="White" {% if active_color == 'White' %}selected{% endif %}>White</option>
-                            <option value="Blue" {% if active_color == 'Blue' %}selected{% endif %}>Blue</option>
-                            <option value="Red" {% if active_color == 'Red' %}selected{% endif %}>Red</option>
-                        </select>
+                    <div class="col-6 col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn-apply-filter flex-grow-1 shadow-sm">Apply</button>
+                        <a href="?" class="btn btn-light border py-2 px-3 rounded-3 fw-bold text-muted">Clear</a>
                     </div>
-
-                    <!-- Min Price -->
-                    <div>
-                        <label class="filter-label">Min Price (₹)</label>
-                        <input type="number" name="min_price" class="filter-input" placeholder="e.g. 100" value="{{ min_price|default:'' }}">
-                    </div>
-
-                    <!-- Max Price -->
-                    <div>
-                        <label class="filter-label">Max Price (₹)</label>
-                        <input type="number" name="max_price" class="filter-input" placeholder="e.g. 5000" value="{{ max_price|default:'' }}">
-                    </div>
-
-                    <!-- Buttons -->
-                    <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 15px;">
-                        <button type="button" class="btn-apply-filter w-100" onclick="this.closest('form').submit();">Apply Filters</button>
-                        <a href="?" class="btn-clear-filter w-100">Clear All</a>
-                    </div>
-
                 </div>
             </form>
         </div>
     </div>
 
     <!-- 🌟 MAIN PRODUCT GRID -->
-    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-xl-5 mb-5">
+    {% if search_query %}
+        <p class="text-muted small fw-bold mb-3 ms-2">Showing results for '{{ search_query }}'</p>
+    {% endif %}
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3 mb-5">
         {% for product in products %}
         
         <!-- 🎯 PREMIUM FEATURE 1: VERTICAL BANNER (Grid ke beech mein, 4th item ki jagah) -->
@@ -590,60 +305,64 @@
         </div>
         {% endif %}
 
-        <!-- Original Product Card -->
+        <!-- 🌟 JIO-MART STYLE PRODUCT CARD -->
         <div class="col">
-            <div class="h-100 d-flex flex-column">
-                <a href="{% url 'product_detail' product.id %}" class="elegant-card text-center mb-2">
-                    <div class="img-box-elegant position-relative">
-                        
-                        <!-- 🎯 PREMIUM FEATURE 2: FOMO / SCARCITY TAG (Stock kam hone par) -->
-                        {% if product.stock and product.stock < 5 %}
-                            <span class="badge bg-warning text-dark position-absolute bottom-0 start-50 translate-middle-x mb-2 px-3 py-1 shadow-sm rounded-pill" style="font-size: 0.75rem; z-index: 2; width: max-content;">
-                                ⏳ Only {{ product.stock }} Left!
-                            </span>
-                        {% endif %}
+            <div class="jio-card shadow-sm border-0">
+                <!-- Wishlist Heart -->
+                <a href="{% url 'add_to_wishlist' product.id %}" class="jio-wishlist-icon">🤍</a>
 
-                        {% if product.discount_percentage > 0 %}
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 shadow" style="font-size: 0.75rem; z-index: 2;">
-                                {{ product.discount_percentage }}% OFF
-                            </span>
-                        {% endif %}
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                        {% else %}
-                            <img src="https://placehold.co/400x500/F8FAFC/64748B?text={{ product.name|urlencode }}" alt="{{ product.name }}">
-                        {% endif %}
-                    </div>
-                    <div class="product-brand-title">{{ product.brand.name|default:"Premium" }}</div>
-                    <h4 class="product-name-elegant">{{ product.name }}</h4>
-                    <div class="d-flex justify-content-center align-items-center mb-2">
-                        <span class="text-warning" style="font-size: 0.85rem; letter-spacing: 2px;">★★★★★</span>
-                    </div>
-                    <div class="product-price-elegant">
-                        ₹{{ product.price }} 
-                        {% if product.mrp and product.mrp > product.price %}
-                            <small class="text-muted text-decoration-line-through fw-light ms-2" style="font-size: 0.9rem;">₹{{ product.mrp }}</small>
-                        {% endif %}
-                    </div>
+                <!-- Image Box -->
+                <a href="{% url 'product_detail' product.id %}" class="jio-img-box text-decoration-none">
+                    
+                    <!-- 🎯 PREMIUM FEATURE 2: FOMO / SCARCITY TAG -->
+                    {% if product.stock and product.stock < 5 %}
+                        <span class="badge position-absolute bottom-0 start-50 translate-middle-x mb-1 px-3 py-1 shadow-sm rounded-pill" style="font-size: 0.7rem; background: #F59E0B; color: #fff; z-index: 2; width: max-content;">
+                            ⏳ Only {{ product.stock }} Left!
+                        </span>
+                    {% endif %}
+
+                    {% if product.discount_percentage > 0 %}
+                        <span class="jio-discount-badge shadow-sm">{{ product.discount_percentage }}% OFF</span>
+                    {% endif %}
+                    
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="https://placehold.co/400x400/F8FAFC/64748B?text={{ product.name|urlencode }}" alt="{{ product.name }}">
+                    {% endif %}
                 </a>
-                
-                <div class="px-2 pb-2 d-flex flex-column flex-grow-1 mt-auto">
-                    <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto">
-                        {% csrf_token %}
+
+                <!-- Add to Cart Form + Variant Row -->
+                <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-2 mb-2">
+                    {% csrf_token %}
+                    <div class="jio-action-row">
                         {% if product.variants.exists %}
-                            <select name="variant_id" class="form-select form-select-sm mb-3 rounded-2 text-center border-secondary shadow-sm" style="font-weight: 500;" required>
-                                <option value="" disabled selected>Select Size</option>
+                            <select name="variant_id" class="jio-variant-select shadow-sm" required>
                                 {% for variant in product.variants.all %}
-                                    <option value="{{ variant.id }}">{{ variant.size_name }} - ₹{{ variant.price }}</option>
+                                    <option value="{{ variant.id }}">{{ variant.size_name }}</option>
                                 {% endfor %}
                             </select>
+                        {% else %}
+                            <span class="jio-variant-select border-0 ps-0 text-muted bg-transparent">1 Pack</span>
                         {% endif %}
-                        <div class="d-flex flex-column gap-2 mt-2">
-                            <button type="submit" class="btn-elegant-cart add-to-cart-ajax w-100 shadow-sm">Add To Bag</button>
-                            <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger w-100 btn-sm rounded-2 fw-bold text-uppercase py-2" style="border: 1px solid #dc3545; letter-spacing: 1px;">❤️ Wishlist</a>
-                        </div>
-                    </form>
-                </div>
+                        
+                        <button type="submit" class="jio-btn-add add-to-cart-ajax shadow-sm">Add</button>
+                    </div>
+                </form>
+
+                <!-- Pricing & Title -->
+                <a href="{% url 'product_detail' product.id %}" class="text-decoration-none d-flex flex-column flex-grow-1">
+                    <div class="jio-price-row">
+                        <span class="jio-price">₹{{ product.price }}</span>
+                        {% if product.mrp and product.mrp > product.price %}
+                            <span class="jio-mrp">₹{{ product.mrp }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="jio-title">{{ product.name }}</div>
+                    
+                    <div class="jio-tag"><span class="text-warning fs-6">⚡</span> Quick</div>
+                </a>
             </div>
         </div>
 
@@ -656,7 +375,7 @@
                 {% endif %}
                 <div class="position-absolute top-50 start-50 translate-middle text-center w-100">
                     <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 3px;">{{ banners.2.title|default:"Mega Savings" }}</h3>
-                    <p class="text-white-50 mb-0">Use Code <strong>CGSMART10</strong> for extra discount!</p>
+                    <p class="text-white-50 mb-0">Use Code <strong class="text-warning">CGSMART10</strong> for extra discount!</p>
                 </div>
             </div>
         </div>
@@ -664,43 +383,42 @@
 
         {% empty %}
         <div class="col-12 text-center py-5">
-            <h4 class="text-muted">No products found matching your filters.</h4>
-            <a href="?" class="btn btn-dark mt-3 px-4 py-2">Clear Filters</a>
+            <h4 class="text-muted fw-bold">Oops! No items found.</h4>
+            <p class="text-muted">Try removing some filters or searching again.</p>
+            <a href="?" class="btn btn-primary mt-3 px-4 py-2 fw-bold rounded-pill">Clear All Filters</a>
         </div>
         {% endfor %}
     </div>
 
     <!-- 🌟 AIRY PAGINATION -->
-    <nav aria-label="Page navigation" class="mt-5 pt-4 border-top">
+    <nav aria-label="Page navigation" class="mt-4 pt-4 border-top">
         <ul class="pagination justify-content-center gap-2">
             {% if products.has_previous %}
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page=1{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}{% if active_discount %}&discount={{active_discount}}{% endif %}{% if active_rating %}&rating={{active_rating}}{% endif %}{% if active_availability %}&availability={{active_availability}}{% endif %}{% if active_color %}&color={{active_color}}{% endif %}{% if active_size %}&size={{active_size}}{% endif %}{% if min_price %}&min_price={{min_price}}{% endif %}{% if max_price %}&max_price={{max_price}}{% endif %}">&laquo; First</a></li>
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.previous_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}{% if active_discount %}&discount={{active_discount}}{% endif %}{% if active_rating %}&rating={{active_rating}}{% endif %}{% if active_availability %}&availability={{active_availability}}{% endif %}{% if active_color %}&color={{active_color}}{% endif %}{% if active_size %}&size={{active_size}}{% endif %}{% if min_price %}&min_price={{min_price}}{% endif %}{% if max_price %}&max_price={{max_price}}{% endif %}">Prev</a></li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent fw-bold" href="?page={{ products.previous_page_number }}{% if search_query %}&search={{search_query}}{% endif %}">Prev</a></li>
             {% endif %}
 
             <li class="page-item active">
-                <span class="page-link text-white border-0 px-4 py-2 shadow-sm rounded-3" style="background-color: #0F172A; font-weight: 600;">{{ products.number }} / {{ products.paginator.num_pages }}</span>
+                <span class="page-link text-white border-0 px-4 py-2 shadow-sm rounded-pill" style="background-color: #00539C; font-weight: 600;">{{ products.number }} / {{ products.paginator.num_pages }}</span>
             </li>
 
             {% if products.has_next %}
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.next_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}{% if active_discount %}&discount={{active_discount}}{% endif %}{% if active_rating %}&rating={{active_rating}}{% endif %}{% if active_availability %}&availability={{active_availability}}{% endif %}{% if active_color %}&color={{active_color}}{% endif %}{% if active_size %}&size={{active_size}}{% endif %}{% if min_price %}&min_price={{min_price}}{% endif %}{% if max_price %}&max_price={{max_price}}{% endif %}">Next</a></li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent fw-bold" href="?page={{ products.next_page_number }}{% if search_query %}&search={{search_query}}{% endif %}">Next</a></li>
             {% endif %}
         </ul>
     </nav>
 </div>
 
-<!-- 🌟 STICKY CART BAR HTML -->
-<div id="stickyCart" class="sticky-cart" style="display:none;">
-    <div class="cart-icon">
-        🛒 <span id="cartBadge" class="cart-badge">0</span>
+<!-- 🌟 APP-STYLE FLOATING PILL CART (AJAX) -->
+<a href="{% url 'cart_detail' %}" id="stickyCart" class="floating-cart-pill" style="display:none;">
+    <div class="d-flex align-items-center gap-3">
+        <div class="floating-cart-icon">🛒</div>
+        <div class="text-start">
+            <div class="fw-bold" style="font-size: 0.95rem; line-height: 1;">View cart</div>
+            <div id="cartSummary" style="font-size: 0.75rem; opacity: 0.9; margin-top: 2px;">0 Items | ₹0.00</div>
+        </div>
     </div>
-    <div class="cart-info">
-        <span id="cartSummary">0 Items | ₹0.00</span>
-    </div>
-    <button class="view-cart-btn" onclick="window.location.href='{% url 'cart_detail' %}'">
-        VIEW CART
-    </button>
-</div>
+    <div class="fw-bold fs-4" style="line-height: 1;">›</div>
+</a>
 
 <!-- 🌟 COMBINED SCRIPTS (AJAX CART + SMART FILTER + VOICE SEARCH) -->
 <script>
@@ -709,45 +427,38 @@
         // --- 1. SMART FILTER AUTO-COLLAPSE LOGIC ---
         const filterContent = document.getElementById("filterContent");
         const toggleFilterBtn = document.getElementById("toggleFilterBtn");
-        const toggleFilterText = document.getElementById("toggleFilterText");
         const toggleFilterIcon = document.getElementById("toggleFilterIcon");
 
         const urlParams = new URLSearchParams(window.location.search);
         let hasActiveFilters = false;
         for (const [key, value] of urlParams.entries()) {
-            if (value && key !== 'page') {
-                hasActiveFilters = true;
-                break;
+            if (value && key !== 'page' && key !== 'search') {
+                hasActiveFilters = true; break;
             }
         }
 
         if (hasActiveFilters) {
             filterContent.classList.add("collapsed");
-            toggleFilterText.innerText = "Show Filters";
             toggleFilterIcon.innerText = "▼";
         }
 
         toggleFilterBtn.addEventListener("click", function() {
             filterContent.classList.toggle("collapsed");
             if (filterContent.classList.contains("collapsed")) {
-                toggleFilterText.innerText = "Show Filters";
                 toggleFilterIcon.innerText = "▼";
             } else {
-                toggleFilterText.innerText = "Hide Filters";
                 toggleFilterIcon.innerText = "▲";
             }
         });
 
-        // --- 2. AJAX CART LOGIC ---
+        // --- 2. AJAX CART LOGIC (FLOATING PILL) ---
         function updateCartBar(items, total) {
             const cartBar = document.getElementById("stickyCart");
-            const cartBadge = document.getElementById("cartBadge");
             const cartSummary = document.getElementById("cartSummary");
 
             if (items > 0) {
                 cartBar.style.display = "flex";
-                cartBadge.textContent = items;
-                cartSummary.textContent = `${items} Items | ₹${parseFloat(total).toFixed(2)}`;
+                cartSummary.textContent = `${items} item${items > 1 ? 's' : ''} | ₹${parseFloat(total).toFixed(2)}`;
             } else {
                 cartBar.style.display = "none";
             }
@@ -760,7 +471,6 @@
                 .catch(error => console.error('Error:', error));
         }
         
-        // Load cart state instantly
         refreshCartBar();
 
         document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
@@ -774,10 +484,7 @@
                 let variantId = null;
                 const variantSelect = form.querySelector('select[name="variant_id"]');
                 if (variantSelect) {
-                    if (!variantSelect.value) {
-                        alert("Please select a Size/Variant first.");
-                        return;
-                    }
+                    if (!variantSelect.value) { alert("Please select a size first."); return; }
                     variantId = variantSelect.value;
                 }
 
@@ -790,12 +497,16 @@
                 .then(data => {
                     updateCartBar(data.items, data.total);
                     const originalText = this.innerHTML;
-                    this.innerHTML = "ADDED! ✔️";
-                    this.style.background = "#059669"; 
+                    this.innerHTML = "Added ✔";
+                    this.style.background = "#00A100";
+                    this.style.color = "#FFF";
+                    this.style.borderColor = "#00A100";
                     setTimeout(() => {
                         this.innerHTML = originalText;
-                        this.style.background = ""; 
-                    }, 1500);
+                        this.style.background = "";
+                        this.style.color = "";
+                        this.style.borderColor = "";
+                    }, 1000);
                 })
                 .catch(error => console.error('Error:', error));
             });
@@ -819,47 +530,37 @@
                 recognition.start(); 
                 voiceSearchBtn.innerHTML = "🔴"; 
                 searchInput.placeholder = "Listening...";
-                searchInput.style.borderColor = "#059669";
+                searchInput.classList.add("border-success");
             });
 
             recognition.onresult = function(event) {
                 let transcript = event.results[0][0].transcript;
                 
-                // 🌟 FIX 1: Aggressive Safai (Sirf English letters, numbers aur spaces bachenge)
+                // Aggressive Safai
                 transcript = transcript.replace(/[^a-zA-Z0-9\s]/g, '').trim();
 
                 searchInput.value = transcript;
                 voiceSearchBtn.innerHTML = "🎤";
     
-                // 🌟 FIX 2: Human-like Submit
-                const submitBtn = filterForm.querySelector('.btn-apply-filter');
-                if (submitBtn) {
-                    setTimeout(() => {
-                        submitBtn.click(); 
-                    }, 200); 
-                } else {
+                // Human-like Submit
+                setTimeout(() => {
                     filterForm.submit(); 
-                }
+                }, 200); 
             };
 
             recognition.onerror = function(event) {
                 console.error("Speech recognition error", event.error);
                 voiceSearchBtn.innerHTML = "🎤";
-                searchInput.placeholder = "Search premium essentials...";
-                searchInput.style.borderColor = "";
-                if (event.error === 'not-allowed') {
-                    alert("Please allow microphone access to use Voice Search.");
-                }
+                searchInput.placeholder = "Search for groceries, essentials...";
+                searchInput.classList.remove("border-success");
             };
             
             recognition.onend = function() {
                 voiceSearchBtn.innerHTML = "🎤";
-                searchInput.style.borderColor = "";
-                searchInput.placeholder = "Search premium essentials...";
+                searchInput.classList.remove("border-success");
             };
         } else {
             voiceSearchBtn.style.display = "none"; 
-            console.log("Voice search is not supported in this browser.");
         }
 
     });
