@@ -129,12 +129,12 @@
 <div class="category-strip-wrapper">
     <div class="container" style="max-width: 1400px;">
         <div class="category-scroller">
-            <a href="?" class="cat-pill {% if not active_category and not active_brand %}active{% endif %}">Shop All</a>
+            <a href="{% url 'home' %}" class="cat-pill {% if not active_category and not active_brand %}active{% endif %}">Shop All</a>
             {% for cat in categories %}
-                <a href="?category={{ cat.id }}" class="cat-pill {% if active_category == cat.id %}active{% endif %}">{{ cat.name }}</a>
+                <a href="{% url 'home' %}?category={{ cat.id }}" class="cat-pill {% if active_category == cat.id %}active{% endif %}">{{ cat.name }}</a>
             {% endfor %}
             {% for brand in brands %}
-                <a href="?brand={{ brand.id }}" class="cat-pill {% if active_brand == brand.id %}active{% endif %}">{{ brand.name }}</a>
+                <a href="{% url 'home' %}?brand={{ brand.id }}" class="cat-pill {% if active_brand == brand.id %}active{% endif %}">{{ brand.name }}</a>
             {% endfor %}
         </div>
     </div>
@@ -147,17 +147,17 @@
         <div class="btn-app-category shadow-sm" data-bs-toggle="offcanvas" data-bs-target="#appCategoriesModal">
             <span class="fs-4">🛍️</span> Shop by Category
         </div>
-        <a href="?sort=low_to_high" class="btn-app-category shadow-sm">
+        <a href="{% url 'home' %}?sort=low_to_high" class="btn-app-category shadow-sm">
             <span class="fs-4">🔥</span> Top Offers
         </a>
-        <a href="?discount=20" class="btn-app-category shadow-sm">
+        <a href="{% url 'home' %}?discount=20" class="btn-app-category shadow-sm">
             <span class="fs-4">🏷️</span> 20%+ Discount
         </a>
     </div>
 
     <!-- 🌟 HIGH CONTRAST SEARCH & FILTER -->
     <div class="premium-filter-bar">
-        <form method="GET" action="#shop-grid">
+        <form method="GET" action="{% url 'home' %}#shop-grid">
             <div class="row g-4 align-items-end">
                 <div class="col-md-5 position-relative">
                     <label class="filter-label">Search Products</label>
@@ -242,7 +242,7 @@
         {% empty %}
         <div class="col-12 text-center py-5">
             <h4 class="fw-bold mb-3">Oops! No items found.</h4>
-            <a href="?" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm" style="background: #00539C; border: none;">Clear All Filters</a>
+            <a href="{% url 'home' %}" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm" style="background: #00539C; border: none;">Clear All Filters</a>
         </div>
         {% endfor %}
     </div>
@@ -292,7 +292,7 @@
                     <div class="row g-2">
                         <!-- View All Button -->
                         <div class="col-12 mb-2">
-                            <a href="?category={{ cat.id }}" class="subcat-card bg-light border-secondary p-3">
+                            <a href="{% url 'home' %}?category={{ cat.id }}" class="subcat-card bg-light border-secondary p-3">
                                 <span class="fw-bold fs-6" style="color: #00539C;">View All {{ cat.name }} ➔</span>
                             </a>
                         </div>
@@ -301,7 +301,7 @@
                         {% if cat.subcategories.all %}
                             {% for sub in cat.subcategories.all %}
                             <div class="col-6">
-                                <a href="?sub_category={{ sub.id }}" class="subcat-card">
+                                <a href="{% url 'home' %}?sub_category={{ sub.id }}" class="subcat-card">
                                     <span class="subcat-icon">📦</span> 
                                     <span class="fw-bold text-center" style="font-size: 0.75rem;">{{ sub.name }}</span>
                                 </a>
@@ -309,13 +309,13 @@
                             {% endfor %}
                         {% else %}
                             <div class="col-6">
-                                <a href="?category={{ cat.id }}&sort=high_to_low" class="subcat-card">
+                                <a href="{% url 'home' %}?category={{ cat.id }}&sort=high_to_low" class="subcat-card">
                                     <span class="subcat-icon">⭐</span>
                                     <span class="fw-bold text-center" style="font-size: 0.75rem;">Premium Picks</span>
                                 </a>
                             </div>
                             <div class="col-6">
-                                <a href="?category={{ cat.id }}&discount=10" class="subcat-card">
+                                <a href="{% url 'home' %}?category={{ cat.id }}&discount=10" class="subcat-card">
                                     <span class="subcat-icon">🏷️</span>
                                     <span class="fw-bold text-center" style="font-size: 0.75rem;">Top Offers</span>
                                 </a>

@@ -159,9 +159,9 @@ EMAIL_USE_SSL = False
 DEFAULT_FROM_EMAIL = 'support@cgsmart.in'
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'mqge4pqj', 
-    'API_KEY': '323853635316772', 
-    'API_SECRET': 'ukYJxlfcZ_SO7HmfBdQCePdbbfA'
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
 STATIC_URL = '/static/'

@@ -29,7 +29,6 @@ from django.core.paginator import Paginator
 from .forms import CustomRegisterForm
 from django.utils import timezone 
 
-# 🌟 DHYAN DEIN: SubCategory import add kiya gaya hai
 from .models import Product, Category, SubCategory, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand, Review
 
 # --- HELPER FUNCTION FOR BREVO API ---
@@ -55,7 +54,7 @@ def send_brevo_api_email(subject, message, to_email):
         print(f"Email API error: {e}")
         return None
 
-# 🏠 1. Updated Homepage View (Advanced Filtering & SubCategories)
+# 🏠 1. Updated Homepage View
 def product_list(request):
     categories = Category.objects.all()
     brands = Brand.objects.all()
@@ -66,7 +65,7 @@ def product_list(request):
     sort = request.GET.get('sort')
     category_id = request.GET.get('category')
     brand_id = request.GET.get('brand')
-    sub_category_id = request.GET.get('sub_category') # 🌟 SubCategory Filter
+    sub_category_id = request.GET.get('sub_category')
     
     discount = request.GET.get('discount')
     rating = request.GET.get('rating')
@@ -570,7 +569,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 NAYA: AI ASSISTANT CHAT LOGIC (Global API)
+# 🤖 NAYA: AI ASSISTANT CHAT LOGIC (SMART DEBUGGER)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -581,51 +580,37 @@ def ai_assistant_chat(request):
             if not user_message:
                 return JsonResponse({'response': 'Kripya apna sawal puchein.'})
 
-            # Store Knowledge Context for the AI
+            # 🛑 DEBUGGER 1: Check if API Key exists
+            api_key = os.environ.get('GEMINI_API_KEY')
+            if not api_key:
+                return JsonResponse({'response': '🛑 DEBUG ERROR: Render par GEMINI_API_KEY variable load nahi hua! Kripya Render dashboard ke Environment Variables tab check karein.'})
+
             system_prompt = (
                 "You are 'CGSMART Support AI', the friendly customer assistant for CGSMART (Chachan General Store in Nohar, Rajasthan).\n"
-                "Store Info:\n"
-                "- Location: Nohar, Rajasthan.\n"
-                "- Free Home Delivery on orders above ₹999.\n"
-                "- Payment Options: COD (Cash on Delivery), UPI, Credit/Debit Cards.\n"
-                "- Offers: Extra 10% off with coupon CGSMART10.\n"
-                "- Help customers with finding products, checking delivery policy, discounts, and general queries.\n"
-                "Rules:\n"
-                "- Answer politely in short, helpful Hinglish/English (2-3 sentences max).\n"
-                "- Always sound professional and welcoming."
+                "Answer politely in short, helpful Hinglish (2-3 sentences max).\n"
             )
 
-            api_key = os.environ.get('GEMINI_API_KEY')
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+            payload = {
+                "contents": [
+                    {"role": "user", "parts": [{"text": f"{system_prompt}\n\nUser Question: {user_message}"}]}
+                ]
+            }
+            headers = {"Content-Type": "application/json"}
             
-            # Use Gemini API if available
-            if api_key:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-                payload = {
-                    "contents": [
-                        {"role": "user", "parts": [{"text": f"{system_prompt}\n\nUser Question: {user_message}"}]}
-                    ]
-                }
-                headers = {"Content-Type": "application/json"}
-                response = requests.post(url, json=payload, headers=headers, timeout=10)
-                
-                if response.status_code == 200:
-                    ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
-                    return JsonResponse({'response': ai_reply})
-
-            # Smart Fallback Responses (if API key fails)
-            msg_lower = user_message.lower()
-            if 'delivery' in msg_lower or 'shipping' in msg_lower:
-                reply = "Hum Nohar mein fast local delivery dete hain! ₹999 se upar ke orders par FREE Delivery hai."
-            elif 'payment' in msg_lower or 'cod' in msg_lower or 'pay' in msg_lower:
-                reply = "Aap Cash on Delivery (COD), UPI, ya Cards se secure payment kar sakte hain."
-            elif 'offer' in msg_lower or 'coupon' in msg_lower or 'discount' in msg_lower:
-                reply = "Aap checkout par coupon code **CGSMART10** use karke extra 10% discount pa sakte hain!"
-            else:
-                reply = "CGSMART Assistant yahan hai! Aap top search bar se koi bhi item search kar sakte hain ya categories explorer use kar sakte hain."
-
-            return JsonResponse({'response': reply})
+            # Google API ko request bhej rahe hain
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            
+            # 🛑 DEBUGGER 2: Check Google's response
+            if response.status_code != 200:
+                return JsonResponse({'response': f'🛑 GOOGLE API ERROR: Code {response.status_code}. Details: {response.text}'})
+            
+            # Agar sab sahi raha toh AI ka jawab bhejein
+            ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
+            return JsonResponse({'response': ai_reply})
 
         except Exception as e:
-            return JsonResponse({'response': 'Kuch technical issue aaya hai, kripya thodi der baad try karein.'})
+            # 🛑 DEBUGGER 3: Python ya Network code mein koi error
+            return JsonResponse({'response': f'🛑 SYSTEM ERROR: {str(e)}'})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
