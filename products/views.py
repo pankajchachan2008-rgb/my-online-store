@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden # 🌟 Added HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt 
 from rest_framework.decorators import api_view
@@ -54,7 +54,7 @@ def send_brevo_api_email(subject, message, to_email):
         print(f"Email API error: {e}")
         return None
 
-# 🏠 1. Updated Homepage View
+# 🏠 1. Updated Homepage View (With Pagination Fix)
 def product_list(request):
     categories = Category.objects.all()
     brands = Brand.objects.all()
@@ -133,15 +133,11 @@ def product_list(request):
     else:
         products = products.order_by('-id')
     
-# 🏠 Updated Homepage View (product_list function ke andar, sabse aakhir mein)
-
-    # ... (Aapka baaki ka filter aur sort ka code) ...
-
     paginator = Paginator(products, 20) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # 🌟 NAYA CODE: Pagination ke liye saare filters ko ek sath jodna
+    # 🌟 Pagination ke liye saare filters ko ek sath jodna
     params = request.GET.copy()
     if 'page' in params:
         params.pop('page')
@@ -163,7 +159,7 @@ def product_list(request):
         'active_size': size,
         'min_price': min_price,
         'max_price': max_price,
-        'querystring': querystring, # 🌟 NAYA CODE: HTML ko querystring bhej rahe hain
+        'querystring': querystring,
     }
     return render(request, 'products/product_list.html', context)
 
@@ -392,11 +388,34 @@ def terms_conditions(request): return render(request, 'policies/terms.html')
 def refund_policy(request): return render(request, 'policies/refund.html')
 def custom_logout(request): logout(request); return redirect('home')
 
+# 🛡️ --- SECURE VERSION of make_admin --- 🛡️
 def make_admin(request):
+    setup_secret = os.environ.get('SETUP_SECRET_KEY')
+
+    # Agar env variable set hi nahi hai, to feature completely band rahega
+    if not setup_secret:
+        return HttpResponseForbidden("Setup disabled.")
+
+    provided_secret = request.GET.get('secret')
+
+    if provided_secret != setup_secret:
+        # Generic error — attacker ko ye pata nahi chalna chahiye ki admin
+        # exist karta hai ya nahi, ya secret galat hai ya missing hai
+        return HttpResponseForbidden("Forbidden.")
+
     if not User.objects.filter(username='admin').exists():
         User.objects.create_superuser('admin', 'admin@cgsmart.in', 'Admin@1234')
-        return HttpResponse("<div style='text-align:center; margin-top:50px;'><h2>✅ Admin Created!</h2><a href='/secret-cgs-main/'>Go to Admin</a></div>")
-    return HttpResponse("<div style='text-align:center; margin-top:50px;'><h2>⚠️ Admin Exists!</h2><a href='/secret-cgs-main/'>Go to Admin</a></div>")
+        return HttpResponse(
+            "<div style='text-align:center; margin-top:50px;'>"
+            "<h2>✅ Admin Created!</h2>"
+            "<a href='/secret-cgs-main/'>Go to Admin</a></div>"
+        )
+
+    return HttpResponse(
+        "<div style='text-align:center; margin-top:50px;'>"
+        "<h2>⚠️ Admin Exists!</h2>"
+        "<a href='/secret-cgs-main/'>Go to Admin</a></div>"
+    )
 
 def trigger_import(request): return render(request, 'products/import_trigger.html')
 
@@ -580,7 +599,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (Super Smart & Accurate)
+# 🤖 AI ASSISTANT CHAT LOGIC (Super Smart & Accurate - Llama 3.1)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -595,7 +614,6 @@ def ai_assistant_chat(request):
             if not api_key:
                 return JsonResponse({'response': '🛑 Error: Render par GROQ_API_KEY set nahi hai.'})
 
-            # 🌟 YAHAN HUMNE AI KO STRICT DETAILS AUR RULES DE DIYE HAIN
             system_prompt = (
                 "Aapka naam 'CGSMART Assistant' hai. Aap 'Chachan General Store' (jise CGSMART bhi kehte hain) ke official customer support AI hain.\n"
                 "AAPKO STRICTLY IN FACTS KO FOLLOW KARNA HAI (Apni taraf se kuch guess nahi karna):\n"
@@ -624,7 +642,7 @@ def ai_assistant_chat(request):
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message}
                 ],
-                "temperature": 0.3, # 🌟 Temperature 0.3 kar diya hai taaki AI apni marzi se kuch na banaye, sirf sach bole.
+                "temperature": 0.3,
                 "max_tokens": 150
             }
             
