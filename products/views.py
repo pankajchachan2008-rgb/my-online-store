@@ -569,7 +569,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (Auto-Fetch Dynamic Models)
+# 🤖 AI ASSISTANT CHAT LOGIC (Smart Brute-Force Loop)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -595,39 +595,42 @@ def ai_assistant_chat(request):
             }
             headers = {"Content-Type": "application/json"}
             
-            # 🌟 STEP 1: Google se poochein ki is API Key par kaun se models Available hain
+            # 🌟 STEP 1: Google se Models ki list mangwayein
             list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
             list_res = requests.get(list_url, timeout=10)
             
             if list_res.status_code != 200:
-                return JsonResponse({'response': f"🛑 Fetch Error: {list_res.text}"})
+                return JsonResponse({'response': f"🛑 API Fetch Error: {list_res.text}"})
             
-            # Jo models 'generateContent' support karte hain, unki list banayein
+            # Jo models text generate kar sakte hain, unhe filter karein
             available_models = []
             for m in list_res.json().get('models', []):
                 if 'generateContent' in m.get('supportedGenerationMethods', []):
-                    available_models.append(m['name']) # example: 'models/gemini-1.5-flash'
-                    
+                    # Naye users ke liye 2.5 flash blocked hai, toh use ignore karein
+                    if '2.5-flash' not in m['name'] and 'vision' not in m['name']:
+                        available_models.append(m['name'])
+            
             if not available_models:
-                return JsonResponse({'response': "🛑 Aapki API key par koi bhi chat model active nahi hai. Kripya naya project banakar nayi key generate karein."})
+                return JsonResponse({'response': "🛑 Aapki API key par koi supported text model nahi hai."})
             
-            # 🌟 STEP 2: List mein se sabse best 'flash' model (jo fast hota hai) chunein, warna jo pehla mile wo le lein
-            selected_model = available_models[0]
-            for m in available_models:
-                if 'flash' in m.lower():
-                    selected_model = m
-                    break
+            last_error = ""
+            
+            # 🌟 STEP 2: Line se har ek model ko try karein (Brute-Force)
+            for model_name in available_models:
+                url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={api_key}"
+                response = requests.post(url, json=payload, headers=headers, timeout=10)
+                
+                # Agar model sahi jawab de de, toh turant reply bhej do aur loop band kar do
+                if response.status_code == 200:
+                    ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
+                    return JsonResponse({'response': ai_reply})
+                else:
+                    # Agar model fail ho, toh error save karo aur AGLE model par jao
+                    last_error = f"{model_name} failed: {response.text}"
+                    continue
                     
-            # 🌟 STEP 3: Ab us exact valid model ko use karke Chatbot ka reply mangwayein
-            # (Note: selected_model variable mein pehle se 'models/' prefix juda hua aata hai)
-            url = f"https://generativelanguage.googleapis.com/v1beta/{selected_model}:generateContent?key={api_key}"
-            response = requests.post(url, json=payload, headers=headers, timeout=10)
-            
-            if response.status_code == 200:
-                ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
-                return JsonResponse({'response': ai_reply})
-            else:
-                return JsonResponse({'response': f"🛑 Model ({selected_model}) Error: {response.text}"})
+            # Agar list ke SAARE models try karne ke baad bhi fail ho gaye (jo ki impossible hai)
+            return JsonResponse({'response': f"🛑 Saare models fail ho gaye! Aakhiri error: {last_error}"})
 
         except Exception as e:
             return JsonResponse({'response': f"🛑 System Error: {str(e)}"})
