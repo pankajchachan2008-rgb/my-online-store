@@ -569,7 +569,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (Using META LLAMA-3 via GROQ API)
+# 🤖 AI ASSISTANT CHAT LOGIC (Using META LLAMA-3.1 via GROQ API)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -580,7 +580,6 @@ def ai_assistant_chat(request):
             if not user_message:
                 return JsonResponse({'response': 'Kripya apna sawal puchein.'})
 
-            # 🌟 Yahan humne Gemini ki jagah Groq API key set ki hai
             api_key = os.environ.get('GROQ_API_KEY')
             if not api_key:
                 return JsonResponse({'response': '🛑 Error: Render par GROQ_API_KEY set nahi hai.'})
@@ -591,7 +590,6 @@ def ai_assistant_chat(request):
                 "Rules: Answer politely in short, friendly Hinglish (max 2-3 sentences)."
             )
 
-            # Groq API ka OpenAI-compatible Endpoint
             url = "https://api.groq.com/openai/v1/chat/completions"
             
             headers = {
@@ -600,7 +598,7 @@ def ai_assistant_chat(request):
             }
             
             payload = {
-                "model": "llama3-8b-8192", # Meta ka fast aur open Llama-3 model
+                "model": "llama-3.1-8b-instant", # 🌟 YAHAN NAYA LATEST MODEL UPDATE KIYA HAI
                 "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message}
@@ -612,7 +610,6 @@ def ai_assistant_chat(request):
             response = requests.post(url, json=payload, headers=headers, timeout=10)
             
             if response.status_code == 200:
-                # Groq API ka response format
                 ai_reply = response.json()['choices'][0]['message']['content']
                 return JsonResponse({'response': ai_reply})
             else:
