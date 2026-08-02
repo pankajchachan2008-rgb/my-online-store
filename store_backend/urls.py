@@ -90,7 +90,7 @@ urlpatterns = [
     path('wishlist/add/<int:product_id>/', add_to_wishlist, name='add_to_wishlist'),
     
     # 🔧 Admin & Sync (🌟 FIX: URL path ko 'make-admin/' kar diya gaya hai)
-    path('make-admin/', make_admin, name='make_admin'), 
+    # path('make-admin/', make_admin, name='make_admin'), 
     path('export-products/', export_products_csv, name='export_products'),
     path('import-products/', import_products_csv, name='import_products'),
 
