@@ -569,7 +569,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (Multi-Model Auto-Fallback Loop)
+# 🤖 AI ASSISTANT CHAT LOGIC (Auto-Fetch Dynamic Models)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -595,31 +595,39 @@ def ai_assistant_chat(request):
             }
             headers = {"Content-Type": "application/json"}
             
-            # 🌟 Yahan hum 3 sabse stable aur universally active models try karenge
-            working_models = [
-                "gemini-1.5-flash-latest", # Pehli pasand (Latest Flash)
-                "gemini-pro",              # Doosri pasand (Universal V1)
-                "gemini-1.5-pro-latest"    # Teesri pasand (Advanced Pro)
-            ]
+            # 🌟 STEP 1: Google se poochein ki is API Key par kaun se models Available hain
+            list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
+            list_res = requests.get(list_url, timeout=10)
             
-            last_error = ""
+            if list_res.status_code != 200:
+                return JsonResponse({'response': f"🛑 Fetch Error: {list_res.text}"})
             
-            # Loop chalega jab tak koi ek model sahi jawab na de de
-            for model_name in working_models:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
-                response = requests.post(url, json=payload, headers=headers, timeout=10)
-                
-                if response.status_code == 200:
-                    # ✅ Model mil gaya aur jawab aa gaya!
-                    ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
-                    return JsonResponse({'response': ai_reply})
-                else:
-                    # ❌ Ye model fail hua, agla try karo
-                    last_error = f"Model {model_name} failed. Error: {response.text}"
-                    continue
+            # Jo models 'generateContent' support karte hain, unki list banayein
+            available_models = []
+            for m in list_res.json().get('models', []):
+                if 'generateContent' in m.get('supportedGenerationMethods', []):
+                    available_models.append(m['name']) # example: 'models/gemini-1.5-flash'
                     
-            # Agar teeno mein se koi bhi model kaam na kare
-            return JsonResponse({'response': f"🛑 Google API Error: Teeno models fail. Aakhiri Error: {last_error}"})
+            if not available_models:
+                return JsonResponse({'response': "🛑 Aapki API key par koi bhi chat model active nahi hai. Kripya naya project banakar nayi key generate karein."})
+            
+            # 🌟 STEP 2: List mein se sabse best 'flash' model (jo fast hota hai) chunein, warna jo pehla mile wo le lein
+            selected_model = available_models[0]
+            for m in available_models:
+                if 'flash' in m.lower():
+                    selected_model = m
+                    break
+                    
+            # 🌟 STEP 3: Ab us exact valid model ko use karke Chatbot ka reply mangwayein
+            # (Note: selected_model variable mein pehle se 'models/' prefix juda hua aata hai)
+            url = f"https://generativelanguage.googleapis.com/v1beta/{selected_model}:generateContent?key={api_key}"
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
+                return JsonResponse({'response': ai_reply})
+            else:
+                return JsonResponse({'response': f"🛑 Model ({selected_model}) Error: {response.text}"})
 
         except Exception as e:
             return JsonResponse({'response': f"🛑 System Error: {str(e)}"})
