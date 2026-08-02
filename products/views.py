@@ -569,7 +569,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (Using META LLAMA-3.1 via GROQ API)
+# 🤖 AI ASSISTANT CHAT LOGIC (Super Smart & Accurate)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -584,10 +584,20 @@ def ai_assistant_chat(request):
             if not api_key:
                 return JsonResponse({'response': '🛑 Error: Render par GROQ_API_KEY set nahi hai.'})
 
+            # 🌟 YAHAN HUMNE AI KO STRICT DETAILS AUR RULES DE DIYE HAIN
             system_prompt = (
-                "You are 'CGSMART Support AI', the premium virtual assistant for CGSMART (Chachan General Store in Nohar, Rajasthan).\n"
-                "Store details: Free Home Delivery over ₹999. COD, UPI, Cards accepted. Extra 10% off code: CGSMART10.\n"
-                "Rules: Answer politely in short, friendly Hinglish (max 2-3 sentences)."
+                "Aapka naam 'CGSMART Assistant' hai. Aap 'Chachan General Store' (jise CGSMART bhi kehte hain) ke official customer support AI hain.\n"
+                "AAPKO STRICTLY IN FACTS KO FOLLOW KARNA HAI (Apni taraf se kuch guess nahi karna):\n"
+                "1. Store Name: Chachan General Store (Is naam ko kabhi Chandan ya kuch aur mat likhna).\n"
+                "2. Location: Nohar, Rajasthan.\n"
+                "3. Customer Care / WhatsApp Number: +91 7357073316.\n"
+                "4. Delivery Policy: ₹999 se upar ke orders par Free Home Delivery available hai.\n"
+                "5. Payment Options: Cash on Delivery (COD), UPI, aur Credit/Debit Cards.\n"
+                "6. Promo Code: Checkout par 'CGSMART10' code lagane se extra discount milta hai.\n\n"
+                "Rules for talking:\n"
+                "- Hamesha polite aur friendly Hinglish (Hindi written in English alphabet) mein reply dein.\n"
+                "- Reply chota aur to-the-point rakhein (max 2-3 lines).\n"
+                "- Agar user aisi baat pooche jo aapko nahi pata, toh politely kahein: 'Kripya is jankari ke liye humein 7357073316 par WhatsApp karein.'"
             )
 
             url = "https://api.groq.com/openai/v1/chat/completions"
@@ -598,12 +608,12 @@ def ai_assistant_chat(request):
             }
             
             payload = {
-                "model": "llama-3.1-8b-instant", # 🌟 YAHAN NAYA LATEST MODEL UPDATE KIYA HAI
+                "model": "llama-3.1-8b-instant",
                 "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message}
                 ],
-                "temperature": 0.7,
+                "temperature": 0.3, # 🌟 Temperature 0.3 kar diya hai taaki AI apni marzi se kuch na banaye, sirf sach bole.
                 "max_tokens": 150
             }
             
