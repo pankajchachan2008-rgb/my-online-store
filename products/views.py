@@ -569,7 +569,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (Smart Brute-Force Loop)
+# 🤖 AI ASSISTANT CHAT LOGIC (Using META LLAMA-3 via GROQ API)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -580,9 +580,10 @@ def ai_assistant_chat(request):
             if not user_message:
                 return JsonResponse({'response': 'Kripya apna sawal puchein.'})
 
-            api_key = os.environ.get('GEMINI_API_KEY')
+            # 🌟 Yahan humne Gemini ki jagah Groq API key set ki hai
+            api_key = os.environ.get('GROQ_API_KEY')
             if not api_key:
-                return JsonResponse({'response': '🛑 Error: Render par GEMINI_API_KEY nahi mil rahi hai.'})
+                return JsonResponse({'response': '🛑 Error: Render par GROQ_API_KEY set nahi hai.'})
 
             system_prompt = (
                 "You are 'CGSMART Support AI', the premium virtual assistant for CGSMART (Chachan General Store in Nohar, Rajasthan).\n"
@@ -590,47 +591,32 @@ def ai_assistant_chat(request):
                 "Rules: Answer politely in short, friendly Hinglish (max 2-3 sentences)."
             )
 
-            payload = {
-                "contents": [{"parts": [{"text": f"{system_prompt}\n\nUser Question: {user_message}"}]}]
+            # Groq API ka OpenAI-compatible Endpoint
+            url = "https://api.groq.com/openai/v1/chat/completions"
+            
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
             }
-            headers = {"Content-Type": "application/json"}
             
-            # 🌟 STEP 1: Google se Models ki list mangwayein
-            list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
-            list_res = requests.get(list_url, timeout=10)
+            payload = {
+                "model": "llama3-8b-8192", # Meta ka fast aur open Llama-3 model
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message}
+                ],
+                "temperature": 0.7,
+                "max_tokens": 150
+            }
             
-            if list_res.status_code != 200:
-                return JsonResponse({'response': f"🛑 API Fetch Error: {list_res.text}"})
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
             
-            # Jo models text generate kar sakte hain, unhe filter karein
-            available_models = []
-            for m in list_res.json().get('models', []):
-                if 'generateContent' in m.get('supportedGenerationMethods', []):
-                    # Naye users ke liye 2.5 flash blocked hai, toh use ignore karein
-                    if '2.5-flash' not in m['name'] and 'vision' not in m['name']:
-                        available_models.append(m['name'])
-            
-            if not available_models:
-                return JsonResponse({'response': "🛑 Aapki API key par koi supported text model nahi hai."})
-            
-            last_error = ""
-            
-            # 🌟 STEP 2: Line se har ek model ko try karein (Brute-Force)
-            for model_name in available_models:
-                url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={api_key}"
-                response = requests.post(url, json=payload, headers=headers, timeout=10)
-                
-                # Agar model sahi jawab de de, toh turant reply bhej do aur loop band kar do
-                if response.status_code == 200:
-                    ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
-                    return JsonResponse({'response': ai_reply})
-                else:
-                    # Agar model fail ho, toh error save karo aur AGLE model par jao
-                    last_error = f"{model_name} failed: {response.text}"
-                    continue
-                    
-            # Agar list ke SAARE models try karne ke baad bhi fail ho gaye (jo ki impossible hai)
-            return JsonResponse({'response': f"🛑 Saare models fail ho gaye! Aakhiri error: {last_error}"})
+            if response.status_code == 200:
+                # Groq API ka response format
+                ai_reply = response.json()['choices'][0]['message']['content']
+                return JsonResponse({'response': ai_reply})
+            else:
+                return JsonResponse({'response': f"🛑 Groq API Error: {response.text}"})
 
         except Exception as e:
             return JsonResponse({'response': f"🛑 System Error: {str(e)}"})
