@@ -570,6 +570,7 @@ def set_new_password(request):
     return render(request, 'registration/set_new_password.html')
 
 # 🤖 NAYA: AI ASSISTANT CHAT LOGIC (SMART DEBUGGER)
+# 🤖 AI ASSISTANT CHAT LOGIC (SMART MULTI-MODEL)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -580,37 +581,35 @@ def ai_assistant_chat(request):
             if not user_message:
                 return JsonResponse({'response': 'Kripya apna sawal puchein.'})
 
-            # 🛑 DEBUGGER 1: Check if API Key exists
             api_key = os.environ.get('GEMINI_API_KEY')
             if not api_key:
-                return JsonResponse({'response': '🛑 DEBUG ERROR: Render par GEMINI_API_KEY variable load nahi hua! Kripya Render dashboard ke Environment Variables tab check karein.'})
+                return JsonResponse({'response': '🛑 DEBUG ERROR: Render par GEMINI_API_KEY nahi mili!'})
 
             system_prompt = (
                 "You are 'CGSMART Support AI', the friendly customer assistant for CGSMART (Chachan General Store in Nohar, Rajasthan).\n"
                 "Answer politely in short, helpful Hinglish (2-3 sentences max).\n"
             )
 
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-            payload = {
-                "contents": [
-                    {"role": "user", "parts": [{"text": f"{system_prompt}\n\nUser Question: {user_message}"}]}
-                ]
-            }
-            headers = {"Content-Type": "application/json"}
+            # Hum 3 latest models try karenge taaki koi error na aaye
+            models_to_try = ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-pro']
             
-            # Google API ko request bhej rahe hain
-            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            for model_name in models_to_try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+                payload = {
+                    "contents": [{"role": "user", "parts": [{"text": f"{system_prompt}\n\nUser Question: {user_message}"}]}]
+                }
+                headers = {"Content-Type": "application/json"}
+                
+                response = requests.post(url, json=payload, headers=headers, timeout=10)
+                
+                if response.status_code == 200:
+                    ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
+                    return JsonResponse({'response': ai_reply})
             
-            # 🛑 DEBUGGER 2: Check Google's response
-            if response.status_code != 200:
-                return JsonResponse({'response': f'🛑 GOOGLE API ERROR: Code {response.status_code}. Details: {response.text}'})
-            
-            # Agar sab sahi raha toh AI ka jawab bhejein
-            ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
-            return JsonResponse({'response': ai_reply})
+            # Agar teeno fail ho jayein toh error dikhayega
+            return JsonResponse({'response': f'🛑 GOOGLE API ERROR: Koi bhi model kaam nahi kar raha. Check your Google API Cloud Console.'})
 
         except Exception as e:
-            # 🛑 DEBUGGER 3: Python ya Network code mein koi error
             return JsonResponse({'response': f'🛑 SYSTEM ERROR: {str(e)}'})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
