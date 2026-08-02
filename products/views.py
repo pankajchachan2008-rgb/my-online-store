@@ -133,9 +133,19 @@ def product_list(request):
     else:
         products = products.order_by('-id')
     
+# 🏠 Updated Homepage View (product_list function ke andar, sabse aakhir mein)
+
+    # ... (Aapka baaki ka filter aur sort ka code) ...
+
     paginator = Paginator(products, 20) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    
+    # 🌟 NAYA CODE: Pagination ke liye saare filters ko ek sath jodna
+    params = request.GET.copy()
+    if 'page' in params:
+        params.pop('page')
+    querystring = params.urlencode()
         
     context = {
         'products': page_obj,  
@@ -153,6 +163,7 @@ def product_list(request):
         'active_size': size,
         'min_price': min_price,
         'max_price': max_price,
+        'querystring': querystring, # 🌟 NAYA CODE: HTML ko querystring bhej rahe hain
     }
     return render(request, 'products/product_list.html', context)
 
