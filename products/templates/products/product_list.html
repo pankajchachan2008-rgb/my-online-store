@@ -82,13 +82,13 @@
         transition: all 0.3s ease;
     }
     .cat-pill:hover, .cat-pill.active {
-        background-color: #0F172A;
-        color: #FFFFFF;
-        border-color: #0F172A;
-        box-shadow: 0 4px 10px rgba(15,23,42,0.15);
+        background-color: var(--primary-blue, #002D62);
+        color: var(--accent-gold, #D4AF37);
+        border-color: var(--primary-blue, #002D62);
+        box-shadow: 0 4px 10px rgba(0,45,98,0.2);
     }
     .cat-pill:focus-visible {
-        outline: 2px solid #4F46E5;
+        outline: 2px solid var(--primary-blue, #002D62);
         outline-offset: 2px;
     }
 
@@ -135,7 +135,7 @@
         font-family: 'Jost', sans-serif;
         font-size: 1.15rem;
         font-weight: 600;
-        color: #0F172A;
+        color: var(--primary-blue, #0F172A);
         margin-bottom: 6px;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -147,12 +147,12 @@
     .product-price-elegant {
         font-size: 1.15rem;
         font-weight: 700;
-        color: #0F172A;
+        color: var(--primary-blue, #0F172A);
         margin-bottom: 12px;
     }
 
     .btn-elegant-cart {
-        background: #1E293B;
+        background: var(--primary-blue, #002D62);
         color: #FFFFFF;
         font-weight: 600;
         border-radius: 8px;
@@ -163,7 +163,7 @@
         text-transform: uppercase;
         transition: all 0.3s ease;
     }
-    .btn-elegant-cart:hover { background: #4F46E5; color: white; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
+    .btn-elegant-cart:hover { background: var(--accent-gold, #D4AF37); color: var(--primary-blue, #002D62); box-shadow: 0 4px 12px rgba(212,175,55,0.35); }
     .btn-elegant-cart:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .section-heading {
@@ -172,9 +172,23 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 3px;
-        color: #0F172A;
+        color: var(--primary-blue, #0F172A);
         text-align: center;
         margin-bottom: 50px;
+        position: relative;
+        padding-bottom: 18px;
+    }
+    /* 🌟 Premium gold accent underline to match brand identity */
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 3px;
+        background: var(--accent-gold, #D4AF37);
+        border-radius: 2px;
     }
 
     /* 🌟 ADVANCED FILTER BAR STYLES */
@@ -215,7 +229,7 @@
     .filter-select:focus, .filter-input:focus { border-color: #0F172A; }
 
     .btn-apply-filter {
-        background: #0F172A;
+        background: var(--primary-blue, #0F172A);
         color: #FFFFFF;
         border: none;
         padding: 10px 20px;
@@ -225,7 +239,7 @@
         transition: 0.3s;
         height: 42px;
     }
-    .btn-apply-filter:hover { background: #1E293B; }
+    .btn-apply-filter:hover { background: var(--accent-gold, #1E293B); color: var(--primary-blue, #FFFFFF); }
     .btn-clear-filter {
         background: #F1F5F9;
         color: #64748B;

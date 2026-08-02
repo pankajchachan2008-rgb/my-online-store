@@ -6,7 +6,12 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-your-custom-secret-key-change-this-in-production')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    raise RuntimeError(
+        "DJANGO_SECRET_KEY environment variable is not set. "
+        "Set it in Render's environment variables before deploying."
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -15,10 +20,10 @@ DEBUG = False
 ALLOWED_HOSTS = [
     'cgsmart.in', 
     'www.cgsmart.in', 
-    'my-online-store-ggbj.onrender.com' # Yahan se https:// hata diya
+    'my-online-store-ggbj.onrender.com'
 ]
 
-# CSRF Trusted Origins: Yahan https:// rehne dein, ye sahi hai
+# CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
     'https://cgsmart.in', 
     'https://www.cgsmart.in', 
@@ -102,11 +107,11 @@ USE_TZ = True
 #                 STATIC & MEDIA STORAGE (FIXED FOR CLOUDINARY)
 # =====================================================================
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 
-# 🌟 DHYAN DEIN: Yeh line `django-cloudinary-storage` ki requirement hai!
+# Storage setup
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
@@ -119,7 +124,6 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
-
 
 # =====================================================================
 #                 SECURITY HARDENING SETTINGS
@@ -151,8 +155,8 @@ SECURE_REFERRER_POLICY = "same-origin"
 # Email Configuration (Brevo)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_PORT = 587  # Render is port ko block nahi karta
-EMAIL_HOST_USER = 'b368f6001@smtp-brevo.com'  # Wo email jisse aapne Brevo par login kiya hai
+EMAIL_PORT = 587  
+EMAIL_HOST_USER = 'b368f6001@smtp-brevo.com'  
 EMAIL_HOST_PASSWORD = os.environ.get('BREVO_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
@@ -164,17 +168,13 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
 
-STATIC_URL = '/static/'
-
-# Yeh nayi 3 lines add karni hain taaki Django main static folder ko read kar sake
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-
-# 1. Admin setup (Abhi ke liye khali rakhein taaki server hang na ho)
+# =====================================================================
+#                 ADMIN & LOGGING
+# =====================================================================
+# Admin setup 
 ADMINS = []
 
-# 2. Logging Configuration (Optimized for Render)
+# Logging Configuration (Optimized for Render)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -185,7 +185,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        # Render par logs file ki jagah seedha console (dashboard) par dekhna best hai
         'console': {
             'level': 'ERROR',
             'class': 'logging.StreamHandler',
@@ -194,7 +193,7 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console'], # Yahan se 'file' aur 'mail_admins' hata diya
+            'handlers': ['console'], 
             'level': 'ERROR',
             'propagate': True,
         },

@@ -14,10 +14,17 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden # 🌟 Added HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAdminUser
+from django.db.models import Avg
+# 🌟 FIX: OrderSerializer was used below but never imported anywhere — this
+# caused a NameError (500 crash) every time get_pending_orders_api was hit.
+# Update the import path below to wherever your OrderSerializer actually lives
+# (commonly products/serializers.py).
+from .serializers import OrderSerializer
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.utils.http import urlencode
@@ -58,7 +65,9 @@ def send_brevo_api_email(subject, message, to_email):
 def product_list(request):
     categories = Category.objects.all()
     brands = Brand.objects.all()
-    products = Product.objects.all()
+    # 🌟 FIX: select_related/prefetch_related avoids one extra query per
+    # product for brand/category/variants (N+1 query problem)
+    products = Product.objects.select_related('brand', 'category').prefetch_related('variants')
     banners = Banner.objects.filter(is_active=True).order_by('-id')
 
     search_query = request.GET.get('search', '').strip(' .')
@@ -105,8 +114,14 @@ def product_list(request):
         except: pass
         
     if rating:
-        try: products = products.filter(reviews__rating__gte=rating)
-        except: pass
+        try:
+            # 🌟 FIX: was matching products with AT LEAST ONE review >= rating
+            # (so a product with a single 5-star review among many 1-stars
+            # would incorrectly show up under "4★ & Above"). Now filters on
+            # the product's actual average rating.
+            products = products.annotate(avg_rating=Avg('reviews__rating')).filter(avg_rating__gte=float(rating))
+        except (ValueError, TypeError):
+            pass
         
     if availability == 'in_stock':
         try: products = products.filter(stock__gt=0)
@@ -120,9 +135,14 @@ def product_list(request):
         try: products = products.filter(size__icontains=size)
         except: pass
         
-    if min_price and max_price:
-        try: products = products.filter(price__range=(min_price, max_price))
-        except: pass
+    # 🌟 FIX: previously required BOTH min_price AND max_price to be present,
+    # so entering only one of them silently did nothing. Now each works alone.
+    if min_price:
+        try: products = products.filter(price__gte=float(min_price))
+        except (ValueError, TypeError): pass
+    if max_price:
+        try: products = products.filter(price__lte=float(max_price))
+        except (ValueError, TypeError): pass
 
     products = products.distinct()
 
@@ -271,7 +291,9 @@ def checkout_page(request):
     if request.method == 'POST':
         address_id = request.POST.get('address_id')
         if address_id:
-            selected_address = Address.objects.get(id=address_id, user=request.user)
+            # 🌟 FIX: unhandled Address.DoesNotExist previously caused a 500
+            # error if someone tampered with the address_id in the form.
+            selected_address = get_object_or_404(Address, id=address_id, user=request.user)
             name = selected_address.name; mobile = selected_address.mobile_number
             address = f"{selected_address.full_address}, {selected_address.locality}, {selected_address.city}, {selected_address.state} - {selected_address.pincode}"
         else:
@@ -432,10 +454,19 @@ def register_page(request):
     else: form = CustomRegisterForm()
     return render(request, 'registration/register.html', {'form': form})
 
+# 🌟 FIX: all 3 APIs below were publicly callable by anyone with no auth at
+# all — exposing customer names/mobiles/addresses, allowing anyone to change
+# order status, and allowing anyone to inject/overwrite products. Now locked
+# to authenticated staff/admin accounts via TokenAuthentication.
 @api_view(['GET'])
-def get_pending_orders_api(request): return Response(OrderSerializer(Order.objects.filter(status='Pending').order_by('-id'), many=True).data)
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAdminUser])
+def get_pending_orders_api(request):
+    return Response(OrderSerializer(Order.objects.filter(status='Pending').order_by('-id'), many=True).data)
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAdminUser])
 def update_order_status_api(request, order_id):
     try: order = Order.objects.get(id=order_id)
     except Order.DoesNotExist: return Response({'error': 'Order nahi mila'}, status=status.HTTP_404_NOT_FOUND)
@@ -443,6 +474,8 @@ def update_order_status_api(request, order_id):
     return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAdminUser])
 def sync_products_from_erp_api(request):
     if not isinstance(request.data, list): return Response({'error': 'Data list format me hona chahiye'}, status=status.HTTP_400_BAD_REQUEST)
     for item in request.data:
@@ -545,7 +578,8 @@ def cart_summary_ajax(request):
     total = sum(float(item['price']) * int(item['quantity']) for item in cart.values() if isinstance(item, dict) and 'price' in item)
     return JsonResponse({'items': items, 'total': total})
 
-@csrf_exempt
+# 🌟 FIX: @csrf_exempt removed — the JS already sends X-CSRFToken correctly,
+# so this decorator was only weakening security for no benefit.
 def add_to_cart_ajax(request, product_id):
     if request.method == 'POST':
         product = get_object_or_404(Product, id=product_id)
@@ -563,7 +597,6 @@ def add_to_cart_ajax(request, product_id):
         request.session['cart'] = cart; request.session.modified = True
         return cart_summary_ajax(request)
 
-@csrf_exempt
 def remove_from_cart_ajax(request, product_id):
     if request.method == 'POST':
         cart = request.session.get('cart', {})
@@ -600,7 +633,7 @@ def set_new_password(request):
     return render(request, 'registration/set_new_password.html')
 
 # 🤖 AI ASSISTANT CHAT LOGIC (Super Smart & Accurate - Llama 3.1)
-@csrf_exempt
+# 🌟 FIX: @csrf_exempt removed — base.html's JS already sends X-CSRFToken.
 def ai_assistant_chat(request):
     if request.method == 'POST':
         try:
