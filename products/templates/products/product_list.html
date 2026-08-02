@@ -4,57 +4,305 @@
 {% block content %}
 <style>
     /* 🌟 DYNAMIC LIFESTYLE CAROUSEL HERO */
-    .lifestyle-carousel .carousel-item { height: 65vh; min-height: 450px; background-color: #0F172A; overflow: hidden; }
-    .lifestyle-carousel img, .lifestyle-carousel video { width: 100%; height: 100%; object-fit: cover; object-position: center center; opacity: 0.65; transition: transform 10s ease; }
-    .lifestyle-carousel .carousel-item.active img { transform: scale(1.05);  }
-    .carousel-caption-custom { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; width: 100%; padding: 0 20px; z-index: 10; }
-    .carousel-caption-custom h2 { font-family: 'Jost', sans-serif; font-size: 4rem; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 25px; text-shadow: 2px 4px 15px rgba(0,0,0,0.4); }
+    .lifestyle-carousel .carousel-item {
+        height: 65vh;
+        min-height: 450px;
+        background-color: #0F172A;
+        overflow: hidden;
+    }
+    .lifestyle-carousel img, .lifestyle-carousel video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        opacity: 0.65;
+        transition: transform 10s ease;
+    }
+    .lifestyle-carousel .carousel-item.active img {
+        transform: scale(1.05); 
+    }
+    .carousel-caption-custom {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        width: 100%;
+        padding: 0 20px;
+        z-index: 10;
+    }
+    .carousel-caption-custom h2 {
+        font-family: 'Jost', sans-serif;
+        font-size: 4rem;
+        font-weight: 700;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        margin-bottom: 25px;
+        text-shadow: 2px 4px 15px rgba(0,0,0,0.4);
+    }
     
     /* 🌟 SLEEK HORIZONTAL FILTERS */
-    .filter-wrapper { background: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 25px 0; margin-bottom: 40px; }
-    .filter-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: #94A3B8; margin-bottom: 10px; padding-left: 20px; font-weight: 700; }
-    .category-scroller { display: flex; overflow-x: auto; gap: 15px; scrollbar-width: none; padding: 0 20px 15px 20px; }
+    .filter-wrapper {
+        background: #FFFFFF;
+        border-bottom: 1px solid #E2E8F0;
+        padding: 25px 0;
+        margin-bottom: 40px;
+    }
+    .filter-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: #94A3B8;
+        margin-bottom: 10px;
+        padding-left: 20px;
+        font-weight: 700;
+    }
+    .category-scroller {
+        display: flex;
+        overflow-x: auto;
+        gap: 15px;
+        scrollbar-width: none;
+        padding: 0 20px 15px 20px;
+    }
     .category-scroller::-webkit-scrollbar { display: none; }
-    .cat-pill { padding: 10px 28px; border: 1px solid #CBD5E1; border-radius: 40px; color: #475569; text-decoration: none; font-weight: 500; white-space: nowrap; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; background: #FFFFFF; transition: all 0.3s ease; }
-    .cat-pill:hover, .cat-pill.active { background-color: #0F172A; color: #FFFFFF; border-color: #0F172A; box-shadow: 0 4px 10px rgba(15,23,42,0.15); }
+    
+    .cat-pill {
+        padding: 10px 28px;
+        border: 1px solid #CBD5E1;
+        border-radius: 40px;
+        color: #475569;
+        text-decoration: none;
+        font-weight: 500;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        background: #FFFFFF;
+        transition: all 0.3s ease;
+    }
+    .cat-pill:hover, .cat-pill.active {
+        background-color: #0F172A;
+        color: #FFFFFF;
+        border-color: #0F172A;
+        box-shadow: 0 4px 10px rgba(15,23,42,0.15);
+    }
 
     /* 🌟 AIRY ELEGANT PRODUCT CARDS */
-    .elegant-card { background: transparent; border: none; text-decoration: none; display: block; transition: transform 0.4s ease; }
+    .elegant-card {
+        background: transparent;
+        border: none;
+        text-decoration: none;
+        display: block;
+        transition: transform 0.4s ease;
+    }
     .elegant-card:hover { transform: translateY(-6px); }
-    .img-box-elegant { background: #F1F5F9; height: 260px; width: 100%; overflow: hidden; border-radius: 12px; position: relative; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    .img-box-elegant img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; transition: transform 0.8s ease; }
-    .elegant-card:hover .img-box-elegant img { transform: scale(1.05); }
-    .product-brand-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #64748B; margin-bottom: 5px; font-weight: 600; }
-    .product-name-elegant { font-family: 'Jost', sans-serif; font-size: 1.15rem; font-weight: 600; color: #0F172A; margin-bottom: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; height: 3.2rem; }
-    .product-price-elegant { font-size: 1.15rem; font-weight: 700; color: #0F172A; margin-bottom: 12px; }
+    
+    .img-box-elegant {
+        background: #F1F5F9;
+        height: 260px; 
+        width: 100%;
+        overflow: hidden;
+        border-radius: 12px; 
+        position: relative;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .img-box-elegant img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        mix-blend-mode: multiply;
+        transition: transform 0.8s ease;
+    }
+    .elegant-card:hover .img-box-elegant img {
+        transform: scale(1.05);
+    }
+    
+    .product-brand-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #64748B;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    .product-name-elegant {
+        font-family: 'Jost', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #0F172A;
+        margin-bottom: 6px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+        height: 3.2rem;
+    }
+    .product-price-elegant {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin-bottom: 12px;
+    }
 
-    .btn-elegant-cart { background: #1E293B; color: #FFFFFF; font-weight: 600; border-radius: 8px; border: none; padding: 12px; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: all 0.3s ease; }
+    .btn-elegant-cart {
+        background: #1E293B;
+        color: #FFFFFF;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        padding: 12px;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+    }
     .btn-elegant-cart:hover { background: #4F46E5; color: white; box-shadow: 0 4px 12px rgba(79,70,229,0.3); }
-    .section-heading { font-family: 'Jost', sans-serif; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: #0F172A; text-align: center; margin-bottom: 50px; }
+
+    .section-heading {
+        font-family: 'Jost', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        color: #0F172A;
+        text-align: center;
+        margin-bottom: 50px;
+    }
 
     /* 🌟 ADVANCED FILTER BAR STYLES */
-    .premium-filter-bar { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 40px; }
-    .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; align-items: end; }
-    .filter-label { font-size: 0.8rem; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
-    .filter-select, .filter-input { width: 100%; padding: 10px 15px; border: 1px solid #CBD5E1; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 0.9rem; color: #0F172A; outline: none; transition: 0.3s; }
+    .premium-filter-bar {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        margin-bottom: 40px;
+    }
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 15px;
+        align-items: end;
+    }
+    .filter-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #64748B;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        display: block;
+    }
+    .filter-select, .filter-input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.9rem;
+        color: #0F172A;
+        outline: none;
+        transition: 0.3s;
+    }
     .filter-select:focus, .filter-input:focus { border-color: #0F172A; }
-    .btn-apply-filter { background: #0F172A; color: #FFFFFF; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; height: 42px; }
+    
+    .btn-apply-filter {
+        background: #0F172A;
+        color: #FFFFFF;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        height: 42px;
+    }
     .btn-apply-filter:hover { background: #1E293B; }
-    .btn-clear-filter { background: #F1F5F9; color: #64748B; border: 1px solid #CBD5E1; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-decoration: none; text-align: center; transition: 0.3s; height: 42px; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-clear-filter {
+        background: #F1F5F9;
+        color: #64748B;
+        border: 1px solid #CBD5E1;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        transition: 0.3s;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
     .btn-clear-filter:hover { background: #E2E8F0; color: #0F172A; }
 
     /* 🌟 Filter Collapse Animation */
-    .filter-content-wrapper { max-height: 1200px; overflow: hidden; transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out; opacity: 1; }
-    .filter-content-wrapper.collapsed { max-height: 0; opacity: 0; pointer-events: none; margin-top: 0; }
-    .toggle-filter-btn { background: #F1F5F9; color: #0F172A; border: 1px solid #CBD5E1; padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
-    .toggle-filter-btn:hover { background: #E2E8F0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .filter-content-wrapper {
+        max-height: 1200px;
+        overflow: hidden;
+        transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
+        opacity: 1;
+    }
+    .filter-content-wrapper.collapsed {
+        max-height: 0;
+        opacity: 0;
+        pointer-events: none;
+        margin-top: 0;
+    }
+    .toggle-filter-btn {
+        background: #F1F5F9;
+        color: #0F172A;
+        border: 1px solid #CBD5E1;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .toggle-filter-btn:hover {
+        background: #E2E8F0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
 
     /* 🌟 STICKY CART BAR (AJAX) */
-    .sticky-cart { position: fixed; bottom: 60px; left: 10px; right: 10px; background: #003366; color: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; font-family: 'Poppins', sans-serif; z-index: 1000; }
+    .sticky-cart {
+        position: fixed;
+        bottom: 60px;
+        left: 10px;
+        right: 10px;
+        background: #003366;
+        color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        font-family: 'Poppins', sans-serif;
+        z-index: 1000;
+    }
     .sticky-cart .cart-icon { position: relative; font-size: 22px; }
-    .sticky-cart .cart-badge { position: absolute; top: -6px; right: -10px; background: #ffcc00; color: #003366; font-weight: 700; border-radius: 50%; padding: 4px 6px; font-size: 12px; }
+    .sticky-cart .cart-badge {
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        background: #ffcc00;
+        color: #003366;
+        font-weight: 700;
+        border-radius: 50%;
+        padding: 4px 6px;
+        font-size: 12px;
+    }
     .sticky-cart .cart-info { flex: 1; text-align: center; font-size: 14px; font-weight: 500; }
-    .sticky-cart .view-cart-btn { background: #ffcc00; color: #003366; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; transition: 0.3s ease; }
+    .sticky-cart .view-cart-btn {
+        background: #ffcc00; color: #003366; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; transition: 0.3s ease;
+    }
     .sticky-cart .view-cart-btn:hover { background: #ffd633; }
 
     /* 📱 MOBILE VIEW FIXES */
@@ -190,6 +438,7 @@
 
     <!-- 🌟 4. ADVANCED SMART FILTER BAR WITH VOICE SEARCH -->
     <div class="premium-filter-bar">
+        <!-- Header with Smart Toggle Button -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-bold m-0 text-uppercase" style="font-family: 'Jost', sans-serif; letter-spacing: 2px; color: #0F172A; font-size: 1.2rem;">
                 🔍 Search & Filter
@@ -199,10 +448,12 @@
             </button>
         </div>
 
+        <!-- Collapsible Content Area -->
         <div id="filterContent" class="filter-content-wrapper">
             <form method="GET" action="{% url 'home' %}#full-collection">
                 <div class="filter-grid">
                     
+                    <!-- Search with Voice Command -->
                     <div style="grid-column: 1 / -1; position: relative; display: flex; align-items: center;">
                         <input type="text" id="searchInput" name="search" class="filter-input" placeholder="Search premium essentials..." value="{{ search_query }}" style="padding-right: 45px;">
                         <button type="button" id="voiceSearchBtn" style="position: absolute; right: 10px; background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.3s;" title="Search by Voice">
@@ -210,6 +461,7 @@
                         </button>
                     </div>
                     
+                    <!-- Category -->
                     <div>
                         <label class="filter-label">Category</label>
                         <select name="category" class="filter-select">
@@ -220,6 +472,7 @@
                         </select>
                     </div>
                     
+                    <!-- Brand -->
                     <div>
                         <label class="filter-label">Brand</label>
                         <select name="brand" class="filter-select">
@@ -230,6 +483,7 @@
                         </select>
                     </div>
 
+                    <!-- Sort -->
                     <div>
                         <label class="filter-label">Sort By</label>
                         <select name="sort" class="filter-select">
@@ -239,6 +493,7 @@
                         </select>
                     </div>
 
+                    <!-- Discount -->
                     <div>
                         <label class="filter-label">Discount</label>
                         <select name="discount" class="filter-select">
@@ -250,6 +505,7 @@
                         </select>
                     </div>
 
+                    <!-- Rating -->
                     <div>
                         <label class="filter-label">Rating</label>
                         <select name="rating" class="filter-select">
@@ -259,6 +515,7 @@
                         </select>
                     </div>
 
+                    <!-- Availability -->
                     <div>
                         <label class="filter-label">Availability</label>
                         <select name="availability" class="filter-select">
@@ -267,6 +524,7 @@
                         </select>
                     </div>
 
+                    <!-- Size -->
                     <div>
                         <label class="filter-label">Size</label>
                         <select name="size" class="filter-select">
@@ -278,6 +536,7 @@
                         </select>
                     </div>
 
+                    <!-- Color -->
                     <div>
                         <label class="filter-label">Color</label>
                         <select name="color" class="filter-select">
@@ -289,20 +548,24 @@
                         </select>
                     </div>
 
+                    <!-- Min Price -->
                     <div>
                         <label class="filter-label">Min Price (₹)</label>
                         <input type="number" name="min_price" class="filter-input" placeholder="e.g. 100" value="{{ min_price|default:'' }}">
                     </div>
 
+                    <!-- Max Price -->
                     <div>
                         <label class="filter-label">Max Price (₹)</label>
                         <input type="number" name="max_price" class="filter-input" placeholder="e.g. 5000" value="{{ max_price|default:'' }}">
                     </div>
 
+                    <!-- Buttons -->
                     <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 15px;">
                         <button type="button" class="btn-apply-filter w-100" onclick="this.closest('form').submit();">Apply Filters</button>
                         <a href="{% url 'home' %}" class="btn-clear-filter w-100">Clear All</a>
                     </div>
+
                 </div>
             </form>
         </div>
@@ -312,7 +575,7 @@
     <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-xl-5 mb-5">
         {% for product in products %}
         
-        <!-- Premium Banner 1 -->
+        <!-- 🎯 PREMIUM FEATURE 1: VERTICAL BANNER (Grid ke beech mein, 4th item ki jagah) -->
         {% if forloop.counter == 4 and banners|length > 1 %}
         <div class="col d-none d-md-block">
             <div class="h-100 rounded-4 overflow-hidden shadow-sm position-relative border-0" style="background: #0F172A;">
@@ -327,11 +590,13 @@
         </div>
         {% endif %}
 
+        <!-- Original Product Card -->
         <div class="col">
             <div class="h-100 d-flex flex-column">
                 <a href="{% url 'product_detail' product.id %}" class="elegant-card text-center mb-2">
                     <div class="img-box-elegant position-relative">
                         
+                        <!-- 🎯 PREMIUM FEATURE 2: FOMO / SCARCITY TAG (Stock kam hone par) -->
                         {% if product.stock and product.stock < 5 %}
                             <span class="badge bg-warning text-dark position-absolute bottom-0 start-50 translate-middle-x mb-2 px-3 py-1 shadow-sm rounded-pill" style="font-size: 0.75rem; z-index: 2; width: max-content;">
                                 ⏳ Only {{ product.stock }} Left!
@@ -382,7 +647,7 @@
             </div>
         </div>
 
-        <!-- Premium Banner 2 -->
+        <!-- 🎯 PREMIUM FEATURE 3: FULL WIDTH HORIZONTAL BANNER (8th item ke baad) -->
         {% if forloop.counter == 8 and banners|length > 2 %}
         <div class="col-12 mt-4 mb-4">
             <div class="rounded-4 overflow-hidden shadow-sm position-relative" style="height: 180px; background: #0F172A;">
@@ -409,7 +674,8 @@
     <nav aria-label="Page navigation" class="mt-5 pt-4 border-top">
         <ul class="pagination justify-content-center gap-2">
             {% if products.has_previous %}
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.previous_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}">Prev</a></li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="{% url 'home' %}?page=1{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}{% if active_discount %}&discount={{active_discount}}{% endif %}{% if active_rating %}&rating={{active_rating}}{% endif %}{% if active_availability %}&availability={{active_availability}}{% endif %}{% if active_color %}&color={{active_color}}{% endif %}{% if active_size %}&size={{active_size}}{% endif %}{% if min_price %}&min_price={{min_price}}{% endif %}{% if max_price %}&max_price={{max_price}}{% endif %}">&laquo; First</a></li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="{% url 'home' %}?page={{ products.previous_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}{% if active_discount %}&discount={{active_discount}}{% endif %}{% if active_rating %}&rating={{active_rating}}{% endif %}{% if active_availability %}&availability={{active_availability}}{% endif %}{% if active_color %}&color={{active_color}}{% endif %}{% if active_size %}&size={{active_size}}{% endif %}{% if min_price %}&min_price={{min_price}}{% endif %}{% if max_price %}&max_price={{max_price}}{% endif %}">Prev</a></li>
             {% endif %}
 
             <li class="page-item active">
@@ -417,7 +683,7 @@
             </li>
 
             {% if products.has_next %}
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="?page={{ products.next_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}">Next</a></li>
+                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="{% url 'home' %}?page={{ products.next_page_number }}{% if search_query %}&search={{search_query}}{% endif %}{% if active_category %}&category={{active_category}}{% endif %}{% if active_brand %}&brand={{active_brand}}{% endif %}{% if current_sort %}&sort={{current_sort}}{% endif %}{% if active_discount %}&discount={{active_discount}}{% endif %}{% if active_rating %}&rating={{active_rating}}{% endif %}{% if active_availability %}&availability={{active_availability}}{% endif %}{% if active_color %}&color={{active_color}}{% endif %}{% if active_size %}&size={{active_size}}{% endif %}{% if min_price %}&min_price={{min_price}}{% endif %}{% if max_price %}&max_price={{max_price}}{% endif %}">Next</a></li>
             {% endif %}
         </ul>
     </nav>
@@ -436,7 +702,7 @@
     </button>
 </div>
 
-<!-- 🌟 COMBINED SCRIPTS -->
+<!-- 🌟 COMBINED SCRIPTS (AJAX CART + SMART FILTER + VOICE SEARCH) -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         
@@ -449,7 +715,10 @@
         const urlParams = new URLSearchParams(window.location.search);
         let hasActiveFilters = false;
         for (const [key, value] of urlParams.entries()) {
-            if (value && key !== 'page') { hasActiveFilters = true; break; }
+            if (value && key !== 'page') {
+                hasActiveFilters = true;
+                break;
+            }
         }
 
         if (hasActiveFilters) {
@@ -491,6 +760,7 @@
                 .catch(error => console.error('Error:', error));
         }
         
+        // Load cart state instantly
         refreshCartBar();
 
         document.querySelectorAll('.add-to-cart-ajax').forEach(btn => {
@@ -531,7 +801,7 @@
             });
         });
 
-        // --- 3. VOICE SEARCH LOGIC ---
+        // --- 3. VOICE SEARCH (SPEECH RECOGNITION) LOGIC ---
         const voiceSearchBtn = document.getElementById("voiceSearchBtn");
         const searchInput = document.getElementById("searchInput");
         const filterForm = searchInput.closest('form');
@@ -554,22 +824,32 @@
 
             recognition.onresult = function(event) {
                 let transcript = event.results[0][0].transcript;
+                
+                // 🌟 FIX 1: Aggressive Safai (Sirf English letters, numbers aur spaces bachenge)
                 transcript = transcript.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+
                 searchInput.value = transcript;
                 voiceSearchBtn.innerHTML = "🎤";
     
+                // 🌟 FIX 2: Human-like Submit
                 const submitBtn = filterForm.querySelector('.btn-apply-filter');
                 if (submitBtn) {
-                    setTimeout(() => { submitBtn.click(); }, 200); 
+                    setTimeout(() => {
+                        submitBtn.click(); 
+                    }, 200); 
                 } else {
                     filterForm.submit(); 
                 }
             };
 
             recognition.onerror = function(event) {
+                console.error("Speech recognition error", event.error);
                 voiceSearchBtn.innerHTML = "🎤";
                 searchInput.placeholder = "Search premium essentials...";
                 searchInput.style.borderColor = "";
+                if (event.error === 'not-allowed') {
+                    alert("Please allow microphone access to use Voice Search.");
+                }
             };
             
             recognition.onend = function() {
@@ -579,6 +859,7 @@
             };
         } else {
             voiceSearchBtn.style.display = "none"; 
+            console.log("Voice search is not supported in this browser.");
         }
 
     });

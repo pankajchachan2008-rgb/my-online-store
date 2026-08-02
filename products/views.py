@@ -569,8 +569,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 NAYA: AI ASSISTANT CHAT LOGIC (SMART DEBUGGER)
-# 🤖 AI ASSISTANT CHAT LOGIC (SMART MULTI-MODEL)
+# 🤖 AI ASSISTANT CHAT LOGIC (Ultimate Debugger)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -583,33 +582,35 @@ def ai_assistant_chat(request):
 
             api_key = os.environ.get('GEMINI_API_KEY')
             if not api_key:
-                return JsonResponse({'response': '🛑 DEBUG ERROR: Render par GEMINI_API_KEY nahi mili!'})
+                return JsonResponse({'response': '🛑 Error: Render par GEMINI_API_KEY nahi mil rahi hai.'})
 
+            # System prompt with your store context
             system_prompt = (
-                "You are 'CGSMART Support AI', the friendly customer assistant for CGSMART (Chachan General Store in Nohar, Rajasthan).\n"
-                "Answer politely in short, helpful Hinglish (2-3 sentences max).\n"
+                "You are 'CGSMART Support AI', the helpful virtual assistant for CGSMART (Chachan General Store in Nohar, Rajasthan).\n"
+                "Store details: Free Home Delivery over ₹999. COD, UPI, Cards accepted. Extra 10% off code: CGSMART10.\n"
+                "Rules: Answer politely in short, friendly Hinglish (max 2-3 sentences)."
             )
 
-            # Hum 3 latest models try karenge taaki koi error na aaye
-            models_to_try = ['gemini-1.5-flash-latest', 'gemini-1.5-pro-latest', 'gemini-pro']
+            # Updated to Google's latest active model: 2.5 Flash
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
             
-            for model_name in models_to_try:
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
-                payload = {
-                    "contents": [{"role": "user", "parts": [{"text": f"{system_prompt}\n\nUser Question: {user_message}"}]}]
-                }
-                headers = {"Content-Type": "application/json"}
-                
-                response = requests.post(url, json=payload, headers=headers, timeout=10)
-                
-                if response.status_code == 200:
-                    ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
-                    return JsonResponse({'response': ai_reply})
+            payload = {
+                "contents": [{"parts": [{"text": f"{system_prompt}\n\nUser Question: {user_message}"}]}]
+            }
+            headers = {"Content-Type": "application/json"}
             
-            # Agar teeno fail ho jayein toh error dikhayega
-            return JsonResponse({'response': f'🛑 GOOGLE API ERROR: Koi bhi model kaam nahi kar raha. Check your Google API Cloud Console.'})
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                res_data = response.json()
+                ai_reply = res_data['candidates'][0]['content']['parts'][0]['text']
+                return JsonResponse({'response': ai_reply})
+            else:
+                # 🛑 YAHAN MAGIC HOGA: Google ka original error seedha screen par aayega
+                error_details = response.text
+                return JsonResponse({'response': f"🛑 Google API Error (Code {response.status_code}): {error_details}"})
 
         except Exception as e:
-            return JsonResponse({'response': f'🛑 SYSTEM ERROR: {str(e)}'})
+            return JsonResponse({'response': f"🛑 System Error: {str(e)}"})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
