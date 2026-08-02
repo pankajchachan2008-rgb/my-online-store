@@ -1,37 +1,161 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us | CGSMART - Nohar{% endblock %}
+
 {% block content %}
 <style>
-    .contact-wrapper { border: 2px solid #000; box-shadow: 6px 6px 0px #000000; background: #fff; }
-    .contact-info-bg { background: #000; color: white; padding: 40px; height: 100%; }
-    .info-item { display: flex; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #333; }
-    .info-icon { font-size: 2rem; margin-right: 20px; }
-    .contact-form-section { padding: 40px; }
-    .custom-input { border: 2px solid #000 !important; border-radius: 0; padding: 12px; font-weight: 500; }
-    .btn-submit { background: #000; color: #fff; text-transform: uppercase; font-weight: 700; border: none; padding: 15px; width: 100%; }
-    .btn-submit:hover { background: #333; }
+    /* 🌟 PREMIUM HERO BANNER */
+    .contact-hero {
+        background: linear-gradient(rgba(0,45,98,0.85), rgba(0,45,98,0.85)), 
+                    url('https://images.unsplash.com/photo-1596524430615-b462c0500125?q=80&w=2070') no-repeat center center;
+        background-size: cover;
+        height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-bottom: 60px;
+        animation: fadeIn 1.2s ease;
+    }
+    .contact-hero h1 {
+        font-family: 'Jost', sans-serif;
+        font-size: 3.5rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--accent-gold);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 🌟 ELEGANT INFO CARDS */
+    .contact-info-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 40px 20px;
+        text-align: center;
+        transition: all 0.4s ease;
+        height: 100%;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+    .contact-info-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        border-color: var(--accent-gold);
+    }
+    .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        display: block;
+    }
+    .card-title {
+        font-family: 'Jost', sans-serif;
+        font-weight: 700;
+        color: var(--primary-blue);
+        margin-bottom: 10px;
+    }
+
+    /* 🌟 ELEGANT FORM */
+    .contact-form-box {
+        background: #FFFFFF;
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+    }
+    .form-control-custom {
+        border: 2px solid #F1F5F9;
+        border-radius: 12px;
+        padding: 15px;
+        background: #F8FAFC;
+        transition: 0.3s;
+    }
+    .form-control-custom:focus {
+        border-color: var(--accent-gold);
+        background: #FFFFFF;
+    }
+    .btn-submit {
+        background: var(--primary-blue);
+        color: white;
+        padding: 15px 40px;
+        border-radius: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+        transition: 0.3s;
+    }
+    .btn-submit:hover {
+        background: #001a38;
+        transform: scale(1.02);
+    }
 </style>
 
-<div class="container my-5" style="max-width: 1000px;">
-    <div class="row g-0 contact-wrapper">
-        <div class="col-md-5">
-            <div class="contact-info-bg">
-                <h3 class="fw-bold text-uppercase mb-4">Contact Info</h3>
-                <p class="text-white-50 mb-5">Agar aapko kisi bhi order ya product ki jaankari chahiye, toh humse sampark karein:</p>
-                <div class="info-item"><div class="info-icon">📍</div><div><h6 class="mb-1 fw-bold text-uppercase">Store Address</h6><p class="mb-0 text-white-50">Nohar, Rajasthan</p></div></div>
-                <div class="info-item"><div class="info-icon">📧</div><div><h6 class="mb-1 fw-bold text-uppercase">Email Us</h6><p class="mb-0 text-white-50">support@cgsmart.in</p></div></div>
-                <div class="info-item border-0"><div class="info-icon">📞</div><div><h6 class="mb-1 fw-bold text-uppercase">Call Us</h6><p class="mb-0 text-white-50">+91-7357073316</p></div></div>
+<!-- Hero Section -->
+<div class="contact-hero">
+    <div class="text-center">
+        <h1>Contact Us</h1>
+        <p class="lead text-white-50">Humari team aapki sewa mein tatpar hai</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Info Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="contact-info-card">
+                <span class="card-icon">📞</span>
+                <h4 class="card-title">Call Support</h4>
+                <p class="text-muted">+91 73570 73316</p>
             </div>
         </div>
-        <div class="col-md-7 contact-form-section">
-            <h2 class="fw-bold text-uppercase mb-4">Send Message</h2>
-            <form action="#" method="POST">
-                {% csrf_token %}
-                <div class="mb-3"><input type="text" class="form-control custom-input" placeholder="Full Name" required></div>
-                <div class="mb-3"><input type="email" class="form-control custom-input" placeholder="Email Address" required></div>
-                <div class="mb-4"><textarea class="form-control custom-input" placeholder="Your Message" style="height: 120px" required></textarea></div>
-                <button type="submit" class="btn-submit">Submit Query</button>
-            </form>
+        <div class="col-md-4">
+            <div class="contact-info-card">
+                <span class="card-icon">📍</span>
+                <h4 class="card-title">Visit Us</h4>
+                <p class="text-muted">Chachan General Store, Nohar, Rajasthan</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="contact-info-card">
+                <span class="card-icon">📧</span>
+                <h4 class="card-title">Email Us</h4>
+                <p class="text-muted">support@cgsmart.in</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="contact-form-box">
+                <h2 class="section-heading mb-4 text-center">Send Us A Message</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <input type="text" name="name" class="form-control form-control-custom" placeholder="Full Name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="email" name="email" class="form-control form-control-custom" placeholder="Email Address" required>
+                        </div>
+                        <div class="col-12">
+                            <input type="text" name="subject" class="form-control form-control-custom" placeholder="Subject" required>
+                        </div>
+                        <div class="col-12">
+                            <textarea name="message" class="form-control form-control-custom" rows="5" placeholder="How can we help you?" required></textarea>
+                        </div>
+                        <div class="col-12 text-center mt-4">
+                            <button type="submit" class="btn-submit">Send Message</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
