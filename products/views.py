@@ -569,7 +569,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (Final Valid Models)
+# 🤖 AI ASSISTANT CHAT LOGIC (Multi-Model Auto-Fallback Loop)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -595,23 +595,31 @@ def ai_assistant_chat(request):
             }
             headers = {"Content-Type": "application/json"}
             
-            # Model 1: Try Gemini 2.5 Flash Preview (Active for new users)
-            url_1 = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview:generateContent?key={api_key}"
-            response = requests.post(url_1, json=payload, headers=headers, timeout=10)
+            # 🌟 Yahan hum 3 sabse stable aur universally active models try karenge
+            working_models = [
+                "gemini-1.5-flash-latest", # Pehli pasand (Latest Flash)
+                "gemini-pro",              # Doosri pasand (Universal V1)
+                "gemini-1.5-pro-latest"    # Teesri pasand (Advanced Pro)
+            ]
             
-            if response.status_code == 200:
-                ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
-                return JsonResponse({'response': ai_reply})
-            else:
-                # Model 2: Fallback to Stable Gemini 1.5 Flash
-                url_2 = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-                res_fallback = requests.post(url_2, json=payload, headers=headers, timeout=10)
+            last_error = ""
+            
+            # Loop chalega jab tak koi ek model sahi jawab na de de
+            for model_name in working_models:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+                response = requests.post(url, json=payload, headers=headers, timeout=10)
                 
-                if res_fallback.status_code == 200:
-                    ai_reply = res_fallback.json()['candidates'][0]['content']['parts'][0]['text']
+                if response.status_code == 200:
+                    # ✅ Model mil gaya aur jawab aa gaya!
+                    ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
                     return JsonResponse({'response': ai_reply})
                 else:
-                    return JsonResponse({'response': f"🛑 Google API Error: Dono models fail ho gaye. Code: {res_fallback.status_code}. Detail: {res_fallback.text}"})
+                    # ❌ Ye model fail hua, agla try karo
+                    last_error = f"Model {model_name} failed. Error: {response.text}"
+                    continue
+                    
+            # Agar teeno mein se koi bhi model kaam na kare
+            return JsonResponse({'response': f"🛑 Google API Error: Teeno models fail. Aakhiri Error: {last_error}"})
 
         except Exception as e:
             return JsonResponse({'response': f"🛑 System Error: {str(e)}"})
