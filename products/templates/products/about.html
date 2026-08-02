@@ -73,7 +73,7 @@
         margin: 0;
     }
 
-    /* 🌟 NAYA: STORE PLACEHOLDER (For Broken Image) */
+    /* STORE PLACEHOLDER (For Broken Image) */
     .store-placeholder {
         background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
         border-radius: 18px;
@@ -98,7 +98,7 @@
     .story-card {
         background: linear-gradient(180deg, #ffffff 0%, var(--bg-soft) 100%);
         border-radius: 18px;
-        padding: 20px; /* Thodi padding adjust ki */
+        padding: 20px;
         border: 1px solid var(--card-border);
         box-shadow: 0 12px 30px rgba(2,6,23,0.04);
         height: 100%;
@@ -116,7 +116,6 @@
     }
 
     /* CORE VALUES */
-    .values-grid { gap: 1.25rem; }
     .value-box {
         background: #fff;
         border-radius: 14px;
@@ -183,8 +182,7 @@
         margin-bottom: 8px;
     }
 
-    /* 🌟 NAYA: TEAM AVATARS */
-    .team-grid { gap: 1.25rem; }
+    /* TEAM AVATARS */
     .team-card {
         background: linear-gradient(180deg, #fff, var(--bg-soft));
         border-radius: 14px;
@@ -192,6 +190,7 @@
         text-align: center;
         border: 1px solid var(--card-border);
         transition: transform 0.3s ease;
+        height: 100%;
     }
     .team-card:hover {
         transform: translateY(-5px);
@@ -288,7 +287,6 @@
         <div class="row align-items-center gx-5">
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="story-card">
-                    <!-- 🌟 FIX: Premium Store SVG Box instead of broken image -->
                     <div class="store-placeholder">
                         <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" fill="var(--accent-gold)" viewBox="0 0 16 16">
                             <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .364-.976l2.605-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5zM4 15h3v-5H4v5zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3z"/>
@@ -322,28 +320,28 @@
         </div>
     </section>
 
-    <!-- CORE VALUES -->
+    <!-- 🌟 CORE VALUES (Fixed Row Wrap) -->
     <section class="py-5" aria-labelledby="core-values">
         <h3 id="core-values" style="font-family:'Jost',sans-serif; color:var(--primary-blue); margin-bottom:18px;">Our Core Values</h3>
-        <div class="row values-grid row-cols-1 row-cols-md-3">
-            <div class="col mb-3">
-                <div class="value-box h-100" role="article" aria-label="Quality First">
+        <div class="row g-4 row-cols-1 row-cols-lg-3">
+            <div class="col">
+                <div class="value-box" role="article" aria-label="Quality First">
                     <div class="value-icon" aria-hidden="true">🏆</div>
                     <div class="value-title">Quality First</div>
                     <div class="value-desc">Sirf behtareen products jo aapke rozmarra ke jeevan ko asaan banayein.</div>
                 </div>
             </div>
 
-            <div class="col mb-3">
-                <div class="value-box h-100" role="article" aria-label="Customer Trust">
+            <div class="col">
+                <div class="value-box" role="article" aria-label="Customer Trust">
                     <div class="value-icon" aria-hidden="true">🤝</div>
                     <div class="value-title">Customer Trust</div>
                     <div class="value-desc">Aapka bharosa hamari sabse badi punji hai — hum ise hamesha sarvopari rakhte hain.</div>
                 </div>
             </div>
 
-            <div class="col mb-3">
-                <div class="value-box h-100" role="article" aria-label="Fast Delivery">
+            <div class="col">
+                <div class="value-box" role="article" aria-label="Fast Delivery">
                     <div class="value-icon" aria-hidden="true">⚡</div>
                     <div class="value-title">Fast Delivery</div>
                     <div class="value-desc">Nohar ke andar lightning-fast delivery taaki aapka samay bache.</div>
@@ -389,17 +387,15 @@
         </div>
     </section>
 
-    <!-- TEAM -->
+    <!-- 🌟 TEAM (Fixed Row Wrap) -->
     <section class="py-5 mt-3" aria-labelledby="meet-team">
-        <!-- 🌟 FIX: Heading centered aur margin fix taaki cut na ho -->
         <div class="text-center w-100 mb-5">
             <h2 id="meet-team" style="font-family:'Jost',sans-serif; color:var(--primary-blue); font-weight:700;">Meet The Team</h2>
             <div style="width: 60px; height: 4px; background: var(--accent-gold); margin: 10px auto; border-radius: 2px;"></div>
         </div>
         
-        <div class="row team-grid row-cols-1 row-cols-sm-2 row-cols-md-4">
-            <!-- 🌟 FIX: Image removed, Avatar Added -->
-            <div class="col mb-3">
+        <div class="row g-4 row-cols-1 row-cols-sm-2 row-cols-lg-4">
+            <div class="col">
                 <div class="team-card">
                     <div class="avatar-circle">C</div>
                     <div class="team-name">Mr. Chachan</div>
@@ -407,7 +403,7 @@
                 </div>
             </div>
 
-            <div class="col mb-3">
+            <div class="col">
                 <div class="team-card">
                     <div class="avatar-circle">N</div>
                     <div class="team-name">Mrs. Neha</div>
@@ -415,7 +411,7 @@
                 </div>
             </div>
 
-            <div class="col mb-3">
+            <div class="col">
                 <div class="team-card">
                     <div class="avatar-circle">R</div>
                     <div class="team-name">Ramniwas</div>
@@ -423,7 +419,7 @@
                 </div>
             </div>
 
-            <div class="col mb-3">
+            <div class="col">
                 <div class="team-card">
                     <div class="avatar-circle">P</div>
                     <div class="team-name">Pankaj Chachan</div>
@@ -436,7 +432,7 @@
     <!-- TESTIMONIALS -->
     <section class="py-5" aria-labelledby="testimonials">
         <h3 id="testimonials" style="font-family:'Jost',sans-serif; color:var(--primary-blue); margin-bottom:18px;">What Our Customers Say</h3>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="row g-4 row-cols-1 row-cols-md-3">
             <div class="col">
                 <div class="testimonial">
                     <p>"Chachan General Store ne hamare liye shopping ko bahut aasan bana diya. Delivery hamesha time par aur products genuine."</p>
@@ -454,7 +450,7 @@
             <div class="col">
                 <div class="testimonial">
                     <p>"Online ordering simple hai aur customer support bahut helpful hai. Highly recommended."</p>
-                    <div class="who">— Ridhi Bansal</div>
+                    <div class="who">— Harsh Kumar</div>
                 </div>
             </div>
         </div>
