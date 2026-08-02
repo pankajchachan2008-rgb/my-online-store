@@ -5,9 +5,6 @@
 
 {% block content %}
 <!-- Premium About Us page for Chachan General Store -->
-<!-- Includes: theme variables, Google fonts, accessible markup, hero, story, values, timeline, team, testimonials, CTA -->
-
-<!-- Fonts (placed here so page-specific fonts load only on this page) -->
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -55,7 +52,6 @@
         padding: 40px;
     }
     
-    /* 🌟 NAYA: LOGO STYLE */
     .hero-logo {
         width: 140px;
         height: auto;
@@ -77,6 +73,23 @@
         margin: 0;
     }
 
+    /* 🌟 NAYA: STORE PLACEHOLDER (For Broken Image) */
+    .store-placeholder {
+        background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+        border-radius: 18px;
+        min-height: 320px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--card-border);
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+    }
+    .store-placeholder svg {
+        margin-bottom: 15px;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
+    }
+
     /* STORY SECTION */
     .story-section {
         padding: 70px 0;
@@ -85,9 +98,10 @@
     .story-card {
         background: linear-gradient(180deg, #ffffff 0%, var(--bg-soft) 100%);
         border-radius: 18px;
-        padding: 28px;
+        padding: 20px; /* Thodi padding adjust ki */
         border: 1px solid var(--card-border);
         box-shadow: 0 12px 30px rgba(2,6,23,0.04);
+        height: 100%;
     }
     .story-text {
         color: var(--muted);
@@ -169,24 +183,39 @@
         margin-bottom: 8px;
     }
 
-    /* TEAM */
+    /* 🌟 NAYA: TEAM AVATARS */
     .team-grid { gap: 1.25rem; }
     .team-card {
         background: linear-gradient(180deg, #fff, var(--bg-soft));
         border-radius: 14px;
-        padding: 18px;
+        padding: 25px 18px;
         text-align: center;
         border: 1px solid var(--card-border);
+        transition: transform 0.3s ease;
     }
-    .team-photo {
-        width: 110px;
-        height: 110px;
+    .team-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,45,98,0.08);
+    }
+    
+    .avatar-circle {
+        width: 90px;
+        height: 90px;
         border-radius: 50%;
-        object-fit: cover;
-        margin: 0 auto 12px;
-        box-shadow: 0 8px 20px rgba(2,6,23,0.06);
+        background: linear-gradient(135deg, var(--primary-blue), #004080);
+        color: var(--accent-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin: 0 auto 15px;
+        box-shadow: 0 8px 15px rgba(0,45,98,0.15);
+        border: 4px solid #fff;
+        font-family: 'Jost', sans-serif;
     }
-    .team-name { font-weight: 700; color: var(--primary-blue); }
+
+    .team-name { font-weight: 700; color: var(--primary-blue); font-size: 1.1rem; margin-bottom: 4px; }
     .team-role { color: var(--muted); font-size: 0.95rem; }
 
     /* TESTIMONIALS */
@@ -239,6 +268,7 @@
         .about-hero h1 { font-size: 2.4rem; }
         .timeline-line { left: 8px; transform: none; }
         .timeline-item { width: 100%; left: 0 !important; text-align: left !important; padding-left: 36px; margin-bottom: 18px; }
+        .cta-banner { flex-direction: column; text-align: center; }
     }
 </style>
 
@@ -247,7 +277,6 @@
     <!-- HERO -->
     <header class="about-hero" role="banner" aria-label="About Chachan General Store hero">
         <div class="hero-inner">
-            <!-- 🌟 LOGO FROM CLOUDINARY INTEGRATED HERE -->
             <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Chachan General Store Logo" class="hero-logo">
             <h1>OUR STORY</h1>
             <p class="lead">Serving Nohar with Quality, Trust, and Excellence — now with a premium online experience.</p>
@@ -259,9 +288,14 @@
         <div class="row align-items-center gx-5">
             <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="story-card">
-                    <img src="https://images.unsplash.com/photo-1583258298642-632514c2b926?q=80&w=2070"
-                         alt="Chachan General Store interior and products"
-                         class="img-fluid rounded-3" style="width:100%; height:auto; object-fit:cover;">
+                    <!-- 🌟 FIX: Premium Store SVG Box instead of broken image -->
+                    <div class="store-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" fill="var(--accent-gold)" viewBox="0 0 16 16">
+                            <path d="M2.97 1.35A1 1 0 0 1 3.73 1h8.54a1 1 0 0 1 .76.35l2.609 3.044A1.5 1.5 0 0 1 16 5.37v.255a2.375 2.375 0 0 1-4.25 1.458A2.37 2.37 0 0 1 9.875 8 2.37 2.37 0 0 1 8 7.083 2.37 2.37 0 0 1 6.125 8a2.37 2.37 0 0 1-1.875-.917A2.375 2.375 0 0 1 0 5.625V5.37a1.5 1.5 0 0 1 .364-.976l2.605-3.045zm1.78 4.275a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0 1.375 1.375 0 1 0 2.75 0V5.37a.5.5 0 0 0-.12-.325L12.27 2H3.73L1.12 5.045A.5.5 0 0 0 1 5.37v.255a1.375 1.375 0 0 0 2.75 0 .5.5 0 0 1 1 0zM1.5 8.5A.5.5 0 0 1 2 9v6h1v-5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v5h6V9a.5.5 0 0 1 1 0v6h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1V9a.5.5 0 0 1 .5-.5zM4 15h3v-5H4v5zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3z"/>
+                        </svg>
+                        <h4 style="font-family: 'Playfair Display', serif; color: var(--primary-blue); font-weight:700; margin-top: 10px;">Chachan General Store</h4>
+                        <p class="text-muted mb-0" style="font-size: 0.95rem;">Premium Corporate Retail</p>
+                    </div>
                 </div>
             </div>
 
@@ -356,12 +390,18 @@
     </section>
 
     <!-- TEAM -->
-    <section class="py-5" aria-labelledby="meet-team">
-        <h3 id="meet-team" style="font-family:'Jost',sans-serif; color:var(--primary-blue); margin-bottom:18px;">Meet The Team</h3>
+    <section class="py-5 mt-3" aria-labelledby="meet-team">
+        <!-- 🌟 FIX: Heading centered aur margin fix taaki cut na ho -->
+        <div class="text-center w-100 mb-5">
+            <h2 id="meet-team" style="font-family:'Jost',sans-serif; color:var(--primary-blue); font-weight:700;">Meet The Team</h2>
+            <div style="width: 60px; height: 4px; background: var(--accent-gold); margin: 10px auto; border-radius: 2px;"></div>
+        </div>
+        
         <div class="row team-grid row-cols-1 row-cols-sm-2 row-cols-md-4">
+            <!-- 🌟 FIX: Image removed, Avatar Added -->
             <div class="col mb-3">
                 <div class="team-card">
-                    <img src="{% static 'images/team1.jpg' %}" alt="Owner - Chachan General Store" class="team-photo">
+                    <div class="avatar-circle">C</div>
                     <div class="team-name">Mr. Chachan</div>
                     <div class="team-role">Founder</div>
                 </div>
@@ -369,7 +409,7 @@
 
             <div class="col mb-3">
                 <div class="team-card">
-                    <img src="{% static 'images/team2.jpg' %}" alt="Store Manager" class="team-photo">
+                    <div class="avatar-circle">N</div>
                     <div class="team-name">Mrs. Neha</div>
                     <div class="team-role">Store Manager</div>
                 </div>
@@ -377,7 +417,7 @@
 
             <div class="col mb-3">
                 <div class="team-card">
-                    <img src="{% static 'images/team3.jpg' %}" alt="Logistics Head" class="team-photo">
+                    <div class="avatar-circle">R</div>
                     <div class="team-name">Ramniwas</div>
                     <div class="team-role">Logistics Head</div>
                 </div>
@@ -385,8 +425,7 @@
 
             <div class="col mb-3">
                 <div class="team-card">
-                    <img src="{% static 'images/team4.jpg' %}" alt="Customer Support" class="team-photo">
-                    <!-- 🌟 FIX: Missing '<' bracket added here -->
+                    <div class="avatar-circle">P</div>
                     <div class="team-name">Pankaj Chachan</div>
                     <div class="team-role">Customer Support</div>
                 </div>
@@ -401,7 +440,6 @@
             <div class="col">
                 <div class="testimonial">
                     <p>"Chachan General Store ne hamare liye shopping ko bahut aasan bana diya. Delivery hamesha time par aur products genuine."</p>
-                    <!-- 🌟 FIX: Missing '<' bracket added here -->
                     <div class="who">— Neha Lohia</div>
                 </div>
             </div>
