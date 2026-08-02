@@ -14,6 +14,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden # 🌟 Added HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
@@ -561,13 +562,26 @@ def product_detail(request, product_id):
         return redirect('product_detail', product_id=product.id)
     return render(request, 'products/product_detail.html', {'product': product, 'reviews': reviews, 'avg_rating': round(sum(r.rating for r in reviews)/reviews.count(), 1) if reviews else 0, 'review_count': reviews.count()})
 
+@require_POST
 def update_cart_item(request, item_key, action):
     cart = request.session.get('cart', {})
     if item_key in cart:
-        if action == 'increase': cart[item_key]['quantity'] += 1
-        elif action == 'decrease' and cart[item_key]['quantity'] > 1: cart[item_key]['quantity'] -= 1
-        else: cart.pop(item_key, None)
-        request.session['cart'] = cart; request.session.modified = True
+        # 🌟 FIX: previously, decreasing at quantity=1 fell through to the
+        # `else` branch and silently DELETED the item entirely (the "-"
+        # button is only disabled client-side via CSS, so a stale page,
+        # cached link, or back-button navigation could still trigger this).
+        # Now each action is explicit, and decreasing at the minimum does
+        # nothing instead of wiping the item out.
+        if action == 'increase':
+            cart[item_key]['quantity'] += 1
+        elif action == 'decrease':
+            if cart[item_key]['quantity'] > 1:
+                cart[item_key]['quantity'] -= 1
+            # else: already at 1, do nothing
+        elif action == 'remove':
+            cart.pop(item_key, None)
+        request.session['cart'] = cart
+        request.session.modified = True
     return redirect('cart_detail')
 
 @login_required(login_url='/login/')

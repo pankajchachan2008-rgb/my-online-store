@@ -13,13 +13,15 @@
     
     /* Quantity Buttons */
     .qty-control { display: flex; align-items: center; margin-top: 20px; }
+    .qty-form { display: inline-flex; margin: 0; }
     .qty-btn { 
         width: 28px; height: 28px; background: #fff; border: 1px solid #c2c2c2; 
         border-radius: 50%; display: flex; align-items: center; justify-content: center; 
         font-weight: 600; color: #212121; text-decoration: none; font-size: 16px; cursor: pointer;
+        padding: 0; line-height: 1;
     }
     .qty-btn:hover { background: #f0f0f0; color: #212121; }
-    .qty-btn.disabled { pointer-events: none; opacity: 0.4; }
+    .qty-btn:disabled { pointer-events: none; opacity: 0.4; cursor: not-allowed; }
     .qty-input { 
         width: 46px; height: 28px; margin: 0 10px; border: 1px solid #c2c2c2; 
         border-radius: 2px; text-align: center; font-weight: 500; font-size: 14px;
@@ -30,6 +32,7 @@
     .remove-btn { 
         color: #212121; font-weight: 600; text-transform: uppercase; font-size: 14px; 
         text-decoration: none; margin-left: 24px; transition: 0.3s ease; 
+        background: none; border: none; padding: 0; cursor: pointer;
     }
     .remove-btn:hover { color: #2874f0; }
 
@@ -51,8 +54,8 @@
 
 <div class="container mt-4 mb-5" style="max-width: 1200px;">
     
-    <!-- Upsell Alert -->
-    <div class="row justify-content-center mb-3">
+    <!-- Upsell Alert (Animated) -->
+    <div class="row justify-content-center mb-3" data-aos="fade-down" data-aos-duration="600">
         <div class="col-12">
             <div id="upsell-alert" class="alert text-center fw-semibold d-none" style="background: #e8f4f8; border: 1px solid #2874f0; color: #212121; border-radius: 4px;">
                 ✨ Sirf <strong class="text-danger">₹<span id="amount-needed"></span></strong> ka samaan aur add karein aur Next Order ke liye <strong style="color: #2874f0;">8% Discount Scratch Card</strong> jeetein!
@@ -76,8 +79,8 @@
 
     <div class="row align-items-start g-4">
         
-        <!-- LEFT SIDE: CART ITEMS -->
-        <div class="col-lg-8">
+        <!-- LEFT SIDE: CART ITEMS (Animated) -->
+        <div class="col-lg-8" data-aos="fade-right" data-aos-delay="100" data-aos-duration="800">
             <div class="cart-left-box">
                 <div class="cart-header d-flex justify-content-between align-items-center">
                     <h4 class="fw-bold m-0" style="color: #212121; font-size: 18px;">My Cart ({{ cart_items|length }})</h4>
@@ -97,9 +100,15 @@
                             
                             <!-- Mobile-only Quantity Control -->
                             <div class="qty-control d-flex d-md-none justify-content-center mt-3">
-                                <a href="{% url 'update_cart_item' item.key 'decrease' %}" class="qty-btn {% if item.quantity == 1 %}disabled{% endif %}">-</a>
-                                <input type="text" class="qty-input" value="{{ item.quantity }}" readonly>
-                                <a href="{% url 'update_cart_item' item.key 'increase' %}" class="qty-btn">+</a>
+                                <form class="qty-form" method="POST" action="{% url 'update_cart_item' item.key 'decrease' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="qty-btn" {% if item.quantity == 1 %}disabled{% endif %} aria-label="Decrease quantity">−</button>
+                                </form>
+                                <input type="text" class="qty-input" value="{{ item.quantity }}" readonly aria-label="Quantity">
+                                <form class="qty-form" method="POST" action="{% url 'update_cart_item' item.key 'increase' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="qty-btn" aria-label="Increase quantity">+</button>
+                                </form>
                             </div>
                         </div>
                         
@@ -123,16 +132,26 @@
                             <!-- Desktop Controls -->
                             <div class="d-none d-md-flex align-items-center mt-4">
                                 <div class="qty-control mt-0">
-                                    <a href="{% url 'update_cart_item' item.key 'decrease' %}" class="qty-btn {% if item.quantity == 1 %}disabled{% endif %}">-</a>
-                                    <input type="text" class="qty-input" value="{{ item.quantity }}" readonly>
-                                    <a href="{% url 'update_cart_item' item.key 'increase' %}" class="qty-btn">+</a>
+                                    <form class="qty-form" method="POST" action="{% url 'update_cart_item' item.key 'decrease' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="qty-btn" {% if item.quantity == 1 %}disabled{% endif %} aria-label="Decrease quantity">−</button>
+                                    </form>
+                                    <input type="text" class="qty-input" value="{{ item.quantity }}" readonly aria-label="Quantity">
+                                    <form class="qty-form" method="POST" action="{% url 'update_cart_item' item.key 'increase' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="qty-btn" aria-label="Increase quantity">+</button>
+                                    </form>
                                 </div>
-                                <a href="{% url 'update_cart_item' item.key 'remove' %}" class="remove-btn">Remove</a>
+                                <form method="POST" action="{% url 'update_cart_item' item.key 'remove' %}" class="ms-3">
+                                    {% csrf_token %}
+                                    <button type="submit" class="remove-btn">Remove</button>
+                                </form>
                             </div>
                             <!-- Mobile Remove Button -->
-                            <div class="d-block d-md-none text-center mt-3 pt-3 border-top">
-                                <a href="{% url 'update_cart_item' item.key 'remove' %}" class="remove-btn ms-0 border-0 bg-transparent w-100 text-center">REMOVE ITEM</a>
-                            </div>
+                            <form method="POST" action="{% url 'update_cart_item' item.key 'remove' %}" class="d-block d-md-none text-center mt-3 pt-3 border-top">
+                                {% csrf_token %}
+                                <button type="submit" class="remove-btn ms-0 w-100 text-center">REMOVE ITEM</button>
+                            </form>
                         </div>
                         
                     </div>
@@ -143,8 +162,8 @@
                     </div>
 
                 {% else %}
-                    <!-- Empty Cart -->
-                    <div class="text-center py-5">
+                    <!-- Empty Cart (Animated) -->
+                    <div class="text-center py-5" data-aos="zoom-in" data-aos-delay="100" data-aos-duration="800">
                         <span style="font-size: 4rem; opacity: 0.5;">🛒</span>
                         <h5 class="fw-medium text-dark mt-3">Your cart is empty!</h5>
                         <p class="text-muted small">Add items to it now.</p>
@@ -154,9 +173,9 @@
             </div>
         </div>
 
-        <!-- RIGHT SIDE: PRICE DETAILS -->
+        <!-- RIGHT SIDE: PRICE DETAILS (Animated) -->
         {% if cart_items %}
-        <div class="col-lg-4">
+        <div class="col-lg-4" data-aos="fade-left" data-aos-delay="200" data-aos-duration="800">
             <div class="price-box">
                 <div class="price-box-header">
                     Price Details
