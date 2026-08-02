@@ -5,6 +5,11 @@
 
 {% block content %}
 <style>
+    :root {
+        --primary-blue: #002D62;
+        --accent-gold: #FFD700;
+    }
+
     /* 🌟 PREMIUM HERO BANNER */
     .about-hero {
         background: linear-gradient(rgba(0,45,98,0.9), rgba(0,45,98,0.9)), 
@@ -21,11 +26,7 @@
 
     /* 🌟 CONTENT SECTIONS */
     .story-section { padding: 80px 0; background: #FFFFFF; }
-    .story-text { 
-        font-size: 1.1rem; 
-        line-height: 1.8; 
-        color: #475569; 
-    }
+    .story-text { font-size: 1.1rem; line-height: 1.8; color: #475569; }
     
     .value-box {
         background: #F8FAFC;
@@ -47,6 +48,47 @@
         margin-bottom: 15px;
         transition: 0.3s;
     }
+
+    /* 🌟 TIMELINE */
+    .timeline {
+        position: relative;
+        padding: 2rem 0;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--primary-blue);
+        transform: translateX(-50%);
+    }
+    .timeline-item {
+        position: relative;
+        width: 50%;
+        padding: 1rem 2rem;
+    }
+    .timeline-item.left { left: 0; text-align: right; }
+    .timeline-item.right { left: 50%; }
+    .timeline-item h4 { color: var(--accent-gold); }
+
+    /* 🌟 TESTIMONIALS */
+    .testimonial-box {
+        background: #fff;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .testimonial-box img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-bottom: 15px;
+    }
+    .testimonial-box h5 { margin-bottom: 5px; font-weight: bold; }
+    .testimonial-box p { font-style: italic; color: #475569; }
 
     @keyframes fadeIn {
         from { opacity: 0; }
@@ -106,6 +148,57 @@
             </div>
         </div>
     </section>
+
+    <!-- Timeline Section -->
+    <section class="py-5">
+        <h2 class="section-heading mb-5 text-center">Our Journey</h2>
+        <div class="timeline">
+            <div class="timeline-item left">
+                <h4>1990</h4>
+                <p>Founded with a vision to serve Nohar with quality essentials.</p>
+            </div>
+            <div class="timeline-item right">
+                <h4>2005</h4>
+                <p>Expanded product range and introduced modern retail practices.</p>
+            </div>
+            <div class="timeline-item left">
+                <h4>2020</h4>
+                <p>Digitally transformed to bring convenience to every household.</p>
+            </div>
+            <div class="timeline-item right">
+                <h4>2025</h4>
+                <p>Launched online store with premium corporate-level experience.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-5">
+        <h2 class="section-heading mb-5 text-center">What Our Customers Say</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="testimonial-box">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer 1">
+                    <h5>Priya Sharma</h5>
+                    <p>"Best store in Nohar! Fast delivery and genuine products."</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-box">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer 2">
+                    <h5>Rohit Mehta</h5>
+                    <p>"I trust Chachan General Store for all my family needs."</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="testimonial-box">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Customer 3">
+                    <h5>Anjali Verma</h5>
+                    <p>"Premium experience with local warmth. Highly recommended!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
 <!-- CTA Banner -->
@@ -116,4 +209,4 @@
     </div>
 </div>
 
-{% endblock %}
+{% endblock

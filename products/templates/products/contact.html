@@ -5,25 +5,35 @@
 
 {% block content %}
 <style>
+    :root {
+        --primary-blue: #002D62;
+        --accent-gold: #FFD700;
+        --light-gray: #F8FAFC;
+    }
+
     /* 🌟 PREMIUM HERO BANNER */
     .contact-hero {
         background: linear-gradient(rgba(0,45,98,0.85), rgba(0,45,98,0.85)), 
                     url('https://images.unsplash.com/photo-1596524430615-b462c0500125?q=80&w=2070') no-repeat center center;
         background-size: cover;
-        height: 400px;
+        height: 420px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        margin-bottom: 60px;
+        margin-bottom: 70px;
         animation: fadeIn 1.2s ease;
     }
     .contact-hero h1 {
-        font-family: 'Jost', sans-serif;
-        font-size: 3.5rem;
-        letter-spacing: 4px;
+        font-family: 'Playfair Display', serif;
+        font-size: 3.8rem;
+        letter-spacing: 3px;
         text-transform: uppercase;
         color: var(--accent-gold);
+    }
+    .contact-hero p {
+        font-size: 1.2rem;
+        color: #E2E8F0;
     }
 
     @keyframes fadeIn {
@@ -31,57 +41,67 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 🌟 ELEGANT INFO CARDS */
+    /* 🌟 INFO CARDS */
     .contact-info-card {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
-        border-radius: 16px;
-        padding: 40px 20px;
+        border-radius: 20px;
+        padding: 50px 25px;
         text-align: center;
         transition: all 0.4s ease;
         height: 100%;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     }
     .contact-info-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        transform: translateY(-12px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.1);
         border-color: var(--accent-gold);
     }
     .card-icon {
-        font-size: 2.5rem;
+        font-size: 3rem;
         margin-bottom: 20px;
         display: block;
+        color: var(--accent-gold);
     }
     .card-title {
         font-family: 'Jost', sans-serif;
         font-weight: 700;
         color: var(--primary-blue);
-        margin-bottom: 10px;
+        margin-bottom: 12px;
+    }
+    .contact-info-card p a {
+        color: #475569;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .contact-info-card p a:hover {
+        color: var(--accent-gold);
     }
 
-    /* 🌟 ELEGANT FORM */
+    /* 🌟 CONTACT FORM */
     .contact-form-box {
         background: #FFFFFF;
-        padding: 50px;
-        border-radius: 20px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+        padding: 60px;
+        border-radius: 25px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.08);
     }
     .form-control-custom {
         border: 2px solid #F1F5F9;
-        border-radius: 12px;
-        padding: 15px;
-        background: #F8FAFC;
+        border-radius: 14px;
+        padding: 16px;
+        background: var(--light-gray);
         transition: 0.3s;
     }
     .form-control-custom:focus {
         border-color: var(--accent-gold);
         background: #FFFFFF;
+        box-shadow: 0 0 8px rgba(255,215,0,0.3);
     }
     .btn-submit {
         background: var(--primary-blue);
         color: white;
-        padding: 15px 40px;
-        border-radius: 12px;
+        padding: 16px 45px;
+        border-radius: 14px;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -90,7 +110,14 @@
     }
     .btn-submit:hover {
         background: #001a38;
-        transform: scale(1.02);
+        transform: scale(1.05);
+    }
+
+    /* 🌟 MAP EMBED */
+    .map-box {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.08);
     }
 </style>
 
@@ -98,7 +125,7 @@
 <div class="contact-hero">
     <div class="text-center">
         <h1>Contact Us</h1>
-        <p class="lead text-white-50">Humari team aapki sewa mein tatpar hai</p>
+        <p class="lead">Humari team aapki sewa mein tatpar hai</p>
     </div>
 </div>
 
@@ -107,29 +134,29 @@
     <div class="row g-4 mb-5">
         <div class="col-md-4">
             <div class="contact-info-card">
-                <span class="card-icon">📞</span>
+                <span class="card-icon" aria-label="Phone">📞</span>
                 <h4 class="card-title">Call Support</h4>
-                <p class="text-muted">+91 73570 73316</p>
+                <p><a href="tel:+917357073316">+91 73570 73316</a></p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="contact-info-card">
-                <span class="card-icon">📍</span>
+                <span class="card-icon" aria-label="Location">📍</span>
                 <h4 class="card-title">Visit Us</h4>
-                <p class="text-muted">Chachan General Store, Nohar, Rajasthan</p>
+                <p>Chachan General Store, Nohar, Rajasthan</p>
             </div>
         </div>
         <div class="col-md-4">
             <div class="contact-info-card">
-                <span class="card-icon">📧</span>
+                <span class="card-icon" aria-label="Email">📧</span>
                 <h4 class="card-title">Email Us</h4>
-                <p class="text-muted">support@cgsmart.in</p>
+                <p><a href="mailto:support@cgsmart.in">support@cgsmart.in</a></p>
             </div>
         </div>
     </div>
 
     <!-- Contact Form -->
-    <div class="row justify-content-center">
+    <div class="row justify-content-center mb-5">
         <div class="col-lg-8">
             <div class="contact-form-box">
                 <h2 class="section-heading mb-4 text-center">Send Us A Message</h2>
@@ -156,6 +183,11 @@
             </div>
         </div>
     </div>
-</div>
 
+    <!-- Google Map Embed -->
+    <div class="map-box mb-5">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.123456789!2d74.7700!3d29.1830!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39123456789abcdef%3A0x123456789abcdef!2sNohar%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1691234567890" 
+                width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+</div>
 {% endblock %}
