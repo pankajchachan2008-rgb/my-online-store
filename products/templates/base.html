@@ -20,8 +20,12 @@
     <!-- 🌟 FAVICON -->
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
     
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- 🌟 AOS CSS (For Animations) -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -149,7 +153,7 @@
         @media (max-width: 768px) {
             .brand-name { font-size: 1.4rem !important; letter-spacing: 1px !important; }
             .brand-logo { height: 38px !important; }
-            .brand-tagline { display: none; } /* Hide tagline on mobile to save space */
+            .brand-tagline { display: none; }
             .premium-navbar { padding: 10px 0; }
             .navbar-toggler-icon-custom { font-size: 1.5rem !important; }
         }
@@ -173,7 +177,7 @@
         /* 🤖 AI ASSISTANT WIDGET */
         .ai-chat-btn {
             position: fixed;
-            bottom: 95px; /* Shifted slightly up so it doesn't hit mobile nav */
+            bottom: 95px;
             right: 20px;
             background: #00539C;
             color: white;
@@ -219,6 +223,30 @@
         .ai-chat-input-area { padding: 12px; background: #FFF; border-top: 1px solid #EAEAEA; display: flex; gap: 8px; }
         .ai-chat-input-area input { flex-grow: 1; border: 1px solid #CBD5E1; border-radius: 25px; padding: 10px 15px; font-size: 0.85rem; outline: none; background: #F8FAFC; }
         .ai-send-btn { background: #00539C; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        /* 🌟 FLOATING WHATSAPP BUTTON CSS */
+        .whatsapp-float {
+            position: fixed;
+            right: 20px;
+            bottom: 165px; /* Placed exactly above the AI button */
+            z-index: 1060;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(18,140,126,0.3);
+            cursor: pointer;
+            transition: transform .18s ease;
+        }
+        .whatsapp-float:hover { transform: translateY(-4px) scale(1.05); }
+        .whatsapp-float svg { width: 30px; height: 30px; fill: #fff; }
+
+        /* AOS fallback */
+        [data-aos] { opacity: 0; transition: opacity .6s ease, transform .6s ease; }
+        [data-aos].aos-animate { opacity: 1; transform: none; }
     </style>
 </head>
 <body>
@@ -230,17 +258,13 @@
 
     <!-- 💎 Luxury Header (Sticky) -->
     <nav class="navbar premium-navbar sticky-top">
-        <!-- 🌟 STRICT FLEXBOX CONTAINER FOR MOBILE FIX -->
         <div class="container d-flex justify-content-between align-items-center" style="max-width: 1400px; padding: 0 20px;">
             
-            <!-- Left Side: Hamburger & Brand -->
             <div class="d-flex align-items-center gap-3">
-                <!-- Mobile Toggle Button -->
                 <button class="navbar-toggler border-0 shadow-none p-0 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
                     <span class="navbar-toggler-icon-custom">☰</span>
                 </button>
                 
-                <!-- Brand Logo -->
                 <a class="brand-container" href="{% url 'home' %}">
                     <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
                     <div class="brand-text-wrapper">
@@ -250,9 +274,7 @@
                 </a>
             </div>
 
-            <!-- Right Side: Cart Icon (Mobile) & Nav Links (Desktop) -->
             <div class="d-flex align-items-center">
-                <!-- Desktop Menu -->
                 <div class="d-none d-lg-flex align-items-center">
                     <a class="nav-link-desktop" href="{% url 'home' %}">Home</a>
                     <a class="nav-link-desktop" href="{% url 'about' %}">About</a>
@@ -270,7 +292,6 @@
                     </div>
                 </div>
                 
-                <!-- Mobile Cart Icon -->
                 <div class="d-lg-none ms-2">
                     <a href="{% url 'cart_detail' %}" class="text-decoration-none p-2 text-white d-flex align-items-center">
                         <span class="fs-2">🛒</span>
@@ -411,8 +432,15 @@
         </a>
     </div>
 
-    <!-- Toggle Button -->
-    <button class="ai-chat-btn" id="aiChatToggleBtn" title="Ask AI or Chat on WhatsApp">🤖</button>
+    <!-- 🌟 FLOATING WHATSAPP BUTTON -->
+    <div id="whatsappFloat" class="whatsapp-float" role="button" aria-label="Chat on WhatsApp" title="Chat with us on WhatsApp">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.52 3.48A11.9 11.9 0 0 0 12 0C5.373 0 .001 5.373.001 12c0 2.116.553 4.18 1.6 6.01L0 24l6.2-1.6A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12 0-3.2-1.25-6.2-3.48-8.52zM12 21.5c-1.9 0-3.7-.5-5.3-1.4l-.38-.22-3.7.96.99-3.6-.24-.38A9.5 9.5 0 1 1 21.5 12 9.5 9.5 0 0 1 12 21.5zM17.2 14.1c-.3-.15-1.8-.9-2.1-1-.3-.1-.5-.15-.7.15-.2.3-.8 1-.95 1.2-.15.2-.3.25-.6.1-.3-.15-1.2-.45-2.3-1.4-.85-.75-1.4-1.7-1.55-2-.15-.3 0-.45.1-.6.1-.1.3-.3.45-.45.15-.15.2-.25.3-.4.1-.15 0-.3-.05-.45-.05-.15-.7-1.7-.95-2.35-.25-.6-.5-.5-.7-.5-.2 0-.45 0-.7 0-.25 0-.65.1-.99.45-.35.35-1.35 1.3-1.35 3.15 0 1.85 1.4 3.65 1.6 3.9.2.25 2.8 4.3 6.8 5.95 4 .15 4.4-2.6 4.4-3 0-.4-.35-.6-.65-.75z"/>
+        </svg>
+    </div>
+
+    <!-- Toggle Button for AI Chat -->
+    <button class="ai-chat-btn" id="aiChatToggleBtn" title="Ask AI">🤖</button>
 
     <!-- Chat Window -->
     <div class="ai-chat-box" id="aiChatWindow">
@@ -442,10 +470,38 @@
         </div>
     </div>
 
-    <!-- 🌟 BOOTSTRAP JS (This is what makes the menu work!) -->
+    <!-- BOOTSTRAP JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 🌟 AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
     <script>
+    // 🌟 Initialize AOS Animations
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.AOS) {
+            AOS.init({
+                duration: 700,
+                easing: 'ease-out-cubic',
+                once: true,
+                offset: 80
+            });
+        }
+    });
+
+    // 🌟 WhatsApp Float Logic
+    (function () {
+        var btn = document.getElementById('whatsappFloat');
+        if (!btn) return;
+        btn.addEventListener('click', function () {
+            var phone = '917357073316'; 
+            var text = encodeURIComponent('Hi Chachan General Store, I need help with...');
+            var url = 'https://wa.me/' + phone + '?text=' + text;
+            window.open(url, '_blank');
+        });
+    })();
+
+    // 🌟 AI Assistant Logic
     document.addEventListener("DOMContentLoaded", function() {
         const toggleBtn = document.getElementById("aiChatToggleBtn");
         const chatWindow = document.getElementById("aiChatWindow");
