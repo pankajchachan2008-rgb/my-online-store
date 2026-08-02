@@ -3,7 +3,7 @@
 
 <!-- 🌟 Product Specific SEO -->
 {% block title %}{{ product.name }} - Buy Online at CGSMART{% endblock %}
-{% block meta_description %}Buy {{ product.name }} online at the best price. {{ product.description|truncatechars:100 }}{% endblock %}
+{% block meta_description %}Buy {{ product.name }} online at the best price. {{ product.description|default:""|truncatechars:100 }}{% endblock %}
 {% block og_title %}{{ product.name }} | CGSMART{% endblock %}
 {% block og_description %}Buy {{ product.name }} for ₹{{ product.price }}. Fast delivery available!{% endblock %}
 {% block og_image %}{% if product.image %}{{ product.image.url }}{% endif %}{% endblock %}
@@ -30,7 +30,7 @@
     }
 
     .btn-sticky-cart {
-        background-color: #0F172A; 
+        background-color: var(--primary-blue, #002D62); 
         color: #FFFFFF;
         font-family: 'Jost', sans-serif;
         font-weight: 600;
@@ -43,13 +43,13 @@
     }
 
     .btn-sticky-cart:hover {
-        background-color: #D4AF37; 
-        color: #0F172A;
+        background-color: var(--accent-gold, #D4AF37); 
+        color: var(--primary-blue, #002D62);
     }
 
     .sticky-price {
         font-family: 'Jost', sans-serif;
-        color: #0F172A;
+        color: var(--primary-blue, #0F172A);
         font-size: 1.4rem;
         font-weight: 700;
         line-height: 1.1;
@@ -59,11 +59,11 @@
         body { padding-bottom: 80px; }
     }
 
-    /* 🌟 NEW: IMAGE ZOOM CSS */
+    /* 🌟 IMAGE ZOOM CSS */
     .zoom-container {
         position: relative;
         overflow: hidden;
-        cursor: crosshair; /* Zoom icon on cursor */
+        cursor: crosshair;
         height: 450px;
         display: flex;
         align-items: center;
@@ -76,7 +76,18 @@
         max-width: 100%;
         object-fit: contain;
         mix-blend-mode: multiply;
-        transition: transform 0.2s ease-out; /* Smooth enter/exit */
+        transition: transform 0.2s ease-out;
+    }
+
+    .btn-add-to-cart-brand {
+        background-color: var(--primary-blue, #002D62);
+        border: none;
+        color: #fff;
+        transition: 0.3s ease;
+    }
+    .btn-add-to-cart-brand:hover {
+        background-color: var(--accent-gold, #D4AF37);
+        color: var(--primary-blue, #002D62);
     }
 </style>
 
@@ -84,7 +95,7 @@
     <div class="row g-5">
         
         <!-- 📸 Product Image Gallery (With Hover Zoom & Click Modal) -->
-        <div class="col-lg-5">
+        <div class="col-lg-5" data-aos="fade-right" data-aos-duration="800">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-2">
                 {% if product.image %}
                     <!-- Hover Zoom Container -->
@@ -104,30 +115,30 @@
         </div>
 
         <!-- 📝 Product Information -->
-        <div class="col-lg-7">
+        <div class="col-lg-7" data-aos="fade-left" data-aos-duration="800">
             <div class="ps-lg-4">
                 
                 <!-- Brand & Name -->
                 {% if product.brand %}
-                    <span class="badge bg-dark mb-2 px-3 py-2 rounded-pill text-uppercase letter-spacing-1">{{ product.brand.name }}</span>
+                    <span class="badge bg-dark mb-2 px-3 py-2 rounded-pill text-uppercase letter-spacing-1" data-aos="fade-down" data-aos-delay="100">{{ product.brand.name }}</span>
                 {% endif %}
-                <h1 class="fw-bold text-dark mb-2" style="font-family: 'Jost', sans-serif;">{{ product.name }}</h1>
+                <h1 class="fw-bold text-dark mb-2" style="font-family: 'Jost', sans-serif;" data-aos="fade-up" data-aos-delay="150">{{ product.name }}</h1>
                 
                 <!-- Average Rating Display -->
-                <div class="d-flex align-items-center mb-3">
+                <div class="d-flex align-items-center mb-3" data-aos="fade-up" data-aos-delay="200">
                     <span class="text-warning fs-5" style="letter-spacing: 2px;">★</span>
                     <span class="fw-bold text-dark ms-2 fs-5">{{ avg_rating|default:"0.0" }}</span>
                     <span class="text-muted ms-2">({{ review_count }} Reviews)</span>
                 </div>
                 
-                <p class="text-muted fs-6 mb-4" style="line-height: 1.8;">
+                <p class="text-muted fs-6 mb-4" style="line-height: 1.8;" data-aos="fade-up" data-aos-delay="250">
                     {{ product.description|default:"No description available for this premium product yet." }}
                 </p>
 
                 <hr class="my-4 border-secondary opacity-25">
 
                 <!-- 🛒 Add to Cart Form -->
-                <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST" class="bg-white p-4 rounded-4 shadow-sm border" style="border-color: #E2E8F0 !important;">
+                <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST" class="bg-white p-4 rounded-4 shadow-sm border" style="border-color: #E2E8F0 !important;" data-aos="fade-up" data-aos-delay="300">
                     {% csrf_token %}
                     
                     {% if product.variants.exists %}
@@ -137,7 +148,7 @@
                             <select name="variant_id" id="variantSelect" class="form-select form-select-lg border-2 shadow-none focus-ring" required onchange="updatePrice()">
                                 <option value="" disabled selected>-- Choose Size/Weight --</option>
                                 {% for variant in product.variants.all %}
-                                    <option value="{{ variant.id }}" data-price="{{ variant.price }}">
+                                    <option value="{{ variant.id }}" data-price="{{ variant.price }}" {% if variant.stock == 0 %}disabled{% endif %}>
                                         {{ variant.size_name }} - ₹{{ variant.price }} 
                                         {% if variant.stock == 0 %}(Out of Stock){% endif %}
                                     </option>
@@ -163,7 +174,7 @@
 
                     <!-- Buttons -->
                     <div class="d-flex gap-3 mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg flex-grow-1 fw-bold text-uppercase rounded-3" style="background-color: #4F46E5; border: none; letter-spacing: 1px;">
+                        <button type="submit" class="btn btn-lg btn-add-to-cart-brand flex-grow-1 fw-bold text-uppercase rounded-3" style="letter-spacing: 1px;">
                             🛒 Add To Cart
                         </button>
                         <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger btn-lg rounded-3 d-flex align-items-center justify-content-center" style="width: 60px;" title="Add to Wishlist">
@@ -173,7 +184,7 @@
                 </form>
 
                 <!-- 🛡️ TRUST SIGNALS & SECURE BADGES -->
-                <div class="mt-4 p-3 bg-light rounded-3 border">
+                <div class="mt-4 p-3 bg-light rounded-3 border" data-aos="fade-up" data-aos-delay="400">
                     <p class="small text-muted fw-bold mb-2 text-center text-uppercase" style="letter-spacing: 1px;">Guaranteed Safe & Secure Checkout</p>
                     <div class="d-flex justify-content-center gap-3 align-items-center flex-wrap">
                         <div class="badge bg-white text-dark border px-3 py-2 fs-6 shadow-sm">🔒 256-bit SSL Secure</div>
@@ -183,7 +194,7 @@
                 </div>
 
                 <!-- Delivery Features -->
-                <div class="d-flex gap-4 mt-4 pt-3 border-top">
+                <div class="d-flex gap-4 mt-4 pt-3 border-top" data-aos="fade-up" data-aos-delay="500">
                     <div class="d-flex align-items-center text-muted">
                         <span class="fs-4 me-2">🚚</span> <small class="fw-medium">Fast Delivery</small>
                     </div>
@@ -196,11 +207,11 @@
                 </div>
 
                 <!-- ⭐ CUSTOMER REVIEWS SECTION -->
-                <div class="mt-5 pt-4 border-top">
+                <div class="mt-5 pt-4 border-top" data-aos="fade-up">
                     <h4 class="fw-bold mb-4">Customer Reviews ({{ review_count }})</h4>
                     
                     {% if user.is_authenticated %}
-                        <div class="bg-white p-4 rounded-4 shadow-sm border mb-4">
+                        <div class="bg-white p-4 rounded-4 shadow-sm border mb-4" data-aos="fade-up" data-aos-delay="100">
                             <h6 class="fw-bold mb-3">Write a Review</h6>
                             <form method="POST">
                                 {% csrf_token %}
@@ -222,7 +233,7 @@
                             </form>
                         </div>
                     {% else %}
-                        <div class="alert alert-light border text-center p-4 rounded-4 mb-4">
+                        <div class="alert alert-light border text-center p-4 rounded-4 mb-4" data-aos="fade-up" data-aos-delay="100">
                             Please <a href="{% url 'login' %}" class="fw-bold text-primary">Login</a> to leave a review for this product.
                         </div>
                     {% endif %}
@@ -230,7 +241,7 @@
                     <!-- Display Existing Reviews -->
                     <div class="reviews-list mt-4">
                         {% for review in reviews %}
-                            <div class="review-card bg-white p-4 rounded-4 border mb-3 shadow-sm">
+                            <div class="review-card bg-white p-4 rounded-4 border mb-3 shadow-sm" data-aos="fade-up" data-aos-delay="100">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <div class="fw-bold text-dark fs-5">
                                         {{ review.user.first_name|default:review.user.username }} 
@@ -251,7 +262,7 @@
                                 {% endif %}
                             </div>
                         {% empty %}
-                            <p class="text-muted font-italic">No reviews yet. Be the first one to review this product!</p>
+                            <p class="text-muted font-italic" data-aos="fade-up">No reviews yet. Be the first one to review this product!</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -309,7 +320,7 @@
     }
 </script>
 
-<!-- 🌟 NEW: INNER HOVER ZOOM JAVASCRIPT -->
+<!-- 🌟 INNER HOVER ZOOM JAVASCRIPT -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const container = document.getElementById('zoomContainer');
@@ -317,21 +328,17 @@
         
         if (container && img) {
             container.addEventListener('mousemove', function(e) {
-                // Get container dimensions and mouse position
                 const rect = container.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 
-                // Convert mouse position to percentages
                 const xPercent = (x / rect.width) * 100;
                 const yPercent = (y / rect.height) * 100;
                 
-                // Move the transform origin to the mouse position and scale
                 img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-                img.style.transform = "scale(2.5)"; // Adjust 2.5 to increase/decrease zoom level
+                img.style.transform = "scale(2.5)";
             });
             
-            // Reset image when mouse leaves
             container.addEventListener('mouseleave', function() {
                 img.style.transformOrigin = "center center";
                 img.style.transform = "scale(1)";
@@ -347,7 +354,7 @@
   "@type": "Product",
   "name": "{{ product.name }}",
   "image": "{% if product.image %}{{ product.image.url }}{% endif %}",
-  "description": "{{ product.description|escapejs }}",
+  "description": "{{ product.description|default:""|escapejs }}",
   "sku": "{{ product.sku|default:product.id }}",
   {% if product.brand %}
   "brand": {

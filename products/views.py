@@ -404,7 +404,31 @@ def check_coupon_ajax(request):
     return JsonResponse({'status': 'found', 'discount_percentage': coupon.discount_percentage, 'discount_amount': discount_amount, 'message': f'Coupon {code} applied successfully!'})
 
 def about_page(request): return render(request, 'products/about.html')
-def contact_page(request): return render(request, 'products/contact.html')
+# 🌟 FIX: this view previously ignored POST entirely — the contact form
+# silently discarded every submission with no email sent and no feedback
+# to the user. Now it actually processes and emails the message.
+def contact_page(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+
+        if name and email and subject and message:
+            email_body = (
+                f"<h3>Naya Contact Form Message</h3>"
+                f"<p><strong>Name:</strong> {name}</p>"
+                f"<p><strong>Email:</strong> {email}</p>"
+                f"<p><strong>Subject:</strong> {subject}</p>"
+                f"<p><strong>Message:</strong><br>{message}</p>"
+            )
+            send_brevo_api_email(f"Contact Form: {subject}", email_body, 'support@cgsmart.in')
+            messages.success(request, "✅ Aapka message humein mil gaya hai! Hum jald hi aapse sampark karenge.")
+        else:
+            messages.error(request, "Kripya saare fields bharein.")
+        return redirect('contact')
+
+    return render(request, 'products/contact.html')
 def privacy_policy(request): return render(request, 'policies/privacy.html')
 def terms_conditions(request): return render(request, 'policies/terms.html')
 def refund_policy(request): return render(request, 'policies/refund.html')

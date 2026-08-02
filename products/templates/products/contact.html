@@ -5,13 +5,6 @@
 
 {% block content %}
 <style>
-    :root {
-        --primary-blue: #002D62;
-        --accent-gold: #FFD700;
-        --light-gray: #F8FAFC;
-    }
-
-    /* 🌟 PREMIUM HERO BANNER */
     .contact-hero {
         background: linear-gradient(rgba(0,45,98,0.85), rgba(0,45,98,0.85)), 
                     url('https://images.unsplash.com/photo-1596524430615-b462c0500125?q=80&w=2070') no-repeat center center;
@@ -22,23 +15,17 @@
         justify-content: center;
         color: white;
         margin-bottom: 70px;
-        animation: fadeIn 1.2s ease;
     }
     .contact-hero h1 {
         font-family: 'Playfair Display', serif;
         font-size: 3.8rem;
         letter-spacing: 3px;
         text-transform: uppercase;
-        color: var(--accent-gold);
+        color: var(--accent-gold, #D4AF37);
     }
     .contact-hero p {
         font-size: 1.2rem;
         color: #E2E8F0;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
     }
 
     /* 🌟 INFO CARDS */
@@ -55,18 +42,18 @@
     .contact-info-card:hover {
         transform: translateY(-12px);
         box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-        border-color: var(--accent-gold);
+        border-color: var(--accent-gold, #D4AF37);
     }
     .card-icon {
         font-size: 3rem;
         margin-bottom: 20px;
         display: block;
-        color: var(--accent-gold);
+        color: var(--accent-gold, #D4AF37);
     }
     .card-title {
         font-family: 'Jost', sans-serif;
         font-weight: 700;
-        color: var(--primary-blue);
+        color: var(--primary-blue, #002D62);
         margin-bottom: 12px;
     }
     .contact-info-card p a {
@@ -75,7 +62,7 @@
         font-weight: 500;
     }
     .contact-info-card p a:hover {
-        color: var(--accent-gold);
+        color: var(--accent-gold, #D4AF37);
     }
 
     /* 🌟 CONTACT FORM */
@@ -89,16 +76,16 @@
         border: 2px solid #F1F5F9;
         border-radius: 14px;
         padding: 16px;
-        background: var(--light-gray);
+        background: var(--bg-light, #F8FAFC);
         transition: 0.3s;
     }
     .form-control-custom:focus {
-        border-color: var(--accent-gold);
+        border-color: var(--accent-gold, #D4AF37);
         background: #FFFFFF;
-        box-shadow: 0 0 8px rgba(255,215,0,0.3);
+        box-shadow: 0 0 8px rgba(212,175,55,0.3);
     }
     .btn-submit {
-        background: var(--primary-blue);
+        background: var(--primary-blue, #002D62);
         color: white;
         padding: 16px 45px;
         border-radius: 14px;
@@ -123,7 +110,7 @@
 
 <!-- Hero Section -->
 <div class="contact-hero">
-    <div class="text-center">
+    <div class="text-center" data-aos="zoom-in" data-aos-duration="1000">
         <h1>Contact Us</h1>
         <p class="lead">Humari team aapki sewa mein tatpar hai</p>
     </div>
@@ -132,21 +119,21 @@
 <div class="container mb-5">
     <!-- Info Cards -->
     <div class="row g-4 mb-5">
-        <div class="col-md-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
             <div class="contact-info-card">
                 <span class="card-icon" aria-label="Phone">📞</span>
                 <h4 class="card-title">Call Support</h4>
                 <p><a href="tel:+917357073316">+91 73570 73316</a></p>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
             <div class="contact-info-card">
                 <span class="card-icon" aria-label="Location">📍</span>
                 <h4 class="card-title">Visit Us</h4>
                 <p>Chachan General Store, Nohar, Rajasthan</p>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
             <div class="contact-info-card">
                 <span class="card-icon" aria-label="Email">📧</span>
                 <h4 class="card-title">Email Us</h4>
@@ -155,11 +142,23 @@
         </div>
     </div>
 
+    {% if messages %}
+        <div class="row justify-content-center mb-3" data-aos="fade-in">
+            <div class="col-lg-8">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} rounded-4 text-center" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
     <!-- Contact Form -->
     <div class="row justify-content-center mb-5">
-        <div class="col-lg-8">
+        <div class="col-lg-8" data-aos="fade-up" data-aos-delay="150">
             <div class="contact-form-box">
-                <h2 class="section-heading mb-4 text-center">Send Us A Message</h2>
+                <h2 class="section-heading mb-4 text-center" style="font-family: 'Jost', sans-serif; color: var(--primary-blue);">Send Us A Message</h2>
                 <form method="POST">
                     {% csrf_token %}
                     <div class="row g-3">
@@ -185,9 +184,9 @@
     </div>
 
     <!-- Google Map Embed -->
-    <div class="map-box mb-5">
+    <div class="map-box mb-5" data-aos="zoom-in" data-aos-delay="200">
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.123456789!2d74.7700!3d29.1830!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39123456789abcdef%3A0x123456789abcdef!2sNohar%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1691234567890" 
-                width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" title="CGSMART store location map"></iframe>
     </div>
 </div>
 {% endblock %}
