@@ -138,7 +138,17 @@ class CouponAdmin(admin.ModelAdmin):
     list_display = ['code', 'discount_percentage', 'min_order_amount', 'is_active', 'valid_to']
     list_filter = ['is_active', 'valid_to']
     search_fields = ['code']
-    readonly_fields = ('code',)
+
+    # 🌟 FIX: readonly_fields = ('code',) previously locked the code field on
+    # BOTH the add and change forms — meaning a coupon could never actually
+    # be created with a working code through the admin, since the field was
+    # always non-editable. This restores the ability to set the code when
+    # creating a new coupon, while still locking it once the coupon exists
+    # (so an active coupon's code can't be silently changed later).
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ('code',)
+        return ()
 
 # -----------------------------
 # Custom Admin Action: Shipping Labels

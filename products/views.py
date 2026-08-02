@@ -185,6 +185,12 @@ def product_list(request):
     return render(request, 'products/product_list.html', context)
 
 # 🛒 2. Add to Cart (Standard)
+# 🌟 FIX: this view mutates session cart state but had no method
+# restriction — wishlist.html was calling it via a plain GET <a> link,
+# the same link-prefetch/crawler risk fixed earlier in cart_detail.html.
+# product_detail.html already submits via a real POST form, so this only
+# blocks the unsafe GET usage.
+@require_POST
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     variant_id = request.POST.get('variant_id')
@@ -521,7 +527,27 @@ def download_invoice(request, order_id):
     
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="CGSmart_Bill_{order.id}.pdf"'
-    html = get_template('products/invoice_pdf.html').render({'order': order, 'items': items, 'company_name': store.company_name if store else 'CGSmart', 'bill_no': bill_no, 'qr_code_base64': qr_base64, 'barcode_base64': barcode_base64})
+    # 🌟 FIX: invoice_pdf.html uses customer_phone, customer_address, date,
+    # status, gstin, store_address, store_phone, and tagline — none of these
+    # were ever being passed here, so every generated invoice had blank
+    # "Billed To", "Document Details", and "Dispatched From" sections.
+    context = {
+        'order': order,
+        'items': items,
+        'company_name': store.company_name if store else 'Chachan General Store',
+        'tagline': store.tagline if store else 'Premium Corporate Retail & Essentials',
+        'gstin': store.gstin if store else '',
+        'store_address': store.store_address if store else '',
+        'store_phone': store.store_phone if store else '',
+        'bill_no': bill_no,
+        'customer_phone': order.mobile_number,
+        'customer_address': order.address,
+        'date': order.created_at,
+        'status': order.status,
+        'qr_code_base64': qr_base64,
+        'barcode_base64': barcode_base64,
+    }
+    html = get_template('products/invoice_pdf.html').render(context)
     if pisa.CreatePDF(html, dest=response).err: return HttpResponse('Error generating PDF')
     return response
 
