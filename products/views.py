@@ -569,7 +569,7 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (Ultimate Debugger)
+# 🤖 AI ASSISTANT CHAT LOGIC (Final Valid Models)
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -584,31 +584,34 @@ def ai_assistant_chat(request):
             if not api_key:
                 return JsonResponse({'response': '🛑 Error: Render par GEMINI_API_KEY nahi mil rahi hai.'})
 
-            # System prompt with your store context
             system_prompt = (
-                "You are 'CGSMART Support AI', the helpful virtual assistant for CGSMART (Chachan General Store in Nohar, Rajasthan).\n"
+                "You are 'CGSMART Support AI', the premium virtual assistant for CGSMART (Chachan General Store in Nohar, Rajasthan).\n"
                 "Store details: Free Home Delivery over ₹999. COD, UPI, Cards accepted. Extra 10% off code: CGSMART10.\n"
                 "Rules: Answer politely in short, friendly Hinglish (max 2-3 sentences)."
             )
 
-            # Updated to Google's latest active model: 2.5 Flash
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-            
             payload = {
                 "contents": [{"parts": [{"text": f"{system_prompt}\n\nUser Question: {user_message}"}]}]
             }
             headers = {"Content-Type": "application/json"}
             
-            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            # Model 1: Try Gemini 2.5 Flash Preview (Active for new users)
+            url_1 = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview:generateContent?key={api_key}"
+            response = requests.post(url_1, json=payload, headers=headers, timeout=10)
             
             if response.status_code == 200:
-                res_data = response.json()
-                ai_reply = res_data['candidates'][0]['content']['parts'][0]['text']
+                ai_reply = response.json()['candidates'][0]['content']['parts'][0]['text']
                 return JsonResponse({'response': ai_reply})
             else:
-                # 🛑 YAHAN MAGIC HOGA: Google ka original error seedha screen par aayega
-                error_details = response.text
-                return JsonResponse({'response': f"🛑 Google API Error (Code {response.status_code}): {error_details}"})
+                # Model 2: Fallback to Stable Gemini 1.5 Flash
+                url_2 = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+                res_fallback = requests.post(url_2, json=payload, headers=headers, timeout=10)
+                
+                if res_fallback.status_code == 200:
+                    ai_reply = res_fallback.json()['candidates'][0]['content']['parts'][0]['text']
+                    return JsonResponse({'response': ai_reply})
+                else:
+                    return JsonResponse({'response': f"🛑 Google API Error: Dono models fail ho gaye. Code: {res_fallback.status_code}. Detail: {res_fallback.text}"})
 
         except Exception as e:
             return JsonResponse({'response': f"🛑 System Error: {str(e)}"})
