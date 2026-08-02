@@ -54,6 +54,16 @@
         max-width: 1100px;
         padding: 40px;
     }
+    
+    /* 🌟 NAYA: LOGO STYLE */
+    .hero-logo {
+        width: 140px;
+        height: auto;
+        margin-bottom: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
     .about-hero h1 {
         font-family: 'Playfair Display', serif;
         font-size: 3.2rem;
@@ -237,6 +247,8 @@
     <!-- HERO -->
     <header class="about-hero" role="banner" aria-label="About Chachan General Store hero">
         <div class="hero-inner">
+            <!-- 🌟 LOGO FROM CLOUDINARY INTEGRATED HERE -->
+            <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Chachan General Store Logo" class="hero-logo">
             <h1>OUR STORY</h1>
             <p class="lead">Serving Nohar with Quality, Trust, and Excellence — now with a premium online experience.</p>
         </div>
@@ -329,14 +341,14 @@
 
             <div class="timeline-item left" style="position:relative;">
                 <div class="bubble">
-                    <div class="timeline-year">2020</div>
-                    <p style="margin:0; color:var(--muted);">Adopted digital tools to improve customer convenience.</p>
+                    <div class="timeline-year">2018</div>
+                    <p style="margin:0; color:var(--muted);">We Changed Our Store Name Chachan General Store from Rajendra General Store and Adopted digital tools to improve customer convenience.</p>
                 </div>
             </div>
 
             <div class="timeline-item right" style="position:relative;">
                 <div class="bubble">
-                    <div class="timeline-year">2025</div>
+                    <div class="timeline-year">2026</div>
                     <p style="margin:0; color:var(--muted);">Launched our premium online store and delivery network.</p>
                 </div>
             </div>
@@ -358,7 +370,7 @@
             <div class="col mb-3">
                 <div class="team-card">
                     <img src="{% static 'images/team2.jpg' %}" alt="Store Manager" class="team-photo">
-                    <div class="team-name">Suman Devi</div>
+                    <div class="team-name">Mrs. Neha</div>
                     <div class="team-role">Store Manager</div>
                 </div>
             </div>
@@ -366,7 +378,7 @@
             <div class="col mb-3">
                 <div class="team-card">
                     <img src="{% static 'images/team3.jpg' %}" alt="Logistics Head" class="team-photo">
-                    <div class="team-name">Rohit Kumar</div>
+                    <div class="team-name">Ramniwas</div>
                     <div class="team-role">Logistics Head</div>
                 </div>
             </div>
@@ -374,7 +386,8 @@
             <div class="col mb-3">
                 <div class="team-card">
                     <img src="{% static 'images/team4.jpg' %}" alt="Customer Support" class="team-photo">
-                    <div class="team-name">Anjali Verma</div>
+                    <!-- 🌟 FIX: Missing '<' bracket added here -->
+                    <div class="team-name">Pankaj Chachan</div>
                     <div class="team-role">Customer Support</div>
                 </div>
             </div>
@@ -388,21 +401,22 @@
             <div class="col">
                 <div class="testimonial">
                     <p>"Chachan General Store ne hamare liye shopping ko bahut aasan bana diya. Delivery hamesha time par aur products genuine."</p>
-                    <div class="who">— Priya Sharma</div>
+                    <!-- 🌟 FIX: Missing '<' bracket added here -->
+                    <div class="who">— Neha Lohia</div>
                 </div>
             </div>
 
             <div class="col">
                 <div class="testimonial">
                     <p>"Local warmth with premium service. Quality aur trust dono milte hain yahan."</p>
-                    <div class="who">— Rohit Mehta</div>
+                    <div class="who">— Om Prakash</div>
                 </div>
             </div>
 
             <div class="col">
                 <div class="testimonial">
                     <p>"Online ordering simple hai aur customer support bahut helpful hai. Highly recommended."</p>
-                    <div class="who">— Anjali Verma</div>
+                    <div class="who">— Ridhi Bansal</div>
                 </div>
             </div>
         </div>
