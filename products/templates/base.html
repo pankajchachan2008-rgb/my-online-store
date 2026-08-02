@@ -17,19 +17,19 @@
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:type" content="website">
 
-    <!-- 🌟 FAVICON (BROWSER TAB LOGO) YAHAN ADD KIYA GAYA HAI 🌟 -->
+    <!-- 🌟 FAVICON -->
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Premium Fonts: Inter for clean readability, Jost for headings -->
+    <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-light: #FAFAFA; /* Brighter, airy background */
+            --bg-light: #FAFAFA;
             --text-dark: #0F172A;
             --text-muted: #64748B;
             --primary-blue: #002D62; 
@@ -44,15 +44,15 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            padding-bottom: env(safe-area-inset-bottom); 
+            padding-bottom: calc(70px + env(safe-area-inset-bottom)); 
             line-height: 1.6;
         }
 
-        /* 💎 Premium Luxury Navbar - More Airy */
+        /* 💎 Premium Luxury Navbar */
         .premium-navbar {
             background-color: var(--primary-blue);
             border-bottom: 4px solid var(--accent-gold);
-            padding: 22px 0; /* Increased padding for luxury feel */
+            padding: 15px 0;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             z-index: 1040;
         }
@@ -60,14 +60,14 @@
         .brand-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             text-decoration: none !important;
         }
         
         .brand-logo { 
-            height: 55px; /* Larger logo image */
+            height: 50px; 
             width: auto; 
-            border-radius: 12px;
+            border-radius: 10px;
             border: 2px solid var(--accent-gold);
         }
         
@@ -76,19 +76,18 @@
             flex-direction: column;
         }
 
-        /* 🌟 MUCH BIGGER LOGO TEXT FOR BRAND RECALL */
         .brand-name {
             font-family: 'Jost', sans-serif;
             font-weight: 800;
-            font-size: 2.2rem; /* Scaled up significantly */
-            letter-spacing: 3px;
+            font-size: 2rem;
+            letter-spacing: 2px;
             color: var(--accent-gold);
             margin: 0;
             line-height: 1.1;
         }
 
         .brand-tagline {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #E2E8F0;
             margin: 0;
             font-style: italic;
@@ -108,9 +107,7 @@
             transition: all 0.3s ease;
         }
         
-        .nav-link-desktop:hover { 
-            color: var(--accent-gold) !important; 
-        }
+        .nav-link-desktop:hover { color: var(--accent-gold) !important; }
         
         /* 🌟 Premium Gold Button */
         .btn-gold {
@@ -148,14 +145,16 @@
             color: var(--primary-blue);
         }
 
-        /* 📱 Mobile Specific Fixes */
+        /* 📱 Mobile Specific Fixes - STRICT FLEXBOX */
         @media (max-width: 768px) {
-            .brand-name { font-size: 1.8rem; letter-spacing: 2px; }
-            .brand-logo { height: 45px; }
-            .premium-navbar { padding: 15px 0; }
+            .brand-name { font-size: 1.4rem !important; letter-spacing: 1px !important; }
+            .brand-logo { height: 38px !important; }
+            .brand-tagline { display: none; } /* Hide tagline on mobile to save space */
+            .premium-navbar { padding: 10px 0; }
+            .navbar-toggler-icon-custom { font-size: 1.5rem !important; }
         }
         
-        .navbar-toggler-icon-custom { color: white; font-size: 1.8rem; }
+        .navbar-toggler-icon-custom { color: white; font-size: 1.8rem; line-height: 1;}
 
         /* Offcanvas Sidebar */
         .offcanvas { border-right: none; box-shadow: 4px 0 15px rgba(0,0,0,0.05); }
@@ -170,57 +169,115 @@
         .nav-icon { font-size: 1.4rem; margin-bottom: 4px; }
 
         @media (max-width: 991px) { body { padding-bottom: 85px; } }
+
+        /* 🤖 AI ASSISTANT WIDGET */
+        .ai-chat-btn {
+            position: fixed;
+            bottom: 95px; /* Shifted slightly up so it doesn't hit mobile nav */
+            right: 20px;
+            background: #00539C;
+            color: white;
+            border: none;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            box-shadow: 0 6px 20px rgba(0, 83, 156, 0.4);
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1060;
+            transition: transform 0.3s ease;
+        }
+        .ai-chat-btn:hover { transform: scale(1.1); }
+        
+        .ai-chat-box {
+            position: fixed;
+            bottom: 160px;
+            right: 20px;
+            width: 340px;
+            max-width: 90vw;
+            height: 480px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1060;
+            overflow: hidden;
+            border: 1px solid #E2E8F0;
+        }
+        .ai-chat-header { background: #00539C; color: white; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
+        .ai-chat-quick-actions { padding: 12px 15px; background: #F8FAFC; border-bottom: 1px solid #EAEAEA; }
+        .wa-btn { background: #25D366; color: white; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.3s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
+        .wa-btn:hover { background: #1EBE55; color: white; }
+        .ai-chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #FFFFFF; }
+        .msg-bubble { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; line-height: 1.4; }
+        .msg-user { background: #00539C; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg-ai { background: #F1F5F9; color: #0F172A; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .ai-chat-input-area { padding: 12px; background: #FFF; border-top: 1px solid #EAEAEA; display: flex; gap: 8px; }
+        .ai-chat-input-area input { flex-grow: 1; border: 1px solid #CBD5E1; border-radius: 25px; padding: 10px 15px; font-size: 0.85rem; outline: none; background: #F8FAFC; }
+        .ai-send-btn { background: #00539C; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <!-- 🌟 TOP ANNOUNCEMENT RIBBON (Correctly placed inside body) -->
+    <!-- 🌟 TOP ANNOUNCEMENT RIBBON -->
     <div class="text-center py-2 px-3" style="background-color: #0F172A; color: #ffcc00; font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; z-index: 1050; position: relative;">
         🎉 FREE DELIVERY ON ORDERS OVER ₹999 | USE CODE: <span class="text-white">CGSMART10</span> FOR ADDITIONAL 1.5% OFF
     </div>
 
     <!-- 💎 Luxury Header (Sticky) -->
     <nav class="navbar premium-navbar sticky-top">
-        <div class="container" style="max-width: 1400px; padding: 0 25px;">
+        <!-- 🌟 STRICT FLEXBOX CONTAINER FOR MOBILE FIX -->
+        <div class="container d-flex justify-content-between align-items-center" style="max-width: 1400px; padding: 0 20px;">
             
-            <!-- Mobile Toggle Button (Left Side) -->
-            <button class="navbar-toggler border-0 shadow-none p-0 me-3 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
-                <span class="navbar-toggler-icon-custom">☰</span>
-            </button>
-            
-            <!-- 🌟 ENHANCED BRAND LOGO -->
-            <a class="brand-container me-auto" href="{% url 'home' %}">
-                <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
-                <div class="brand-text-wrapper">
-                    <h1 class="brand-name">CGSMART<span style="color: #FFFFFF; font-size: 2.5rem; line-height: 0;">.</span></h1>
-                    <span class="brand-tagline d-none d-sm-block">Nohar's Premium Essentials</span>
-                </div>
-            </a>
-
-            <!-- Desktop Menu -->
-            <div class="d-none d-lg-flex align-items-center">
-                <a class="nav-link-desktop" href="{% url 'home' %}">Home</a>
-                <a class="nav-link-desktop" href="{% url 'about' %}">About</a>
-                <a class="nav-link-desktop" href="{% url 'contact' %}">Contact</a>
+            <!-- Left Side: Hamburger & Brand -->
+            <div class="d-flex align-items-center gap-3">
+                <!-- Mobile Toggle Button -->
+                <button class="navbar-toggler border-0 shadow-none p-0 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                    <span class="navbar-toggler-icon-custom">☰</span>
+                </button>
                 
-                <div class="ms-5 d-flex align-items-center gap-3">
-                    <a class="btn header-icon-btn rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" href="{% url 'view_wishlist' %}" title="Wishlist">❤️</a>
-                    <a class="btn header-icon-btn rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" href="{% url 'cart_detail' %}" title="Cart">🛒</a>
-                    
-                    {% if user.is_authenticated %}
-                        <a class="btn-gold ms-2" href="{% url 'profile' %}">👤 Profile</a>
-                    {% else %}
-                        <a class="btn-gold ms-2" href="{% url 'login' %}">Login</a>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <!-- Mobile Cart Icon -->
-            <div class="d-lg-none">
-                <a href="{% url 'cart_detail' %}" class="text-decoration-none position-relative p-2 text-white">
-                    <span class="fs-3">🛒</span>
+                <!-- Brand Logo -->
+                <a class="brand-container" href="{% url 'home' %}">
+                    <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
+                    <div class="brand-text-wrapper">
+                        <h1 class="brand-name">CGSMART<span style="color: #FFFFFF; font-size: 1.2em; line-height: 0;">.</span></h1>
+                        <span class="brand-tagline d-none d-sm-block">Nohar's Premium Essentials</span>
+                    </div>
                 </a>
             </div>
+
+            <!-- Right Side: Cart Icon (Mobile) & Nav Links (Desktop) -->
+            <div class="d-flex align-items-center">
+                <!-- Desktop Menu -->
+                <div class="d-none d-lg-flex align-items-center">
+                    <a class="nav-link-desktop" href="{% url 'home' %}">Home</a>
+                    <a class="nav-link-desktop" href="{% url 'about' %}">About</a>
+                    <a class="nav-link-desktop" href="{% url 'contact' %}">Contact</a>
+                    
+                    <div class="ms-5 d-flex align-items-center gap-3">
+                        <a class="btn header-icon-btn rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" href="{% url 'view_wishlist' %}" title="Wishlist">❤️</a>
+                        <a class="btn header-icon-btn rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" href="{% url 'cart_detail' %}" title="Cart">🛒</a>
+                        
+                        {% if user.is_authenticated %}
+                            <a class="btn-gold ms-2" href="{% url 'profile' %}">👤 Profile</a>
+                        {% else %}
+                            <a class="btn-gold ms-2" href="{% url 'login' %}">Login</a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Mobile Cart Icon -->
+                <div class="d-lg-none ms-2">
+                    <a href="{% url 'cart_detail' %}" class="text-decoration-none p-2 text-white d-flex align-items-center">
+                        <span class="fs-2">🛒</span>
+                    </a>
+                </div>
+            </div>
+            
         </div>
     </nav>
 
@@ -239,7 +296,7 @@
             <div class="d-flex flex-column h-100">
                 <div class="flex-grow-1 mt-2">
                     <a href="{% url 'home' %}" class="mobile-menu-link">🏠 <span class="ms-3">Home</span></a>
-                    <a href="{% url 'home' %}" class="mobile-menu-link">🛍️ <span class="ms-3">Shop Products</span></a>
+                    <a href="{% url 'home' %}#full-collection" class="mobile-menu-link" data-bs-dismiss="offcanvas">🛍️ <span class="ms-3">Shop Products</span></a>
                     <a href="{% url 'about' %}" class="mobile-menu-link">🏢 <span class="ms-3">About Us</span></a>
                     <a href="{% url 'contact' %}" class="mobile-menu-link">📞 <span class="ms-3">Contact Support</span></a>
                     <a href="{% url 'privacy_policy' %}" class="mobile-menu-link">📄 <span class="ms-3">Privacy Policy</span></a>
@@ -354,127 +411,6 @@
         </a>
     </div>
 
-    <!-- 🤖 AI ASSISTANT & WHATSAPP FLOATING CHAT WIDGET -->
-    <style>
-        .ai-chat-btn {
-            position: fixed;
-            bottom: 85px;
-            right: 20px;
-            background: #00539C;
-            color: white;
-            border: none;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            box-shadow: 0 6px 20px rgba(0, 83, 156, 0.4);
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1060;
-            transition: transform 0.3s ease;
-        }
-        .ai-chat-btn:hover { transform: scale(1.1); }
-        
-        .ai-chat-box {
-            position: fixed;
-            bottom: 150px;
-            right: 20px;
-            width: 340px;
-            max-width: 90vw;
-            height: 480px;
-            background: #FFFFFF;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            display: none;
-            flex-direction: column;
-            z-index: 1060;
-            overflow: hidden;
-            border: 1px solid #E2E8F0;
-        }
-        .ai-chat-header {
-            background: #00539C;
-            color: white;
-            padding: 14px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-        }
-        
-        .ai-chat-quick-actions {
-            padding: 12px 15px;
-            background: #F8FAFC;
-            border-bottom: 1px solid #EAEAEA;
-        }
-        .wa-btn {
-            background: #25D366;
-            color: white;
-            text-decoration: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background 0.3s;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);
-        }
-        .wa-btn:hover { background: #1EBE55; color: white; }
-
-        .ai-chat-messages {
-            flex-grow: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background: #FFFFFF;
-        }
-        .msg-bubble {
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            line-height: 1.4;
-        }
-        .msg-user { background: #00539C; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg-ai { background: #F1F5F9; color: #0F172A; align-self: flex-start; border-bottom-left-radius: 2px; }
-        
-        .ai-chat-input-area {
-            padding: 12px;
-            background: #FFF;
-            border-top: 1px solid #EAEAEA;
-            display: flex;
-            gap: 8px;
-        }
-        .ai-chat-input-area input {
-            flex-grow: 1;
-            border: 1px solid #CBD5E1;
-            border-radius: 25px;
-            padding: 10px 15px;
-            font-size: 0.85rem;
-            outline: none;
-            background: #F8FAFC;
-        }
-        .ai-send-btn {
-            background: #00539C;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
-
     <!-- Toggle Button -->
     <button class="ai-chat-btn" id="aiChatToggleBtn" title="Ask AI or Chat on WhatsApp">🤖</button>
 
@@ -506,85 +442,89 @@
         </div>
     </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const toggleBtn = document.getElementById("aiChatToggleBtn");
-    const chatWindow = document.getElementById("aiChatWindow");
-    const closeBtn = document.getElementById("closeAiChat");
-    const sendBtn = document.getElementById("aiSendBtn");
-    const userInput = document.getElementById("aiUserInput");
-    const msgContainer = document.getElementById("aiMsgContainer");
+    <!-- 🌟 BOOTSTRAP JS (This is what makes the menu work!) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    if(toggleBtn) {
-        toggleBtn.addEventListener("click", () => {
-            chatWindow.style.display = (chatWindow.style.display === "flex") ? "none" : "flex";
-        });
-    }
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const toggleBtn = document.getElementById("aiChatToggleBtn");
+        const chatWindow = document.getElementById("aiChatWindow");
+        const closeBtn = document.getElementById("closeAiChat");
+        const sendBtn = document.getElementById("aiSendBtn");
+        const userInput = document.getElementById("aiUserInput");
+        const msgContainer = document.getElementById("aiMsgContainer");
 
-    if(closeBtn) {
-        closeBtn.addEventListener("click", () => { chatWindow.style.display = "none"; });
-    }
+        if(toggleBtn) {
+            toggleBtn.addEventListener("click", () => {
+                chatWindow.style.display = (chatWindow.style.display === "flex") ? "none" : "flex";
+            });
+        }
 
-    function appendMessage(text, isUser) {
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-ai'} shadow-sm`;
-        msgDiv.innerText = text;
-        msgContainer.appendChild(msgDiv);
-        msgContainer.scrollTop = msgContainer.scrollHeight;
-    }
+        if(closeBtn) {
+            closeBtn.addEventListener("click", () => { chatWindow.style.display = "none"; });
+        }
 
-    function sendAiMessage() {
-        const query = userInput.value.trim();
-        if (!query) return;
+        function appendMessage(text, isUser) {
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-ai'} shadow-sm`;
+            msgDiv.innerText = text;
+            msgContainer.appendChild(msgDiv);
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+        }
 
-        appendMessage(query, true);
-        userInput.value = "";
+        function sendAiMessage() {
+            const query = userInput.value.trim();
+            if (!query) return;
 
-        // Typing indicator
-        const typingDiv = document.createElement("div");
-        typingDiv.className = "msg-bubble msg-ai shadow-sm";
-        typingDiv.innerText = "Thinking...";
-        typingDiv.id = "aiTyping";
-        msgContainer.appendChild(typingDiv);
+            appendMessage(query, true);
+            userInput.value = "";
 
-        // 🌟 NAYA: Yahan exact Django URL tag use kiya hai
-        const aiUrl = "{% url 'ai_assistant_chat' %}";
+            // Typing indicator
+            const typingDiv = document.createElement("div");
+            typingDiv.className = "msg-bubble msg-ai shadow-sm";
+            typingDiv.innerText = "Thinking...";
+            typingDiv.id = "aiTyping";
+            msgContainer.appendChild(typingDiv);
 
-        fetch(aiUrl, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                "X-CSRFToken": "{{ csrf_token }}" 
-            },
-            body: JSON.stringify({ message: query })
-        })
-        .then(async response => {
-            if (!response.ok) {
-                const errText = await response.text();
-                console.error("Server Error Response:", errText);
-                throw new Error("Server ne error return kiya: " + response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            document.getElementById("aiTyping")?.remove();
-            appendMessage(data.response || "No response received.", false);
-        })
-        .catch(error => {
-            console.error("Complete Error Detail:", error);
-            document.getElementById("aiTyping")?.remove();
-            appendMessage("Technical error! System URL find nahi kar pa raha, F12 daba kar Console check karein.", false);
-        });
-    }
+            const aiUrl = "{% url 'ai_assistant_chat' %}";
 
-    if(sendBtn) {
-        sendBtn.addEventListener("click", sendAiMessage);
-    }
-    
-    if(userInput) {
-        userInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") sendAiMessage();
-        });
-    }
-});
-</script>
+            fetch(aiUrl, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}" 
+                },
+                body: JSON.stringify({ message: query })
+            })
+            .then(async response => {
+                if (!response.ok) {
+                    const errText = await response.text();
+                    console.error("Server Error Response:", errText);
+                    throw new Error("Server ne error return kiya: " + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("aiTyping")?.remove();
+                appendMessage(data.response || "No response received.", false);
+            })
+            .catch(error => {
+                console.error("Complete Error Detail:", error);
+                document.getElementById("aiTyping")?.remove();
+                appendMessage("Technical error! System URL find nahi kar pa raha, F12 daba kar Console check karein.", false);
+            });
+        }
+
+        if(sendBtn) {
+            sendBtn.addEventListener("click", sendAiMessage);
+        }
+        
+        if(userInput) {
+            userInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendAiMessage();
+            });
+        }
+    });
+    </script>
+</body>
+</html>
