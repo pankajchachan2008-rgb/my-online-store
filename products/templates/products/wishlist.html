@@ -43,6 +43,20 @@
         background-color: var(--accent-gold, #D4AF37);
         color: var(--primary-blue, #002D62);
     }
+    .btn-remove {
+        background-color: transparent;
+        color: #dc3545;
+        border: 1.5px solid #dc3545;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+    .btn-remove:hover {
+        background-color: #dc3545;
+        color: #fff;
+    }
 </style>
 
 <div class="container my-5" style="max-width: 1200px;">
@@ -69,9 +83,16 @@
                     <p class="fw-bold mb-3" style="font-size: 1.2rem; color: #388e3c;">₹{{ item.product.price }}</p>
                     
                     <div class="mt-auto">
-                        <form method="POST" action="{% url 'add_to_cart' item.product.id %}">
+                        <!-- Add to Cart Form -->
+                        <form method="POST" action="{% url 'add_to_cart' item.product.id %}" class="mb-2">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-brand w-100 py-2">Add to Cart</button>
+                        </form>
+                        
+                        <!-- Remove from Wishlist Form -->
+                        <form method="POST" action="{% url 'remove_from_wishlist' item.product.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-remove w-100 py-2">Remove</button>
                         </form>
                     </div>
                 </div>

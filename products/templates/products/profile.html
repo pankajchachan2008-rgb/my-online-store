@@ -29,8 +29,7 @@
 <div class="container my-4" style="max-width: 1200px;">
     <div class="row">
         
-        <!-- LEFT SIDEBAR (Animated) -->
-        <div class="col-lg-3 mb-4" data-aos="fade-right" data-aos-duration="600">
+        <div class="col-lg-3 mb-4">
             <div class="profile-card">
                 <div class="user-info-header mb-3">
                     <div class="user-avatar">
@@ -66,11 +65,9 @@
             </div>
         </div>
 
-        <!-- RIGHT CONTENT AREA (Animated) -->
-        <div class="col-lg-9" data-aos="fade-left" data-aos-duration="600" data-aos-delay="100">
+        <div class="col-lg-9">
             <div class="profile-card p-4 tab-content" id="v-pills-tabContent" style="min-height: 500px;">
                 
-                <!-- 1. PROFILE INFO TAB -->
                 <div class="tab-pane fade show active" id="tab-profile">
                     
                     <div class="alert alert-info d-flex justify-content-between align-items-center rounded-0 border-0 shadow-sm mb-3 p-3" style="background-color: #e5edfa; border-left: 4px solid #2874f0 !important;">
@@ -81,7 +78,7 @@
                         <h4 class="fw-bold mb-0" style="color: #2874f0;">₹{{ profile.wallet_balance }}</h4>
                     </div>
 
-                    <!-- Wallet Passbook UI -->
+                    <!-- 🌟 NAYA: Wallet Passbook UI -->
                     <div class="mb-5">
                         <a class="btn btn-sm btn-outline-primary rounded-0 fw-bold mb-2" data-bs-toggle="collapse" href="#collapsePassbook" role="button" aria-expanded="false" aria-controls="collapsePassbook">
                             📖 View Wallet Passbook
@@ -151,12 +148,11 @@
                     </form>
                 </div>
 
-                <!-- 2. MY ORDERS TAB -->
                 <div class="tab-pane fade" id="tab-orders">
                     <h5 class="fw-bold mb-4 pb-2 border-bottom">My Orders</h5>
                     
                     {% for order in orders %}
-                    <div class="order-box mb-4" data-aos="fade-up">
+                    <div class="order-box mb-4">
                         <div class="order-header d-flex justify-content-between align-items-center">
                             <div>
                                 <span class="text-muted small">ORDER PLACED</span><br>
@@ -175,6 +171,11 @@
                         <div class="p-3">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
+                                    <!-- 🌟 FIX: Order.STATUS_CHOICES in models.py has
+                                         'Completed', not 'Delivered' — this branch
+                                         could never actually match, so completed
+                                         orders always fell through to the generic
+                                         yellow "in progress" status below. -->
                                     {% if order.status == 'Completed' %}
                                         <h6 class="fw-bold text-success mb-1">🟢 Completed</h6>
                                     {% elif order.status == 'Cancelled' %}
@@ -199,6 +200,12 @@
                             </div>
 
                             <div class="bg-light p-3 rounded">
+                                <!-- 🌟 FIX: OrderItem's ForeignKey to Order uses
+                                     related_name='items' in models.py, so
+                                     Django's default reverse accessor
+                                     'orderitem_set' does not exist here. This
+                                     silently rendered an empty loop — order
+                                     items never showed up under My Orders. -->
                                 {% for item in order.items.all %}
                                 <div class="d-flex justify-content-between mb-2 pb-2 {% if not forloop.last %}border-bottom{% endif %}">
                                     <span style="font-size: 0.9rem;"><strong>{{ item.quantity }} x</strong> {{ item.product_name }}</span>
@@ -232,7 +239,6 @@
                     {% endfor %}
                 </div>
 
-                <!-- 3. MANAGE ADDRESSES TAB -->
                 <div class="tab-pane fade" id="tab-addresses">
                     <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
                         <h5 class="fw-bold mb-0">Manage Addresses</h5>
@@ -303,14 +309,22 @@
                     </div>
 
                     {% for addr in addresses %}
-                    <div class="border rounded-0 p-3 mb-3 position-relative bg-white" style="border-color: #e0e0e0 !important;" data-aos="fade-up">
+                    <div class="border rounded-0 p-3 mb-3 position-relative bg-white" style="border-color: #e0e0e0 !important;">
                         <span class="address-tag mb-2 d-inline-block">{{ addr.address_type }}</span>
                         
                         <div class="dropdown position-absolute top-0 end-0 mt-3 me-3">
                             <button class="btn btn-sm text-muted" type="button" data-bs-toggle="dropdown" style="font-size: 1.2rem; line-height: 1;">⋮</button>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                                 <li><a class="dropdown-item small" href="{% url 'edit_address' addr.id %}">Edit</a></li>
-                                <li><a class="dropdown-item text-danger small" href="{% url 'delete_address' addr.id %}" onclick="return confirm('Delete this address?');">Delete</a></li>
+                                <li>
+                                    <!-- 🌟 FIX: was a GET <a> link deleting data directly —
+                                         now a real POST form, matching delete_address's
+                                         @require_POST restriction. -->
+                                    <form method="POST" action="{% url 'delete_address' addr.id %}" onsubmit="return confirm('Delete this address?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item text-danger small border-0 bg-transparent w-100 text-start">Delete</button>
+                                    </form>
+                                </li>
                             </ul>
                         </div>
 

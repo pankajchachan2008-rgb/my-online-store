@@ -328,7 +328,6 @@
     @media (max-width: 768px) {
         .lifestyle-carousel .carousel-item { height: 40vh; min-height: 280px; }
         .carousel-caption-custom h2 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 15px; }
-        .carousel-caption-custom .btn { padding: 10px 30px !important; font-size: 0.9rem; }
         .img-box-elegant { height: 200px; }
         .section-heading { font-size: 1.6rem; margin-bottom: 30px; }
         .sticky-cart { bottom: calc(70px + env(safe-area-inset-bottom, 0px)); padding: 10px 14px; }
@@ -336,7 +335,7 @@
     }
 </style>
 
-<!-- 🌟 1. DYNAMIC ADMIN CONTROLLED CAROUSEL -->
+<!-- 🌟 1. DYNAMIC ADMIN CONTROLLED CAROUSEL (Updated to full clickable link) -->
 {% if banners %}
 <div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel" aria-roledescription="carousel" aria-label="Promotional banners">
     <div class="carousel-indicators">
@@ -348,20 +347,23 @@
     <div class="carousel-inner">
         {% for banner in banners %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="5000">
-            {% if banner.animated_file %}
-                <video class="d-block w-100" autoplay loop muted playsinline poster="{% static 'main_banner.png' %}" aria-hidden="true">
-                    <source src="{{ banner.animated_file.url }}" type="video/mp4">
-                </video>
-            {% elif banner.image %}
-                <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}" {% if not forloop.first %}loading="lazy"{% endif %}>
-            {% endif %}
-
-            <div class="carousel-caption-custom">
-                {% if banner.title %}
-                    <h2>{{ banner.title }}</h2>
+            <!-- 🎯 NAYA FIX: Pure banner ko ek clickable link mein wrap kar diya gaya hai -->
+            <a href="{% if banner.category %}{% url 'home' %}?category={{ banner.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
+                {% if banner.animated_file %}
+                    <video class="d-block w-100" autoplay loop muted playsinline poster="{% static 'main_banner.png' %}" aria-hidden="true">
+                        <source src="{{ banner.animated_file.url }}" type="video/mp4">
+                    </video>
+                {% elif banner.image %}
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}" {% if not forloop.first %}loading="lazy"{% endif %}>
                 {% endif %}
-                <a href="#full-collection" class="btn btn-light rounded-pill px-5 py-3 text-uppercase fw-bold shadow-lg" style="letter-spacing: 2px;">Shop Now</a>
-            </div>
+
+                <!-- Title rakha hai, par 'pointer-events: none' hai taaki click link par hi jaaye -->
+                {% if banner.title %}
+                <div class="carousel-caption-custom" style="pointer-events: none;">
+                    <h2>{{ banner.title }}</h2>
+                </div>
+                {% endif %}
+            </a>
         </div>
         {% endfor %}
     </div>
@@ -379,11 +381,13 @@
 <div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel" aria-label="Store banner">
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070" alt="Premium Fashion">
-            <div class="carousel-caption-custom">
-                <h2>The Style Edit</h2>
-                <a href="#full-collection" class="btn btn-light rounded-pill px-5 py-3 text-uppercase fw-bold shadow-lg" style="letter-spacing: 2px;">Shop Now</a>
-            </div>
+            <!-- Fallback banner bhi ab clickable hai -->
+            <a href="#full-collection" style="display: block; width: 100%; height: 100%;">
+                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070" alt="Premium Fashion">
+                <div class="carousel-caption-custom" style="pointer-events: none;">
+                    <h2>The Style Edit</h2>
+                </div>
+            </a>
         </div>
     </div>
 </div>
@@ -458,7 +462,6 @@
 
     <!-- 🌟 4. ADVANCED SMART FILTER BAR WITH VOICE SEARCH -->
     <div class="premium-filter-bar">
-        <!-- Header with Smart Toggle Button -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-bold m-0 text-uppercase" style="font-family: 'Jost', sans-serif; letter-spacing: 2px; color: #0F172A; font-size: 1.2rem;">
                 🔍 Search &amp; Filter
@@ -468,12 +471,10 @@
             </button>
         </div>
 
-        <!-- Collapsible Content Area -->
         <div id="filterContent" class="filter-content-wrapper">
             <form method="GET" action="{% url 'home' %}#full-collection">
                 <div class="filter-grid">
 
-                    <!-- Search with Voice Command -->
                     <div style="grid-column: 1 / -1; position: relative; display: flex; align-items: center;">
                         <label for="searchInput" class="visually-hidden">Search products</label>
                         <input type="text" id="searchInput" name="search" class="filter-input" placeholder="Search premium essentials..." value="{{ search_query }}" style="padding-right: 45px;">
@@ -482,7 +483,6 @@
                         </button>
                     </div>
 
-                    <!-- Category -->
                     <div>
                         <label class="filter-label" for="id_category">Category</label>
                         <select name="category" id="id_category" class="filter-select">
@@ -493,7 +493,6 @@
                         </select>
                     </div>
 
-                    <!-- Brand -->
                     <div>
                         <label class="filter-label" for="id_brand">Brand</label>
                         <select name="brand" id="id_brand" class="filter-select">
@@ -504,7 +503,6 @@
                         </select>
                     </div>
 
-                    <!-- Sort -->
                     <div>
                         <label class="filter-label" for="id_sort">Sort By</label>
                         <select name="sort" id="id_sort" class="filter-select">
@@ -514,7 +512,6 @@
                         </select>
                     </div>
 
-                    <!-- Discount -->
                     <div>
                         <label class="filter-label" for="id_discount">Discount</label>
                         <select name="discount" id="id_discount" class="filter-select">
@@ -526,7 +523,6 @@
                         </select>
                     </div>
 
-                    <!-- Rating -->
                     <div>
                         <label class="filter-label" for="id_rating">Rating</label>
                         <select name="rating" id="id_rating" class="filter-select">
@@ -536,7 +532,6 @@
                         </select>
                     </div>
 
-                    <!-- Availability -->
                     <div>
                         <label class="filter-label" for="id_availability">Availability</label>
                         <select name="availability" id="id_availability" class="filter-select">
@@ -545,7 +540,6 @@
                         </select>
                     </div>
 
-                    <!-- Size -->
                     <div>
                         <label class="filter-label" for="id_size">Size</label>
                         <select name="size" id="id_size" class="filter-select">
@@ -557,7 +551,6 @@
                         </select>
                     </div>
 
-                    <!-- Color -->
                     <div>
                         <label class="filter-label" for="id_color">Color</label>
                         <select name="color" id="id_color" class="filter-select">
@@ -569,19 +562,16 @@
                         </select>
                     </div>
 
-                    <!-- Min Price -->
                     <div>
                         <label class="filter-label" for="id_min_price">Min Price (₹)</label>
                         <input type="number" name="min_price" id="id_min_price" class="filter-input" placeholder="e.g. 100" value="{{ min_price|default:'' }}" min="0">
                     </div>
 
-                    <!-- Max Price -->
                     <div>
                         <label class="filter-label" for="id_max_price">Max Price (₹)</label>
                         <input type="number" name="max_price" id="id_max_price" class="filter-input" placeholder="e.g. 5000" value="{{ max_price|default:'' }}" min="0">
                     </div>
 
-                    <!-- Buttons -->
                     <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 15px;">
                         <button type="submit" class="btn-apply-filter w-100">Apply Filters</button>
                         <a href="{% url 'home' %}" class="btn-clear-filter w-100">Clear All</a>
@@ -600,13 +590,14 @@
         {% if forloop.counter == 4 and banners|length > 1 %}
         <div class="col d-none d-md-block">
             <div class="h-100 rounded-4 overflow-hidden shadow-sm position-relative border-0" style="background: #0F172A;">
-                {% if banners.1.image %}
-                    <img src="{{ banners.1.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8;" alt="Promo" loading="lazy">
-                {% endif %}
-                <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3">
-                    <h4 class="text-white fw-bold text-uppercase" style="letter-spacing: 2px;">{{ banners.1.title|default:"Special Offer" }}</h4>
-                    <a href="#full-collection" class="btn btn-outline-light btn-sm mt-2 rounded-pill px-4">Explore</a>
-                </div>
+                <a href="{% if banners.1.category %}{% url 'home' %}?category={{ banners.1.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
+                    {% if banners.1.image %}
+                        <img src="{{ banners.1.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8;" alt="Promo" loading="lazy">
+                    {% endif %}
+                    <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3" style="pointer-events: none;">
+                        <h4 class="text-white fw-bold text-uppercase" style="letter-spacing: 2px;">{{ banners.1.title|default:"Special Offer" }}</h4>
+                    </div>
+                </a>
             </div>
         </div>
         {% endif %}
@@ -673,13 +664,15 @@
         {% if forloop.counter == 8 and banners|length > 2 %}
         <div class="col-12 mt-4 mb-4">
             <div class="rounded-4 overflow-hidden shadow-sm position-relative" style="height: 180px; background: #0F172A;">
-                {% if banners.2.image %}
-                    <img src="{{ banners.2.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.7;" alt="Promo" loading="lazy">
-                {% endif %}
-                <div class="position-absolute top-50 start-50 translate-middle text-center w-100">
-                    <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 3px;">{{ banners.2.title|default:"Mega Savings" }}</h3>
-                    <p class="text-white-50 mb-0">Use Code <strong>CGSMART10</strong> for extra discount!</p>
-                </div>
+                <a href="{% if banners.2.category %}{% url 'home' %}?category={{ banners.2.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
+                    {% if banners.2.image %}
+                        <img src="{{ banners.2.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.7;" alt="Promo" loading="lazy">
+                    {% endif %}
+                    <div class="position-absolute top-50 start-50 translate-middle text-center w-100" style="pointer-events: none;">
+                        <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 3px;">{{ banners.2.title|default:"Mega Savings" }}</h3>
+                        <p class="text-white-50 mb-0">Use Code <strong>CGSMART10</strong> for extra discount!</p>
+                    </div>
+                </a>
             </div>
         </div>
         {% endif %}
@@ -693,17 +686,6 @@
     </div>
 
     <!-- 🌟 AIRY PAGINATION -->
-    {% comment %}
-    NOTE: This block now relies on a `querystring` context variable built in the view,
-    instead of repeating every filter param manually three times. Add this to your
-    view before rendering the paginated response:
-
-        params = request.GET.copy()
-        params.pop('page', None)
-        context['querystring'] = params.urlencode()
-
-    Then link as: ?page=N&{{ querystring }}
-    {% endcomment %}
     <nav aria-label="Product list pagination" class="mt-5 pt-4 border-top">
         <ul class="pagination justify-content-center gap-2">
             {% if products.has_previous %}

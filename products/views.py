@@ -617,6 +617,12 @@ def cancel_order(request, order_id):
     return redirect('profile')
 
 @login_required(login_url='/login/')
+# 🌟 FIX: this permanently deletes data but had no method restriction —
+# profile.html called it via a plain GET <a> link. Browser link-prefetching
+# or accidental navigation could silently delete a saved address with no
+# confirmation (the confirm() dialog is JS-only and never runs on a
+# prefetch). Now requires an actual POST submission.
+@require_POST
 def delete_address(request, address_id): get_object_or_404(Address, id=address_id, user=request.user).delete(); return redirect('profile')
 
 @login_required(login_url='/login/')
@@ -670,12 +676,17 @@ def remove_from_cart_ajax(request, product_id):
 # --- FORGOT PASSWORD ---
 def forgot_password(request):
     if request.method == 'POST':
-        try:
-            user = User.objects.get(email=request.POST.get('email'))
+        # 🌟 FIX: .get() would raise MultipleObjectsReturned (500 crash) if
+        # any duplicate-email accounts already exist from before the
+        # CustomRegisterForm uniqueness fix. filter().first() degrades
+        # gracefully instead of crashing.
+        user = User.objects.filter(email__iexact=request.POST.get('email', '')).first()
+        if user:
             otp = str(random.randint(100000, 999999)); OTPVerification.objects.filter(user=user).delete(); OTPVerification.objects.create(user=user, otp=otp, is_verified=False)
             send_brevo_api_email('Password Reset', f'OTP: {otp}', user.email)
             request.session['reset_user_email'] = user.email; return redirect('reset_verify_otp')
-        except User.DoesNotExist: messages.error(request, 'Account nahi mila.')
+        else:
+            messages.error(request, 'Account nahi mila.')
     return render(request, 'registration/forgot_password.html')
 
 def reset_verify_otp(request):
