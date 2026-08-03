@@ -580,6 +580,14 @@ def add_to_wishlist(request, product_id):
 @login_required(login_url='/login/')
 def view_wishlist(request): return render(request, 'products/wishlist.html', {'wishlist': Wishlist.objects.filter(user=request.user)})
 
+@login_required(login_url='/login/')
+@require_POST
+def remove_from_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    Wishlist.objects.filter(user=request.user, product=product).delete()
+    messages.success(request, "Item wishlist se hata diya gaya!")
+    return redirect('view_wishlist')
+
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id); reviews = product.reviews.all().order_by('-created_at')
     if request.method == 'POST':
