@@ -58,17 +58,17 @@
     <div class="row justify-content-center mb-3" data-aos="fade-down" data-aos-duration="600">
         <div class="col-12">
             <div id="upsell-alert" class="alert text-center fw-semibold d-none" style="background: #e8f4f8; border: 1px solid #2874f0; color: #212121; border-radius: 4px;">
-                ✨ Sirf <strong class="text-danger">₹<span id="amount-needed"></span></strong> ka samaan aur add karein aur Next Order ke liye <strong style="color: #2874f0;">8% Discount Scratch Card</strong> jeetein!
+                ✨ Sirf <strong class="text-danger">₹<span id="amount-needed"></span></strong> ka samaan aur add karein aur Next Order ke liye <strong style="color: #2874f0;">Surprise Scratch Card</strong> jeetein!
             </div>
             
             <div id="scratch-box" class="card border-0 shadow-sm d-none mb-3" style="background: linear-gradient(135deg, #2874f0, #1c5ab5); border-radius: 4px;">
                 <div class="card-body text-center py-3">
-                    <h5 class="fw-bold text-white mb-1">🎉 You Won a Scratch Card!</h5>
-                    <div class="mx-auto mt-3 position-relative" style="width: 250px; height: 60px; cursor: pointer;" onclick="revealCard()">
+                    <h5 class="fw-bold text-white mb-1">🎉 You Got a Scratch Card!</h5>
+                    <div class="mx-auto mt-3 position-relative" style="width: 250px; height: 75px; cursor: pointer;" onclick="revealCard()">
                         <div class="bg-white w-100 h-100 d-flex align-items-center justify-content-center rounded border border-warning shadow-sm">
                             <h5 id="coupon-code" class="fw-bold m-0" style="color: #212121;"></h5>
                         </div>
-                        <div id="scratch-cover" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center fw-bold shadow-sm rounded" style="background: #e0e0e0; transition: opacity 0.6s ease; font-size: 1rem; color: #878787;">
+                        <div id="scratch-cover" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center fw-bold shadow-sm rounded" style="background: #e0e0e0; transition: opacity 0.6s ease; font-size: 1.1rem; color: #878787;">
                             🪙 Tap to Scratch
                         </div>
                     </div>
@@ -230,13 +230,30 @@
         const couponCode = document.getElementById("coupon-code");
         const amountNeeded = document.getElementById("amount-needed");
 
-        if (cartTotal >= 999) {
+        // 🌟 5% Probability Checker (Math.random() gives 0 to 0.999...)
+        // Agar value 0.05 se kam hui, to user jeetega (5% chance).
+        const isWinner = Math.random() < 0.05;
+
+        // Logic check
+        if (cartTotal >= 699) {
+            // Cart criteria met, show the scratch box
             scratchBox.classList.remove("d-none");
-            couponCode.innerHTML = "🎁 CGSMART10 <br><small class='fs-6 text-muted'>(10% OFF NEXT ORDER)</small>";
-        } else if (cartTotal >= 699) {
-            scratchBox.classList.remove("d-none");
-            couponCode.innerHTML = "🎉 CGSMART08 <br><small class='fs-6 text-muted'>(8% OFF NEXT ORDER)</small>";
+            
+            if (isWinner) {
+                // User is in the lucky 5%!
+                if (cartTotal >= 999) {
+                    couponCode.innerHTML = "🎁 CGSMART10 <br><small class='fs-6 text-muted'>(10% OFF NEXT ORDER)</small>";
+                } else {
+                    couponCode.innerHTML = "🎉 CGSMART08 <br><small class='fs-6 text-muted'>(8% OFF NEXT ORDER)</small>";
+                }
+            } else {
+                // 95% of users will see this
+                couponCode.innerHTML = "🥺 Better Luck<br><span style='font-size: 16px; font-weight: normal; color: #666;'>Try Next Time!</span>";
+                couponCode.style.color = "#dc3545"; // Red color
+            }
+
         } else if (cartTotal > 0) {
+            // Under 699, show upsell message
             upsellAlert.classList.remove("d-none");
             amountNeeded.innerText = (699 - cartTotal).toFixed(2);
         }
