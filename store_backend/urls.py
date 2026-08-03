@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.views.static import serve
 from django.contrib.auth import views as auth_views
 from django.http import HttpResponse  
+from django.views.generic import TemplateView
 
 # 🌟 NAYE IMPORTS SEO AUR STATIC PAGES KE LIYE
 from django.contrib.sitemaps.views import sitemap
@@ -47,6 +48,8 @@ urlpatterns = [
     
     # 🌟 Product Detail URL
     path('product/<int:product_id>/', product_detail, name='product_detail'),
+
+    path('sw.js', TemplateView.as_view(template_name='sw.js', content_type='application/javascript'), name='sw.js'),
     
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('cart/', cart_detail, name='cart_detail'),
