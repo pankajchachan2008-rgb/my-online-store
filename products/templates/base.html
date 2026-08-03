@@ -18,7 +18,7 @@
     <meta property="og:type" content="website">
 
     <!-- 🌟 FAVICON -->
-<link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
+    <link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -33,11 +33,12 @@
     
     <style>
         :root {
-            --bg-light: #FAFAFA;
-            --text-dark: #0F172A;
-            --text-muted: #64748B;
-            --primary-blue: #002D62; 
-            --accent-gold: #D4AF37;
+            --bg-light: #F2F2F2; /* Amazon light gray bg */
+            --text-dark: #0F1111; /* Amazon dark text */
+            --text-muted: #565959;
+            --primary-blue: #131921; /* Amazon Dark Blue */
+            --nav-blue: #232F3E; /* Amazon Lighter Nav Blue */
+            --accent-gold: #FEBD69; /* Amazon Yellow/Gold */
             --surface: #FFFFFF;
         }
 
@@ -53,117 +54,117 @@
             overflow-x: hidden;
         }
 
-        /* 💎 Premium Luxury Navbar */
+        /* 💎 AMAZON STYLE HEADER CSS */
         .premium-navbar {
             background-color: var(--primary-blue);
-            border-bottom: 4px solid var(--accent-gold);
-            padding: 15px 0;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 10px 0;
+            color: white;
             z-index: 1040;
         }
         
         .brand-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             text-decoration: none !important;
         }
         
         .brand-logo { 
-            height: 50px; 
+            height: 42px; 
             width: auto; 
-            border-radius: 10px;
-            border: 2px solid var(--accent-gold);
-        }
-        
-        .brand-text-wrapper {
-            display: flex;
-            flex-direction: column;
+            border-radius: 4px;
+            border: 1px solid var(--accent-gold);
         }
 
         .brand-name {
             font-family: 'Jost', sans-serif;
             font-weight: 800;
-            font-size: 2rem;
-            letter-spacing: 2px;
-            color: var(--accent-gold);
-            margin: 0;
-            line-height: 1.1;
-        }
-
-        .brand-tagline {
-            font-size: 0.75rem;
-            color: #E2E8F0;
-            margin: 0;
-            font-style: italic;
-            letter-spacing: 1px;
-            opacity: 0.9;
-        }
-
-        /* Desktop specific styles */
-        .nav-link-desktop {
-            font-family: 'Jost', sans-serif;
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: 0.95rem;
-            letter-spacing: 1px;
-            color: #FFFFFF !important;
-            margin-left: 25px;
-            transition: all 0.3s ease;
-        }
-        
-        .nav-link-desktop:hover { color: var(--accent-gold) !important; }
-        
-        /* 🌟 Premium Gold Button */
-        .btn-gold {
-            background-color: var(--accent-gold);
-            color: var(--primary-blue);
-            border-radius: 30px;
-            padding: 10px 28px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            border: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
-            text-decoration: none;
-        }
-        
-        .btn-gold:hover { 
-            background-color: #b5952f; 
+            font-size: 1.6rem;
             color: #FFFFFF;
-            transform: translateY(-2px);
+            margin: 0;
+            line-height: 1;
         }
 
-        .header-icon-btn {
-            background: transparent;
+        .header-search-form {
+            display: flex;
+            flex-grow: 1;
+            max-width: 800px;
+            margin: 0 20px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .header-search-input {
+            border: none;
+            padding: 10px 15px;
+            font-size: 1rem;
+            width: 100%;
+            outline: none;
+        }
+        .header-search-input:focus {
+            box-shadow: 0 0 0 2px var(--accent-gold) inset;
+        }
+        .voice-btn {
+            background-color: #FFFFFF;
+            border: none;
+            border-left: 1px solid #ccc;
+            padding: 0 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #555;
+        }
+        .search-btn {
+            background-color: var(--accent-gold);
+            border: none;
+            padding: 0 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #111;
+        }
+        .search-btn:hover { background-color: #F3A847; }
+
+        .nav-action-btn {
             color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            transition: 0.3s;
-            font-size: 1.1rem;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: 0.2s;
         }
-        
-        .header-icon-btn:hover {
-            background: var(--accent-gold);
-            border-color: var(--accent-gold);
-            color: var(--primary-blue);
-        }
+        .nav-action-btn:hover { border: 1px solid white; color: white; }
+        .nav-action-btn strong { font-weight: 700; font-size: 1rem; }
 
-        /* 📱 Mobile Specific Fixes */
-        @media (max-width: 768px) {
-            .brand-name { font-size: 1.4rem !important; letter-spacing: 1px !important; }
-            .brand-logo { height: 38px !important; }
-            .brand-tagline { display: none; }
-            .premium-navbar { padding: 10px 0; }
-            .navbar-toggler-icon-custom { font-size: 1.5rem !important; }
+        /* Sub Navbar */
+        .sub-navbar {
+            background-color: var(--nav-blue);
+            padding: 8px 20px;
+            color: white;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            white-space: nowrap;
         }
-        
-        .navbar-toggler-icon-custom { color: white; font-size: 1.8rem; line-height: 1;}
+        .sub-navbar::-webkit-scrollbar { display: none; }
+        .sub-navbar a { color: white; text-decoration: none; padding: 4px 6px; border: 1px solid transparent; transition: 0.2s; }
+        .sub-navbar a:hover { border: 1px solid white; border-radius: 2px; }
+
+        /* 📱 Mobile Specific Fixes for Header */
+        @media (max-width: 768px) {
+            .header-search-form { margin: 10px 0 0 0; width: 100%; order: 3; }
+            .mobile-header-block { flex-wrap: wrap; }
+            .nav-action-btn span { display: none; }
+            .nav-action-btn strong { font-size: 0.85rem; }
+            .sub-navbar { gap: 10px; padding: 8px 10px; }
+        }
 
         /* Offcanvas Sidebar */
         .offcanvas { border-right: none; box-shadow: 4px 0 15px rgba(0,0,0,0.05); }
-        .offcanvas-header { background-color: var(--primary-blue); border-bottom: 3px solid var(--accent-gold); padding: 25px 20px; }
+        .offcanvas-header { background-color: var(--nav-blue); padding: 20px; color: white; }
         .mobile-menu-link { display: flex; align-items: center; padding: 16px 20px; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 1px solid #F1F5F9; transition: 0.3s; font-size: 1.05rem; }
         .mobile-menu-link:hover { background-color: #F8FAFC; color: var(--primary-blue); padding-left: 25px; }
 
@@ -229,7 +230,7 @@
         .whatsapp-float {
             position: fixed;
             right: 20px;
-            bottom: 165px; /* Placed exactly above the AI button */
+            bottom: 165px;
             z-index: 1060;
             width: 55px;
             height: 55px;
@@ -253,65 +254,72 @@
 <body>
 
     <!-- 🌟 TOP ANNOUNCEMENT RIBBON -->
-    <div class="text-center py-2 px-3" style="background-color: #0F172A; color: #ffcc00; font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; z-index: 1050; position: relative;">
+    <div class="text-center py-2 px-3" style="background-color: var(--nav-blue); color: var(--accent-gold); font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; z-index: 1050; position: relative;">
         🎉 FREE DELIVERY ON ORDERS OVER ₹999 | USE CODE: <span class="text-white">CGSMART10</span> FOR ADDITIONAL 1.5% OFF
     </div>
 
-    <!-- 💎 Luxury Header (Sticky) -->
-    <nav class="navbar premium-navbar sticky-top">
-        <div class="container d-flex justify-content-between align-items-center" style="max-width: 1400px; padding: 0 20px;">
-            
-            <div class="d-flex align-items-center gap-3">
-                <button class="navbar-toggler border-0 shadow-none p-0 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
-                    <span class="navbar-toggler-icon-custom">☰</span>
-                </button>
+    <!-- 💎 AMAZON STYLE HEADER -->
+    <header class="sticky-top">
+        <div class="premium-navbar">
+            <div class="container-fluid px-3 d-flex align-items-center justify-content-between mobile-header-block">
                 
-                <a class="brand-container" href="{% url 'home' %}">
-                    <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
-                    <div class="brand-text-wrapper">
-                        <h1 class="brand-name">CGSMART<span style="color: #FFFFFF; font-size: 1.2em; line-height: 0;">.</span></h1>
-                        <span class="brand-tagline d-none d-sm-block">Nohar's Premium Essentials</span>
-                    </div>
-                </a>
-            </div>
-
-            <div class="d-flex align-items-center">
-                <div class="d-none d-lg-flex align-items-center">
-                    <a class="nav-link-desktop" href="{% url 'home' %}">Home</a>
-                    <a class="nav-link-desktop" href="{% url 'about' %}">About</a>
-                    <a class="nav-link-desktop" href="{% url 'contact' %}">Contact</a>
-                    
-                    <div class="ms-5 d-flex align-items-center gap-3">
-                        <a class="btn header-icon-btn rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" href="{% url 'view_wishlist' %}" title="Wishlist">❤️</a>
-                        <a class="btn header-icon-btn rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;" href="{% url 'cart_detail' %}" title="Cart">🛒</a>
-                        
-                        {% if user.is_authenticated %}
-                            <a class="btn-gold ms-2" href="{% url 'profile' %}">👤 Profile</a>
-                        {% else %}
-                            <a class="btn-gold ms-2" href="{% url 'login' %}">Login</a>
-                        {% endif %}
-                    </div>
+                <!-- 1. Logo & Sidebar Toggle -->
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn text-white d-lg-none p-1 me-1 fs-4 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">☰</button>
+                    <a href="{% url 'home' %}" class="brand-container">
+                        <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
+                        <span class="brand-name">CGSMART</span>
+                    </a>
                 </div>
-                
-                <div class="d-lg-none ms-2">
-                    <a href="{% url 'cart_detail' %}" class="text-decoration-none p-2 text-white d-flex align-items-center">
-                        <span class="fs-2">🛒</span>
+
+                <!-- 2. 🌟 Header Search Bar with Voice -->
+                <form class="header-search-form order-3 order-lg-2 mt-2 mt-lg-0" action="{% url 'home' %}#full-collection" method="GET">
+                    <input type="text" id="globalSearchInput" name="search" class="header-search-input" placeholder="Search Chachan General Store..." value="{{ search_query|default:'' }}">
+                    <button type="button" id="globalVoiceBtn" class="voice-btn" title="Search by Voice">🎤</button>
+                    <button type="submit" class="search-btn">🔍</button>
+                </form>
+
+                <!-- 3. Actions (Account, Wishlist, Cart) -->
+                <div class="d-flex align-items-center gap-1 order-2 order-lg-3">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'profile' %}" class="nav-action-btn">
+                            <span>Hello, {{ user.first_name|default:user.username }}</span>
+                            <strong>Account & Lists</strong>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-action-btn">
+                            <span>Hello, sign in</span>
+                            <strong>Account & Lists</strong>
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'view_wishlist' %}" class="nav-action-btn d-none d-md-flex">
+                        <span>Returns</span>
+                        <strong>& Wishlist</strong>
+                    </a>
+                    
+                    <a href="{% url 'cart_detail' %}" class="nav-action-btn d-flex flex-row align-items-center gap-1">
+                        <span style="font-size: 1.8rem; line-height: 1; display: block !important;">🛒</span>
+                        <strong>Cart</strong>
                     </a>
                 </div>
             </div>
-            
         </div>
-    </nav>
+        
+        <!-- 💎 Sub Navbar -->
+        <div class="sub-navbar shadow-sm">
+            <a href="{% url 'home' %}#full-collection">☰ All Products</a>
+            <a href="{% url 'about' %}">About Us</a>
+            <a href="{% url 'contact' %}">Customer Service</a>
+            <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+            <strong class="ms-auto d-none d-md-block" style="color: var(--accent-gold);">Premium Corporate Retail & Essentials</strong>
+        </div>
+    </header>
 
     <!-- 📱 Mobile Offcanvas Sidebar -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
         <div class="offcanvas-header">
-            <a class="brand-container" href="{% url 'home' %}">
-                <div class="brand-text-wrapper">
-                    <h1 class="brand-name" style="font-size: 1.8rem;">CGSMART.</h1>
-                    <span class="brand-tagline">Premium Essentials</span>
-                </div>
-            </a>
+            <h5 class="offcanvas-title fw-bold">Hello, {% if user.is_authenticated %}{{ user.first_name }}{% else %}Sign in{% endif %}</h5>
             <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-0">
@@ -329,8 +337,8 @@
                         <p class="mb-3 fw-bold text-dark fs-5">Hi, {{ user.first_name|default:user.username }}!</p>
                         <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 fw-bold rounded-3 py-2">Log Out</a>
                     {% else %}
-                        <a href="{% url 'login' %}" class="btn-gold d-block text-center mb-3 py-2">Login to Account</a>
-                        <a href="{% url 'register' %}" class="btn btn-outline-primary w-100 fw-bold rounded-3 py-2">Sign Up</a>
+                        <a href="{% url 'login' %}" class="btn btn-warning w-100 fw-bold rounded-3 py-2 mb-3" style="background-color: var(--accent-gold);">Login to Account</a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-dark w-100 fw-bold rounded-3 py-2">Sign Up</a>
                     {% endif %}
                 </div>
             </div>
@@ -383,7 +391,7 @@
     </div>
 
     <!-- 📄 FOOTER -->
-    <footer class="text-white py-5" style="background-color: var(--primary-blue); margin-bottom: env(safe-area-inset-bottom);">
+    <footer class="text-white py-5" style="background-color: var(--nav-blue); margin-bottom: env(safe-area-inset-bottom);">
         <div class="container" style="max-width: 1400px; padding: 0 25px;">
             <div class="row g-5">
                 <div class="col-lg-4">
@@ -580,6 +588,44 @@
             userInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") sendAiMessage();
             });
+        }
+    });
+
+    // 🌟 GLOBAL VOICE SEARCH LOGIC
+    document.addEventListener('DOMContentLoaded', function () {
+        const voiceBtn = document.getElementById("globalVoiceBtn");
+        const searchInput = document.getElementById("globalSearchInput");
+        const searchForm = searchInput.closest("form");
+
+        if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = "en-IN";
+
+            voiceBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                recognition.start();
+                voiceBtn.innerHTML = "🔴";
+                searchInput.placeholder = "Listening...";
+            });
+
+            recognition.onresult = function (event) {
+                let transcript = event.results[0][0].transcript.replace(/[^a-zA-Z0-9\s]/g, "").trim();
+                searchInput.value = transcript;
+                voiceBtn.innerHTML = "🎤";
+                searchForm.submit(); // Auto submit after speaking
+            };
+
+            recognition.onerror = function () {
+                voiceBtn.innerHTML = "🎤";
+                searchInput.placeholder = "Search Chachan General Store...";
+            };
+            recognition.onend = function () {
+                voiceBtn.innerHTML = "🎤";
+                searchInput.placeholder = "Search Chachan General Store...";
+            };
+        } else {
+            if (voiceBtn) { voiceBtn.style.display = "none"; }
         }
     });
     </script>

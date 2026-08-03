@@ -5,21 +5,17 @@
 <style>
     /* 🌟 DYNAMIC LIFESTYLE CAROUSEL HERO */
     .lifestyle-carousel .carousel-item {
-        height: 65vh;
-        min-height: 450px;
-        background-color: #0F172A;
+        height: 45vh;
+        min-height: 350px;
+        background-color: #131921;
         overflow: hidden;
     }
     .lifestyle-carousel img, .lifestyle-carousel video {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: center center;
-        opacity: 0.65;
-        transition: transform 10s ease;
-    }
-    .lifestyle-carousel .carousel-item.active img {
-        transform: scale(1.05);
+        object-position: center top;
+        opacity: 0.85;
     }
     .carousel-caption-custom {
         position: absolute;
@@ -31,262 +27,174 @@
         width: 100%;
         padding: 0 20px;
         z-index: 10;
+        pointer-events: none;
     }
     .carousel-caption-custom h2 {
         font-family: 'Jost', sans-serif;
-        font-size: 4rem;
-        font-weight: 700;
-        letter-spacing: 5px;
+        font-size: 3.5rem;
+        font-weight: 800;
+        letter-spacing: 3px;
         text-transform: uppercase;
-        margin-bottom: 25px;
-        text-shadow: 2px 4px 15px rgba(0,0,0,0.4);
+        margin-bottom: 20px;
+        text-shadow: 2px 4px 15px rgba(0,0,0,0.6);
     }
 
-    /* 🌟 SLEEK HORIZONTAL FILTERS */
-    .filter-wrapper {
+    /* 🌟 AMAZON STYLE LAYOUT & SIDEBAR */
+    .sidebar-filters {
         background: #FFFFFF;
-        border-bottom: 1px solid #E2E8F0;
-        padding: 25px 0;
-        margin-bottom: 40px;
+        border-right: 1px solid #E7E7E7;
+        padding: 20px 20px 20px 0;
+        min-height: 100vh;
+    }
+    .filter-group {
+        margin-bottom: 25px;
     }
     .filter-title {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        color: #94A3B8;
-        margin-bottom: 10px;
-        padding-left: 20px;
         font-weight: 700;
-    }
-    .category-scroller {
-        display: flex;
-        overflow-x: auto;
-        gap: 15px;
-        scrollbar-width: none;
-        padding: 0 20px 15px 20px;
-    }
-    .category-scroller::-webkit-scrollbar { display: none; }
-
-    .cat-pill {
-        padding: 10px 28px;
-        border: 1px solid #CBD5E1;
-        border-radius: 40px;
-        color: #475569;
-        text-decoration: none;
-        font-weight: 500;
-        white-space: nowrap;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        background: #FFFFFF;
-        transition: all 0.3s ease;
-    }
-    .cat-pill:hover, .cat-pill.active {
-        background-color: var(--primary-blue, #002D62);
-        color: var(--accent-gold, #D4AF37);
-        border-color: var(--primary-blue, #002D62);
-        box-shadow: 0 4px 10px rgba(0,45,98,0.2);
-    }
-    .cat-pill:focus-visible {
-        outline: 2px solid var(--primary-blue, #002D62);
-        outline-offset: 2px;
-    }
-
-    /* 🌟 AIRY ELEGANT PRODUCT CARDS */
-    .elegant-card {
-        background: transparent;
-        border: none;
-        text-decoration: none;
-        display: block;
-        transition: transform 0.4s ease;
-    }
-    .elegant-card:hover { transform: translateY(-6px); }
-
-    .img-box-elegant {
-        background: #F1F5F9;
-        height: 260px;
-        width: 100%;
-        overflow: hidden;
-        border-radius: 12px;
-        position: relative;
-        margin-bottom: 18px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-    .img-box-elegant img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        mix-blend-mode: multiply;
-        transition: transform 0.8s ease;
-    }
-    .elegant-card:hover .img-box-elegant img {
-        transform: scale(1.05);
-    }
-
-    .product-brand-title {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        color: #64748B;
-        margin-bottom: 5px;
-        font-weight: 600;
-    }
-    .product-name-elegant {
-        font-family: 'Jost', sans-serif;
-        font-size: 1.15rem;
-        font-weight: 600;
-        color: var(--primary-blue, #0F172A);
-        margin-bottom: 6px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        line-height: 1.4;
-        height: 3.2rem;
-    }
-    .product-price-elegant {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--primary-blue, #0F172A);
+        font-size: 0.95rem;
         margin-bottom: 12px;
-    }
-
-    .btn-elegant-cart {
-        background: var(--primary-blue, #002D62);
-        color: #FFFFFF;
-        font-weight: 600;
-        border-radius: 8px;
-        border: none;
-        padding: 12px;
-        font-size: 0.85rem;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        transition: all 0.3s ease;
-    }
-    .btn-elegant-cart:hover { background: var(--accent-gold, #D4AF37); color: var(--primary-blue, #002D62); box-shadow: 0 4px 12px rgba(212,175,55,0.35); }
-    .btn-elegant-cart:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    .section-heading {
-        font-family: 'Jost', sans-serif;
-        font-size: 2.2rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 3px;
-        color: var(--primary-blue, #0F172A);
-        text-align: center;
-        margin-bottom: 50px;
-        position: relative;
-        padding-bottom: 18px;
-    }
-    /* 🌟 Premium gold accent underline to match brand identity */
-    .section-heading::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 70px;
-        height: 3px;
-        background: var(--accent-gold, #D4AF37);
-        border-radius: 2px;
-    }
-
-    /* 🌟 ADVANCED FILTER BAR STYLES */
-    .premium-filter-bar {
-        background: #FFFFFF;
-        border: 1px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        margin-bottom: 40px;
-    }
-    .filter-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 15px;
-        align-items: end;
-    }
-    .filter-label {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #64748B;
+        color: #0F1111;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-bottom: 8px;
-        display: block;
     }
     .filter-select, .filter-input {
         width: 100%;
-        padding: 10px 15px;
-        border: 1px solid #CBD5E1;
-        border-radius: 8px;
-        font-family: 'Poppins', sans-serif;
+        padding: 8px 12px;
+        border: 1px solid #888C8C;
+        border-radius: 6px;
         font-size: 0.9rem;
-        color: #0F172A;
-        outline: none;
-        transition: 0.3s;
+        color: #0F1111;
+        background-color: #F0F2F2;
+        box-shadow: 0 1px 2px rgba(15,17,17,0.15) inset;
+        transition: 0.2s;
     }
-    .filter-select:focus, .filter-input:focus { border-color: #0F172A; }
-
+    .filter-select:focus, .filter-input:focus {
+        border-color: #E47911;
+        outline: none;
+        background-color: #FFFFFF;
+        box-shadow: 0 0 0 2px rgba(228,121,17,0.3);
+    }
     .btn-apply-filter {
-        background: var(--primary-blue, #0F172A);
-        color: #FFFFFF;
-        border: none;
+        background: #FFD814;
+        color: #0F1111;
+        border: 1px solid #FCD200;
         padding: 10px 20px;
         border-radius: 8px;
         font-weight: 600;
         cursor: pointer;
         transition: 0.3s;
-        height: 42px;
+        width: 100%;
     }
-    .btn-apply-filter:hover { background: var(--accent-gold, #1E293B); color: var(--primary-blue, #FFFFFF); }
+    .btn-apply-filter:hover { background: #F7CA00; }
     .btn-clear-filter {
-        background: #F1F5F9;
-        color: #64748B;
-        border: 1px solid #CBD5E1;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: 600;
+        color: #007185;
+        font-size: 0.85rem;
         text-decoration: none;
-        text-align: center;
-        transition: 0.3s;
-        height: 42px;
-        display: inline-flex;
+        display: block;
+        margin-top: 10px;
+        font-weight: 500;
+    }
+    .btn-clear-filter:hover { color: #C45500; text-decoration: underline; }
+
+    /* 🌟 AMAZON STYLE PRODUCT CARDS */
+    .amazon-card {
+        background: #FFFFFF;
+        border: 1px solid #E7E7E7;
+        border-radius: 8px;
+        padding: 15px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.2s, border-color 0.2s;
+        text-decoration: none;
+        color: #0F1111;
+        position: relative;
+    }
+    .amazon-card:hover { 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        border-color: #D5D9D9;
+    }
+    
+    .img-box-amazon {
+        height: 220px;
+        width: 100%;
+        display: flex;
         align-items: center;
         justify-content: center;
-    }
-    .btn-clear-filter:hover { background: #E2E8F0; color: #0F172A; }
-
-    /* 🌟 Filter Collapse Animation */
-    .filter-content-wrapper {
-        max-height: 1200px;
+        margin-bottom: 15px;
+        background: #F8F8F8;
+        border-radius: 4px;
         overflow: hidden;
-        transition: max-height 0.5s ease-in-out, opacity 0.4s ease-in-out;
-        opacity: 1;
     }
-    .filter-content-wrapper.collapsed {
-        max-height: 0;
-        opacity: 0;
-        pointer-events: none;
-        margin-top: 0;
+    .img-box-amazon img { 
+        max-height: 100%; 
+        max-width: 100%; 
+        object-fit: contain; 
+        mix-blend-mode: multiply;
+        transition: transform 0.4s ease;
     }
-    .toggle-filter-btn {
-        background: #F1F5F9;
-        color: #0F172A;
-        border: 1px solid #CBD5E1;
-        padding: 8px 18px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
+    .amazon-card:hover .img-box-amazon img { transform: scale(1.05); }
+    
+    .prod-brand { 
+        font-size: 0.75rem; 
+        color: #565959; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        margin-bottom: 4px; 
+        font-weight: 600;
     }
-    .toggle-filter-btn:hover {
-        background: #E2E8F0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    .prod-title { 
+        font-size: 1.05rem; 
+        font-weight: 500; 
+        display: -webkit-box; 
+        -webkit-line-clamp: 2; 
+        -webkit-box-orient: vertical; 
+        overflow: hidden; 
+        line-height: 1.4; 
+        height: 2.9rem;
+        margin-bottom: 6px; 
+        color: #0F1111;
+    }
+    .prod-rating { font-size: 0.9rem; color: #FFA41C; margin-bottom: 8px; }
+    
+    .prod-price { 
+        font-size: 1.5rem; 
+        font-weight: 600; 
+        display: flex; 
+        align-items: baseline; 
+        gap: 6px; 
+        margin-bottom: 12px; 
+        color: #0F1111;
+    }
+    .prod-mrp { font-size: 0.85rem; color: #565959; text-decoration: line-through; font-weight: 400;}
+    
+    .btn-amazon-cart {
+        background: #FFD814;
+        border: 1px solid #FCD200;
+        color: #0F1111;
+        border-radius: 50px;
+        padding: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        width: 100%;
+        transition: 0.2s;
+    }
+    .btn-amazon-cart:hover { background: #F7CA00; border-color: #F2C200; }
+    .btn-amazon-cart:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .prime-badge { font-family: 'Jost', sans-serif; font-weight: 800; color: #00A8E1; font-size: 0.9rem; font-style: italic; margin-bottom: 8px; display: block; }
+    .prime-badge span { color: #FF9900; }
+
+    /* Mobile Filter Button */
+    .mobile-filter-btn { 
+        background: #F0F2F2; 
+        border: 1px solid #D5D9D9; 
+        border-radius: 8px; 
+        padding: 10px; 
+        width: 100%; 
+        font-weight: 600; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+        color: #0F1111;
     }
 
     /* 🌟 STICKY CART BAR (AJAX) */
@@ -295,15 +203,15 @@
         bottom: calc(60px + env(safe-area-inset-bottom, 0px));
         left: 10px;
         right: 10px;
-        background: #003366;
+        background: #232F3E;
         color: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 12px 18px;
-        font-family: 'Poppins', sans-serif;
+        font-family: 'Inter', sans-serif;
         z-index: 1000;
     }
     .sticky-cart .cart-icon { position: relative; font-size: 22px; }
@@ -311,55 +219,51 @@
         position: absolute;
         top: -6px;
         right: -10px;
-        background: #ffcc00;
-        color: #003366;
+        background: #FF9900;
+        color: #131921;
         font-weight: 700;
         border-radius: 50%;
-        padding: 4px 6px;
-        font-size: 12px;
+        padding: 2px 6px;
+        font-size: 11px;
     }
-    .sticky-cart .cart-info { flex: 1; text-align: center; font-size: 14px; font-weight: 500; }
+    .sticky-cart .cart-info { flex: 1; text-align: center; font-size: 14px; font-weight: 600; }
     .sticky-cart .view-cart-btn {
-        background: #ffcc00; color: #003366; border: none; border-radius: 8px; padding: 8px 14px; font-weight: 600; cursor: pointer; transition: 0.3s ease;
+        background: #FFD814; color: #0F1111; border: none; border-radius: 6px; padding: 8px 16px; font-weight: 700; cursor: pointer; transition: 0.3s ease; font-size: 0.85rem;
     }
-    .sticky-cart .view-cart-btn:hover { background: #ffd633; }
+    .sticky-cart .view-cart-btn:hover { background: #F7CA00; }
 
     /* 📱 MOBILE VIEW FIXES */
-    @media (max-width: 768px) {
-        .lifestyle-carousel .carousel-item { height: 40vh; min-height: 280px; }
-        .carousel-caption-custom h2 { font-size: 2rem; letter-spacing: 2px; margin-bottom: 15px; }
-        .img-box-elegant { height: 200px; }
-        .section-heading { font-size: 1.6rem; margin-bottom: 30px; }
-        .sticky-cart { bottom: calc(70px + env(safe-area-inset-bottom, 0px)); padding: 10px 14px; }
-        .sticky-cart .cart-info { font-size: 13px; }
+    @media (max-width: 991px) {
+        .lifestyle-carousel .carousel-item { height: 35vh; min-height: 250px; }
+        .carousel-caption-custom h2 { font-size: 2rem; letter-spacing: 2px; }
+        .img-box-amazon { height: 180px; }
+        .sticky-cart { bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
     }
 </style>
 
-<!-- 🌟 1. DYNAMIC ADMIN CONTROLLED CAROUSEL (Updated to full clickable link) -->
+<!-- 🌟 1. DYNAMIC ADMIN CONTROLLED CAROUSEL (Full clickable link) -->
 {% if banners %}
-<div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel" aria-roledescription="carousel" aria-label="Promotional banners">
+<div id="lifestyleCarousel" class="carousel slide lifestyle-carousel mb-4" data-bs-ride="carousel">
     <div class="carousel-indicators">
         {% for banner in banners %}
-            <button type="button" data-bs-target="#lifestyleCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-label="Show banner {{ forloop.counter }}" {% if forloop.first %}aria-current="true"{% endif %}></button>
+            <button type="button" data-bs-target="#lifestyleCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
         {% endfor %}
     </div>
 
     <div class="carousel-inner">
         {% for banner in banners %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="5000">
-            <!-- 🎯 NAYA FIX: Pure banner ko ek clickable link mein wrap kar diya gaya hai -->
-            <a href="{% if banner.category %}{% url 'home' %}?category={{ banner.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
+            <a href="{% if banner.category %}?category={{ banner.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
                 {% if banner.animated_file %}
-                    <video class="d-block w-100" autoplay loop muted playsinline poster="{% static 'main_banner.png' %}" aria-hidden="true">
+                    <video class="d-block w-100" autoplay loop muted playsinline poster="{% static 'main_banner.png' %}">
                         <source src="{{ banner.animated_file.url }}" type="video/mp4">
                     </video>
                 {% elif banner.image %}
-                    <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}" {% if not forloop.first %}loading="lazy"{% endif %}>
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}">
                 {% endif %}
 
-                <!-- Title rakha hai, par 'pointer-events: none' hai taaki click link par hi jaaye -->
                 {% if banner.title %}
-                <div class="carousel-caption-custom" style="pointer-events: none;">
+                <div class="carousel-caption-custom">
                     <h2>{{ banner.title }}</h2>
                 </div>
                 {% endif %}
@@ -369,22 +273,21 @@
     </div>
 
     {% if banners|length > 1 %}
-    <button class="carousel-control-prev" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="prev" style="width: 5%;" aria-label="Previous banner">
+    <button class="carousel-control-prev" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="prev" style="width: 5%;">
         <span class="carousel-control-prev-icon" aria-hidden="true" style="width: 3rem; height: 3rem;"></span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="next" style="width: 5%;" aria-label="Next banner">
+    <button class="carousel-control-next" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="next" style="width: 5%;">
         <span class="carousel-control-next-icon" aria-hidden="true" style="width: 3rem; height: 3rem;"></span>
     </button>
     {% endif %}
 </div>
 {% else %}
-<div id="lifestyleCarousel" class="carousel slide lifestyle-carousel" data-bs-ride="carousel" aria-label="Store banner">
+<div id="lifestyleCarousel" class="carousel slide lifestyle-carousel mb-4" data-bs-ride="carousel">
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <!-- Fallback banner bhi ab clickable hai -->
             <a href="#full-collection" style="display: block; width: 100%; height: 100%;">
                 <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070" alt="Premium Fashion">
-                <div class="carousel-caption-custom" style="pointer-events: none;">
+                <div class="carousel-caption-custom">
                     <h2>The Style Edit</h2>
                 </div>
             </a>
@@ -393,99 +296,29 @@
 </div>
 {% endif %}
 
-<!-- 🌟 2. SLEEK HORIZONTAL FILTERS -->
-<div class="filter-wrapper shadow-sm">
-    <div class="container-fluid" style="max-width: 1400px;">
-        <h6 class="filter-title" id="categories-label">Categories</h6>
-        <nav class="category-scroller mb-3" aria-labelledby="categories-label">
-            <a href="{% url 'home' %}" class="cat-pill {% if not active_category %}active{% endif %}" {% if not active_category %}aria-current="true"{% endif %}>All Categories</a>
-            {% for cat in categories %}
-                <a href="{% url 'home' %}?category={{ cat.id }}{% if active_brand %}&brand={{ active_brand }}{% endif %}" class="cat-pill {% if active_category == cat.id %}active{% endif %}" {% if active_category == cat.id %}aria-current="true"{% endif %}>{{ cat.name }}</a>
-            {% endfor %}
-        </nav>
-
-        <h6 class="filter-title mt-2" id="brands-label">Top Brands</h6>
-        <nav class="category-scroller pb-2" aria-labelledby="brands-label">
-            <a href="{% url 'home' %}?{% if active_category %}category={{ active_category }}{% endif %}" class="cat-pill {% if not active_brand %}active{% endif %}" {% if not active_brand %}aria-current="true"{% endif %}>All Brands</a>
-            {% for brand in brands %}
-                <a href="{% url 'home' %}?brand={{ brand.id }}{% if active_category %}&category={{ active_category }}{% endif %}" class="cat-pill {% if active_brand == brand.id %}active{% endif %}" {% if active_brand == brand.id %}aria-current="true"{% endif %}>
-                    {{ brand.name }}
-                </a>
-            {% endfor %}
-        </nav>
+<!-- 🌟 2. MAIN LAYOUT (SIDEBAR + GRID) -->
+<div class="container-fluid px-3 px-lg-4 mb-5" id="full-collection" style="max-width: 1600px;">
+    
+    <!-- Mobile Filter Toggle Button -->
+    <div class="d-lg-none mb-4">
+        <button class="mobile-filter-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileFilters">
+            Filters & Sort ▾
+        </button>
     </div>
-</div>
 
-<div class="container-fluid px-4 mb-5" style="max-width: 1400px;" id="full-collection">
+    <div class="row">
+        <!-- 🌟 LEFT SIDEBAR (DESKTOP FILTERS) -->
+        <aside class="col-lg-3 col-xl-2 d-none d-lg-block">
+            <div class="sidebar-filters">
+                <h5 class="fw-bold mb-4" style="color: #0F1111;">Filters</h5>
+                
+                <form method="GET" action="{% url 'home' %}#full-collection" id="desktopFilterForm">
+                    <!-- Retain Search Query from Header -->
+                    {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
 
-    <!-- 🌟 3. TRENDING BESTSELLERS SHOWCASE -->
-    {% if not active_category and not active_brand and not search_query %}
-    <div class="mb-5 pb-5 border-bottom">
-        <h3 class="section-heading">Trending Bestsellers</h3>
-        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-xl-5">
-            {% for product in products|slice:":4" %}
-            <div class="col">
-                <div class="h-100 d-flex flex-column">
-                    <a href="{% url 'product_detail' product.id %}" class="elegant-card text-center mb-2">
-                        <div class="img-box-elegant position-relative">
-                            {% if product.discount_percentage > 0 %}
-                                <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 shadow" style="font-size: 0.75rem; z-index: 2;">
-                                    {{ product.discount_percentage }}% OFF
-                                </span>
-                            {% endif %}
-                            {% if product.image %}
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" {% if not forloop.first %}loading="lazy"{% endif %}>
-                            {% else %}
-                                <img src="https://placehold.co/400x500/F8FAFC/64748B?text={{ product.name|urlencode }}" alt="{{ product.name }}" loading="lazy">
-                            {% endif %}
-                        </div>
-                        <div class="product-brand-title">{{ product.brand.name|default:"Premium" }}</div>
-                        <h4 class="product-name-elegant">{{ product.name }}</h4>
-                        <div class="d-flex justify-content-center align-items-center mb-2">
-                            <span class="text-warning" style="font-size: 0.85rem; letter-spacing: 2px;" aria-hidden="true">★★★★★</span>
-                            <span class="visually-hidden">Rated 4.8 out of 5</span>
-                            <span class="text-muted ms-2 fw-medium" style="font-size: 0.75rem;" aria-hidden="true">(4.8)</span>
-                        </div>
-                        <div class="product-price-elegant">
-                            ₹{{ product.price }}
-                            {% if product.mrp and product.mrp > product.price %}
-                                <small class="text-muted text-decoration-line-through fw-light ms-2" style="font-size: 0.9rem;">₹{{ product.mrp }}</small>
-                            {% endif %}
-                        </div>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- 🌟 4. ADVANCED SMART FILTER BAR WITH VOICE SEARCH -->
-    <div class="premium-filter-bar">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="fw-bold m-0 text-uppercase" style="font-family: 'Jost', sans-serif; letter-spacing: 2px; color: #0F172A; font-size: 1.2rem;">
-                🔍 Search &amp; Filter
-            </h4>
-            <button type="button" id="toggleFilterBtn" class="toggle-filter-btn shadow-sm" aria-expanded="true" aria-controls="filterContent">
-                <span id="toggleFilterText">Hide Filters</span> <span id="toggleFilterIcon" aria-hidden="true">▲</span>
-            </button>
-        </div>
-
-        <div id="filterContent" class="filter-content-wrapper">
-            <form method="GET" action="{% url 'home' %}#full-collection">
-                <div class="filter-grid">
-
-                    <div style="grid-column: 1 / -1; position: relative; display: flex; align-items: center;">
-                        <label for="searchInput" class="visually-hidden">Search products</label>
-                        <input type="text" id="searchInput" name="search" class="filter-input" placeholder="Search premium essentials..." value="{{ search_query }}" style="padding-right: 45px;">
-                        <button type="button" id="voiceSearchBtn" style="position: absolute; right: 10px; background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.3s;" title="Search by Voice" aria-label="Search by voice">
-                            🎤
-                        </button>
-                    </div>
-
-                    <div>
-                        <label class="filter-label" for="id_category">Category</label>
-                        <select name="category" id="id_category" class="filter-select">
+                    <div class="filter-group">
+                        <h6 class="filter-title">Department</h6>
+                        <select name="category" class="filter-select">
                             <option value="">All Categories</option>
                             {% for cat in categories %}
                                 <option value="{{ cat.id }}" {% if active_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
@@ -493,56 +326,56 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label class="filter-label" for="id_brand">Brand</label>
-                        <select name="brand" id="id_brand" class="filter-select">
-                            <option value="">All Brands</option>
+                    <div class="filter-group">
+                        <h6 class="filter-title">Brands</h6>
+                        <select name="brand" class="filter-select">
+                            <option value="">Any Brand</option>
                             {% for brand in brands %}
                                 <option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
-                    <div>
-                        <label class="filter-label" for="id_sort">Sort By</label>
-                        <select name="sort" id="id_sort" class="filter-select">
-                            <option value="">Latest First</option>
+                    <div class="filter-group">
+                        <h6 class="filter-title">Sort By</h6>
+                        <select name="sort" class="filter-select">
+                            <option value="">Featured</option>
                             <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
                             <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
                         </select>
                     </div>
 
-                    <div>
-                        <label class="filter-label" for="id_discount">Discount</label>
-                        <select name="discount" id="id_discount" class="filter-select">
-                            <option value="">Any Discount</option>
-                            <option value="10" {% if active_discount == '10' %}selected{% endif %}>10% or more</option>
-                            <option value="20" {% if active_discount == '20' %}selected{% endif %}>20% or more</option>
-                            <option value="30" {% if active_discount == '30' %}selected{% endif %}>30% or more</option>
-                            <option value="50" {% if active_discount == '50' %}selected{% endif %}>50% or more</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="filter-label" for="id_rating">Rating</label>
-                        <select name="rating" id="id_rating" class="filter-select">
+                    <div class="filter-group">
+                        <h6 class="filter-title">Customer Reviews</h6>
+                        <select name="rating" class="filter-select">
                             <option value="">Any Rating</option>
-                            <option value="4" {% if active_rating == '4' %}selected{% endif %}>4★ &amp; Above</option>
-                            <option value="3" {% if active_rating == '3' %}selected{% endif %}>3★ &amp; Above</option>
+                            <option value="4" {% if active_rating == '4' %}selected{% endif %}>4★ & Up</option>
+                            <option value="3" {% if active_rating == '3' %}selected{% endif %}>3★ & Up</option>
                         </select>
                     </div>
 
-                    <div>
-                        <label class="filter-label" for="id_availability">Availability</label>
-                        <select name="availability" id="id_availability" class="filter-select">
+                    <div class="filter-group">
+                        <h6 class="filter-title">Discount</h6>
+                        <select name="discount" class="filter-select">
+                            <option value="">Any Discount</option>
+                            <option value="10" {% if active_discount == '10' %}selected{% endif %}>10% Off or more</option>
+                            <option value="20" {% if active_discount == '20' %}selected{% endif %}>20% Off or more</option>
+                            <option value="30" {% if active_discount == '30' %}selected{% endif %}>30% Off or more</option>
+                            <option value="50" {% if active_discount == '50' %}selected{% endif %}>50% Off or more</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <h6 class="filter-title">Availability</h6>
+                        <select name="availability" class="filter-select">
                             <option value="">All Items</option>
                             <option value="in_stock" {% if active_availability == 'in_stock' %}selected{% endif %}>In Stock Only</option>
                         </select>
                     </div>
 
-                    <div>
-                        <label class="filter-label" for="id_size">Size</label>
-                        <select name="size" id="id_size" class="filter-select">
+                    <div class="filter-group">
+                        <h6 class="filter-title">Size</h6>
+                        <select name="size" class="filter-select">
                             <option value="">Any Size</option>
                             <option value="S" {% if active_size == 'S' %}selected{% endif %}>Small (S)</option>
                             <option value="M" {% if active_size == 'M' %}selected{% endif %}>Medium (M)</option>
@@ -551,9 +384,9 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label class="filter-label" for="id_color">Color</label>
-                        <select name="color" id="id_color" class="filter-select">
+                    <div class="filter-group">
+                        <h6 class="filter-title">Color</h6>
+                        <select name="color" class="filter-select">
                             <option value="">Any Color</option>
                             <option value="Black" {% if active_color == 'Black' %}selected{% endif %}>Black</option>
                             <option value="White" {% if active_color == 'White' %}selected{% endif %}>White</option>
@@ -562,149 +395,194 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label class="filter-label" for="id_min_price">Min Price (₹)</label>
-                        <input type="number" name="min_price" id="id_min_price" class="filter-input" placeholder="e.g. 100" value="{{ min_price|default:'' }}" min="0">
-                    </div>
-
-                    <div>
-                        <label class="filter-label" for="id_max_price">Max Price (₹)</label>
-                        <input type="number" name="max_price" id="id_max_price" class="filter-input" placeholder="e.g. 5000" value="{{ max_price|default:'' }}" min="0">
-                    </div>
-
-                    <div style="display: flex; gap: 10px; grid-column: 1 / -1; margin-top: 15px;">
-                        <button type="submit" class="btn-apply-filter w-100">Apply Filters</button>
-                        <a href="{% url 'home' %}" class="btn-clear-filter w-100">Clear All</a>
-                    </div>
-
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 🌟 MAIN PRODUCT GRID -->
-    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 g-xl-5 mb-5">
-        {% for product in products %}
-
-        <!-- 🎯 PREMIUM FEATURE 1: VERTICAL BANNER (Grid ke beech mein, 4th item ki jagah) -->
-        {% if forloop.counter == 4 and banners|length > 1 %}
-        <div class="col d-none d-md-block">
-            <div class="h-100 rounded-4 overflow-hidden shadow-sm position-relative border-0" style="background: #0F172A;">
-                <a href="{% if banners.1.category %}{% url 'home' %}?category={{ banners.1.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
-                    {% if banners.1.image %}
-                        <img src="{{ banners.1.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8;" alt="Promo" loading="lazy">
-                    {% endif %}
-                    <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3" style="pointer-events: none;">
-                        <h4 class="text-white fw-bold text-uppercase" style="letter-spacing: 2px;">{{ banners.1.title|default:"Special Offer" }}</h4>
-                    </div>
-                </a>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Original Product Card -->
-        <div class="col">
-            <div class="h-100 d-flex flex-column">
-                <a href="{% url 'product_detail' product.id %}" class="elegant-card text-center mb-2">
-                    <div class="img-box-elegant position-relative">
-
-                        <!-- 🎯 PREMIUM FEATURE 2: FOMO / SCARCITY TAG (Stock kam hone par) -->
-                        {% if product.stock and product.stock < 5 %}
-                            <span class="badge bg-warning text-dark position-absolute bottom-0 start-50 translate-middle-x mb-2 px-3 py-1 shadow-sm rounded-pill" style="font-size: 0.75rem; z-index: 2; width: max-content;">
-                                ⏳ Only {{ product.stock }} Left!
-                            </span>
-                        {% endif %}
-
-                        {% if product.discount_percentage > 0 %}
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 shadow" style="font-size: 0.75rem; z-index: 2;">
-                                {{ product.discount_percentage }}% OFF
-                            </span>
-                        {% endif %}
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
-                        {% else %}
-                            <img src="https://placehold.co/400x500/F8FAFC/64748B?text={{ product.name|urlencode }}" alt="{{ product.name }}" loading="lazy">
-                        {% endif %}
-                    </div>
-                    <div class="product-brand-title">{{ product.brand.name|default:"Premium" }}</div>
-                    <h4 class="product-name-elegant">{{ product.name }}</h4>
-                    <div class="d-flex justify-content-center align-items-center mb-2">
-                        <span class="text-warning" style="font-size: 0.85rem; letter-spacing: 2px;" aria-hidden="true">★★★★★</span>
-                    </div>
-                    <div class="product-price-elegant">
-                        ₹{{ product.price }}
-                        {% if product.mrp and product.mrp > product.price %}
-                            <small class="text-muted text-decoration-line-through fw-light ms-2" style="font-size: 0.9rem;">₹{{ product.mrp }}</small>
-                        {% endif %}
-                    </div>
-                </a>
-
-                <div class="px-2 pb-2 d-flex flex-column flex-grow-1 mt-auto">
-                    <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto add-to-cart-form" data-product-id="{{ product.id }}">
-                        {% csrf_token %}
-                        {% if product.variants.exists %}
-                            <label class="visually-hidden" for="variant-{{ product.id }}">Select size for {{ product.name }}</label>
-                            <select name="variant_id" id="variant-{{ product.id }}" class="form-select form-select-sm mb-3 rounded-2 text-center border-secondary shadow-sm" style="font-weight: 500;" required>
-                                <option value="" disabled selected>Select Size</option>
-                                {% for variant in product.variants.all %}
-                                    <option value="{{ variant.id }}">{{ variant.size_name }} - ₹{{ variant.price }}</option>
-                                {% endfor %}
-                            </select>
-                        {% endif %}
-                        <div class="d-flex flex-column gap-2 mt-2">
-                            <button type="submit" class="btn-elegant-cart add-to-cart-ajax w-100 shadow-sm">Add To Bag</button>
-                            <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-outline-danger w-100 btn-sm rounded-2 fw-bold text-uppercase py-2" style="border: 1px solid #dc3545; letter-spacing: 1px;">❤️ Wishlist</a>
+                    <div class="filter-group">
+                        <h6 class="filter-title">Price (₹)</h6>
+                        <div class="d-flex gap-2 mb-3">
+                            <input type="number" name="min_price" class="filter-input" placeholder="Min" value="{{ min_price|default:'' }}" min="0">
+                            <input type="number" name="max_price" class="filter-input" placeholder="Max" value="{{ max_price|default:'' }}" min="0">
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- 🎯 PREMIUM FEATURE 3: FULL WIDTH HORIZONTAL BANNER (8th item ke baad) -->
-        {% if forloop.counter == 8 and banners|length > 2 %}
-        <div class="col-12 mt-4 mb-4">
-            <div class="rounded-4 overflow-hidden shadow-sm position-relative" style="height: 180px; background: #0F172A;">
-                <a href="{% if banners.2.category %}{% url 'home' %}?category={{ banners.2.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
-                    {% if banners.2.image %}
-                        <img src="{{ banners.2.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.7;" alt="Promo" loading="lazy">
-                    {% endif %}
-                    <div class="position-absolute top-50 start-50 translate-middle text-center w-100" style="pointer-events: none;">
-                        <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 3px;">{{ banners.2.title|default:"Mega Savings" }}</h3>
-                        <p class="text-white-50 mb-0">Use Code <strong>CGSMART10</strong> for extra discount!</p>
+                        <button type="submit" class="btn-apply-filter shadow-sm">Apply Filters</button>
+                        <a href="{% url 'home' %}" class="btn-clear-filter text-center mt-3">Clear All</a>
                     </div>
-                </a>
+                </form>
             </div>
-        </div>
-        {% endif %}
+        </aside>
 
-        {% empty %}
-        <div class="col-12 text-center py-5">
-            <h4 class="text-muted">No products found matching your filters.</h4>
-            <a href="{% url 'home' %}" class="btn btn-dark mt-3 px-4 py-2">Clear Filters</a>
-        </div>
-        {% endfor %}
+        <!-- 🌟 RIGHT CONTENT (PRODUCT GRID) -->
+        <main class="col-12 col-lg-9 col-xl-10">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h4 class="fw-bold m-0" style="color: #0F1111;">
+                    {% if search_query %}Results for "{{ search_query }}"
+                    {% elif active_category %}Category Products
+                    {% else %}Trending Essentials{% endif %}
+                </h4>
+                <span class="text-muted small">Showing {{ products|length }} results</span>
+            </div>
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 g-md-4 mb-5">
+                {% for product in products %}
+
+                <!-- 🎯 PREMIUM FEATURE 1: VERTICAL BANNER (4th item ki jagah) -->
+                {% if forloop.counter == 4 and banners|length > 1 %}
+                <div class="col d-none d-md-block">
+                    <div class="h-100 rounded-2 overflow-hidden shadow-sm position-relative border-0" style="background: #131921;">
+                        <a href="{% if banners.1.category %}?category={{ banners.1.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
+                            {% if banners.1.image %}
+                                <img src="{{ banners.1.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8;" alt="Promo">
+                            {% endif %}
+                            <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3" style="pointer-events: none;">
+                                <h4 class="text-white fw-bold text-uppercase" style="letter-spacing: 1px;">{{ banners.1.title|default:"Special Offer" }}</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Amazon Product Card -->
+                <div class="col">
+                    <div class="amazon-card">
+                        
+                        <!-- Scarcity / Discount Tags -->
+                        {% if product.stock and product.stock < 5 %}
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-2 shadow-sm">Only {{ product.stock }} left</span>
+                        {% elif product.discount_percentage > 0 %}
+                            <span class="badge bg-dark position-absolute top-0 start-0 m-2 z-2 shadow-sm">{{ product.discount_percentage }}% OFF</span>
+                        {% endif %}
+
+                        <a href="{% url 'product_detail' product.id %}" class="text-decoration-none d-flex flex-column flex-grow-1">
+                            <div class="img-box-amazon">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                                {% else %}
+                                    <img src="https://placehold.co/400x500/F8F8F8/565959?text={{ product.name|urlencode }}" alt="{{ product.name }}" loading="lazy">
+                                {% endif %}
+                            </div>
+                            
+                            <div class="prod-brand">{{ product.brand.name|default:"Premium Exclusive" }}</div>
+                            <h2 class="prod-title">{{ product.name }}</h2>
+                            
+                            <div class="prod-rating">
+                                ★★★★★ <span style="color: #007185; font-size: 0.8rem;">(4.8)</span>
+                            </div>
+
+                            <div class="prod-price">
+                                <span><small style="font-size: 0.9rem; vertical-align: top;">₹</small>{{ product.price }}</span>
+                                {% if product.mrp and product.mrp > product.price %}
+                                    <span class="prod-mrp">M.R.P: ₹{{ product.mrp }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="prime-badge">CGSMART <span>Assured</span></div>
+                        </a>
+
+                        <div class="mt-auto pt-2 border-top">
+                            <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form" data-product-id="{{ product.id }}">
+                                {% csrf_token %}
+                                {% if product.variants.exists %}
+                                    <label class="visually-hidden" for="variant-{{ product.id }}">Select size</label>
+                                    <select name="variant_id" id="variant-{{ product.id }}" class="form-select form-select-sm mb-2 border-secondary" style="font-size: 0.85rem;" required>
+                                        <option value="" disabled selected>Select Size</option>
+                                        {% for variant in product.variants.all %}
+                                            <option value="{{ variant.id }}">{{ variant.size_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% endif %}
+                                <div class="d-flex flex-column gap-2 mt-2">
+                                    <button type="submit" class="btn-amazon-cart add-to-cart-ajax shadow-sm">Add to Cart</button>
+                                    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-light border w-100 btn-sm rounded-pill fw-bold text-muted py-1">❤️ Add to Wishlist</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🎯 PREMIUM FEATURE 3: HORIZONTAL BANNER (8th item ke baad) -->
+                {% if forloop.counter == 8 and banners|length > 2 %}
+                <div class="col-12 mt-4 mb-4">
+                    <div class="rounded-2 overflow-hidden shadow-sm position-relative border" style="height: 160px; background: #131921;">
+                        <a href="{% if banners.2.category %}?category={{ banners.2.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
+                            {% if banners.2.image %}
+                                <img src="{{ banners.2.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.7;" alt="Promo" loading="lazy">
+                            {% endif %}
+                            <div class="position-absolute top-50 start-50 translate-middle text-center w-100" style="pointer-events: none;">
+                                <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 2px;">{{ banners.2.title|default:"Mega Savings" }}</h3>
+                                <p class="text-white-50 mb-0">Use Code <strong style="color: #FF9900;">CGSMART10</strong> for extra discount!</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% empty %}
+                <div class="col-12 text-center py-5 w-100">
+                    <span style="font-size: 4rem; opacity: 0.5;">🛒</span>
+                    <h4 class="mt-3 text-dark">No products found.</h4>
+                    <p class="text-muted">Try adjusting your filters or search query.</p>
+                    <a href="{% url 'home' %}" class="btn btn-outline-dark mt-2">Clear all filters</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- 🌟 PAGINATION -->
+            <nav aria-label="Product list pagination" class="mt-4 pt-4 border-top d-flex justify-content-center">
+                <ul class="pagination shadow-sm">
+                    {% if products.has_previous %}
+                        <li class="page-item"><a class="page-link text-dark" href="{% url 'home' %}?page={{ products.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">← Previous</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link" style="background-color: #0F1111; border-color: #0F1111;">Page {{ products.number }} of {{ products.paginator.num_pages }}</span></li>
+                    {% if products.has_next %}
+                        <li class="page-item"><a class="page-link text-dark" href="{% url 'home' %}?page={{ products.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Next →</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+
+        </main>
     </div>
-
-    <!-- 🌟 AIRY PAGINATION -->
-    <nav aria-label="Product list pagination" class="mt-5 pt-4 border-top">
-        <ul class="pagination justify-content-center gap-2">
-            {% if products.has_previous %}
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="{% url 'home' %}?page=1{% if querystring %}&{{ querystring }}{% endif %}">&laquo; First</a></li>
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="{% url 'home' %}?page={{ products.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Prev</a></li>
-            {% endif %}
-
-            <li class="page-item active">
-                <span class="page-link text-white border-0 px-4 py-2 shadow-sm rounded-3" style="background-color: #0F172A; font-weight: 600;" aria-current="page">{{ products.number }} / {{ products.paginator.num_pages }}</span>
-            </li>
-
-            {% if products.has_next %}
-                <li class="page-item"><a class="page-link text-dark border-0 bg-transparent text-uppercase fw-bold" style="letter-spacing: 1px;" href="{% url 'home' %}?page={{ products.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Next</a></li>
-            {% endif %}
-        </ul>
-    </nav>
 </div>
 
-<!-- 🌟 STICKY CART BAR HTML -->
+<!-- 📱 Mobile Filter Offcanvas -->
+<div class="offcanvas offcanvas-bottom h-75" tabindex="-1" id="mobileFilters">
+    <div class="offcanvas-header bg-light border-bottom">
+        <h5 class="offcanvas-title fw-bold" style="color: #0F1111;">Filters & Sort</h5>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form method="GET" action="{% url 'home' %}#full-collection">
+            {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+            
+            <label class="fw-bold mb-2">Category</label>
+            <select name="category" class="filter-select mb-3">
+                <option value="">All Categories</option>
+                {% for cat in categories %}<option value="{{ cat.id }}" {% if active_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>{% endfor %}
+            </select>
+
+            <label class="fw-bold mb-2">Brand</label>
+            <select name="brand" class="filter-select mb-3">
+                <option value="">Any Brand</option>
+                {% for brand in brands %}<option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>{% endfor %}
+            </select>
+
+            <label class="fw-bold mb-2">Sort By</label>
+            <select name="sort" class="filter-select mb-3">
+                <option value="">Featured</option>
+                <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
+                <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
+            </select>
+
+            <label class="fw-bold mb-2">Price (₹)</label>
+            <div class="d-flex gap-2 mb-3">
+                <input type="number" name="min_price" class="filter-input" placeholder="Min" value="{{ min_price|default:'' }}">
+                <input type="number" name="max_price" class="filter-input" placeholder="Max" value="{{ max_price|default:'' }}">
+            </div>
+            
+            <button type="submit" class="btn-apply-filter mt-2">Apply Filters</button>
+            <a href="{% url 'home' %}" class="btn btn-light border w-100 fw-bold py-2 mt-2">Clear All</a>
+        </form>
+    </div>
+</div>
+
+<!-- 🌟 STICKY CART BAR (AJAX) -->
 <div id="stickyCart" class="sticky-cart" style="display:none;" role="status" aria-live="polite">
     <div class="cart-icon">
         🛒 <span id="cartBadge" class="cart-badge">0</span>
@@ -712,47 +590,16 @@
     <div class="cart-info">
         <span id="cartSummary">0 Items | ₹0.00</span>
     </div>
-    <button class="view-cart-btn" onclick="window.location.href='{% url 'cart_detail' %}'">
+    <button class="view-cart-btn shadow-sm" onclick="window.location.href='{% url 'cart_detail' %}'">
         VIEW CART
     </button>
 </div>
 
-<!-- 🌟 COMBINED SCRIPTS (AJAX CART + SMART FILTER + VOICE SEARCH) -->
+<!-- 🌟 AJAX CART SCRIPT -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const CSRF_TOKEN = "{{ csrf_token }}";
 
-        // --- 1. SMART FILTER AUTO-COLLAPSE LOGIC ---
-        const filterContent = document.getElementById("filterContent");
-        const toggleFilterBtn = document.getElementById("toggleFilterBtn");
-        const toggleFilterText = document.getElementById("toggleFilterText");
-        const toggleFilterIcon = document.getElementById("toggleFilterIcon");
-
-        const urlParams = new URLSearchParams(window.location.search);
-        let hasActiveFilters = false;
-        for (const [key, value] of urlParams.entries()) {
-            if (value && key !== "page") {
-                hasActiveFilters = true;
-                break;
-            }
-        }
-
-        function setFilterState(collapsed) {
-            filterContent.classList.toggle("collapsed", collapsed);
-            toggleFilterBtn.setAttribute("aria-expanded", String(!collapsed));
-            toggleFilterText.innerText = collapsed ? "Show Filters" : "Hide Filters";
-            toggleFilterIcon.innerText = collapsed ? "▼" : "▲";
-        }
-
-        if (hasActiveFilters) {
-            setFilterState(true);
-        }
-
-        toggleFilterBtn.addEventListener("click", function () {
-            setFilterState(!filterContent.classList.contains("collapsed"));
-        });
-
-        // --- 2. AJAX CART LOGIC ---
         function updateCartBar(items, total) {
             const cartBar = document.getElementById("stickyCart");
             const cartBadge = document.getElementById("cartBadge");
@@ -777,10 +624,8 @@
                 .catch((error) => console.error("Cart summary error:", error));
         }
 
-        // Load cart state instantly
         refreshCartBar();
 
-        // Event delegation: one listener for all current AND future add-to-cart forms
         document.querySelectorAll(".add-to-cart-form").forEach((form) => {
             form.addEventListener("submit", function (e) {
                 e.preventDefault();
@@ -817,17 +662,21 @@
                     })
                     .then((data) => {
                         updateCartBar(data.items, data.total);
-                        submitBtn.innerHTML = "ADDED! ✔️";
-                        submitBtn.style.background = "#059669";
+                        submitBtn.innerHTML = "Added ✔️";
+                        submitBtn.style.background = "#2ECC71";
+                        submitBtn.style.color = "#FFFFFF";
+                        submitBtn.style.borderColor = "#27AE60";
                         setTimeout(() => {
                             submitBtn.innerHTML = originalText;
                             submitBtn.style.background = "";
+                            submitBtn.style.color = "";
+                            submitBtn.style.borderColor = "";
                             submitBtn.disabled = false;
                         }, 1500);
                     })
                     .catch((error) => {
                         console.error("Add to cart error:", error);
-                        submitBtn.innerHTML = "Try Again";
+                        submitBtn.innerHTML = "Error";
                         submitBtn.disabled = false;
                         setTimeout(() => {
                             submitBtn.innerHTML = originalText;
@@ -835,64 +684,6 @@
                     });
             });
         });
-
-        // --- 3. VOICE SEARCH (SPEECH RECOGNITION) LOGIC ---
-        const voiceSearchBtn = document.getElementById("voiceSearchBtn");
-        const searchInput = document.getElementById("searchInput");
-        const filterForm = searchInput.closest("form");
-
-        if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = "en-IN";
-
-            voiceSearchBtn.addEventListener("click", function (e) {
-                e.preventDefault();
-                recognition.start();
-                voiceSearchBtn.innerHTML = "🔴";
-                searchInput.placeholder = "Listening...";
-                searchInput.style.borderColor = "#059669";
-            });
-
-            recognition.onresult = function (event) {
-                let transcript = event.results[0][0].transcript;
-
-                // Keep only English letters, numbers, and spaces
-                transcript = transcript.replace(/[^a-zA-Z0-9\s]/g, "").trim();
-
-                searchInput.value = transcript;
-                voiceSearchBtn.innerHTML = "🎤";
-
-                const submitBtn = filterForm.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    setTimeout(() => submitBtn.click(), 200);
-                } else {
-                    filterForm.submit();
-                }
-            };
-
-            recognition.onerror = function (event) {
-                console.error("Speech recognition error", event.error);
-                voiceSearchBtn.innerHTML = "🎤";
-                searchInput.placeholder = "Search premium essentials...";
-                searchInput.style.borderColor = "";
-                if (event.error === "not-allowed") {
-                    alert("Please allow microphone access to use Voice Search.");
-                }
-            };
-
-            recognition.onend = function () {
-                voiceSearchBtn.innerHTML = "🎤";
-                searchInput.style.borderColor = "";
-                searchInput.placeholder = "Search premium essentials...";
-            };
-        } else {
-            voiceSearchBtn.style.display = "none";
-            console.log("Voice search is not supported in this browser.");
-        }
     });
 </script>
 {% endblock %}
