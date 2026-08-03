@@ -9,9 +9,7 @@ from django.views.generic import TemplateView
 
 # 🌟 NAYE IMPORTS SEO AUR STATIC PAGES KE LIYE
 from django.contrib.sitemaps.views import sitemap
-from django.views.generic import TemplateView
 from products.sitemaps import ProductSitemap, StaticViewSitemap
-
 from products import views
 
 # Views functions imports
@@ -28,7 +26,7 @@ from products.views import (
     update_cart_item, 
     cancel_order, 
     delete_address, edit_address,
-    privacy_policy, terms_conditions, refund_policy, # 🌟 NAYE POLICY PAGES IMPORT
+    privacy_policy, terms_conditions, refund_policy,
 )
 
 # 🌟 UPTIMEROBOT KE LIYE PING FUNCTION
@@ -49,7 +47,9 @@ urlpatterns = [
     # 🌟 Product Detail URL
     path('product/<int:product_id>/', product_detail, name='product_detail'),
 
+    # 🌟 PWA Files (Service Worker & Manifest) served directly
     path('sw.js', TemplateView.as_view(template_name='sw.js', content_type='application/javascript'), name='sw.js'),
+    path('manifest.json', TemplateView.as_view(template_name='manifest.json', content_type='application/json'), name='manifest'),
     
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('cart/', cart_detail, name='cart_detail'),
@@ -93,8 +93,7 @@ urlpatterns = [
     path('wishlist/add/<int:product_id>/', add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     
-    # 🔧 Admin & Sync (🌟 FIX: URL path ko 'make-admin/' kar diya gaya hai)
-    # path('make-admin/', make_admin, name='make_admin'), 
+    # 🔧 Admin & Sync 
     path('export-products/', export_products_csv, name='export_products'),
     path('import-products/', import_products_csv, name='import_products'),
 

@@ -20,8 +20,8 @@
     <!-- 🌟 FAVICON -->
     <link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
 
-    <!-- 🌟 PWA & Theme Colors -->
-    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <!-- 🌟 PWA & Theme Colors (FIXED URL) -->
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#131921">
     <link rel="apple-touch-icon" href="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
     
@@ -38,12 +38,12 @@
     
     <style>
         :root {
-            --bg-light: #F2F2F2; /* Amazon light gray bg */
-            --text-dark: #0F1111; /* Amazon dark text */
+            --bg-light: #F2F2F2;
+            --text-dark: #0F1111;
             --text-muted: #565959;
-            --primary-blue: #131921; /* Amazon Dark Blue */
-            --nav-blue: #232F3E; /* Amazon Lighter Nav Blue */
-            --accent-gold: #FEBD69; /* Amazon Yellow/Gold */
+            --primary-blue: #131921;
+            --nav-blue: #232F3E;
+            --accent-gold: #FEBD69;
             --surface: #FFFFFF;
         }
 
@@ -490,152 +490,156 @@
     <!-- 🌟 AOS JS -->
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
+    <!-- 🌟 ALL JAVASCRIPT LOGIC BUNDLED PROPERLY -->
     <script>
-    // 🌟 Initialize AOS Animations
-    document.addEventListener('DOMContentLoaded', function () {
-        if (window.AOS) {
-            AOS.init({
-                duration: 700,
-                easing: 'ease-out-cubic',
-                once: true,
-                offset: 80
-            });
-        }
-    });
-
-    // 🌟 WhatsApp Float Logic
-    (function () {
-        var btn = document.getElementById('whatsappFloat');
-        if (!btn) return;
-        btn.addEventListener('click', function () {
-            var phone = '917357073316'; 
-            var text = encodeURIComponent('Hi Chachan General Store, I need help with...');
-            var url = 'https://wa.me/' + phone + '?text=' + text;
-            window.open(url, '_blank');
+        // 1. Initialize AOS Animations
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.AOS) {
+                AOS.init({
+                    duration: 700,
+                    easing: 'ease-out-cubic',
+                    once: true,
+                    offset: 80
+                });
+            }
         });
-    })();
 
-    // 🌟 AI Assistant Logic
-    document.addEventListener("DOMContentLoaded", function() {
-        const toggleBtn = document.getElementById("aiChatToggleBtn");
-        const chatWindow = document.getElementById("aiChatWindow");
-        const closeBtn = document.getElementById("closeAiChat");
-        const sendBtn = document.getElementById("aiSendBtn");
-        const userInput = document.getElementById("aiUserInput");
-        const msgContainer = document.getElementById("aiMsgContainer");
+        // 2. WhatsApp Float Logic
+        document.addEventListener('DOMContentLoaded', function () {
+            var btn = document.getElementById('whatsappFloat');
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    var phone = '917357073316'; 
+                    var text = encodeURIComponent('Hi Chachan General Store, I need help with...');
+                    var url = 'https://wa.me/' + phone + '?text=' + text;
+                    window.open(url, '_blank');
+                });
+            }
+        });
 
-        if(toggleBtn) {
-            toggleBtn.addEventListener("click", () => {
-                chatWindow.style.display = (chatWindow.style.display === "flex") ? "none" : "flex";
-            });
-        }
+        // 3. AI Assistant Logic
+        document.addEventListener("DOMContentLoaded", function() {
+            const toggleBtn = document.getElementById("aiChatToggleBtn");
+            const chatWindow = document.getElementById("aiChatWindow");
+            const closeBtn = document.getElementById("closeAiChat");
+            const sendBtn = document.getElementById("aiSendBtn");
+            const userInput = document.getElementById("aiUserInput");
+            const msgContainer = document.getElementById("aiMsgContainer");
 
-        if(closeBtn) {
-            closeBtn.addEventListener("click", () => { chatWindow.style.display = "none"; });
-        }
+            if(toggleBtn) {
+                toggleBtn.addEventListener("click", () => {
+                    chatWindow.style.display = (chatWindow.style.display === "flex") ? "none" : "flex";
+                });
+            }
 
-        function appendMessage(text, isUser) {
-            const msgDiv = document.createElement("div");
-            msgDiv.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-ai'} shadow-sm`;
-            msgDiv.innerText = text;
-            msgContainer.appendChild(msgDiv);
-            msgContainer.scrollTop = msgContainer.scrollHeight;
-        }
+            if(closeBtn) {
+                closeBtn.addEventListener("click", () => { chatWindow.style.display = "none"; });
+            }
 
-        function sendAiMessage() {
-            const query = userInput.value.trim();
-            if (!query) return;
+            function appendMessage(text, isUser) {
+                const msgDiv = document.createElement("div");
+                msgDiv.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-ai'} shadow-sm`;
+                msgDiv.innerText = text;
+                msgContainer.appendChild(msgDiv);
+                msgContainer.scrollTop = msgContainer.scrollHeight;
+            }
 
-            appendMessage(query, true);
-            userInput.value = "";
+            function sendAiMessage() {
+                const query = userInput.value.trim();
+                if (!query) return;
 
-            // Typing indicator
-            const typingDiv = document.createElement("div");
-            typingDiv.className = "msg-bubble msg-ai shadow-sm";
-            typingDiv.innerText = "Thinking...";
-            typingDiv.id = "aiTyping";
-            msgContainer.appendChild(typingDiv);
+                appendMessage(query, true);
+                userInput.value = "";
 
-            const aiUrl = "{% url 'ai_assistant_chat' %}";
+                // Typing indicator
+                const typingDiv = document.createElement("div");
+                typingDiv.className = "msg-bubble msg-ai shadow-sm";
+                typingDiv.innerText = "Thinking...";
+                typingDiv.id = "aiTyping";
+                msgContainer.appendChild(typingDiv);
 
-            fetch(aiUrl, {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}" 
-                },
-                body: JSON.stringify({ message: query })
-            })
-            .then(async response => {
-                if (!response.ok) {
-                    const errText = await response.text();
-                    console.error("Server Error Response:", errText);
-                    throw new Error("Server ne error return kiya: " + response.status);
+                const aiUrl = "{% url 'ai_assistant_chat' %}";
+
+                fetch(aiUrl, {
+                    method: "POST",
+                    headers: { 
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}" 
+                    },
+                    body: JSON.stringify({ message: query })
+                })
+                .then(async response => {
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        console.error("Server Error Response:", errText);
+                        throw new Error("Server ne error return kiya: " + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("aiTyping")?.remove();
+                    appendMessage(data.response || "No response received.", false);
+                })
+                .catch(error => {
+                    console.error("Complete Error Detail:", error);
+                    document.getElementById("aiTyping")?.remove();
+                    appendMessage("Technical error! System URL find nahi kar pa raha, F12 daba kar Console check karein.", false);
+                });
+            }
+
+            if(sendBtn) {
+                sendBtn.addEventListener("click", sendAiMessage);
+            }
+            
+            if(userInput) {
+                userInput.addEventListener("keypress", (e) => {
+                    if (e.key === "Enter") sendAiMessage();
+                });
+            }
+        });
+
+        // 4. GLOBAL VOICE SEARCH LOGIC
+        document.addEventListener('DOMContentLoaded', function () {
+            const voiceBtn = document.getElementById("globalVoiceBtn");
+            const searchInput = document.getElementById("globalSearchInput");
+            
+            if (voiceBtn && searchInput) {
+                const searchForm = searchInput.closest("form");
+
+                if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = "en-IN";
+
+                    voiceBtn.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        recognition.start();
+                        voiceBtn.innerHTML = "🔴";
+                        searchInput.placeholder = "Listening...";
+                    });
+
+                    recognition.onresult = function (event) {
+                        let transcript = event.results[0][0].transcript.replace(/[^a-zA-Z0-9\s]/g, "").trim();
+                        searchInput.value = transcript;
+                        voiceBtn.innerHTML = "🎤";
+                        searchForm.submit(); // Auto submit after speaking
+                    };
+
+                    recognition.onerror = function () {
+                        voiceBtn.innerHTML = "🎤";
+                        searchInput.placeholder = "Search Chachan General Store...";
+                    };
+                    recognition.onend = function () {
+                        voiceBtn.innerHTML = "🎤";
+                        searchInput.placeholder = "Search Chachan General Store...";
+                    };
+                } else {
+                    voiceBtn.style.display = "none";
                 }
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById("aiTyping")?.remove();
-                appendMessage(data.response || "No response received.", false);
-            })
-            .catch(error => {
-                console.error("Complete Error Detail:", error);
-                document.getElementById("aiTyping")?.remove();
-                appendMessage("Technical error! System URL find nahi kar pa raha, F12 daba kar Console check karein.", false);
-            });
-        }
+            }
+        });
 
-        if(sendBtn) {
-            sendBtn.addEventListener("click", sendAiMessage);
-        }
-        
-        if(userInput) {
-            userInput.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") sendAiMessage();
-            });
-        }
-    });
-
-    // 🌟 GLOBAL VOICE SEARCH LOGIC
-    document.addEventListener('DOMContentLoaded', function () {
-        const voiceBtn = document.getElementById("globalVoiceBtn");
-        const searchInput = document.getElementById("globalSearchInput");
-        const searchForm = searchInput.closest("form");
-
-        if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.lang = "en-IN";
-
-            voiceBtn.addEventListener("click", function (e) {
-                e.preventDefault();
-                recognition.start();
-                voiceBtn.innerHTML = "🔴";
-                searchInput.placeholder = "Listening...";
-            });
-
-            recognition.onresult = function (event) {
-                let transcript = event.results[0][0].transcript.replace(/[^a-zA-Z0-9\s]/g, "").trim();
-                searchInput.value = transcript;
-                voiceBtn.innerHTML = "🎤";
-                searchForm.submit(); // Auto submit after speaking
-            };
-
-            recognition.onerror = function () {
-                voiceBtn.innerHTML = "🎤";
-                searchInput.placeholder = "Search Chachan General Store...";
-            };
-            recognition.onend = function () {
-                voiceBtn.innerHTML = "🎤";
-                searchInput.placeholder = "Search Chachan General Store...";
-            };
-        } else {
-            if (voiceBtn) { voiceBtn.style.display = "none"; }
-        }
-    });
-
-    <!-- 🌟 Register Service Worker for PWA -->
-    <script>
+        // 5. Register Service Worker for PWA (Without causing HTML syntax errors)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js').then(function(registration) {
