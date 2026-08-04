@@ -21,6 +21,10 @@ from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser
 from django.db.models import Avg
+
+# 🌟 NAYA IMPORT: Smart/Fuzzy Search ke liye (Spelling Mistake Handler)
+from django.contrib.postgres.search import TrigramSimilarity
+
 # 🌟 FIX: OrderSerializer was used below but never imported anywhere — this
 # caused a NameError (500 crash) every time get_pending_orders_api was hit.
 # Update the import path below to wherever your OrderSerializer actually lives
@@ -62,7 +66,7 @@ def send_brevo_api_email(subject, message, to_email):
         print(f"Email API error: {e}")
         return None
 
-# 🏠 1. Updated Homepage View (With Pagination Fix)
+# 🏠 1. Updated Homepage View (With Pagination Fix & Fuzzy Search)
 def product_list(request):
     categories = Category.objects.all()
     brands = Brand.objects.all()
@@ -85,8 +89,11 @@ def product_list(request):
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
+    # 🌟 NAYA: Smart/Fuzzy Search Logic
     if search_query:
-        products = products.filter(name__icontains=search_query)
+        products = products.annotate(
+            similarity=TrigramSimilarity('name', search_query)
+        ).filter(similarity__gt=0.15).order_by('-similarity')
 
     active_category = None
     if category_id:
@@ -151,7 +158,8 @@ def product_list(request):
         products = products.order_by('price')
     elif sort == 'high_to_low':
         products = products.order_by('-price')
-    else:
+    # If a search query exists, we don't apply the '-id' order so the trigram similarity ordering stays intact
+    elif not search_query:
         products = products.order_by('-id')
     
     paginator = Paginator(products, 20) 
@@ -590,11 +598,16 @@ def remove_from_wishlist(request, product_id):
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id); reviews = product.reviews.all().order_by('-created_at')
+    
+    # 🌟 NAYA: Same category ke similar products fetch karna (Current product ko chhod kar)
+    similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+
     if request.method == 'POST':
         if not request.user.is_authenticated: return redirect('login')
         if rating := request.POST.get('rating'): Review.objects.create(product=product, user=request.user, rating=int(rating), comment=request.POST.get('comment'))
         return redirect('product_detail', product_id=product.id)
-    return render(request, 'products/product_detail.html', {'product': product, 'reviews': reviews, 'avg_rating': round(sum(r.rating for r in reviews)/reviews.count(), 1) if reviews else 0, 'review_count': reviews.count()})
+    
+    return render(request, 'products/product_detail.html', {'product': product, 'reviews': reviews, 'similar_products': similar_products, 'avg_rating': round(sum(r.rating for r in reviews)/reviews.count(), 1) if reviews else 0, 'review_count': reviews.count()})
 
 @require_POST
 def update_cart_item(request, item_key, action):

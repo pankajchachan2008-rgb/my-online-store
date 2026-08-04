@@ -89,6 +89,47 @@
         background-color: var(--accent-gold, #D4AF37);
         color: var(--primary-blue, #002D62);
     }
+
+    /* 🌟 AMAZON STYLE PRODUCT CARDS (For Similar Products) */
+    .amazon-card {
+        background: #FFFFFF;
+        border: 1px solid #E7E7E7;
+        border-radius: 8px;
+        padding: 15px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .amazon-card:hover { 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        border-color: #D5D9D9;
+    }
+    .img-box-amazon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #F8F8F8;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 15px;
+    }
+    .img-box-amazon img {
+        mix-blend-mode: multiply;
+        transition: transform 0.4s ease;
+    }
+    .amazon-card:hover .img-box-amazon img { transform: scale(1.05); }
+    .prod-title {
+        font-size: 1rem;
+        font-weight: 500;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+        margin-bottom: 6px;
+        color: #0F1111;
+    }
 </style>
 
 <div class="container py-5" style="max-width: 1200px;">
@@ -271,6 +312,43 @@
         </div>
     </div>
 </div>
+
+<!-- 🌟 SIMILAR PRODUCTS RECOMMENDATION SECTION (NAYA ADD KIYA HAI) -->
+{% if similar_products %}
+<div class="container mb-5" style="max-width: 1200px;" data-aos="fade-up">
+    <hr class="mb-5 border-secondary opacity-25">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold m-0" style="font-family: 'Jost', sans-serif; letter-spacing: 1px; color: #0F1111;">Similar Products You May Like</h3>
+        <a href="{% url 'home' %}?category={{ product.category.id }}" class="text-primary text-decoration-none fw-bold small">View All →</a>
+    </div>
+    
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
+        {% for sim_prod in similar_products %}
+        <div class="col">
+            <div class="amazon-card">
+                <a href="{% url 'product_detail' sim_prod.id %}" class="text-decoration-none d-flex flex-column flex-grow-1">
+                    <div class="img-box-amazon" style="height: 200px;">
+                        {% if sim_prod.image %}
+                            <img src="{{ sim_prod.image.url }}" alt="{{ sim_prod.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy">
+                        {% else %}
+                            <img src="https://placehold.co/400x500/F8F8F8/565959?text={{ sim_prod.name|urlencode }}" alt="{{ sim_prod.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy">
+                        {% endif %}
+                    </div>
+                    <div class="prod-brand mt-2" style="font-size: 0.75rem; color: #565959; text-transform: uppercase; font-weight: 600;">{{ sim_prod.brand.name|default:"Premium" }}</div>
+                    <h2 class="prod-title">{{ sim_prod.name }}</h2>
+                    <div class="prod-price mt-auto pt-2">
+                        <span class="fs-4 fw-bold text-dark">₹{{ sim_prod.price }}</span>
+                        {% if sim_prod.mrp and sim_prod.mrp > sim_prod.price %}
+                            <span class="small text-muted text-decoration-line-through ms-2">₹{{ sim_prod.mrp }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
 
 <!-- 📱 STICKY ADD TO CART (Only visible on Mobile screens) -->
 <div class="sticky-bottom-cart d-block d-md-none">

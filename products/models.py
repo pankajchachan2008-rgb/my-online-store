@@ -258,6 +258,10 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.TextField(blank=True, null=True)
+    
+    # 🌟 NAYI FIELD: Photo Reviews ke liye
+    image = models.ImageField(upload_to='review_pics/', blank=True, null=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
