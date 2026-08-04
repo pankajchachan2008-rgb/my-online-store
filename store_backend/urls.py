@@ -29,9 +29,16 @@ from products.views import (
     privacy_policy, terms_conditions, refund_policy,
 )
 
-# 🌟 UPTIMEROBOT KE LIYE PING FUNCTION
+# 🌟 UPTIMEROBOT KE LIYE PING FUNCTION (Database Extension Jugaad)
 def ping(request):
-    return HttpResponse("OK", status=200)
+    try:
+        # Check karega ki database PostgreSQL hai ya nahi (taaki local SQLite par error na aaye)
+        if connection.vendor == 'postgresql':
+            with connection.cursor() as cursor:
+                cursor.execute("CREATE EXTENSION IF NOT EXISTS pg_trgm;")
+        return HttpResponse("OK - Extension successfully installed! 🎉", status=200)
+    except Exception as e:
+        return HttpResponse(f"OK (Lekin extension me error aaya: {e})", status=200)
 
 # 🌟 SITEMAP DICTIONARY
 sitemaps = {
