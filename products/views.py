@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse, HttpResponseForbidden # 🌟 Added HttpResponseForbidden
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -22,13 +22,9 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser
 from django.db.models import Avg
 
-# 🌟 NAYA IMPORT: Smart/Fuzzy Search ke liye (Spelling Mistake Handler)
-from django.contrib.postgres.search import TrigramSimilarity
+# 🌟 100% SAFE SMART SEARCH IMPORT (Bina kisi database extension ke)
+from django.db.models import Q
 
-# 🌟 FIX: OrderSerializer was used below but never imported anywhere — this
-# caused a NameError (500 crash) every time get_pending_orders_api was hit.
-# Update the import path below to wherever your OrderSerializer actually lives
-# (commonly products/serializers.py).
 from .serializers import OrderSerializer
 from django.template.loader import get_template
 from xhtml2pdf import pisa
@@ -66,12 +62,10 @@ def send_brevo_api_email(subject, message, to_email):
         print(f"Email API error: {e}")
         return None
 
-# 🏠 1. Updated Homepage View (With Pagination Fix & Fuzzy Search)
+# 🏠 1. Updated Homepage View (With Safe Smart Search)
 def product_list(request):
     categories = Category.objects.all()
     brands = Brand.objects.all()
-    # 🌟 FIX: select_related/prefetch_related avoids one extra query per
-    # product for brand/category/variants (N+1 query problem)
     products = Product.objects.select_related('brand', 'category').prefetch_related('variants')
     banners = Banner.objects.filter(is_active=True).order_by('-id')
 
@@ -89,11 +83,14 @@ def product_list(request):
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
-    # 🌟 NAYA: Smart/Fuzzy Search Logic
+    # 🌟 SAFE SMART SEARCH (No Crash)
     if search_query:
-        products = products.annotate(
-            similarity=TrigramSimilarity('name', search_query)
-        ).filter(similarity__gt=0.15).order_by('-similarity')
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(category__name__icontains=search_query) |
+            Q(brand__name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        ).distinct()
 
     active_category = None
     if category_id:
@@ -123,10 +120,6 @@ def product_list(request):
         
     if rating:
         try:
-            # 🌟 FIX: was matching products with AT LEAST ONE review >= rating
-            # (so a product with a single 5-star review among many 1-stars
-            # would incorrectly show up under "4★ & Above"). Now filters on
-            # the product's actual average rating.
             products = products.annotate(avg_rating=Avg('reviews__rating')).filter(avg_rating__gte=float(rating))
         except (ValueError, TypeError):
             pass
@@ -143,8 +136,6 @@ def product_list(request):
         try: products = products.filter(size__icontains=size)
         except: pass
         
-    # 🌟 FIX: previously required BOTH min_price AND max_price to be present,
-    # so entering only one of them silently did nothing. Now each works alone.
     if min_price:
         try: products = products.filter(price__gte=float(min_price))
         except (ValueError, TypeError): pass
@@ -154,19 +145,18 @@ def product_list(request):
 
     products = products.distinct()
 
+    # 🌟 Sorting Logic
     if sort == 'low_to_high':
         products = products.order_by('price')
     elif sort == 'high_to_low':
         products = products.order_by('-price')
-    # If a search query exists, we don't apply the '-id' order so the trigram similarity ordering stays intact
-    elif not search_query:
+    else:
         products = products.order_by('-id')
     
     paginator = Paginator(products, 20) 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    # 🌟 Pagination ke liye saare filters ko ek sath jodna
     params = request.GET.copy()
     if 'page' in params:
         params.pop('page')
@@ -192,12 +182,7 @@ def product_list(request):
     }
     return render(request, 'products/product_list.html', context)
 
-# 🛒 2. Add to Cart (Standard)
-# 🌟 FIX: this view mutates session cart state but had no method
-# restriction — wishlist.html was calling it via a plain GET <a> link,
-# the same link-prefetch/crawler risk fixed earlier in cart_detail.html.
-# product_detail.html already submits via a real POST form, so this only
-# blocks the unsafe GET usage.
+# 🛒 2. Add to Cart
 @require_POST
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -306,8 +291,6 @@ def checkout_page(request):
     if request.method == 'POST':
         address_id = request.POST.get('address_id')
         if address_id:
-            # 🌟 FIX: unhandled Address.DoesNotExist previously caused a 500
-            # error if someone tampered with the address_id in the form.
             selected_address = get_object_or_404(Address, id=address_id, user=request.user)
             name = selected_address.name; mobile = selected_address.mobile_number
             address = f"{selected_address.full_address}, {selected_address.locality}, {selected_address.city}, {selected_address.state} - {selected_address.pincode}"
@@ -419,9 +402,7 @@ def check_coupon_ajax(request):
     return JsonResponse({'status': 'found', 'discount_percentage': coupon.discount_percentage, 'discount_amount': discount_amount, 'message': f'Coupon {code} applied successfully!'})
 
 def about_page(request): return render(request, 'products/about.html')
-# 🌟 FIX: this view previously ignored POST entirely — the contact form
-# silently discarded every submission with no email sent and no feedback
-# to the user. Now it actually processes and emails the message.
+
 def contact_page(request):
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
@@ -444,6 +425,7 @@ def contact_page(request):
         return redirect('contact')
 
     return render(request, 'products/contact.html')
+
 def privacy_policy(request): return render(request, 'policies/privacy.html')
 def terms_conditions(request): return render(request, 'policies/terms.html')
 def refund_policy(request): return render(request, 'policies/refund.html')
@@ -453,15 +435,12 @@ def custom_logout(request): logout(request); return redirect('home')
 def make_admin(request):
     setup_secret = os.environ.get('SETUP_SECRET_KEY')
 
-    # Agar env variable set hi nahi hai, to feature completely band rahega
     if not setup_secret:
         return HttpResponseForbidden("Setup disabled.")
 
     provided_secret = request.GET.get('secret')
 
     if provided_secret != setup_secret:
-        # Generic error — attacker ko ye pata nahi chalna chahiye ki admin
-        # exist karta hai ya nahi, ya secret galat hai ya missing hai
         return HttpResponseForbidden("Forbidden.")
 
     if not User.objects.filter(username='admin').exists():
@@ -493,10 +472,7 @@ def register_page(request):
     else: form = CustomRegisterForm()
     return render(request, 'registration/register.html', {'form': form})
 
-# 🌟 FIX: all 3 APIs below were publicly callable by anyone with no auth at
-# all — exposing customer names/mobiles/addresses, allowing anyone to change
-# order status, and allowing anyone to inject/overwrite products. Now locked
-# to authenticated staff/admin accounts via TokenAuthentication.
+# 📡 APIs
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAdminUser])
@@ -535,10 +511,7 @@ def download_invoice(request, order_id):
     
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="CGSmart_Bill_{order.id}.pdf"'
-    # 🌟 FIX: invoice_pdf.html uses customer_phone, customer_address, date,
-    # status, gstin, store_address, store_phone, and tagline — none of these
-    # were ever being passed here, so every generated invoice had blank
-    # "Billed To", "Document Details", and "Dispatched From" sections.
+    
     context = {
         'order': order,
         'items': items,
@@ -599,7 +572,6 @@ def remove_from_wishlist(request, product_id):
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id); reviews = product.reviews.all().order_by('-created_at')
     
-    # 🌟 NAYA: Same category ke similar products fetch karna (Current product ko chhod kar)
     similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
 
     if request.method == 'POST':
@@ -613,18 +585,11 @@ def product_detail(request, product_id):
 def update_cart_item(request, item_key, action):
     cart = request.session.get('cart', {})
     if item_key in cart:
-        # 🌟 FIX: previously, decreasing at quantity=1 fell through to the
-        # `else` branch and silently DELETED the item entirely (the "-"
-        # button is only disabled client-side via CSS, so a stale page,
-        # cached link, or back-button navigation could still trigger this).
-        # Now each action is explicit, and decreasing at the minimum does
-        # nothing instead of wiping the item out.
         if action == 'increase':
             cart[item_key]['quantity'] += 1
         elif action == 'decrease':
             if cart[item_key]['quantity'] > 1:
                 cart[item_key]['quantity'] -= 1
-            # else: already at 1, do nothing
         elif action == 'remove':
             cart.pop(item_key, None)
         request.session['cart'] = cart
@@ -638,11 +603,6 @@ def cancel_order(request, order_id):
     return redirect('profile')
 
 @login_required(login_url='/login/')
-# 🌟 FIX: this permanently deletes data but had no method restriction —
-# profile.html called it via a plain GET <a> link. Browser link-prefetching
-# or accidental navigation could silently delete a saved address with no
-# confirmation (the confirm() dialog is JS-only and never runs on a
-# prefetch). Now requires an actual POST submission.
 @require_POST
 def delete_address(request, address_id): get_object_or_404(Address, id=address_id, user=request.user).delete(); return redirect('profile')
 
@@ -669,8 +629,6 @@ def cart_summary_ajax(request):
     total = sum(float(item['price']) * int(item['quantity']) for item in cart.values() if isinstance(item, dict) and 'price' in item)
     return JsonResponse({'items': items, 'total': total})
 
-# 🌟 FIX: @csrf_exempt removed — the JS already sends X-CSRFToken correctly,
-# so this decorator was only weakening security for no benefit.
 def add_to_cart_ajax(request, product_id):
     if request.method == 'POST':
         product = get_object_or_404(Product, id=product_id)
@@ -697,10 +655,6 @@ def remove_from_cart_ajax(request, product_id):
 # --- FORGOT PASSWORD ---
 def forgot_password(request):
     if request.method == 'POST':
-        # 🌟 FIX: .get() would raise MultipleObjectsReturned (500 crash) if
-        # any duplicate-email accounts already exist from before the
-        # CustomRegisterForm uniqueness fix. filter().first() degrades
-        # gracefully instead of crashing.
         user = User.objects.filter(email__iexact=request.POST.get('email', '')).first()
         if user:
             otp = str(random.randint(100000, 999999)); OTPVerification.objects.filter(user=user).delete(); OTPVerification.objects.create(user=user, otp=otp, is_verified=False)
@@ -729,7 +683,6 @@ def set_new_password(request):
     return render(request, 'registration/set_new_password.html')
 
 # 🤖 AI ASSISTANT CHAT LOGIC (Super Smart & Accurate - Llama 3.1)
-# 🌟 FIX: @csrf_exempt removed — base.html's JS already sends X-CSRFToken.
 def ai_assistant_chat(request):
     if request.method == 'POST':
         try:
