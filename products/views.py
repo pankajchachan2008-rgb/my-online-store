@@ -570,13 +570,27 @@ def remove_from_wishlist(request, product_id):
     return redirect('view_wishlist')
 
 def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id); reviews = product.reviews.all().order_by('-created_at')
+    product = get_object_or_404(Product, id=product_id)
+    reviews = product.reviews.all().order_by('-created_at')
     
     similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
 
     if request.method == 'POST':
         if not request.user.is_authenticated: return redirect('login')
-        if rating := request.POST.get('rating'): Review.objects.create(product=product, user=request.user, rating=int(rating), comment=request.POST.get('comment'))
+        
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
+        review_image = request.FILES.get('review_image') # 🌟 MISSING: Yahan customer ki photo capture hogi
+
+        if rating: 
+            Review.objects.create(
+                product=product, 
+                user=request.user, 
+                rating=int(rating), 
+                comment=comment,
+                image=review_image # 🌟 MISSING: Yahan database mein photo save hogi
+            )
+            messages.success(request, "✅ Aapka review submit ho gaya!")
         return redirect('product_detail', product_id=product.id)
     
     return render(request, 'products/product_detail.html', {'product': product, 'reviews': reviews, 'similar_products': similar_products, 'avg_rating': round(sum(r.rating for r in reviews)/reviews.count(), 1) if reviews else 0, 'review_count': reviews.count()})
