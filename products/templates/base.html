@@ -504,6 +504,8 @@
         </div>
         
         <div class="ai-chat-input-area">
+            <!-- 🌟 AI Chat CSRF Token Container -->
+            <span id="aiCsrfContainer" style="display:none;">{% csrf_token %}</span>
             <input type="text" id="aiUserInput" placeholder="Type your question here...">
             <button type="button" class="ai-send-btn shadow-sm" id="aiSendBtn">➤</button>
         </div>
@@ -585,27 +587,15 @@
 
                 const aiUrl = "{% url 'ai_assistant_chat' %}";
 
-                // 🌟 BULLETPROOF FIX: Django CSRF Helper for AI Chat
-                function getCookie(name) {
-                    let cookieValue = null;
-                    if (document.cookie && document.cookie !== '') {
-                        const cookies = document.cookie.split(';');
-                        for (let i = 0; i < cookies.length; i++) {
-                            const cookie = cookies[i].trim();
-                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                break;
-                            }
-                        }
-                    }
-                    return cookieValue;
-                }
+                // 🌟 FINAL FIX: Grabbing CSRF directly from DOM
+                const aiCsrfToken = document.querySelector('#aiCsrfContainer input[name=csrfmiddlewaretoken]').value;
 
                 fetch(aiUrl, {
                     method: "POST",
                     headers: { 
                         "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie('csrftoken') // 🌟 Fetching properly now!
+                        "X-CSRFToken": aiCsrfToken,
+                        "X-Requested-With": "XMLHttpRequest"
                     },
                     body: JSON.stringify({ message: query })
                 })

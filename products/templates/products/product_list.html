@@ -648,26 +648,9 @@
     </button>
 </div>
 
-<!-- 🌟 AJAX CART SCRIPT (BULLETPROOF CSRF FIX) -->
+<!-- 🌟 AJAX CART SCRIPT (FINAL BULLETPROOF CSRF FIX) -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Django Official Method to get CSRF from Cookies
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        const CSRF_TOKEN = getCookie('csrftoken');
-
         function updateCartBar(items, total) {
             const cartBar = document.getElementById("stickyCart");
             const cartBadge = document.getElementById("cartBadge");
@@ -700,6 +683,9 @@
 
                 const productId = form.dataset.productId;
                 const submitBtn = form.querySelector(".add-to-cart-ajax");
+                
+                // 🌟 NAYA LOGIC: Direct form ke andar se token nikalna!
+                const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
 
                 let variantId = null;
                 const variantSelect = form.querySelector('select[name="variant_id"]');
@@ -719,8 +705,9 @@
                 fetch(`/cart-ajax/add/${productId}/`, {
                     method: "POST",
                     headers: {
-                        "X-CSRFToken": CSRF_TOKEN,
                         "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken,
+                        "X-Requested-With": "XMLHttpRequest"
                     },
                     body: JSON.stringify({ quantity: 1, variant_id: variantId }),
                 })
