@@ -651,7 +651,7 @@
 <!-- 🌟 AJAX CART SCRIPT -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const CSRF_TOKEN = "{{ csrf_token }}";
+        const CSRF_TOKEN = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
         function updateCartBar(items, total) {
             const cartBar = document.getElementById("stickyCart");
