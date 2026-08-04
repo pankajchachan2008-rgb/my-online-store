@@ -181,27 +181,48 @@
 
         @media (max-width: 991px) { body { padding-bottom: 85px; } }
 
-        /* 🤖 AI ASSISTANT WIDGET */
-        .ai-chat-btn {
+        /* 🤖 PREMIUM AI ASSISTANT WIDGET */
+        .premium-ai-avatar {
             position: fixed;
-            bottom: 95px;
+            bottom: 95px; 
             right: 20px;
-            background: #00539C;
-            color: white;
-            border: none;
-            width: 55px;
-            height: 55px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            box-shadow: 0 6px 20px rgba(0, 83, 156, 0.4);
-            font-size: 1.6rem;
+            background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);
+            box-shadow: 0 4px 15px rgba(142, 45, 226, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             z-index: 1060;
+            border: 2px solid #FFFFFF;
             transition: transform 0.3s ease;
+            animation: aiPulseGlow 2s infinite;
         }
-        .ai-chat-btn:hover { transform: scale(1.1); }
+
+        .premium-ai-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .premium-ai-avatar svg {
+            width: 32px;
+            height: 32px;
+            fill: #FFFFFF;
+            animation: floatSparkle 3s ease-in-out infinite;
+        }
+
+        @keyframes aiPulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(142, 45, 226, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(142, 45, 226, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(142, 45, 226, 0); }
+        }
+
+        @keyframes floatSparkle {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-4px) scale(1.05); }
+            100% { transform: translateY(0px); }
+        }
         
         .ai-chat-box {
             position: fixed;
@@ -453,14 +474,18 @@
         </svg>
     </div>
 
-    <!-- Toggle Button for AI Chat -->
-    <button class="ai-chat-btn" id="aiChatToggleBtn" title="Ask AI">🤖</button>
+    <!-- Toggle Button for AI Chat (Premium Animated Avatar) -->
+    <div class="premium-ai-avatar" id="aiChatToggleBtn" title="Ask AI">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5z" clip-rule="evenodd" />
+        </svg>
+    </div>
 
     <!-- Chat Window -->
     <div class="ai-chat-box" id="aiChatWindow">
         <div class="ai-chat-header">
             <div class="d-flex align-items-center gap-2">
-                <span class="fs-5">🤖</span>
+                <span class="fs-5">✨</span>
                 <span style="letter-spacing: 0.5px;">CGSMART Assistant</span>
             </div>
             <button type="button" class="btn-close btn-close-white shadow-none" id="closeAiChat"></button>

@@ -96,95 +96,6 @@
     }
     .btn-clear-filter:hover { color: #C45500; text-decoration: underline; }
 
-    /* 🌟 AMAZON STYLE PRODUCT CARDS */
-    .amazon-card {
-        background: #FFFFFF;
-        border: 1px solid #E7E7E7;
-        border-radius: 8px;
-        padding: 15px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        transition: box-shadow 0.2s, border-color 0.2s;
-        text-decoration: none;
-        color: #0F1111;
-        position: relative;
-    }
-    .amazon-card:hover { 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-        border-color: #D5D9D9;
-    }
-    
-    .img-box-amazon {
-        height: 220px;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 15px;
-        background: #F8F8F8;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-    .img-box-amazon img { 
-        max-height: 100%; 
-        max-width: 100%; 
-        object-fit: contain; 
-        mix-blend-mode: multiply;
-        transition: transform 0.4s ease;
-    }
-    .amazon-card:hover .img-box-amazon img { transform: scale(1.05); }
-    
-    .prod-brand { 
-        font-size: 0.75rem; 
-        color: #565959; 
-        text-transform: uppercase; 
-        letter-spacing: 1px; 
-        margin-bottom: 4px; 
-        font-weight: 600;
-    }
-    .prod-title { 
-        font-size: 1.05rem; 
-        font-weight: 500; 
-        display: -webkit-box; 
-        -webkit-line-clamp: 2; 
-        -webkit-box-orient: vertical; 
-        overflow: hidden; 
-        line-height: 1.4; 
-        height: 2.9rem;
-        margin-bottom: 6px; 
-        color: #0F1111;
-    }
-    .prod-rating { font-size: 0.9rem; color: #FFA41C; margin-bottom: 8px; }
-    
-    .prod-price { 
-        font-size: 1.5rem; 
-        font-weight: 600; 
-        display: flex; 
-        align-items: baseline; 
-        gap: 6px; 
-        margin-bottom: 12px; 
-        color: #0F1111;
-    }
-    .prod-mrp { font-size: 0.85rem; color: #565959; text-decoration: line-through; font-weight: 400;}
-    
-    .btn-amazon-cart {
-        background: #FFD814;
-        border: 1px solid #FCD200;
-        color: #0F1111;
-        border-radius: 50px;
-        padding: 8px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        width: 100%;
-        transition: 0.2s;
-    }
-    .btn-amazon-cart:hover { background: #F7CA00; border-color: #F2C200; }
-    .btn-amazon-cart:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    .prime-badge { font-family: 'Jost', sans-serif; font-weight: 800; color: #00A8E1; font-size: 0.9rem; font-style: italic; margin-bottom: 8px; display: block; }
-    .prime-badge span { color: #FF9900; }
-
     /* Mobile Filter Button */
     .mobile-filter-btn { 
         background: #F0F2F2; 
@@ -195,6 +106,141 @@
         font-weight: 600; 
         box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
         color: #0F1111;
+    }
+
+    /* 🌟 COMPACT & MODERN PRODUCT CARD (JioMart/Blinkit Style) */
+    .smart-card {
+        background: #fff;
+        border: 1px solid #f0f0f0;
+        border-radius: 12px;
+        padding: 10px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        transition: box-shadow 0.2s ease;
+    }
+    
+    .smart-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    /* Floating Wishlist Heart */
+    .smart-wishlist-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #999;
+        font-size: 1.1rem;
+        z-index: 10;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: 0.2s;
+    }
+    .smart-wishlist-btn:hover { color: #ff3366; transform: scale(1.1); }
+
+    /* Image Container */
+    .smart-img-container {
+        height: 140px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        position: relative;
+    }
+    .smart-img-container img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        mix-blend-mode: multiply;
+        transition: transform 0.3s ease;
+    }
+    .smart-card:hover .smart-img-container img {
+        transform: scale(1.05);
+    }
+
+    /* Add Row (Quantity + Button) */
+    .smart-add-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .smart-qty {
+        font-size: 0.75rem;
+        color: #666;
+        font-weight: 500;
+        background: #f8f8f8;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    .smart-add-btn {
+        border: 1px solid #0056b3;
+        color: #0056b3;
+        background: transparent;
+        padding: 4px 16px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: capitalize;
+        transition: 0.2s;
+        min-width: 60px;
+        text-align: center;
+    }
+    .smart-add-btn:hover {
+        background: #f0f8ff;
+    }
+
+    /* Price Row */
+    .smart-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-bottom: 6px;
+        flex-wrap: wrap; /* Prevents overflow */
+    }
+    .smart-price {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #111;
+    }
+    .smart-mrp {
+        font-size: 0.75rem;
+        color: #888;
+        text-decoration: line-through;
+    }
+    .smart-discount {
+        font-size: 0.75rem;
+        color: #1a9a4c;
+        font-weight: 700;
+    }
+
+    /* Title */
+    .smart-title {
+        font-size: 0.85rem;
+        color: #333;
+        line-height: 1.35;
+        font-weight: 500;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* Max 2 lines */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 4px;
+    }
+    
+    .smart-brand {
+        font-size: 0.7rem;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     /* 🌟 STICKY CART BAR (AJAX) */
@@ -236,7 +282,6 @@
     @media (max-width: 991px) {
         .lifestyle-carousel .carousel-item { height: 35vh; min-height: 250px; }
         .carousel-caption-custom h2 { font-size: 2rem; letter-spacing: 2px; }
-        .img-box-amazon { height: 180px; }
         .sticky-cart { bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
     }
 </style>
@@ -420,13 +465,13 @@
                 <span class="text-muted small">Showing {{ products|length }} results</span>
             </div>
 
-            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 g-md-4 mb-5">
+            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-2 g-md-3 mb-5">
                 {% for product in products %}
 
                 <!-- 🎯 PREMIUM FEATURE 1: VERTICAL BANNER (4th item ki jagah) -->
                 {% if forloop.counter == 4 and banners|length > 1 %}
                 <div class="col d-none d-md-block">
-                    <div class="h-100 rounded-2 overflow-hidden shadow-sm position-relative border-0" style="background: #131921;">
+                    <div class="h-100 rounded-2 overflow-hidden shadow-sm position-relative border-0" style="background: #131921; border-radius: 12px !important;">
                         <a href="{% if banners.1.category %}?category={{ banners.1.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
                             {% if banners.1.image %}
                                 <img src="{{ banners.1.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8;" alt="Promo">
@@ -439,68 +484,76 @@
                 </div>
                 {% endif %}
 
-                <!-- Amazon Product Card -->
+                <!-- 🌟 COMPACT SMART CARD -->
                 <div class="col">
-                    <div class="amazon-card">
+                    <div class="smart-card">
                         
                         <!-- Scarcity / Discount Tags -->
                         {% if product.stock and product.stock < 5 %}
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-2 shadow-sm">Only {{ product.stock }} left</span>
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-2 shadow-sm" style="font-size: 0.7rem;">Only {{ product.stock }} left</span>
                         {% elif product.discount_percentage > 0 %}
-                            <span class="badge bg-dark position-absolute top-0 start-0 m-2 z-2 shadow-sm">{{ product.discount_percentage }}% OFF</span>
+                            <span class="badge bg-dark position-absolute top-0 start-0 m-2 z-2 shadow-sm" style="font-size: 0.7rem;">{{ product.discount_percentage }}% OFF</span>
                         {% endif %}
 
-                        <a href="{% url 'product_detail' product.id %}" class="text-decoration-none d-flex flex-column flex-grow-1">
-                            <div class="img-box-amazon">
+                        <!-- Floating Wishlist Button -->
+                        <a href="{% url 'add_to_wishlist' product.id %}" class="smart-wishlist-btn" title="Add to Wishlist">
+                            ❤️
+                        </a>
+
+                        <!-- Product Image -->
+                        <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
+                            <div class="smart-img-container">
                                 {% if product.image %}
                                     <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
                                 {% else %}
                                     <img src="https://placehold.co/400x500/F8F8F8/565959?text={{ product.name|urlencode }}" alt="{{ product.name }}" loading="lazy">
                                 {% endif %}
                             </div>
-                            
-                            <div class="prod-brand">{{ product.brand.name|default:"Premium Exclusive" }}</div>
-                            <h2 class="prod-title">{{ product.name }}</h2>
-                            
-                            <div class="prod-rating">
-                                ★★★★★ <span style="color: #007185; font-size: 0.8rem;">(4.8)</span>
-                            </div>
-
-                            <div class="prod-price">
-                                <span><small style="font-size: 0.9rem; vertical-align: top;">₹</small>{{ product.price }}</span>
-                                {% if product.mrp and product.mrp > product.price %}
-                                    <span class="prod-mrp">M.R.P: ₹{{ product.mrp }}</span>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="prime-badge">CGSMART <span>Assured</span></div>
                         </a>
 
-                        <div class="mt-auto pt-2 border-top">
-                            <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form" data-product-id="{{ product.id }}">
-                                {% csrf_token %}
+                        <!-- AJAX Add To Cart Form & Quantity -->
+                        <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form m-0 d-flex flex-column h-100" data-product-id="{{ product.id }}">
+                            {% csrf_token %}
+                            <div class="mt-auto">
+                                <!-- Variant Selector (If exists) -->
                                 {% if product.variants.exists %}
-                                    <label class="visually-hidden" for="variant-{{ product.id }}">Select size</label>
-                                    <select name="variant_id" id="variant-{{ product.id }}" class="form-select form-select-sm mb-2 border-secondary" style="font-size: 0.85rem;" required>
+                                    <select name="variant_id" class="form-select form-select-sm mb-2 border-secondary" style="font-size: 0.75rem; padding: 2px 8px; height: auto;" required>
                                         <option value="" disabled selected>Select Size</option>
                                         {% for variant in product.variants.all %}
                                             <option value="{{ variant.id }}">{{ variant.size_name }}</option>
                                         {% endfor %}
                                     </select>
                                 {% endif %}
-                                <div class="d-flex flex-column gap-2 mt-2">
-                                    <button type="submit" class="btn-amazon-cart add-to-cart-ajax shadow-sm">Add to Cart</button>
-                                    <a href="{% url 'add_to_wishlist' product.id %}" class="btn btn-light border w-100 btn-sm rounded-pill fw-bold text-muted py-1">❤️ Add to Wishlist</a>
+
+                                <div class="smart-add-row">
+                                    <span class="smart-qty">
+                                        {% if not product.variants.exists %}1 Unit{% endif %}
+                                    </span>
+                                    <button type="submit" class="smart-add-btn add-to-cart-ajax">Add</button>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
+
+                        <!-- Pricing & Title -->
+                        <a href="{% url 'product_detail' product.id %}" class="text-decoration-none mt-1">
+                            <div class="smart-price-row">
+                                <span class="smart-price">₹{{ product.price }}</span>
+                                {% if product.mrp and product.mrp > product.price %}
+                                    <span class="smart-mrp">₹{{ product.mrp }}</span>
+                                    <span class="smart-discount">{{ product.discount_percentage }}% off</span>
+                                {% endif %}
+                            </div>
+
+                            <h3 class="smart-title">{{ product.name }}</h3>
+                            <div class="smart-brand">{{ product.brand.name|default:"Premium" }}</div>
+                        </a>
                     </div>
                 </div>
 
                 <!-- 🎯 PREMIUM FEATURE 3: HORIZONTAL BANNER (8th item ke baad) -->
                 {% if forloop.counter == 8 and banners|length > 2 %}
-                <div class="col-12 mt-4 mb-4">
-                    <div class="rounded-2 overflow-hidden shadow-sm position-relative border" style="height: 160px; background: #131921;">
+                <div class="col-12 mt-3 mb-3">
+                    <div class="rounded-2 overflow-hidden shadow-sm position-relative border" style="height: 140px; background: #131921; border-radius: 12px !important;">
                         <a href="{% if banners.2.category %}?category={{ banners.2.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
                             {% if banners.2.image %}
                                 <img src="{{ banners.2.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.7;" alt="Promo" loading="lazy">
@@ -637,7 +690,7 @@
                 const variantSelect = form.querySelector('select[name="variant_id"]');
                 if (variantSelect) {
                     if (!variantSelect.value) {
-                        alert("Please select a Size/Variant first.");
+                        alert("Please select a Size first.");
                         variantSelect.focus();
                         return;
                     }
@@ -646,7 +699,7 @@
 
                 submitBtn.disabled = true;
                 const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = "Adding...";
+                submitBtn.innerHTML = "Adding..";
 
                 fetch(`/cart-ajax/add/${productId}/`, {
                     method: "POST",

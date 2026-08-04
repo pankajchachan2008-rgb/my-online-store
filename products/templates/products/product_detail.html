@@ -181,6 +181,8 @@
                 <!-- 🛒 Add to Cart Form -->
                 <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST" class="bg-white p-4 rounded-4 shadow-sm border" style="border-color: #E2E8F0 !important;" data-aos="fade-up" data-aos-delay="300">
                     {% csrf_token %}
+                    <!-- 🌟 HIDDEN INPUT FOR BUY NOW LOGIC -->
+                    <input type="hidden" name="buy_now" id="buyNowInput" value="">
                     
                     {% if product.variants.exists %}
                         <!-- Varieties (Variants) -->
@@ -219,8 +221,8 @@
                             🛒 Add To Cart
                         </button>
                         
-                        <!-- 🌟 NAYA: Buy Now Button -->
-                        <button type="submit" name="buy_now" value="true" class="btn btn-lg flex-grow-1 fw-bold text-uppercase rounded-3 shadow-sm" style="background-color: #FFA41C; color: #0F1111; letter-spacing: 1px; border: 1px solid #FF8F00;">
+                        <!-- 🌟 NAYA: Bulletproof Buy Now Button -->
+                        <button type="button" onclick="document.getElementById('buyNowInput').value='true'; document.getElementById('addToCartForm').submit();" class="btn btn-lg flex-grow-1 fw-bold text-uppercase rounded-3 shadow-sm" style="background-color: #FFA41C; color: #0F1111; letter-spacing: 1px; border: 1px solid #FF8F00;">
                             ⚡ Buy Now
                         </button>
                         
@@ -387,8 +389,8 @@
             <button type="submit" form="addToCartForm" class="btn fw-bold px-3 py-2 rounded-3 text-white shadow-sm" style="background-color: var(--primary-blue, #002D62); font-size: 0.85rem;">
                 Add
             </button>
-            <!-- 🌟 NAYA: Mobile Buy Now Button linked to the form above -->
-            <button type="submit" form="addToCartForm" name="buy_now" value="true" class="btn fw-bold px-3 py-2 rounded-3 shadow-sm" style="background-color: #FFA41C; color: #0F1111; border: 1px solid #FF8F00; font-size: 0.85rem; white-space: nowrap;">
+            <!-- 🌟 NAYA: Mobile Bulletproof Buy Now Button -->
+            <button type="button" onclick="document.getElementById('buyNowInput').value='true'; document.getElementById('addToCartForm').submit();" class="btn fw-bold px-3 py-2 rounded-3 shadow-sm" style="background-color: #FFA41C; color: #0F1111; border: 1px solid #FF8F00; font-size: 0.85rem; white-space: nowrap;">
                 ⚡ Buy Now
             </button>
         </div>
