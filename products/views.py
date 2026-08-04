@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt # 🌟 NAYA: CSRF bypass ke liye
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
@@ -653,13 +654,14 @@ def verify_otp(request):
         except: messages.error(request, 'Galat OTP!')
     return render(request, 'products/verify_otp.html', {'email': user.email})
 
-# --- AJAX CART ---
+# --- AJAX CART (🌟 CSRF EXEMPT FIX LAGA DIYA) ---
 def cart_summary_ajax(request):
     cart = request.session.get('cart', {})
     items = sum(item['quantity'] for item in cart.values() if isinstance(item, dict) and 'quantity' in item)
     total = sum(float(item['price']) * int(item['quantity']) for item in cart.values() if isinstance(item, dict) and 'price' in item)
     return JsonResponse({'items': items, 'total': total})
 
+@csrf_exempt
 def add_to_cart_ajax(request, product_id):
     if request.method == 'POST':
         product = get_object_or_404(Product, id=product_id)
@@ -677,6 +679,7 @@ def add_to_cart_ajax(request, product_id):
         request.session['cart'] = cart; request.session.modified = True
         return cart_summary_ajax(request)
 
+@csrf_exempt
 def remove_from_cart_ajax(request, product_id):
     if request.method == 'POST':
         cart = request.session.get('cart', {})
@@ -713,7 +716,8 @@ def set_new_password(request):
             del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (Super Smart & Accurate - Llama 3.1)
+# 🤖 AI ASSISTANT CHAT LOGIC (🌟 CSRF EXEMPT FIX LAGA DIYA)
+@csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
         try:
