@@ -63,7 +63,7 @@ def send_brevo_api_email(subject, message, to_email):
         print(f"Email API error: {e}")
         return None
 
-# 🏠 1. Updated Homepage View (With Safe Smart Search & Typo Handling)
+# 🏠 1. Homepage View (With Safe Smart Search & Typo Handling)
 def product_list(request):
     categories = Category.objects.all()
     brands = Brand.objects.all()
@@ -86,7 +86,6 @@ def product_list(request):
 
     # 🌟 SAFE SMART SEARCH (Typo / Spelling Mistake Handler)
     if search_query:
-        # Step 1: Normal Q-Object Search
         exact_matches = products.filter(
             Q(name__icontains=search_query) |
             Q(category__name__icontains=search_query) |
@@ -97,15 +96,13 @@ def product_list(request):
         if exact_matches.exists():
             products = exact_matches
         else:
-            # Step 2: Agar kuch nahi mila, toh Difflib se spelling mistake check karo!
             all_product_names = Product.objects.values_list('name', flat=True)
-            # Find closest matches (e.g. "Diana" -> "Dyna")
             closest_matches = difflib.get_close_matches(search_query, all_product_names, n=4, cutoff=0.4)
             
             if closest_matches:
                 products = products.filter(name__in=closest_matches)
             else:
-                products = exact_matches # Return empty set if still nothing found
+                products = exact_matches
 
     active_category = None
     if category_id:
@@ -160,13 +157,11 @@ def product_list(request):
 
     products = products.distinct()
 
-    # 🌟 Sorting Logic
     if sort == 'low_to_high':
         products = products.order_by('price')
     elif sort == 'high_to_low':
         products = products.order_by('-price')
     else:
-        # Paginator ke liye default ordering required hai
         products = products.order_by('-id')
     
     paginator = Paginator(products, 20) 
@@ -198,7 +193,7 @@ def product_list(request):
     }
     return render(request, 'products/product_list.html', context)
 
-# 🛒 2. Add to Cart
+# 🛒 2. Add to Cart (With "Buy Now" Smart Logic)
 @require_POST
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -221,6 +216,11 @@ def add_to_cart(request, product_id):
         cart[cart_key] = {'name': item_name, 'price': item_price, 'quantity': 1}
     
     request.session['cart'] = cart
+
+    # 🌟 NAYA: "Buy Now" Button ka Logic
+    if request.POST.get('buy_now'):
+        return redirect('checkout') # Seedha checkout page par bhejo
+        
     messages.success(request, f"{item_name} cart mein add hua!")
     return redirect('home')
 
@@ -585,6 +585,7 @@ def remove_from_wishlist(request, product_id):
     messages.success(request, "Item wishlist se hata diya gaya!")
     return redirect('view_wishlist')
 
+# 📝 Product Detail View (With Photo Upload Logic)
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = product.reviews.all().order_by('-created_at')
@@ -596,7 +597,7 @@ def product_detail(request, product_id):
         
         rating = request.POST.get('rating')
         comment = request.POST.get('comment')
-        review_image = request.FILES.get('review_image') # 🌟 REVIEW PHOTO CAPTURED HERE
+        review_image = request.FILES.get('review_image') # 🌟 Photo Receive
 
         if rating: 
             Review.objects.create(
@@ -604,7 +605,7 @@ def product_detail(request, product_id):
                 user=request.user, 
                 rating=int(rating), 
                 comment=comment,
-                image=review_image # 🌟 SAVED TO DATABASE HERE
+                image=review_image # 🌟 Photo Save
             )
             messages.success(request, "✅ Aapka review submit ho gaya!")
         return redirect('product_detail', product_id=product.id)
