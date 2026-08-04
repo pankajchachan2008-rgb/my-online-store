@@ -254,7 +254,8 @@
                     {% if user.is_authenticated %}
                         <div class="bg-white p-4 rounded-4 shadow-sm border mb-4" data-aos="fade-up" data-aos-delay="100">
                             <h6 class="fw-bold mb-3">Write a Review</h6>
-                            <form method="POST">
+                            <!-- 🌟 FIX: enctype="multipart/form-data" added for image upload -->
+                            <form method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                     <label class="form-label text-muted small fw-medium">Rating (1 to 5 Stars)</label>
@@ -270,6 +271,13 @@
                                     <label class="form-label text-muted small fw-medium">Your Comment (Optional)</label>
                                     <textarea name="comment" class="form-control border-2 shadow-none" rows="3" placeholder="What did you like about this product?"></textarea>
                                 </div>
+                                
+                                <!-- 🌟 NAYA: Photo Upload Input -->
+                                <div class="mb-3">
+                                    <label class="form-label text-muted small fw-medium">Upload Product Photo (Optional)</label>
+                                    <input type="file" name="review_image" class="form-control border-2 shadow-none" accept="image/*">
+                                </div>
+
                                 <button type="submit" class="btn btn-dark fw-bold px-4">Submit Review</button>
                             </form>
                         </div>
@@ -299,7 +307,16 @@
                                     {% endif %}
                                 </div>
                                 {% if review.comment %}
-                                    <p class="text-muted mb-0" style="line-height: 1.6;">"{{ review.comment }}"</p>
+                                    <p class="text-muted mb-2" style="line-height: 1.6;">"{{ review.comment }}"</p>
+                                {% endif %}
+                                
+                                <!-- 🌟 NAYA: Show Review Image if customer uploaded one -->
+                                {% if review.image %}
+                                    <div class="mt-3">
+                                        <a href="{{ review.image.url }}" target="_blank">
+                                            <img src="{{ review.image.url }}" alt="Customer Photo" class="img-thumbnail rounded" style="width: 100px; height: 100px; object-fit: cover;">
+                                        </a>
+                                    </div>
                                 {% endif %}
                             </div>
                         {% empty %}
@@ -313,7 +330,7 @@
     </div>
 </div>
 
-<!-- 🌟 SIMILAR PRODUCTS RECOMMENDATION SECTION (NAYA ADD KIYA HAI) -->
+<!-- 🌟 SIMILAR PRODUCTS RECOMMENDATION SECTION -->
 {% if similar_products %}
 <div class="container mb-5" style="max-width: 1200px;" data-aos="fade-up">
     <hr class="mb-5 border-secondary opacity-25">
