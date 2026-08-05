@@ -84,6 +84,7 @@ urlpatterns = [
     path('delete-address/<int:address_id>/', delete_address, name='delete_address'),
     path('edit-address/<int:address_id>/', edit_address, name='edit_address'),
     path('track-order/', views.track_order_page, name='track_order'),
+    path('erp/ledger/whatsapp/<str:mobile>/', views.send_customer_khata_whatsapp, name='send_customer_khata_whatsapp'),
 
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('reset-verify-otp/', views.reset_verify_otp, name='reset_verify_otp'),

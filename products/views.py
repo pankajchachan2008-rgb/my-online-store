@@ -987,35 +987,52 @@ def erp_pos_billing(request):
 # 📒 ERP Customer Ledger & Khata View
 @staff_member_required(login_url='/login/')
 def erp_customer_ledger(request):
-    if request.method == 'POST':
-        customer_name = request.POST.get('customer_name')
-        mobile_number = request.POST.get('mobile_number')
-        transaction_type = request.POST.get('transaction_type')
-        amount = request.POST.get('amount')
-        description = request.POST.get('description')
+    customers = User.objects.filter(is_staff=False)
+    selected_customer_id = request.GET.get('customer_id')
+    selected_customer = None
+    customer_orders = []
+    customer_mobile = ""
 
-        CustomerLedger.objects.create(
-            customer_name=customer_name,
-            mobile_number=mobile_number,
-            transaction_type=transaction_type,
-            amount=amount,
-            description=description
-        )
-        return redirect('erp_ledger')
-
-    ledgers = CustomerLedger.objects.all().order_by('-created_at')
-    
-    total_udhaar = CustomerLedger.objects.filter(transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
-    total_jama = CustomerLedger.objects.filter(transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
-    net_balance = total_udhaar - total_jama
+    if selected_customer_id:
+        selected_customer = get_object_or_404(User, id=selected_customer_id, is_staff=False)
+        customer_orders = Order.objects.filter(user=selected_customer).order_by('-created_at')
+        
+        # Customer ka mobile number fetch karna profile ya orders se
+        profile = CustomerProfile.objects.filter(user=selected_customer).first()
+        if profile and profile.mobile_number:
+            customer_mobile = profile.mobile_number
+        elif customer_orders.exists():
+            customer_mobile = customer_orders.first().mobile_number
 
     context = {
-        'ledgers': ledgers,
-        'total_udhaar': total_udhaar,
-        'total_jama': total_jama,
-        'net_balance': net_balance,
+        'customers': customers,
+        'selected_customer': selected_customer,
+        'customer_orders': customer_orders,
+        'customer_mobile': customer_mobile,
     }
     return render(request, 'erp/ledger.html', context)
+
+@staff_member_required(login_url='/login/')
+def send_customer_khata_whatsapp(request, mobile):
+    orders = Order.objects.filter(mobile_number=mobile).order_by('-created_at')
+    if not orders.exists():
+        messages.error(request, "Is mobile number par koi order history nahi mili.")
+        return redirect('erp_ledger')
+    
+    customer_name = orders.first().customer_name
+    total_due = sum(float(o.total_amount) for o in orders if o.status != 'Cancelled')
+    
+    msg = (
+        f"📊 *Khata Statement - Chachan General Store*\n\n"
+        f"Namaste {customer_name},\n"
+        f"Aapka current total pending order amount summary:\n"
+        f"📌 *Total Payable: ₹{total_due}*\n\n"
+        f"Kripya samay par bhugtan karein. Thank you for shopping with us!"
+    )
+    
+    send_brevo_whatsapp(mobile, msg)
+    messages.success(request, f"✅ Khata statement successfully sent to {customer_name} ({mobile}) via WhatsApp!")
+    return redirect('erp_ledger')
 
 # 🏢 ERP Store Settings View
 @staff_member_required(login_url='/login/')
@@ -1182,3 +1199,35 @@ def erp_gst_report(request):
         'total_invoice_amount': round(total_invoice_amount, 2),
     }
     return render(request, 'erp/gst_report.html', context)
+
+@staff_member_required(login_url='/login/')
+def send_customer_khata_whatsapp(request, mobile):
+    # Customer ki saari transactions nikalhein
+    ledgers = CustomerLedger.objects.filter(mobile_number=mobile).order_by('-created_at')
+    if not ledgers.exists():
+        messages.error(request, "Is mobile number par koi ledger entry nahi mili.")
+        return redirect('erp_ledger')
+    
+    customer_name = ledgers.first().customer_name
+    
+    # Balance calculate karein
+    total_debit = sum(l.amount for l in ledgers if l.transaction_type == 'DEBIT')
+    total_credit = sum(l.amount for l in ledgers if l.transaction_type == 'CREDIT')
+    net_due = total_debit - total_credit
+    
+    # WhatsApp Message Format
+    msg = (
+        f"📊 *Khata Statement - Chachan General Store*\n\n"
+        f"Namaste {customer_name},\n"
+        f"Aapka current balance summary:\n"
+        f"🔴 Total Udhaar (Debit): ₹{total_debit}\n"
+        f"🟢 Total Jama (Credit): ₹{total_credit}\n"
+        f"-------------------\n"
+        f"📌 *Net Balance Due: ₹{net_due}*\n\n"
+        f"Kripya samay par bhugtan karein. Thank you!"
+    )
+    
+    # Brevo WhatsApp API call
+    send_brevo_whatsapp(mobile, msg)
+    messages.success(request, f"✅ Khata statement successfully sent to {customer_name} ({mobile}) via WhatsApp!")
+    return redirect('erp_ledger')

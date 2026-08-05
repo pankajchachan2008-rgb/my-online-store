@@ -58,12 +58,18 @@
             <div class="col-md-8">
                 <div class="card border-0 shadow-sm rounded-4 p-4">
                     {% if selected_customer %}
-                        <div class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center">
+                        <div class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <div>
                                 <h4 class="fw-bold m-0">{{ selected_customer.first_name|default:selected_customer.username }}</h4>
                                 <span class="text-muted small">Email: {{ selected_customer.email }} | Username: {{ selected_customer.username }}</span>
                             </div>
-                            <div class="text-end">
+                            <div class="d-flex gap-2 align-items-center">
+                                <!-- 🌟 WhatsApp Khata Send Button -->
+                                {% if customer_mobile %}
+                                <a href="{% url 'send_customer_khata_whatsapp' customer_mobile %}" class="btn btn-success btn-sm fw-bold rounded-pill px-3 no-print">
+                                    💬 Send Khata via WhatsApp
+                                </a>
+                                {% endif %}
                                 <span class="badge bg-primary px-3 py-2 fs-6">Khata Statement</span>
                             </div>
                         </div>
@@ -82,7 +88,7 @@
                             <tbody>
                                 {% for order in customer_orders %}
                                 <tr>
-                                    <td class="fw-bold">#ORD-{{ order.id }}</td>
+                                    <td class="fw-bold">#{{ order.order_id|default:order.id }}</td>
                                     <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
                                     <td><span class="badge bg-secondary">{{ order.status }}</span></td>
                                     <td class="fw-bold text-success">₹{{ order.total_amount }}</td>
