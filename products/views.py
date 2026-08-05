@@ -409,31 +409,42 @@ def checkout_page(request):
         wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n*Delivery Charge:* ₹{delivery_fee}{coupon_text}\n*Wallet Used:* ₹{wallet_deducted}\n*Total Payable:* ₹{final_total}"
         whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
 
-        # 🌟 Automated Notifications to Customer (WhatsApp & Email)
+# 🌟 AUTOMATED NOTIFICATIONS TO CUSTOMER (Highlighting OTP)
         tracking_link = "https://www.cgsmart.in/track-order/"
+        
         customer_wa_msg = (
             f"🎉 Namaste {name}!\n\n"
             f"Aapka CGSmart order *#{order.id}* successfully receive ho gaya hai!\n"
-            f"💰 Total Amount: ₹{final_total}\n"
-            f"⚡ Expected Delivery: 10 Mins - 1 Hour (Nohar)\n\n"
-            f"📦 Apna order live track karne ke liye yahan click karein:\n{tracking_link}\n\n"
+            f"💰 Total Amount: ₹{final_total}\n\n"
+            f"🔑 *AAPKA DELIVERY OTP:* *{delivery_otp_code}*\n"
+            f"*(Yeh 4-digit OTP order milne par delivery boy ko dena hai)*\n\n"
+            f"⚡ Expected Delivery: 10 Mins - 1 Hour (Nohar)\n"
+            f"📦 Track order: {tracking_link}\n\n"
             f"Thank you for shopping with Chachan General Store!"
         )
         send_brevo_whatsapp(mobile, customer_wa_msg)
 
         customer_email = request.user.email if request.user.is_authenticated and request.user.email else request.POST.get('email')
         if customer_email:
-            email_html = f"<h3>Hello {name},</h3><p>Aapka order <strong>#{order.id}</strong> receive ho gaya hai!</p><p><strong>Total Amount:</strong> ₹{final_total}</p><p><a href='{tracking_link}'>Click here to track your order</a></p>"
-            send_brevo_api_email(f"Order Confirmation - Order #{order.id}", email_html, customer_email)
-
-        request.session['cart'] = {}
-        return render(request, 'products/order_success.html', {'order': order, 'whatsapp_url': whatsapp_url})
-
-    saved_addresses = Address.objects.filter(user=request.user) if request.user.is_authenticated else []
-    return render(request, 'products/checkout.html', {
-        'cart_total': subtotal, 'total_mrp': total_mrp, 'regular_discount': regular_discount, 'hidden_discount_total': hidden_discount_total,
-        'delivery_fee': delivery_fee, 'final_total': final_total, 'total_savings': total_savings, 'saved_addresses': saved_addresses, 'profile': profile,
-    })
+            email_html = f"""
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <h2 style="color: #002D62; margin-top: 0;">Order Confirmation #{order.id}</h2>
+                <p>Hello <strong>{name}</strong>,</p>
+                <p>Aapka order successfully receive ho gaya hai aur is waqt packing mein hai!</p>
+                
+                <div style="background: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #D4AF37;">
+                    <p style="margin: 0; font-size: 14px; color: #64748B;">YOUR SECRET DELIVERY OTP</p>
+                    <h1 style="margin: 5px 0 0 0; color: #002D62; letter-spacing: 5px;">{delivery_otp_code}</h1>
+                    <p style="margin: 5px 0 0 0; font-size: 12px; color: #e11d48;">*Yeh 4-digit OTP delivery ke waqt delivery partner ko batana zaroori hai.*</p>
+                </div>
+                
+                <p><strong>Total Amount Payable:</strong> ₹{final_total}</p>
+                <p><a href="{tracking_link}" style="background: #002D62; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">Track Your Order Live</a></p>
+                <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                <p style="font-size: 12px; color: #94a3b8;">Chachan General Store, Nohar, Rajasthan</p>
+            </div>
+            """
+            send_brevo_api_email(f"Order Confirmation & Delivery OTP - Order #{order.id}", email_html, customer_email)
 
 # 👤 5. Premium Profile
 @never_cache   
