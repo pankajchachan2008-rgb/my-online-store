@@ -149,15 +149,15 @@
 </head>
 <body>
 
-    <!-- 🏢 SIDEBAR -->
+<!-- 🏢 SIDEBAR -->
     <div class="sidebar">
         <div class="sidebar-brand">
             CGSMART ERP
         </div>
         <div class="sidebar-menu">
-            <a href="#" class="active">📊 Dashboard</a>
-            <a href="#">📦 Manage Orders</a>
-            <a href="#">🛍️ Product Master</a>
+            <a href="{% url 'erp_dashboard' %}" class="active">📊 Dashboard</a>
+            <a href="{% url 'erp_dashboard' %}">📦 Manage Orders</a>
+            <a href="{% url 'erp_products' %}">🛍️ Product Master</a>
             <a href="#">🧾 Billing & POS</a>
             <a href="#">⚙️ Store Settings</a>
             <a href="{% url 'home' %}" target="_blank" style="margin-top: 50px; color: #38BDF8;">🌐 Go to Live Store</a>
