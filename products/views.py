@@ -23,6 +23,9 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser
 from django.db.models import Avg, F, ExpressionWrapper, FloatField
 from django.views.decorators.cache import never_cache
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Sum, Count
+from datetime import timedelta
 
 # 🌟 100% SAFE SMART SEARCH IMPORTS
 from django.db.models import Q
@@ -818,3 +821,26 @@ def ai_assistant_chat(request):
             return JsonResponse({'response': "Technical error aaya hai, humari team isey theek kar rahi hai. Kripya WhatsApp par sampark karein."})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+# ==========================================
+# 🏢 CUSTOM ERP / ADMIN DASHBOARD SECTION
+# ==========================================
+
+@staff_member_required(login_url='/login/')
+def erp_dashboard(request):
+    # Live Business Analytics
+    total_orders = Order.objects.count()
+    total_sales = Order.objects.filter(status='Completed').aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+    pending_orders = Order.objects.filter(status='Pending').count()
+    total_customers = User.objects.filter(is_staff=False).count()
+
+    recent_orders = Order.objects.all().order_by('-created_at')[:10]
+
+    context = {
+        'total_orders': total_orders,
+        'total_sales': total_sales,
+        'pending_orders': pending_orders,
+        'total_customers': total_customers,
+        'recent_orders': recent_orders,
+    }
+    return render(request, 'erp/dashboard.html', context)

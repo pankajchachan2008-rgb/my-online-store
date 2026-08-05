@@ -103,6 +103,8 @@ urlpatterns = [
     path('invoice/<int:order_id>/download/', download_invoice, name='download_invoice'),
     
     path('ping/', ping, name='ping'),
+# 🏢 Custom ERP Routes
+    path('cgs-erp/dashboard/', views.erp_dashboard, name='erp_dashboard'),
     
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
