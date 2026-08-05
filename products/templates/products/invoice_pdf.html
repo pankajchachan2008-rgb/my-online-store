@@ -18,25 +18,25 @@
         body {
             font-family: Helvetica, Arial, sans-serif;
             font-size: 11px;
-            color: #2b2b2b;
+            color: #000000; /* Pure black for crisp Dot-Matrix/Thermal Print */
         }
         
         .header-table {
             width: 100%;
             margin-bottom: 25px;
-            border-bottom: 3px solid #002D62; /* Updated to brand primary blue */
+            border-bottom: 3px solid #222222; /* Darkened for print */
             padding-bottom: 15px;
         }
         .company-name {
             font-size: 26px;
             font-weight: bold;
-            color: #002D62;
+            color: #111111;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         .tagline {
             font-size: 10px;
-            color: #7F8C8D;
+            color: #555555;
             letter-spacing: 1px;
             text-transform: uppercase;
             margin-top: 4px;
@@ -44,7 +44,7 @@
         .document-title {
             font-size: 24px;
             font-weight: bold;
-            color: #D4AF37; /* Updated to brand accent gold */
+            color: #000000;
             text-align: right;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -53,30 +53,26 @@
         .info-table {
             width: 100%;
             margin-bottom: 25px;
-            border: 1px solid #E5E7E9;
+            border: 1px solid #333333; /* Darker border for printer */
         }
         .info-table td {
             vertical-align: top;
             width: 33.33%;
             padding: 10px;
-            border-right: 1px solid #E5E7E9;
+            border-right: 1px solid #333333;
         }
-        .info-table td.last {
-            border-right: none;
-        }
+        .info-table td.last { border-right: none; }
+        
         .section-title {
             font-size: 10px;
             font-weight: bold;
-            color: #002D62;
+            color: #000000;
             text-transform: uppercase;
-            border-bottom: 1px solid #E5E7E9;
+            border-bottom: 1px solid #333333;
             padding-bottom: 4px;
             margin-bottom: 6px;
         }
-        .info-text {
-            font-size: 11px;
-            line-height: 1.6;
-        }
+        .info-text { font-size: 11px; line-height: 1.6; color: #111; }
         
         .items-table {
             width: 100%;
@@ -84,84 +80,62 @@
             margin-bottom: 20px;
         }
         .items-table th {
-            background-color: #002D62;
+            background-color: #222222; /* B&W Print Friendly */
             color: #ffffff;
             padding: 7px 8px; 
             text-align: left;
             font-size: 10px;
             font-weight: bold;
             text-transform: uppercase;
-            border: 1px solid #002D62;
+            border: 1px solid #222222;
         }
         .items-table td {
             padding: 10px 8px;
-            border: 1px solid #E5E7E9;
+            border: 1px solid #888888;
             font-size: 11px;
         }
-        .items-table tr.alt-row td {
-            background-color: #FDFEFE;
-        }
+        .items-table tr.alt-row td { background-color: #F8F8F8; }
         .right-align { text-align: right; }
         .center-align { text-align: center; }
         
-        .totals-table {
-            width: 100%;
-            margin-bottom: 30px;
-        }
+        .totals-table { width: 100%; margin-bottom: 30px; }
         .terms-box {
-            background-color: #F8FAFC;
-            border-left: 3px solid #D4AF37;
+            background-color: #F8F8F8;
+            border-left: 3px solid #333333;
             padding: 10px;
             font-size: 9px;
-            color: #5D6D7E;
+            color: #333333;
             line-height: 1.5;
         }
-        .totals-calc {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .totals-calc td {
-            padding: 6px 10px;
-            font-size: 11px;
-            border-bottom: 1px solid #E5E7E9;
-        }
-        .totals-calc tr.tax-row td {
-            color: #5D6D7E;
-            font-size: 10px;
-        }
+        .totals-calc { width: 100%; border-collapse: collapse; }
+        .totals-calc td { padding: 6px 10px; font-size: 11px; border-bottom: 1px solid #888888; }
+        .totals-calc tr.tax-row td { color: #444444; font-size: 10px; }
         .grand-total-row td {
             font-size: 14px;
             font-weight: bold;
             color: #ffffff;
-            background-color: #002D62;
+            background-color: #000000; /* Contrast punch for invoice totals */
             border: none;
         }
         
-        .footer-section {
-            width: 100%;
-            margin-top: 10px;
-        }
-        .qr-code {
-            border: 1px solid #E5E7E9;
-            padding: 4px;
-            background-color: white;
-        }
+        .footer-section { width: 100%; margin-top: 10px; }
+        .qr-code { border: 1px solid #333; padding: 4px; background-color: white; }
         .sign-box {
             text-align: center;
             width: 160px;
-            border-top: 1px solid #34495E;
+            border-top: 1px solid #000000;
             padding-top: 6px;
             font-size: 10px;
             font-weight: bold;
             float: right;
-            color: #34495E;
+            color: #000000;
         }
         
         #footerContent {
             text-align: center;
             font-size: 9px;
-            color: #95A5A6;
-            border-top: 1px solid #E5E7E9;
+            color: #666666;
+            border-top: 1px solid #888888;
             padding-top: 6px;
         }
     </style>
@@ -171,22 +145,17 @@
     <!-- HEADER SECTION -->
     <table class="header-table">
         <tr>
-            <!-- 1. Store Logo -->
             <td style="width: 12%; vertical-align: middle;">
                 <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" width="70" height="70" alt="Logo">
             </td>
-            
-            <!-- 2. Company Info -->
             <td style="width: 48%; vertical-align: middle;">
                 <div class="company-name">{{ company_name|default:"Chachan General Store" }}</div>
                 <div class="tagline">{{ tagline|default:"Premium Corporate Retail & Essentials" }}</div>
             </td>
-            
-            <!-- 3. Title, Barcode & Text -->
             <td style="width: 40%; text-align: right; vertical-align: middle;">
                 <div class="document-title" style="margin-bottom: 5px;">TAX INVOICE</div>
                 <img src="data:image/png;base64,{{ barcode_base64 }}" width="140" height="35" alt="Barcode"><br>
-                <div style="font-size: 10px; color: #34495E; font-weight: bold; letter-spacing: 1px; margin-top: 2px;">{{ bill_no }}</div>
+                <div style="font-size: 10px; color: #000; font-weight: bold; letter-spacing: 1px; margin-top: 2px;">{{ bill_no }}</div>
             </td>
         </tr>
     </table>
@@ -194,19 +163,16 @@
     <!-- INFO SECTION -->
     <table class="info-table">
         <tr>
-            <!-- Dispatched From -->
             <td>
                 <div class="section-title">Billed By</div>
                 <div class="info-text">
                     <strong>{{ company_name|default:"Chachan General Store" }}</strong><br>
-                    GSTIN: {{ gstin|default:"08ABCDE1234F1Z5" }}<br> <!-- Sample Rajasthan GSTIN -->
+                    GSTIN: {{ gstin|default:"08ABCDE1234F1Z5" }}<br>
                     {{ store_address|default:"Main Market, Nohar" }}<br>
-                    {{ store_state|default:"Rajasthan" }} - {{ store_pincode|default:"335523" }}<br>
+                    Rajasthan - 335523<br>
                     Phone: {{ store_phone|default:"+91 73570 73316" }}
                 </div>
             </td>
-            
-            <!-- Billed To -->
             <td>
                 <div class="section-title">Billed To</div>
                 <div class="info-text">
@@ -216,15 +182,13 @@
                     Place of Supply: Rajasthan (08)
                 </div>
             </td>
-
-            <!-- Document Details -->
             <td class="last">
                 <div class="section-title">Invoice Details</div>
                 <div class="info-text">
                     <strong>Invoice No:</strong> {{ bill_no }}<br>
                     <strong>Date:</strong> {{ order.created_at|date:"d M Y, h:i A" }}<br>
-                    <strong>Payment Mode:</strong> Online/COD<br>
-                    <strong>Status:</strong> <span style="font-weight:bold; color: {% if order.status == 'Completed' %}green{% else %}#C0392B{% endif %};">{{ order.status }}</span>
+                    <strong>Payment Mode:</strong> Online / COD<br>
+                    <strong>Status:</strong> <span style="font-weight:bold;">{{ order.status }}</span>
                 </div>
             </td>
         </tr>
@@ -240,21 +204,19 @@
                 <th class="center-align" style="width: 8%;">Qty</th>
                 <th class="right-align" style="width: 12%;">Rate</th>
                 <th class="center-align" style="width: 10%;">Tax %</th>
-                <th class="right-align" style="width: 18%;">Total Amount</th>
+                <th class="right-align" style="width: 18%;">Amount (Inc. GST)</th>
             </tr>
         </thead>
         <tbody>
             {% for item in items %}
-            <tr>
+            <tr class="{% cycle '' 'alt-row' %}">
                 <td class="center-align">{{ forloop.counter }}</td>
-                <td>
-                    <strong>{{ item.product_name }}</strong>
-                </td>
+                <td><strong>{{ item.product_name }}</strong></td>
                 <td class="center-align">{{ item.product.hsn_code|default:"-" }}</td>
                 <td class="center-align">{{ item.quantity }}</td>
-                <td class="right-align">Rs. {{ item.price }}</td>
-                <td class="center-align">18%</td> <!-- Default or Dynamic Tax Rate -->
-                <td class="right-align">Rs. {% widthratio item.price 1 item.quantity %}</td>
+                <td class="right-align">₹ {{ item.price }}</td>
+                <td class="center-align">18%</td>
+                <td class="right-align">₹ {% widthratio item.price 1 item.quantity %}</td>
             </tr>
             {% empty %}
             <tr>
@@ -279,25 +241,19 @@
                 <table class="totals-calc">
                     <tr>
                         <td class="right-align">Taxable Value:</td>
-                        <!-- Mock calculation assuming total_amount includes 18% GST -->
-                        <td class="right-align" style="width: 40%;">Rs. {{ order.total_amount|add:"-15" }}</td> 
+                        <td class="right-align" style="width: 40%;">₹ {{ subtotal|floatformat:2 }}</td> 
                     </tr>
                     <tr class="tax-row">
-                        <td class="right-align">Add: CGST @ 9%:</td>
-                        <td class="right-align">Rs. 7.50</td>
+                        <td class="right-align">Add: CGST (9%):</td>
+                        <td class="right-align">₹ {{ cgst|floatformat:2 }}</td>
                     </tr>
                     <tr class="tax-row">
-                        <td class="right-align">Add: SGST @ 9%:</td>
-                        <td class="right-align">Rs. 7.50</td>
-                    </tr>
-                    <!-- Optional Courier Charge Row -->
-                    <tr>
-                        <td class="right-align">Delivery Charges:</td>
-                        <td class="right-align">Rs. 0.00</td>
+                        <td class="right-align">Add: SGST (9%):</td>
+                        <td class="right-align">₹ {{ sgst|floatformat:2 }}</td>
                     </tr>
                     <tr class="grand-total-row">
                         <td class="right-align">GRAND TOTAL:</td>
-                        <td class="right-align">Rs. {{ order.total_amount }}</td>
+                        <td class="right-align">₹ {{ order.total_amount }}</td>
                     </tr>
                 </table>
             </td>
@@ -308,7 +264,7 @@
     <table class="footer-section">
         <tr>
             <td style="width: 50%;">
-                <div style="font-size: 9px; font-weight: bold; color: #002D62; margin-bottom: 5px;">SCAN TO VERIFY</div>
+                <div style="font-size: 9px; font-weight: bold; color: #000; margin-bottom: 5px;">SCAN TO VERIFY</div>
                 <img src="data:image/png;base64,{{ qr_code_base64 }}" width="70" height="70" class="qr-code" alt="QR Code">
             </td>
             <td style="width: 50%; text-align: right; vertical-align: bottom;">

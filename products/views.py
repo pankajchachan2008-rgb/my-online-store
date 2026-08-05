@@ -499,15 +499,26 @@ def sync_products_from_erp_api(request):
 
 @login_required(login_url='/login/')
 def download_invoice(request, order_id):
-    order = get_object_or_404(Order, id=order_id); items = OrderItem.objects.filter(order=order)
+    order = get_object_or_404(Order, id=order_id)
+    items = OrderItem.objects.filter(order=order)
     store = StoreSetting.objects.first()
     bill_no = f"#INV-2026-{order.id}"
 
-    qr = qrcode.make(bill_no); qr_buffer = BytesIO(); qr.save(qr_buffer, format="PNG")
+    qr = qrcode.make(bill_no)
+    qr_buffer = BytesIO()
+    qr.save(qr_buffer, format="PNG")
     qr_base64 = base64.b64encode(qr_buffer.getvalue()).decode("utf-8")
 
-    bc = barcode.get_barcode_class('code128')(bill_no, writer=ImageWriter()); bc_buffer = BytesIO()
-    bc.write(bc_buffer, options={'write_text': False}); barcode_base64 = base64.b64encode(bc_buffer.getvalue()).decode("utf-8")
+    bc = barcode.get_barcode_class('code128')(bill_no, writer=ImageWriter())
+    bc_buffer = BytesIO()
+    bc.write(bc_buffer, options={'write_text': False})
+    barcode_base64 = base64.b64encode(bc_buffer.getvalue()).decode("utf-8")
+    
+    # 🌟 NAYA: Real GST Calculation (Assuming 18% Inclusive GST for overall bill)
+    total_amt = float(order.total_amount)
+    subtotal = total_amt / 1.18
+    cgst = (total_amt - subtotal) / 2
+    sgst = cgst
     
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="CGSmart_Bill_{order.id}.pdf"'
@@ -527,6 +538,10 @@ def download_invoice(request, order_id):
         'status': order.status,
         'qr_code_base64': qr_base64,
         'barcode_base64': barcode_base64,
+        # 🌟 NAYA: Sending real calculations to PDF
+        'subtotal': subtotal,
+        'cgst': cgst,
+        'sgst': sgst,
     }
     html = get_template('products/invoice_pdf.html').render(context)
     if pisa.CreatePDF(html, dest=response).err: return HttpResponse('Error generating PDF')
