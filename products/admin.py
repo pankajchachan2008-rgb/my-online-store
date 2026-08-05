@@ -8,9 +8,12 @@ from django.utils.html import format_html
 from django.urls import path
 from django.template.response import TemplateResponse
 from django.db.models import Sum
-from django.db.models.functions import TruncMonth # 🌟 NAYA: Chart ke liye import add kiya
+from django.db.models.functions import TruncMonth 
+
+# Apne models import karein
 from .models import ServiceablePincode
 from .models import Expense, Supplier, SupplierLedger
+from .models import DeliveryBoy
 
 from .models import (
     Category, Brand, Product, Coupon, Order, OrderItem,
@@ -60,7 +63,7 @@ def dashboard_view(request):
         order_count=order_count,
         top_products=top_products,
         coupon_usage=coupon_usage,
-        monthly_sales=list(monthly_sales), # 🌟 NAYA: Chart ka data template mein bheja
+        monthly_sales=list(monthly_sales), 
     )
     return TemplateResponse(request, "admin/dashboard.html", context)
 
@@ -90,6 +93,18 @@ admin.site.register(Expense)
 admin.site.register(Supplier)
 admin.site.register(SupplierLedger)
 
+
+# -----------------------------
+# 🛵 Delivery Boy Admin (Premium)
+# -----------------------------
+@admin.register(DeliveryBoy)
+class DeliveryBoyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'mobile_number', 'vehicle_number', 'is_active', 'joined_date')
+    list_filter = ('is_active',)
+    search_fields = ('name', 'mobile_number', 'vehicle_number')
+    list_editable = ('is_active',)
+
+
 # -----------------------------
 # Product Variant Inline
 # -----------------------------
@@ -97,6 +112,7 @@ class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
     extra = 1
     show_change_link = True
+
 
 # -----------------------------
 # Product Admin
@@ -111,7 +127,6 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ('category', 'brand')
     list_select_related = ('category', 'brand')
     
-    # 🌟 WAPAS ADD KIYA: category aur brand taaki aap bahar se ek sath update kar sakein
     list_editable = ('category', 'brand', 'price', 'last_moment_discount') 
     
     readonly_fields = ('sku',)
@@ -128,12 +143,14 @@ class ProductAdmin(admin.ModelAdmin):
         return "No Image"
     product_image.short_description = 'Image'
 
+
 # -----------------------------
 # Store Settings Admin
 # -----------------------------
 @admin.register(StoreSetting)
 class StoreSettingAdmin(admin.ModelAdmin):
     list_display = ('store_name', 'phone', 'gstin')
+
 
 # -----------------------------
 # Coupon Admin
@@ -144,16 +161,11 @@ class CouponAdmin(admin.ModelAdmin):
     list_filter = ['is_active', 'valid_to']
     search_fields = ['code']
 
-    # 🌟 FIX: readonly_fields = ('code',) previously locked the code field on
-    # BOTH the add and change forms — meaning a coupon could never actually
-    # be created with a working code through the admin, since the field was
-    # always non-editable. This restores the ability to set the code when
-    # creating a new coupon, while still locking it once the coupon exists
-    # (so an active coupon's code can't be silently changed later).
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return ('code',)
         return ()
+
 
 # -----------------------------
 # Custom Admin Action: Shipping Labels
@@ -171,6 +183,7 @@ def print_shipping_labels(modeladmin, request, queryset):
         return HttpResponse('Error generating label')
     return response
 
+
 # -----------------------------
 # Order Items Inline
 # -----------------------------
@@ -179,17 +192,22 @@ class OrderItemInline(admin.TabularInline):
     extra = 0
     readonly_fields = ('product_name', 'price', 'quantity')
 
+
 # -----------------------------
 # Order Admin
 # -----------------------------
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer_name', 'mobile_number', 'total_amount', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
+    # 🌟 NAYA: delivery_boy bahar table mein add kiya
+    list_display = ('id', 'customer_name', 'mobile_number', 'total_amount', 'status', 'delivery_boy', 'created_at')
+    list_filter = ('status', 'delivery_boy', 'created_at')
     search_fields = ('customer_name', 'mobile_number', 'id')
     inlines = [OrderItemInline]
     actions = [print_shipping_labels]
-    list_editable = ('status',)
+    
+    # 🌟 NAYA: status aur delivery_boy dono bahar se edit ho payenge
+    list_editable = ('status', 'delivery_boy')
+
 
 # -----------------------------
 # Custom User Admin
@@ -204,6 +222,7 @@ class CustomUserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
+
 # -----------------------------
 # Review Admin
 # -----------------------------
@@ -213,6 +232,10 @@ class ReviewAdmin(admin.ModelAdmin):
     list_filter = ('rating', 'created_at')
     search_fields = ('product__name', 'user__username', 'comment')
 
+
+# -----------------------------
+# Serviceable Pincode Admin
+# -----------------------------
 @admin.register(ServiceablePincode)
 class ServiceablePincodeAdmin(admin.ModelAdmin):
     list_display = ('pincode', 'city_name', 'branch_name', 'is_serviceable', 'delivery_estimate')

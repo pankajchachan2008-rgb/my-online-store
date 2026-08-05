@@ -94,6 +94,7 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, default='Pending')
     applied_coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
+    delivery_boy = models.ForeignKey('DeliveryBoy', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_orders', help_text="Is order ko kaun deliver karega?")
     
     # Courier Tracking Fields
     courier_name = models.CharField(max_length=100, blank=True, null=True)
@@ -349,3 +350,19 @@ class SupplierLedger(models.Model):
     
     def __str__(self):
         return f"{self.supplier.name} - {self.get_transaction_type_display()} - ₹{self.amount}"
+
+# ==========================================
+# 🛵 DELIVERY BOY / STAFF MODEL
+# ==========================================
+from django.contrib.auth.models import User
+
+class DeliveryBoy(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='delivery_profile', null=True, blank=True)
+    name = models.CharField(max_length=100)
+    mobile_number = models.CharField(max_length=15, unique=True)
+    vehicle_number = models.CharField(max_length=50, blank=True, null=True, help_text="Bike ya Gaadi ka number")
+    is_active = models.BooleanField(default=True, help_text="Agar staff chhutti par hai toh isko untick karein")
+    joined_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.mobile_number}"
