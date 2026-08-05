@@ -973,3 +973,28 @@ def erp_store_settings(request):
         return redirect('erp_settings')
     
     return render(request, 'erp/settings.html', {'setting': setting})
+
+# 🏢 ERP Product Master & Bulk Update
+@staff_member_required(login_url='/login/')
+def erp_products(request):
+    if request.method == 'POST':
+        product_ids = request.POST.getlist('product_ids[]')
+        for p_id in product_ids:
+            new_name = request.POST.get(f'name_{p_id}')
+            new_stock = request.POST.get(f'stock_{p_id}')
+            new_price = request.POST.get(f'price_{p_id}')
+
+            product = Product.objects.filter(id=p_id).first()
+            if product:
+                if new_name:
+                    product.name = new_name
+                if new_stock is not None and new_stock != '':
+                    product.stock = int(new_stock)
+                if new_price is not None and new_price != '':
+                    product.price = float(new_price)
+                product.save()
+        
+        return redirect('erp_products')
+
+    products = Product.objects.all().order_by('-id')
+    return render(request, 'erp/products.html', {'products': products})
