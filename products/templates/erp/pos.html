@@ -128,7 +128,7 @@
     </div>
 
     <!-- POS JAVASCRIPT & VOICE COMMAND -->
-    <script>
+<script>
         let cart = [];
 
         function addToCart(name, price) {
@@ -194,89 +194,11 @@
                 alert("Cart khali hai!");
                 return;
             }
-
-            // Thermal 80mm Receipt Window Generation with Dynamic Store Settings
-            let printWindow = window.open('', '_blank', 'width=400,height=600');
-            let totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            let currentDate = new Date().toLocaleString();
-
-            let storeName = "{{ store_setting.store_name|default:'CHACHAN GENERAL STORE' }}";
-            let storeAddress = "{{ store_setting.address|default:'Nohar, Rajasthan' }}";
-            let storePhone = "{{ store_setting.phone|default:'9414XXXXXX' }}";
-            let storeGstin = "{{ store_setting.gstin|default:'08XXXXX' }}";
-            let receiptFooter = "{{ store_setting.receipt_footer|default:'Thank You! Visit Again.' }}";
-
-            let receiptHTML = `
-                <html>
-                <head>
-                    <title>Thermal Receipt</title>
-                    <style>
-                        body { font-family: 'Courier New', Courier, monospace; font-size: 12px; width: 280px; margin: 0; padding: 10px; color: #000; }
-                        .text-center { text-align: center; }
-                        .fw-bold { font-weight: bold; }
-                        .border-bottom { border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px; }
-                        table { width: 100%; border-collapse: collapse; }
-                        th, td { text-align: left; padding: 3px 0; font-size: 11px; }
-                        .right { text-align: right; }
-                    </style>
-                </head>
-                <body>
-                    <div class="text-center fw-bold" style="font-size: 16px;">${storeName}</div>
-                    <div class="text-center">${storeAddress}</div>
-                    <div class="text-center border-bottom">Mob: ${storePhone} | GSTIN: ${storeGstin}</div>
-                    
-                    <div>Date: ${currentDate}</div>
-                    <div class="border-bottom">Bill Type: POS Cash Sale</div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Qty</th>
-                                <th class="right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            cart.forEach(item => {
-                let itemTotal = item.price * item.qty;
-                receiptHTML += `
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.qty}</td>
-                        <td class="right">₹${itemTotal.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
-
-            receiptHTML += `
-                        </tbody>
-                    </table>
-
-                    <div class="border-bottom" style="margin-top: 5px;"></div>
-                    <div class="fw-bold right" style="font-size: 14px;">Grand Total: ₹${totalAmount.toFixed(2)}</div>
-                    <div class="border-bottom" style="margin-top: 5px;"></div>
-                    
-                    <div class="text-center" style="margin-top: 10px;">${receiptFooter}</div>
-                    <div class="text-center" style="font-size: 10px; color: #555;">Powered by CGSMART ERP</div>
-
-                    <script>
-                        window.onload = function() {
-                            window.print();
-                            window.close();
-                        }
-                    </script>
-                </body>
-                </html>
-            `;
-
-            printWindow.document.write(receiptHTML);
-            printWindow.document.close();
+            alert("Sale successfully completed!");
             clearCart();
         }
 
-        // 🎙️ FIXED SMART VOICE COMMAND ITEM ENTRY FOR POS
+        // 🎙️ VOICE COMMAND DEBUG & LOGIC
         const posMicBtn = document.getElementById('posMicBtn');
         const micText = document.getElementById('micText');
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -287,7 +209,11 @@
             recognition.continuous = false;
 
             posMicBtn.addEventListener('click', () => {
-                recognition.start();
+                try {
+                    recognition.start();
+                } catch(err) {
+                    console.log("Mic already started or blocked:", err);
+                }
             });
 
             recognition.onstart = function() {
@@ -296,22 +222,21 @@
             };
 
             recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript.toLowerCase().trim();
+                const transcript = event.results[0][0].transcript.toLowerCase();
                 document.getElementById('posSearch').value = transcript;
                 
                 let tiles = document.querySelectorAll('.product-tile');
                 let found = false;
-                
                 tiles.forEach(tile => {
                     let productName = tile.querySelector('.fw-bold').innerText.toLowerCase();
-                    if (productName.includes(transcript) || transcript.includes(productName)) {
+                    if (productName.includes(transcript)) {
                         tile.click();
                         found = true;
                     }
                 });
 
                 if(!found) {
-                    alert("Item nahi mila: " + transcript + ". Kripya Product Master mein naam check karein.");
+                    alert("Item nahi mila: " + transcript);
                 }
             };
 
@@ -321,7 +246,10 @@
                 recognition.stop();
             };
         } else {
-            posMicBtn.style.display = 'none';
+            // Agar browser support nahi karega toh ab ye alert aa jayega
+            posMicBtn.addEventListener('click', () => {
+                alert("Aapka ye browser Voice Command support nahi karta! Kripya Google Chrome ka upyog karein.");
+            });
         }
     </script>
 </body>
