@@ -15,7 +15,9 @@
             overflow-x: hidden;
         }
         
-        /* 🌟 Premium Sidebar */
+        /* ==========================================
+           🌟 Premium Sidebar (Compact & Scrollable)
+           ========================================== */
         .sidebar {
             width: 260px;
             background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
@@ -25,9 +27,17 @@
             left: 0;
             top: 0;
             padding-top: 20px;
+            padding-bottom: 20px;
+            overflow-y: auto;  /* Vertical scroll enable */
             box-shadow: 4px 0 15px rgba(0,0,0,0.1);
             z-index: 100;
         }
+        
+        /* 🎨 Custom Scrollbar Design for Sidebar */
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+
         .sidebar-brand {
             font-size: 22px;
             font-weight: 800;
@@ -38,15 +48,18 @@
             padding-bottom: 20px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
+        
         .sidebar-menu a {
             display: flex;
             align-items: center;
-            padding: 15px 25px;
+            padding: 12px 20px;   /* Padding reduced for compact look */
+            font-size: 14.5px;    /* Font size slightly reduced */
             color: #94A3B8;
             text-decoration: none;
             font-weight: 500;
-            transition: 0.3s;
+            transition: background 0.2s, color 0.2s;
         }
+        
         .sidebar-menu a:hover, .sidebar-menu a.active {
             background: rgba(255,255,255,0.05);
             color: #fff;
@@ -145,25 +158,40 @@
         .erp-table thead { background: #F8FAFC; }
         .erp-table th { font-weight: 600; color: #475569; padding: 15px 20px; font-size: 0.85rem; text-transform: uppercase; }
         .erp-table td { padding: 15px 20px; vertical-align: middle; font-size: 0.95rem; border-bottom: 1px solid #F1F5F9; }
+        
+        @media print {
+            .sidebar, .no-print, .top-navbar { display: none !important; }
+            .main-content { margin-left: 0 !important; padding: 0 !important; }
+        }
     </style>
 </head>
 <body>
 
-<!-- 🏢 SIDEBAR -->
-    <div class="sidebar">
+    <!-- 🏢 SIDEBAR -->
+    <div class="sidebar no-print">
         <div class="sidebar-brand">
             CGSMART ERP
         </div>
         <div class="sidebar-menu">
-            <a href="{% url 'erp_dashboard' %}" class="active">📊 Dashboard</a>
-            <a href="{% url 'erp_dashboard' %}">📦 Manage Orders</a>
-            <a href="{% url 'erp_products' %}">🛍️ Product Master</a>
+            
+            <!-- Core Features -->
+            <a href="{% url 'erp_dashboard' %}" class="active">📊 Dashboard & Orders</a>
             <a href="{% url 'erp_pos' %}">🧾 Billing & POS</a>
-            <a href="{% url 'erp_ledger' %}">📒 Customer Khata / Ledger</a>
-            <a href="{% url 'erp_settings' %}">⚙️ Store Settings</a>
-            <a href="{% url 'home' %}" target="_blank" style="margin-top: 50px; color: #38BDF8;">🌐 Go to Live Store</a>
-            <a href="{% url 'logout' %}" class="text-danger mt-3">🚪 Logout</a>
+            <a href="{% url 'erp_products' %}">🛍️ Product Master</a>
+            
+            <!-- Khatas & Ledgers -->
+            <a href="{% url 'erp_ledger' %}">📒 Customer Khata</a>
+            <a href="{% url 'erp_supplier_ledger' %}">🏢 Supplier Khata</a>
+            <a href="{% url 'erp_expenses' %}">📉 Expense Tracker</a>
+            
+            <!-- Reports & Settings -->
             <a href="{% url 'erp_gst_report' %}">📊 GST Tax Report</a>
+            <a href="{% url 'erp_settings' %}">⚙️ Store Settings</a>
+            
+            <!-- Bottom Actions -->
+            <a href="{% url 'home' %}" target="_blank" class="text-info mt-5" style="color: #38BDF8;">🌐 Go to Live Store</a>
+            <a href="{% url 'logout' %}" class="text-danger mt-2">🚪 Logout</a>
+
         </div>
     </div>
 
@@ -171,7 +199,7 @@
     <div class="main-content">
         
         <!-- TOP NAVBAR & VOICE COMMAND -->
-        <div class="top-navbar">
+        <div class="top-navbar no-print">
             <h4 class="m-0 fw-bold">Overview</h4>
             
             <div class="voice-search-box">
