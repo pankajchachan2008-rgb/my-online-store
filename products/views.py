@@ -915,3 +915,45 @@ def erp_pos_billing(request):
         'categories': categories,
     }
     return render(request, 'erp/pos.html', context)
+
+# 🏢 ERP Customer Ledger & Khata Management
+@staff_member_required(login_url='/login/')
+def erp_customer_ledger(request):
+    # Customers jo registered hain (is_staff=False)
+    customers = User.objects.filter(is_staff=False)
+    
+    selected_customer = None
+    customer_orders = []
+    
+    customer_id = request.GET.get('customer_id')
+    if customer_id:
+        selected_customer = User.objects.filter(id=customer_id).first()
+        if selected_customer:
+            customer_orders = Order.objects.filter(user=selected_customer).order_by('-created_at')
+
+    context = {
+        'customers': customers,
+        'selected_customer': selected_customer,
+        'customer_orders': customer_orders,
+    }
+    return render(request, 'erp/ledger.html', context)
+
+# 🏢 ERP Customer Ledger & Khata Management
+@staff_member_required(login_url='/login/')
+def erp_customer_ledger(request):
+    customers = User.objects.filter(is_staff=False)
+    selected_customer = None
+    customer_orders = []
+    
+    customer_id = request.GET.get('customer_id')
+    if customer_id:
+        selected_customer = User.objects.filter(id=customer_id).first()
+        if selected_customer:
+            customer_orders = Order.objects.filter(user=selected_customer).order_by('-created_at')
+
+    context = {
+        'customers': customers,
+        'selected_customer': selected_customer,
+        'customer_orders': customer_orders,
+    }
+    return render(request, 'erp/ledger.html', context)
