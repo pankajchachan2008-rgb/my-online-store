@@ -53,7 +53,7 @@ urlpatterns = [
     path('cart/', cart_detail, name='cart_detail'),
     
     path('cart/update/<str:item_key>/<str:action>/', update_cart_item, name='update_cart_item'),
-    
+    path('erp/api/barcode-lookup/', views.erp_barcode_lookup, name='erp_barcode_lookup'),
     path('checkout/', checkout_page, name='checkout'),
     path('check-coupon-ajax/', check_coupon_ajax, name='check_coupon_ajax'),
     

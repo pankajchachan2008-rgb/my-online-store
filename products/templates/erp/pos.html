@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>POS Billing & Voice Entry - CGSMART ERP</title>
+    <title>POS Billing & Barcode Scanner - CGSMART ERP</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -38,7 +38,7 @@
     <!-- MAIN CONTENT -->
     <div class="main-content">
         
-        <!-- TOP BAR WITH VOICE ENTRY -->
+        <!-- TOP BAR WITH VOICE & BARCODE SCANNER INPUT -->
         <div class="pos-card p-3 mb-3 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-3">
                 <h4 class="fw-bold m-0">Fast POS Billing</h4>
@@ -46,8 +46,11 @@
                     <span>🎙️</span> <span id="micText">Voice Item Add</span>
                 </button>
             </div>
-            <div>
-                <input type="text" id="posSearch" class="form-control" placeholder="Search item name or barcode..." style="width: 300px;">
+            
+            <!-- 📷 Barcode Scanner & Search Box -->
+            <div class="d-flex gap-2">
+                <input type="text" id="barcodeScanInput" class="form-control fw-bold border-primary" placeholder="📷 Scan Barcode / Type SKU..." autofocus style="width: 280px;">
+                <input type="text" id="posSearch" class="form-control" placeholder="Search item name..." style="width: 200px;">
             </div>
         </div>
 
@@ -56,12 +59,13 @@
             <!-- LEFT: PRODUCT CATALOG -->
             <div class="col-md-7 d-flex flex-column">
                 <div class="pos-card p-3 flex-grow-1 d-flex flex-column">
-                    <h6 class="fw-bold text-muted mb-3">Tap Item to Add to Bill</h6>
+                    <h6 class="fw-bold text-muted mb-3">Tap Item or Scan Barcode to Add</h6>
                     <div class="product-grid" id="productCatalog">
                         {% for product in products %}
-                        <div class="product-tile" onclick="addToCart('{{ product.name }}', {{ product.price }})">
+                        <div class="product-tile" data-name="{{ product.name|lower }}" data-barcode="{{ product.sku|default:product.id }}" onclick="addToCart('{{ product.name }}', {{ product.price }})">
                             <div class="fw-bold text-truncate" style="font-size: 0.9rem;">{{ product.name }}</div>
                             <div class="text-success fw-bold mt-1">₹{{ product.price }}</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">SKU: {{ product.sku|default:product.id }}</div>
                         </div>
                         {% empty %}
                         <div class="text-center text-muted py-5 w-100">No products available in inventory. Please add via Product Master.</div>
@@ -127,8 +131,8 @@
 
     </div>
 
-    <!-- POS JAVASCRIPT & VOICE COMMAND -->
-<script>
+    <!-- POS JAVASCRIPT: BARCODE SCANNER + VOICE COMMAND -->
+    <script>
         let cart = [];
 
         function addToCart(name, price) {
@@ -198,7 +202,60 @@
             clearCart();
         }
 
-        // 🎙️ VOICE COMMAND DEBUG & LOGIC
+        // 📷 USB BARCODE SCANNER GUN LISTENER
+        document.addEventListener("DOMContentLoaded", function() {
+            const barcodeInput = document.getElementById("barcodeScanInput");
+
+            // Keep focus on barcode scanner input for instant gun scanning
+            setInterval(() => {
+                if (document.activeElement !== barcodeInput && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+                    barcodeInput.focus();
+                }
+            }, 1000);
+
+            barcodeInput.addEventListener("keypress", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    let code = barcodeInput.value.trim().toLowerCase();
+                    if (!code) return;
+
+                    let tiles = document.querySelectorAll('.product-tile');
+                    let found = false;
+                    tiles.forEach(tile => {
+                        let barcode = tile.getAttribute('data-barcode').toLowerCase();
+                        let name = tile.getAttribute('data-name');
+                        if (barcode === code || name.includes(code)) {
+                            tile.click();
+                            found = true;
+                        }
+                    });
+
+                    if (!found) {
+                        alert("❌ Product nahi mila is barcode/SKU ke sath: " + code);
+                    }
+                    barcodeInput.value = "";
+                }
+            });
+
+            // Manual Search Filtering for Catalog
+            const posSearch = document.getElementById("posSearch");
+            if(posSearch) {
+                posSearch.addEventListener("input", function() {
+                    let filter = this.value.toLowerCase();
+                    let tiles = document.querySelectorAll('.product-tile');
+                    tiles.forEach(tile => {
+                        let name = tile.getAttribute('data-name');
+                        if (name.includes(filter)) {
+                            tile.style.display = "block";
+                        } else {
+                            tile.style.display = "none";
+                        }
+                    });
+                });
+            }
+        });
+
+        // 🎙️ VOICE COMMAND LOGIC
         const posMicBtn = document.getElementById('posMicBtn');
         const micText = document.getElementById('micText');
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -212,7 +269,7 @@
                 try {
                     recognition.start();
                 } catch(err) {
-                    console.log("Mic already started or blocked:", err);
+                    console.log("Mic already started:", err);
                 }
             });
 
@@ -228,7 +285,7 @@
                 let tiles = document.querySelectorAll('.product-tile');
                 let found = false;
                 tiles.forEach(tile => {
-                    let productName = tile.querySelector('.fw-bold').innerText.toLowerCase();
+                    let productName = tile.getAttribute('data-name');
                     if (productName.includes(transcript)) {
                         tile.click();
                         found = true;
@@ -236,7 +293,7 @@
                 });
 
                 if(!found) {
-                    alert("Item nahi mila: " + transcript);
+                    alert("Voice item nahi mila: " + transcript);
                 }
             };
 
@@ -246,7 +303,6 @@
                 recognition.stop();
             };
         } else {
-            // Agar browser support nahi karega toh ab ye alert aa jayega
             posMicBtn.addEventListener('click', () => {
                 alert("Aapka ye browser Voice Command support nahi karta! Kripya Google Chrome ka upyog karein.");
             });

@@ -185,7 +185,7 @@
         </div>
 
         <!-- STATS CARDS -->
-        <div class="row g-4 mb-5">
+        <div class="row g-4 mb-4">
             <div class="col-md-3">
                 <div class="stat-card">
                     <div class="stat-title">Total Orders</div>
@@ -210,6 +210,45 @@
                     <div class="stat-value">{{ total_customers }}</div>
                 </div>
             </div>
+        </div>
+
+        <!-- ⚠️ LOW STOCK INVENTORY ALERTS -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold m-0 text-danger">⚠️ Low Stock Inventory Alerts</h5>
+                <span class="badge bg-danger rounded-pill px-3 py-2">{{ low_stock_products.count }} Items Low</span>
+            </div>
+            
+            {% if low_stock_products %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Current Stock</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prod in low_stock_products %}
+                            <tr>
+                                <td class="fw-semibold">{{ prod.name }}</td>
+                                <td>{{ prod.category.name|default:"General" }}</td>
+                                <td><span class="badge bg-danger px-2 py-1">{{ prod.stock }} left</span></td>
+                                <td>₹{{ prod.price }}</td>
+                                <td>
+                                    <a href="{% url 'erp_products' %}" class="btn btn-sm btn-outline-dark fw-bold rounded-pill">Update Stock</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-success small mb-0 fw-semibold">✅ Great! All products have sufficient stock levels.</p>
+            {% endif %}
         </div>
 
         <!-- RECENT ORDERS TABLE -->

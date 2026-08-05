@@ -1098,3 +1098,44 @@ def track_order_page(request):
             order = Order.objects.filter(query).first()
             
     return render(request, 'products/track_order.html', {'order': order, 'searched': searched})
+
+@staff_member_required(login_url='/login/')
+def erp_dashboard(request):
+    total_orders = Order.objects.count()
+    total_sales = Order.objects.filter(status='Completed').aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+    pending_orders = Order.objects.filter(status='Pending').count()
+    total_customers = User.objects.filter(is_staff=False).count()
+
+    recent_orders = Order.objects.all().order_by('-created_at')[:10]
+    
+    # 🌟 Low Stock Alert (Stock <= 5 items)
+    low_stock_products = Product.objects.filter(stock__lte=5).order_by('stock')
+
+    context = {
+        'total_orders': total_orders,
+        'total_sales': total_sales,
+        'pending_orders': pending_orders,
+        'total_customers': total_customers,
+        'recent_orders': recent_orders,
+        'low_stock_products': low_stock_products,  # 👈 Pass to template
+    }
+    return render(request, 'erp/dashboard.html', context)
+
+def erp_barcode_lookup(request):
+    code = request.GET.get('code', '').strip()
+    if not code:
+        return JsonResponse({'success': False, 'message': 'No code provided'})
+    
+    # SKU ya Product ID se search karein
+    product = Product.objects.filter(Q(sku__iexact=code) | Q(id=code)).first()
+    
+    if product:
+        return JsonResponse({
+            'success': True,
+            'id': product.id,
+            'name': product.name,
+            'price': float(product.price),
+            'stock': product.stock,
+            'image': product.image.url if product.image else ''
+        })
+    return JsonResponse({'success': False, 'message': 'Product not found!'})
