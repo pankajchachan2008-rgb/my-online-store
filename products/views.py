@@ -42,6 +42,10 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from .forms import CustomRegisterForm
 from django.utils import timezone 
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render, redirect
+from django.db.models import Sum
+from .models import CustomerLedger
 
 from .models import Product, Category, SubCategory, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand, Review
 
@@ -998,3 +1002,41 @@ def erp_products(request):
 
     products = Product.objects.all().order_by('-id')
     return render(request, 'erp/products.html', {'products': products})
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render, redirect
+from django.db.models import Sum
+from .models import CustomerLedger
+
+# 📒 Customer Ledger & Khata View
+@staff_member_required(login_url='/login/')
+def erp_customer_ledger(request):
+    if request.method == 'POST':
+        customer_name = request.POST.get('customer_name')
+        mobile_number = request.POST.get('mobile_number')
+        transaction_type = request.POST.get('transaction_type')
+        amount = request.POST.get('amount')
+        description = request.POST.get('description')
+
+        CustomerLedger.objects.create(
+            customer_name=customer_name,
+            mobile_number=mobile_number,
+            transaction_type=transaction_type,
+            amount=amount,
+            description=description
+        )
+        return redirect('erp_ledger')
+
+    ledgers = CustomerLedger.objects.all().order_by('-created_at')
+    
+    total_udhaar = CustomerLedger.objects.filter(transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
+    total_jama = CustomerLedger.objects.filter(transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
+    net_balance = total_udhaar - total_jama
+
+    context = {
+        'ledgers': ledgers,
+        'total_udhaar': total_udhaar,
+        'total_jama': total_jama,
+        'net_balance': net_balance,
+    }
+    return render(request, 'erp/ledger.html', context)
