@@ -295,9 +295,9 @@ class CustomerLedger(models.Model):
 class ServiceablePincode(models.Model):
     pincode = models.CharField(max_length=6, unique=True, db_index=True)
     city_name = models.CharField(max_length=100)
-    branch_name = models.CharField(max_length=100, default='Nohar Main Hub') # Multi-branch support
+    branch_name = models.CharField(max_length=100, default='Nohar Main Hub')
     is_serviceable = models.BooleanField(default=True)
-    delivery_estimate = models.CharField(max_length=100, default='24-48 Hours')
+    delivery_estimate = models.CharField(max_length=100, default='10 Mins - 1 Hour') # 👈 Quick local time default
     shipping_charge = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
     def __str__(self):

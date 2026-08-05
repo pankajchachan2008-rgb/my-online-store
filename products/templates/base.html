@@ -301,7 +301,7 @@
 
     <!-- 🌟 TOP ANNOUNCEMENT RIBBON -->
     <div class="text-center py-2 px-3" style="background-color: var(--nav-blue); color: var(--accent-gold); font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; z-index: 1050; position: relative;">
-        🎉 FREE DELIVERY ON ORDERS OVER ₹999 | USE CODE: <span class="text-white">CGSMART10</span> FOR ADDITIONAL 1.5% OFF
+        🎉 ⚡ 10 MINS - 1 HOUR LOCAL DELIVERY IN NOHAR | USE CODE: <span class="text-white">CGSMART10</span> FOR 1.5% OFF
     </div>
 
     <!-- 💎 AMAZON STYLE HEADER -->
@@ -309,13 +309,22 @@
         <div class="premium-navbar">
             <div class="container-fluid px-3 d-flex align-items-center justify-content-between mobile-header-block">
                 
-                <!-- 1. Logo & Sidebar Toggle -->
+                <!-- 1. Logo & Sidebar Toggle & Location Selector -->
                 <div class="d-flex align-items-center gap-2">
                     <button class="btn text-white d-lg-none p-1 me-1 fs-4 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">☰</button>
                     <a href="{% url 'home' %}" class="brand-container">
                         <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
                         <span class="brand-name">CGSMART</span>
                     </a>
+
+                    <!-- 📍 Header Global Pincode / Location Selector (Blinkit Style) -->
+                    <div class="d-none d-md-flex align-items-center text-white ms-3 px-2 py-1 rounded" style="background-color: #374151; cursor: pointer; border: 1px solid rgba(255,255,255,0.15);" data-bs-toggle="modal" data-bs-target="#globalPincodeModal" title="Change Location">
+                        <span class="fs-6 me-1">📍</span>
+                        <div style="line-height: 1.1; font-size: 0.75rem;">
+                            <span class="text-white-50 d-block" style="font-size: 0.65rem;">Delivery in 10 Mins</span>
+                            <strong class="text-white" id="headerSelectedPincode">Nohar 335523</strong>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 2. 🌟 Header Search Bar with Voice and Live Suggestions Dropdown -->
@@ -361,9 +370,29 @@
             <a href="{% url 'about' %}">About Us</a>
             <a href="{% url 'contact' %}">Customer Service</a>
             <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
-            <strong class="ms-auto d-none d-md-block" style="color: var(--accent-gold);">Premium Corporate Retail & Essentials</strong>
+            <strong class="ms-auto d-none d-md-block" style="color: var(--accent-gold);">⚡ Superfast Local Delivery: 10 Mins - 1 Hour</strong>
         </div>
     </header>
+
+    <!-- 📍 Global Pincode Modal Popup -->
+    <div class="modal fade" id="globalPincodeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header bg-dark text-white rounded-top-4 py-3">
+                    <h5 class="modal-title fs-6 fw-bold">📍 Choose Your Location</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Enter your delivery pincode to check instant 10-minute to 1-hour local delivery availability in Nohar.</p>
+                    <div class="input-group mb-3">
+                        <input type="text" id="globalModalPincode" class="form-control" placeholder="Enter Pincode" maxlength="6">
+                        <button class="btn btn-warning fw-bold" type="button" id="saveGlobalPincodeBtn" style="background-color: var(--accent-gold);">Apply</button>
+                    </div>
+                    <div id="globalModalResult" class="small fw-semibold text-center" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 📱 Mobile Offcanvas Sidebar -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
@@ -374,6 +403,15 @@
         <div class="offcanvas-body p-0">
             <div class="d-flex flex-column h-100">
                 <div class="flex-grow-1 mt-2">
+                    <!-- Mobile Location option -->
+                    <div class="p-3 bg-light border-bottom d-flex align-items-center justify-content-between" data-bs-toggle="modal" data-bs-target="#globalPincodeModal" data-bs-dismiss="offcanvas">
+                        <div class="d-flex align-items-center gap-2">
+                            <span>📍</span>
+                            <span class="fw-bold small">Delivery Location: <span id="mobileSelectedPincode">Nohar 335523</span></span>
+                        </div>
+                        <span class="badge bg-dark">Change</span>
+                    </div>
+
                     <a href="{% url 'home' %}" class="mobile-menu-link">🏠 <span class="ms-3">Home</span></a>
                     <a href="{% url 'home' %}#full-collection" class="mobile-menu-link" data-bs-dismiss="offcanvas">🛍️ <span class="ms-3">Shop Products</span></a>
                     <a href="{% url 'about' %}" class="mobile-menu-link">🏢 <span class="ms-3">About Us</span></a>
@@ -426,9 +464,9 @@
                     <p class="small text-muted mb-0">Pay when you receive</p>
                 </div>
                 <div class="col-md-3">
-                    <span class="fs-1 mb-3 d-block">🚚</span>
-                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue); font-size: 1.1rem;">Fast Local Delivery</h6>
-                    <p class="small text-muted mb-0">Quick dispatch across Nohar</p>
+                    <span class="fs-1 mb-3 d-block">⚡</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-blue); font-size: 1.1rem;">10 Mins - 1 Hour Delivery</h6>
+                    <p class="small text-muted mb-0">Superfast dispatch across Nohar</p>
                 </div>
                 <div class="col-md-3">
                     <span class="fs-1 mb-3 d-block">⭐</span>
@@ -447,7 +485,7 @@
                     <h5 class="fw-bold mb-4 text-uppercase" style="color: var(--accent-gold); font-size: 1.5rem; letter-spacing: 2px;">CGSMART.</h5>
                     <p class="text-white-50" style="line-height: 1.8;">
                         Nohar's premium destination for quality fashion, skincare, and daily essentials. 
-                        Delivering happiness to your doorstep with trust and speed.
+                        Delivering happiness to your doorstep with trust and speed in 10 mins - 1 hour.
                     </p>
                 </div>
                 <div class="col-6 col-lg-4">
@@ -549,6 +587,70 @@
                     easing: 'ease-out-cubic',
                     once: true,
                     offset: 80
+                });
+            }
+
+            // Sync Header Location from localStorage
+            const savedPin = localStorage.getItem("cgsmart_user_pincode");
+            const savedCity = localStorage.getItem("cgsmart_user_city");
+            const headerPinEl = document.getElementById("headerSelectedPincode");
+            const mobilePinEl = document.getElementById("mobileSelectedPincode");
+            
+            if(savedPin && headerPinEl) {
+                headerPinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
+            }
+            if(savedPin && mobilePinEl) {
+                mobilePinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
+            }
+
+            // Global Pincode Modal Save Logic
+            const applyBtn = document.getElementById("saveGlobalPincodeBtn");
+            const inputEl = document.getElementById("globalModalPincode");
+            const resEl = document.getElementById("globalModalResult");
+
+            if(applyBtn && inputEl) {
+                applyBtn.addEventListener("click", function() {
+                    let pin = inputEl.value.trim();
+                    if(pin.length !== 6) {
+                        resEl.style.display = "block";
+                        resEl.className = "small fw-semibold text-danger";
+                        resEl.innerText = "Enter valid 6-digit pincode.";
+                        return;
+                    }
+
+                    applyBtn.innerText = "...";
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
+                    fetch('/api/check-delivery/', {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": csrfToken,
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        body: JSON.stringify({ pincode: pin })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        applyBtn.innerText = "Apply";
+                        resEl.style.display = "block";
+                        if(data.available) {
+                            resEl.className = "small fw-semibold text-success";
+                            resEl.innerText = "⚡ 10 Mins delivery available!";
+                            localStorage.setItem("cgsmart_user_pincode", pin);
+                            localStorage.setItem("cgsmart_user_city", data.city || "Nohar");
+                            if(headerPinEl) headerPinEl.innerText = (data.city || "Nohar") + " " + pin;
+                            if(mobilePinEl) mobilePinEl.innerText = (data.city || "Nohar") + " " + pin;
+                            setTimeout(() => { location.reload(); }, 1000);
+                        } else {
+                            resEl.className = "small fw-semibold text-danger";
+                            resEl.innerText = data.message;
+                        }
+                    })
+                    .catch(err => {
+                        applyBtn.innerText = "Apply";
+                        console.error(err);
+                    });
                 });
             }
         });
