@@ -291,3 +291,14 @@ class CustomerLedger(models.Model):
 
     def __str__(self):
         return f"{self.customer_name} - {self.transaction_type} - ₹{self.amount}"
+
+class ServiceablePincode(models.Model):
+    pincode = models.CharField(max_length=6, unique=True, db_index=True)
+    city_name = models.CharField(max_length=100)
+    branch_name = models.CharField(max_length=100, default='Nohar Main Hub') # Multi-branch support
+    is_serviceable = models.BooleanField(default=True)
+    delivery_estimate = models.CharField(max_length=100, default='24-48 Hours')
+    shipping_charge = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"{self.pincode} - {self.city_name} ({self.branch_name})"

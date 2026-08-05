@@ -176,18 +176,26 @@
                     {{ product.description|default:"No description available for this premium product yet." }}
                 </p>
 
+                <!-- 📍 Dynamic Multi-City Delivery & Pincode Checker -->
+                <div class="card p-3 my-3 bg-light border-0 rounded-3 shadow-sm" data-aos="fade-up" data-aos-delay="270">
+                    <label for="pincodeInput" class="form-label fw-bold small text-dark mb-1">📦 Delivery & Branch Availability</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" id="pincodeInput" class="form-control" placeholder="Enter 6-digit Pincode" maxlength="6">
+                        <button class="btn btn-dark fw-bold px-3" type="button" id="checkPincodeBtn">Check</button>
+                    </div>
+                    <div id="pincodeResult" class="small mt-2 fw-semibold" style="display: none;"></div>
+                </div>
+
                 <hr class="my-4 border-secondary opacity-25">
 
                 <!-- 🛒 Add to Cart Form -->
                 <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST" class="bg-white p-4 rounded-4 shadow-sm border" style="border-color: #E2E8F0 !important;" data-aos="fade-up" data-aos-delay="300">
                     {% csrf_token %}
-                    <!-- 🌟 FIX: Removed hidden input, handled completely via native HTML buttons below -->
                     
                     {% if product.variants.exists %}
                         <!-- Varieties (Variants) -->
                         <h5 class="fw-bold mb-3">Select Variety:</h5>
                         <div class="mb-4">
-                            <!-- 'required' attribute naturally enforces validation -->
                             <select name="variant_id" id="variantSelect" class="form-select form-select-lg border-2 shadow-none focus-ring" required onchange="updatePrice()">
                                 <option value="" disabled selected>-- Choose Size/Weight --</option>
                                 {% for variant in product.variants.all %}
@@ -221,8 +229,6 @@
                             🛒 Add To Cart
                         </button>
                         
-                        <!-- 🌟 NAYA BUG FIX: Changed type to 'submit' and added name='buy_now' value='true'. 
-                             Browser will natively block submission until variant is selected! -->
                         <button type="submit" name="buy_now" value="true" class="btn btn-lg flex-grow-1 fw-bold text-uppercase rounded-3 shadow-sm" style="background-color: #FFA41C; color: #0F1111; letter-spacing: 1px; border: 1px solid #FF8F00;">
                             ⚡ Buy Now
                         </button>
@@ -389,7 +395,6 @@
                 Add
             </button>
             
-            <!-- 🌟 NAYA BUG FIX: Mobile par bhi native HTML5 validation ke sath submit -->
             <button type="submit" form="addToCartForm" name="buy_now" value="true" class="btn fw-bold px-3 py-2 rounded-3 shadow-sm" style="background-color: #FFA41C; color: #0F1111; border: 1px solid #FF8F00; font-size: 0.85rem; white-space: nowrap;">
                 ⚡ Buy Now
             </button>
@@ -413,7 +418,7 @@
 </div>
 {% endif %}
 
-<!-- Dynamic Price Update Script -->
+<!-- Dynamic Price Update & Pincode Checker Script -->
 <script>
     function updatePrice() {
         var select = document.getElementById("variantSelect");
@@ -427,6 +432,52 @@
             }
         }
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const btn = document.getElementById("checkPincodeBtn");
+        const input = document.getElementById("pincodeInput");
+        const resultDiv = document.getElementById("pincodeResult");
+
+        if(btn && input) {
+            btn.addEventListener("click", function() {
+                let pincode = input.value.trim();
+                if(pincode.length !== 6) {
+                    resultDiv.style.display = "block";
+                    resultDiv.className = "small mt-2 fw-semibold text-danger";
+                    resultDiv.innerText = "Please enter a valid 6-digit pincode.";
+                    return;
+                }
+
+                btn.innerText = "...⏳";
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
+                fetch('/api/check-delivery/', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken,
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({ pincode: pincode })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    btn.innerText = "Check";
+                    resultDiv.style.display = "block";
+                    if(data.available) {
+                        resultDiv.className = "small mt-2 fw-semibold text-success";
+                    } else {
+                        resultDiv.className = "small mt-2 fw-semibold text-danger";
+                    }
+                    resultDiv.innerText = data.message;
+                })
+                .catch(err => {
+                    btn.innerText = "Check";
+                    console.error("Pincode check error:", err);
+                });
+            });
+        }
+    });
 </script>
 
 <!-- 🌟 INNER HOVER ZOOM JAVASCRIPT -->

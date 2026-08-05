@@ -41,7 +41,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from .forms import CustomRegisterForm
-from django.utils import timezone 
+from django.utils import timezone
+from .models import ServiceablePincode
+import json
 
 from .models import Product, Category, SubCategory, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand, Review, CustomerLedger
 
@@ -983,3 +985,28 @@ def search_suggestions(api_request):
                 'image': p.image.url if p.image else ''
             })
     return JsonResponse({'products': results})
+
+def check_delivery(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            pincode = data.get('pincode', '').strip()
+            
+            # Database lookup for multi-city scalability
+            match = ServiceablePincode.objects.filter(pincode=pincode, is_serviceable=True).first()
+            
+            if match:
+                return JsonResponse({
+                    'available': True,
+                    'city': match.city_name,
+                    'branch': match.branch_name,
+                    'message': f"⚡ Fast delivery available in {match.city_name} via {match.branch_name}! Estimated delivery: {match.delivery_estimate}."
+                })
+            else:
+                return JsonResponse({
+                    'available': False,
+                    'message': '❌ Sorry, delivery is not available for this pincode yet. We are expanding to new cities soon!'
+                })
+        except Exception as e:
+            return JsonResponse({'available': False, 'message': 'Invalid request.'}, status=400)
+    return JsonResponse({'error': 'Invalid method'}, status=405)

@@ -9,6 +9,7 @@ from django.urls import path
 from django.template.response import TemplateResponse
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth # 🌟 NAYA: Chart ke liye import add kiya
+from .models import ServiceablePincode
 
 from .models import (
     Category, Brand, Product, Coupon, Order, OrderItem,
@@ -207,3 +208,9 @@ class ReviewAdmin(admin.ModelAdmin):
     list_display = ('product', 'user', 'rating', 'comment', 'created_at')
     list_filter = ('rating', 'created_at')
     search_fields = ('product__name', 'user__username', 'comment')
+
+@admin.register(ServiceablePincode)
+class ServiceablePincodeAdmin(admin.ModelAdmin):
+    list_display = ('pincode', 'city_name', 'branch_name', 'is_serviceable', 'delivery_estimate')
+    search_fields = ('pincode', 'city_name', 'branch_name')
+    list_filter = ('is_serviceable', 'city_name', 'branch_name')

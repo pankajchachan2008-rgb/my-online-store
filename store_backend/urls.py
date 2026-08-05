@@ -12,6 +12,7 @@ from products.sitemaps import ProductSitemap, StaticViewSitemap
 from products.views import search_suggestions
 
 from products import views
+from products.views import check_delivery
 
 # 🌟 FIX: Removed 'make_admin' from here!
 from products.views import (
@@ -42,6 +43,8 @@ sitemaps = {
 urlpatterns = [
     path('secret-cgs-main/', admin.site.urls),
     path('', product_list, name='home'),
+
+    path('api/check-delivery/', check_delivery, name='check_delivery'),
     
     path('product/<int:product_id>/', product_detail, name='product_detail'),
     path('api/search-suggestions/', search_suggestions, name='search_suggestions'),
