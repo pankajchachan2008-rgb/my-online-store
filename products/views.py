@@ -27,6 +27,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum, Count
 from datetime import timedelta
 
+# 🌟 RATELIMIT IMPORT FOR SECURITY
+from django_ratelimit.decorators import ratelimit
+
 # 🌟 100% SAFE SMART SEARCH IMPORTS
 from django.db.models import Q
 import difflib
@@ -43,7 +46,6 @@ from django.core.paginator import Paginator
 from .forms import CustomRegisterForm
 from django.utils import timezone
 from .models import ServiceablePincode
-import json
 
 from .models import Product, Category, SubCategory, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand, Review, CustomerLedger
 
@@ -986,6 +988,8 @@ def search_suggestions(api_request):
             })
     return JsonResponse({'products': results})
 
+# 🌟 Ratelimit applied to protect the delivery API against automated bot/spam hitting
+@ratelimit(key='ip', rate='15/m', block=True)
 def check_delivery(request):
     if request.method == "POST":
         try:
