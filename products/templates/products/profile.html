@@ -24,11 +24,27 @@
     .tracking-box { background-color: #e5f3fb; border: 1px dashed #2874f0; border-radius: 4px; padding: 12px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
 
     .address-tag { background: #f0f0f0; color: #878787; font-size: 0.7rem; padding: 3px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* 🌟 NAYA: ORDER TRACKING TIMELINE CSS */
+    .tracking-wrapper { padding: 25px 15px; margin-bottom: 15px; background: #fff; border-radius: 4px; border: 1px solid #f0f0f0; }
+    .track-line { display: flex; justify-content: space-between; position: relative; }
+    .track-line::before { content: ''; position: absolute; top: 15px; left: 10%; right: 10%; height: 4px; background-color: #E2E8F0; z-index: 1; }
+    .track-progress { position: absolute; top: 15px; left: 10%; height: 4px; background-color: #2ECC71; z-index: 2; transition: width 0.5s ease; }
+    .track-step { position: relative; z-index: 3; text-align: center; width: 25%; }
+    .track-icon { width: 34px; height: 34px; background-color: #E2E8F0; color: #94A3B8; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; font-size: 14px; font-weight: bold; box-shadow: 0 0 0 4px white; transition: all 0.3s ease; }
+    .track-text { font-size: 0.85rem; font-weight: 600; color: #64748B; }
+    
+    /* Active & Cancelled States */
+    .step-active .track-icon { background-color: #2ECC71; color: white; box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.2); }
+    .step-active .track-text { color: #0F172A; }
+    .step-cancelled .track-icon { background-color: #E74C3C; color: white; box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.2); }
+    .track-line.cancelled::before { background-color: #FADBD8; }
 </style>
 
 <div class="container my-4" style="max-width: 1200px;">
     <div class="row">
         
+        <!-- SIDEBAR -->
         <div class="col-lg-3 mb-4">
             <div class="profile-card">
                 <div class="user-info-header mb-3">
@@ -65,11 +81,14 @@
             </div>
         </div>
 
+        <!-- MAIN CONTENT AREA -->
         <div class="col-lg-9">
             <div class="profile-card p-4 tab-content" id="v-pills-tabContent" style="min-height: 500px;">
                 
+                <!-- 👤 PROFILE TAB -->
                 <div class="tab-pane fade show active" id="tab-profile">
                     
+                    <!-- Wallet Alert -->
                     <div class="alert alert-info d-flex justify-content-between align-items-center rounded-0 border-0 shadow-sm mb-3 p-3" style="background-color: #e5edfa; border-left: 4px solid #2874f0 !important;">
                         <div>
                             <h6 class="fw-bold mb-0 text-dark" style="font-size: 15px;">🛍️ My Store Wallet Balance</h6>
@@ -78,7 +97,7 @@
                         <h4 class="fw-bold mb-0" style="color: #2874f0;">₹{{ profile.wallet_balance }}</h4>
                     </div>
 
-                    <!-- 🌟 NAYA: Wallet Passbook UI -->
+                    <!-- Wallet Passbook -->
                     <div class="mb-5">
                         <a class="btn btn-sm btn-outline-primary rounded-0 fw-bold mb-2" data-bs-toggle="collapse" href="#collapsePassbook" role="button" aria-expanded="false" aria-controls="collapsePassbook">
                             📖 View Wallet Passbook
@@ -113,6 +132,7 @@
                         </div>
                     </div>
 
+                    <!-- Profile Edit Form -->
                     <h5 class="fw-bold mb-4 pb-2 border-bottom">Profile Information</h5>
                     
                     <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
@@ -148,12 +168,13 @@
                     </form>
                 </div>
 
+                <!-- 📦 ORDERS TAB -->
                 <div class="tab-pane fade" id="tab-orders">
                     <h5 class="fw-bold mb-4 pb-2 border-bottom">My Orders</h5>
                     
                     {% for order in orders %}
                     <div class="order-box mb-4">
-                        <div class="order-header d-flex justify-content-between align-items-center">
+                        <div class="order-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <div>
                                 <span class="text-muted small">ORDER PLACED</span><br>
                                 <strong style="font-size: 0.9rem;">{{ order.created_at|date:"d M Y" }}</strong>
@@ -164,34 +185,75 @@
                             </div>
                             <div class="text-end">
                                 <span class="text-muted small">ORDER ID</span><br>
-                                <strong style="font-size: 0.9rem;">#ORD-2026-{{ order.id }}</strong>
+                                <strong style="font-size: 0.9rem; color: #2874f0;">#ORD-2026-{{ order.id }}</strong>
                             </div>
                         </div>
                         
-                        <div class="p-3">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <!-- 🌟 FIX: Order.STATUS_CHOICES in models.py has
-                                         'Completed', not 'Delivered' — this branch
-                                         could never actually match, so completed
-                                         orders always fell through to the generic
-                                         yellow "in progress" status below. -->
-                                    {% if order.status == 'Completed' %}
-                                        <h6 class="fw-bold text-success mb-1">🟢 Completed</h6>
-                                    {% elif order.status == 'Cancelled' %}
-                                        <h6 class="fw-bold text-danger mb-1">🔴 Cancelled</h6>
+                        <div class="p-4">
+                            <!-- 🌟 LIVE TRACKING TIMELINE BAR -->
+                            <div class="tracking-wrapper">
+                                <div class="track-line {% if order.status == 'Cancelled' %}cancelled{% endif %}">
+                                    
+                                    {% if order.status != 'Cancelled' %}
+                                        <!-- Dynamic Progress Indicator -->
+                                        {% if order.status == 'Pending' %}
+                                            <div class="track-progress" style="width: 0%;"></div>
+                                        {% elif order.status == 'Processing' %}
+                                            <div class="track-progress" style="width: 33%;"></div>
+                                        {% elif order.status == 'Out for Delivery' %}
+                                            <div class="track-progress" style="width: 66%;"></div>
+                                        {% elif order.status == 'Completed' %}
+                                            <div class="track-progress" style="width: 100%;"></div>
+                                        {% endif %}
+                                        
+                                        <!-- Checkpoints -->
+                                        <div class="track-step step-active">
+                                            <div class="track-icon">✓</div>
+                                            <div class="track-text">Placed</div>
+                                        </div>
+                                        <div class="track-step {% if order.status in 'Processing,Out for Delivery,Completed' %}step-active{% endif %}">
+                                            <div class="track-icon">📦</div>
+                                            <div class="track-text">Processing</div>
+                                        </div>
+                                        <div class="track-step {% if order.status in 'Out for Delivery,Completed' %}step-active{% endif %}">
+                                            <div class="track-icon">🚚</div>
+                                            <div class="track-text">Shipped</div>
+                                        </div>
+                                        <div class="track-step {% if order.status == 'Completed' %}step-active{% endif %}">
+                                            <div class="track-icon">🏠</div>
+                                            <div class="track-text">Delivered</div>
+                                        </div>
                                     {% else %}
-                                        <h6 class="fw-bold text-warning mb-1">🟡 {{ order.status }}</h6>
+                                        <!-- Cancelled State -->
+                                        <div class="track-step step-cancelled" style="width: 100%;">
+                                            <div class="track-icon">❌</div>
+                                            <div class="track-text text-danger">Order Cancelled</div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <!-- END OF TIMELINE BAR -->
+
+                            <!-- Order Action Buttons -->
+                            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-2">
+                                <div>
+                                    {% if order.status == 'Completed' %}
+                                        <h6 class="fw-bold text-success m-0">🟢 Delivered Successfully</h6>
+                                    {% elif order.status == 'Cancelled' %}
+                                        <h6 class="fw-bold text-danger m-0">🔴 Cancelled</h6>
+                                    {% else %}
+                                        <h6 class="fw-bold text-warning m-0">🟡 {{ order.status }}</h6>
                                     {% endif %}
                                 </div>
                                 
-                                <div>
+                                <div class="d-flex gap-2">
                                     {% if order.status != 'Cancelled' %}
-                                    <a href="{% url 'download_invoice' order.id %}" class="btn btn-outline-dark btn-sm rounded-0 me-2">Download Invoice</a>
+                                        <!-- 🧾 DOWNLOAD INVOICE BUTTON -->
+                                        <a href="{% url 'download_invoice' order.id %}" class="btn btn-outline-dark btn-sm rounded-0 fw-bold">🧾 Download Bill</a>
                                     {% endif %}
                                     
                                     {% if order.status == 'Pending' %}
-                                    <form action="{% url 'cancel_order' order.id %}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel?');">
+                                    <form action="{% url 'cancel_order' order.id %}" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to cancel?');">
                                         {% csrf_token %}
                                         <button type="submit" class="btn btn-outline-danger btn-sm rounded-0">Cancel Order</button>
                                     </form>
@@ -199,30 +261,28 @@
                                 </div>
                             </div>
 
-                            <div class="bg-light p-3 rounded">
-                                <!-- 🌟 FIX: OrderItem's ForeignKey to Order uses
-                                     related_name='items' in models.py, so
-                                     Django's default reverse accessor
-                                     'orderitem_set' does not exist here. This
-                                     silently rendered an empty loop — order
-                                     items never showed up under My Orders. -->
+                            <!-- Order Items -->
+                            <div class="bg-light p-3 rounded border">
                                 {% for item in order.items.all %}
                                 <div class="d-flex justify-content-between mb-2 pb-2 {% if not forloop.last %}border-bottom{% endif %}">
                                     <span style="font-size: 0.9rem;"><strong>{{ item.quantity }} x</strong> {{ item.product_name }}</span>
                                     <span class="fw-medium text-dark" style="font-size: 0.9rem;">₹{{ item.price }}</span>
                                 </div>
+                                {% empty %}
+                                    <span class="text-muted">No items in this order.</span>
                                 {% endfor %}
                             </div>
 
+                            <!-- Courier Details (If Shipped) -->
                             {% if order.tracking_id %}
-                            <div class="tracking-box mt-3">
+                            <div class="tracking-box mt-3 flex-wrap gap-2">
                                 <div>
                                     <span class="text-muted small fw-bold" style="text-transform: uppercase;">🚚 Delivery Partner: {{ order.courier_name|default:"Courier" }}</span><br>
                                     <span class="text-dark fw-bold" style="font-size: 15px;">Tracking ID: {{ order.tracking_id }}</span>
                                 </div>
                                 {% if order.tracking_url %}
                                 <div>
-                                    <a href="{{ order.tracking_url }}" target="_blank" class="btn btn-primary btn-sm px-4 fw-bold rounded-0" style="background-color: #2874f0; border:none;">TRACK ORDER</a>
+                                    <a href="{{ order.tracking_url }}" target="_blank" class="btn btn-primary btn-sm px-4 fw-bold rounded-0" style="background-color: #2874f0; border:none;">TRACK LIVE</a>
                                 </div>
                                 {% endif %}
                             </div>
@@ -239,6 +299,7 @@
                     {% endfor %}
                 </div>
 
+                <!-- 📍 ADDRESSES TAB -->
                 <div class="tab-pane fade" id="tab-addresses">
                     <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
                         <h5 class="fw-bold mb-0">Manage Addresses</h5>
@@ -317,9 +378,6 @@
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                                 <li><a class="dropdown-item small" href="{% url 'edit_address' addr.id %}">Edit</a></li>
                                 <li>
-                                    <!-- 🌟 FIX: was a GET <a> link deleting data directly —
-                                         now a real POST form, matching delete_address's
-                                         @require_POST restriction. -->
                                     <form method="POST" action="{% url 'delete_address' addr.id %}" onsubmit="return confirm('Delete this address?');">
                                         {% csrf_token %}
                                         <button type="submit" class="dropdown-item text-danger small border-0 bg-transparent w-100 text-start">Delete</button>
