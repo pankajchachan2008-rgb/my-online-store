@@ -28,6 +28,8 @@ from django.db.models import Sum, Count
 from datetime import timedelta
 from .models import Expense, Supplier, SupplierLedger
 from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
+from .models import Order, DeliveryBoy
 
 # 🌟 RATELIMIT IMPORT FOR SECURITY
 from django_ratelimit.decorators import ratelimit
@@ -894,41 +896,6 @@ def erp_dashboard(request):
     }
     return render(request, 'erp/dashboard.html', context)
 
-@staff_member_required(login_url='/login/')
-def erp_update_order(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    if request.method == 'POST':
-        new_status = request.POST.get('status')
-        courier_name = request.POST.get('courier_name')
-        tracking_id = request.POST.get('tracking_id')
-        tracking_url = request.POST.get('tracking_url')
-
-        if new_status: order.status = new_status
-        if courier_name: order.courier_name = courier_name
-        if tracking_id: order.tracking_id = tracking_id
-        if tracking_url: order.tracking_url = tracking_url
-            
-        order.save()
-
-        # 🌟 Send Status Update via WhatsApp & Email
-        update_msg = (
-            f"📦 *Order Status Update - CGSmart*\n\n"
-            f"Dear {order.customer_name},\n"
-            f"Aapke Order *#{order.id}* ka status update ho gaya hai:\n"
-            f"📌 *New Status:* {order.status}\n"
-        )
-        if order.tracking_id:
-            update_msg += f"🚚 Courier: {order.courier_name}\nTracking ID: {order.tracking_id}\n"
-        update_msg += f"\n🔗 Track status here: https://www.cgsmart.in/track-order/"
-
-        send_brevo_whatsapp(order.mobile_number, update_msg)
-        if order.user and order.user.email:
-            send_brevo_api_email(f"Order Status Updated: #{order.id} - {order.status}", f"<p>Dear {order.customer_name}, your order status is now: <strong>{order.status}</strong></p>", order.user.email)
-
-        return redirect('erp_dashboard')
-    
-    return render(request, 'erp/update_order.html', {'order': order})
-
 # 🏢 ERP Product Master & Bulk Update
 @staff_member_required(login_url='/login/')
 def erp_products(request):
@@ -1321,3 +1288,108 @@ def erp_supplier_ledger(request):
         'net_balance': net_balance,
     }
     return render(request, 'erp/supplier_ledger.html', context)
+
+# ==========================================
+# 🌟 ERP - ORDER UPDATE & ASSIGN VIEW (MERGED)
+# ==========================================
+@staff_member_required(login_url='/login/')
+def erp_update_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    # Sirf active delivery boys ko fetch karein
+    delivery_boys = DeliveryBoy.objects.filter(is_active=True)
+    
+    if request.method == 'POST':
+        # 1. Order Status update
+        new_status = request.POST.get('status')
+        if new_status:
+            order.status = new_status
+            
+        # 2. Local Delivery Boy Logic
+        delivery_boy_id = request.POST.get('delivery_boy')
+        if delivery_boy_id:
+            order.delivery_boy_id = delivery_boy_id
+        else:
+            order.delivery_boy = None
+            
+        # 3. External Courier & Tracking Logic
+        courier_name = request.POST.get('courier_name')
+        tracking_id = request.POST.get('tracking_id')
+        tracking_url = request.POST.get('tracking_url')
+        
+        if courier_name: order.courier_name = courier_name
+        if tracking_id: order.tracking_id = tracking_id
+        if tracking_url: order.tracking_url = tracking_url
+            
+        order.save()
+
+        # 🌟 4. Send Status Update via WhatsApp & Email
+        update_msg = (
+            f"📦 *Order Status Update - CGSmart*\n\n"
+            f"Dear {order.customer_name},\n"
+            f"Aapke Order *#{order.id}* ka status update ho gaya hai:\n"
+            f"📌 *New Status:* {order.status}\n"
+        )
+        if order.tracking_id:
+            update_msg += f"🚚 Courier: {order.courier_name}\nTracking ID: {order.tracking_id}\n"
+        elif order.delivery_boy:
+            update_msg += f"🛵 Delivery Partner: {order.delivery_boy.name} will deliver your order soon!\n"
+            
+        update_msg += f"\n🔗 Track status here: https://www.cgsmart.in/track-order/"
+
+        # Notifications bhejein
+        send_brevo_whatsapp(order.mobile_number, update_msg)
+        if order.user and order.user.email:
+            send_brevo_api_email(
+                f"Order Status Updated: #{order.id} - {order.status}", 
+                f"<p>Dear {order.customer_name}, your order status is now: <strong>{order.status}</strong></p>", 
+                order.user.email
+            )
+
+        messages.success(request, f"✅ Order #ORD-{order.id} successfully update ho gaya!")
+        return redirect('erp_dashboard')
+        
+    context = {
+        'order': order,
+        'delivery_boys': delivery_boys
+    }
+    return render(request, 'erp/update_order.html', context)
+
+# ==========================================
+# 🛵 2. DELIVERY BOY - MOBILE DASHBOARD
+# ==========================================
+@login_required(login_url='/login/')
+def delivery_boy_dashboard(request):
+    # Check karein ki logged-in user ek delivery boy hai ya nahi
+    if not hasattr(request.user, 'delivery_profile'):
+        messages.error(request, "Aapko Delivery Boy Dashboard ka access nahi hai.")
+        return redirect('home')
+        
+    delivery_boy = request.user.delivery_profile
+    
+    # Agar delivery boy order ko 'Completed' mark karta hai
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        order = get_object_or_404(Order, id=order_id, delivery_boy=delivery_boy)
+        
+        order.status = 'Completed'
+        order.save()
+        messages.success(request, f"🎉 Order #ORD-{order.id} Delivered mark ho gaya!")
+        return redirect('delivery_boy_dashboard')
+
+    # Pending Orders (Jo deliver karne hain)
+    pending_orders = Order.objects.filter(
+        delivery_boy=delivery_boy
+    ).exclude(status__in=['Completed', 'Cancelled']).order_by('-created_at')
+    
+    # Completed Orders (Jo deliver ho chuke hain)
+    completed_orders = Order.objects.filter(
+        delivery_boy=delivery_boy, 
+        status='Completed'
+    ).order_by('-created_at')[:10]  # Aakhri 10 orders dikhayenge
+
+    context = {
+        'delivery_boy': delivery_boy,
+        'pending_orders': pending_orders,
+        'completed_orders': completed_orders
+    }
+    return render(request, 'delivery/dashboard.html', context)

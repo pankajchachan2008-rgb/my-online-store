@@ -121,6 +121,12 @@ urlpatterns = [
     path('cgs-erp/pos/', views.erp_pos_billing, name='erp_pos'),
     path('cgs-erp/ledger/', views.erp_customer_ledger, name='erp_ledger'),
     path('cgs-erp/settings/', views.erp_store_settings, name='erp_settings'),
+
+# ERP Order Update
+    path('erp/order/update/<int:order_id>/', views.erp_update_order, name='erp_update_order'),
+    
+    # Delivery Boy Mobile Portal
+    path('delivery-dashboard/', views.delivery_boy_dashboard, name='delivery_boy_dashboard'),
     
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
