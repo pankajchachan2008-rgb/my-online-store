@@ -30,6 +30,7 @@ from .models import Expense, Supplier, SupplierLedger
 from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 from .models import Order, DeliveryBoy
+import csv
 
 # 🌟 RATELIMIT IMPORT FOR SECURITY
 from django_ratelimit.decorators import ratelimit
@@ -1393,3 +1394,90 @@ def delivery_boy_dashboard(request):
         'completed_orders': completed_orders
     }
     return render(request, 'delivery/dashboard.html', context)
+
+# ==========================================
+# 📊 CA / TALLY EXCEL (CSV) EXPORT VIEW
+# ==========================================
+@staff_member_required(login_url='/login/')
+def export_ca_accounting_report(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="CGSmart_CA_Accounting_Report_2026.csv"'
+    
+    writer = csv.writer(response)
+    
+    # 1. Store Header Info
+    writer.writerow(['CHACHAN GENERAL STORE - CA ACCOUNTING & GST REPORT'])
+    writer.writerow([f'Generated On: {timezone.now().strftime("%d-%m-%Y %H:%M")}'])
+    writer.writerow([]) # Blank row
+    
+    # 2. Sales & GST Section
+    writer.writerow(['--- SALES & GST SUMMARY ---'])
+    writer.writerow(['Order ID', 'Date', 'Customer Name', 'Mobile', 'Total Amount (₹)', 'Taxable Value (Subtotal)', 'CGST (9%)', 'SGST (9%)', 'Status'])
+    
+    completed_orders = Order.objects.filter(status='Completed').order_by('-created_at')
+    total_sales = 0
+    total_taxable = 0
+    total_cgst = 0
+    total_sgst = 0
+    
+    for order in completed_orders:
+        amt = float(order.total_amount)
+        subtotal = round(amt / 1.18, 2)
+        tax_amount = round(amt - subtotal, 2)
+        cgst = round(tax_amount / 2, 2)
+        sgst = cgst
+        
+        total_sales += amt
+        total_taxable += subtotal
+        total_cgst += cgst
+        total_sgst += sgst
+        
+        writer.writerow([
+            f"#ORD-{order.id}",
+            order.created_at.strftime('%d-%m-%Y'),
+            order.customer_name,
+            order.mobile_number,
+            amt,
+            subtotal,
+            cgst,
+            sgst,
+            order.status
+        ])
+        
+    writer.writerow(['TOTAL SALES', '', '', '', total_sales, total_taxable, total_cgst, total_sgst, ''])
+    writer.writerow([]) # Blank row
+    
+    # 3. Shop Expenses Section (Dukaan ke kharche)
+    writer.writerow(['--- DUKAAN DAILY EXPENSES ---'])
+    writer.writerow(['Date', 'Category', 'Description', 'Amount (₹)'])
+    
+    expenses = Expense.objects.all().order_by('-date')
+    total_exp = 0
+    for exp in expenses:
+        total_exp += float(exp.amount)
+        writer.writerow([
+            exp.date.strftime('%d-%m-%Y'),
+            exp.get_category_display() if hasattr(exp, 'get_category_display') else exp.category,
+            exp.description,
+            exp.amount
+        ])
+    writer.writerow(['TOTAL EXPENSES', '', '', total_exp])
+    writer.writerow([]) # Blank row
+    
+    # 4. Supplier / Wholesaler Khata Section (Udhaar/Payable)
+    writer.writerow(['--- SUPPLIER / WHOLESALER LEDGER ---'])
+    writer.writerow(['Supplier Name', 'Company', 'Mobile', 'Transaction Type', 'Amount (₹)', 'Description', 'Date'])
+    
+    ledger_entries = SupplierLedger.objects.all().order_by('-created_at')
+    for entry in ledger_entries:
+        writer.writerow([
+            entry.supplier.name,
+            entry.supplier.company_name or 'N/A',
+            entry.supplier.mobile_number or 'N/A',
+            entry.get_transaction_type_display(),
+            entry.amount,
+            entry.description,
+            entry.created_at.strftime('%d-%m-%Y %H:%M')
+        ])
+        
+    return response

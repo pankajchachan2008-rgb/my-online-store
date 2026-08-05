@@ -111,8 +111,10 @@ urlpatterns = [
     path('cart-ajax/remove/<int:product_id>/', views.remove_from_cart_ajax, name='remove_from_cart_ajax'),
 
     path('invoice/<int:order_id>/download/', download_invoice, name='download_invoice'),
+    path('erp/export-ca-report/', views.export_ca_accounting_report, name='export_ca_report'),    
     
     path('ping/', ping, name='ping'),
+
 # 🏢 Custom ERP Routes
     path('cgs-erp/dashboard/', views.erp_dashboard, name='erp_dashboard'),
     path('cgs-erp/order/update/<int:order_id>/', views.erp_update_order, name='erp_update_order'),
