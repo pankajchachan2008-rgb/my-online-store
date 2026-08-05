@@ -49,9 +49,10 @@ from .models import ServiceablePincode
 
 from .models import Product, Category, SubCategory, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand, Review, CustomerLedger
 
-# --- HELPER FUNCTION FOR BREVO API ---
+# --- HELPER FUNCTION FOR BREVO EMAIL ---
 def send_brevo_api_email(subject, message, to_email):
     api_key = os.environ.get('BREVO_API_KEY') 
+    if not api_key or not to_email: return None
     
     url = "https://api.brevo.com/v3/smtp/email"
     headers = {
@@ -66,11 +67,34 @@ def send_brevo_api_email(subject, message, to_email):
     }
     
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers, timeout=5)
         return response.status_code
     except Exception as e:
         print(f"Email API error: {e}")
         return None
+
+# --- HELPER FUNCTION FOR BREVO WHATSAPP NOTIFICATIONS ---
+def send_brevo_whatsapp(mobile_number, message_text):
+    api_key = os.environ.get('BREVO_API_KEY')
+    if not api_key or not mobile_number: return
+    
+    clean_mobile = str(mobile_number).strip().replace("+", "")
+    if len(clean_mobile) == 10:
+        clean_mobile = "91" + clean_mobile
+        
+    url = "https://api.brevo.com/v3/whatsapp/sendMessage"
+    headers = {
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+    payload = {
+        "contactNumber": clean_mobile,
+        "text": message_text
+    }
+    try:
+        requests.post(url, json=payload, headers=headers, timeout=5)
+    except Exception as e:
+        print(f"WhatsApp API error: {e}")
 
 # 🏠 1. Homepage View (With Safe Smart Search & Typo Handling)
 def product_list(request):
@@ -278,7 +302,7 @@ def cart_detail(request):
         
     return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
-# 🛍️ 4. Checkout
+# 🛍️ 4. Checkout (With Automated WhatsApp & Email Notifications)
 def checkout_page(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -371,8 +395,22 @@ def checkout_page(request):
         wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n*Delivery Charge:* ₹{delivery_fee}{coupon_text}\n*Wallet Used:* ₹{wallet_deducted}\n*Total Payable:* ₹{final_total}"
         whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
 
-        if request.user.is_authenticated and request.user.email:
-            send_brevo_api_email(f"Order Confirmation - Order #{order.id}", f"<h3>Hello {name},</h3><p>Aapka order <strong>#{order.id}</strong> receive ho gaya hai!</p><p><strong>Total Amount:</strong> ₹{final_total}</p>", request.user.email)
+        # 🌟 Automated Notifications to Customer (WhatsApp & Email)
+        tracking_link = "https://www.cgsmart.in/track-order/"
+        customer_wa_msg = (
+            f"🎉 Namaste {name}!\n\n"
+            f"Aapka CGSmart order *#{order.id}* successfully receive ho gaya hai!\n"
+            f"💰 Total Amount: ₹{final_total}\n"
+            f"⚡ Expected Delivery: 10 Mins - 1 Hour (Nohar)\n\n"
+            f"📦 Apna order live track karne ke liye yahan click karein:\n{tracking_link}\n\n"
+            f"Thank you for shopping with Chachan General Store!"
+        )
+        send_brevo_whatsapp(mobile, customer_wa_msg)
+
+        customer_email = request.user.email if request.user.is_authenticated and request.user.email else request.POST.get('email')
+        if customer_email:
+            email_html = f"<h3>Hello {name},</h3><p>Aapka order <strong>#{order.id}</strong> receive ho gaya hai!</p><p><strong>Total Amount:</strong> ₹{final_total}</p><p><a href='{tracking_link}'>Click here to track your order</a></p>"
+            send_brevo_api_email(f"Order Confirmation - Order #{order.id}", email_html, customer_email)
 
         request.session['cart'] = {}
         return render(request, 'products/order_success.html', {'order': order, 'whatsapp_url': whatsapp_url})
@@ -860,6 +898,22 @@ def erp_update_order(request, order_id):
         if tracking_url: order.tracking_url = tracking_url
             
         order.save()
+
+        # 🌟 Send Status Update via WhatsApp & Email
+        update_msg = (
+            f"📦 *Order Status Update - CGSmart*\n\n"
+            f"Dear {order.customer_name},\n"
+            f"Aapke Order *#{order.id}* ka status update ho gaya hai:\n"
+            f"📌 *New Status:* {order.status}\n"
+        )
+        if order.tracking_id:
+            update_msg += f"🚚 Courier: {order.courier_name}\nTracking ID: {order.tracking_id}\n"
+        update_msg += f"\n🔗 Track status here: https://www.cgsmart.in/track-order/"
+
+        send_brevo_whatsapp(order.mobile_number, update_msg)
+        if order.user and order.user.email:
+            send_brevo_api_email(f"Order Status Updated: #{order.id} - {order.status}", f"<p>Dear {order.customer_name}, your order status is now: <strong>{order.status}</strong></p>", order.user.email)
+
         return redirect('erp_dashboard')
     
     return render(request, 'erp/update_order.html', {'order': order})
