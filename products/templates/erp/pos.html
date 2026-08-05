@@ -32,6 +32,7 @@
         <a href="{% url 'erp_ledger' %}">📒 Customer Ledger</a>
         <a href="{% url 'erp_pos' %}" class="active">🧾 Billing & POS</a>
         <a href="{% url 'home' %}" target="_blank" class="text-info mt-5">🌐 Go to Live Store</a>
+        <a href="{% url 'logout' %}" class="text-danger mt-3">🚪 Logout</a>
     </div>
 
     <!-- MAIN CONTENT -->
@@ -275,7 +276,7 @@
             clearCart();
         }
 
-        // 🎙️ VOICE COMMAND ITEM ENTRY FOR POS
+        // 🎙️ FIXED SMART VOICE COMMAND ITEM ENTRY FOR POS
         const posMicBtn = document.getElementById('posMicBtn');
         const micText = document.getElementById('micText');
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -295,21 +296,22 @@
             };
 
             recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript.toLowerCase();
+                const transcript = event.results[0][0].transcript.toLowerCase().trim();
                 document.getElementById('posSearch').value = transcript;
                 
                 let tiles = document.querySelectorAll('.product-tile');
                 let found = false;
+                
                 tiles.forEach(tile => {
                     let productName = tile.querySelector('.fw-bold').innerText.toLowerCase();
-                    if (productName.includes(transcript)) {
+                    if (productName.includes(transcript) || transcript.includes(productName)) {
                         tile.click();
                         found = true;
                     }
                 });
 
                 if(!found) {
-                    alert("Item nahi mila: " + transcript);
+                    alert("Item nahi mila: " + transcript + ". Kripya Product Master mein naam check karein.");
                 }
             };
 
