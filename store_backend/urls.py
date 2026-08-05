@@ -56,6 +56,7 @@ urlpatterns = [
     path('erp/api/barcode-lookup/', views.erp_barcode_lookup, name='erp_barcode_lookup'),
     path('checkout/', checkout_page, name='checkout'),
     path('check-coupon-ajax/', check_coupon_ajax, name='check_coupon_ajax'),
+    path('erp/gst-report/', views.erp_gst_report, name='erp_gst_report'),
     
     path('about/', about_page, name='about'),
     path('contact/', contact_page, name='contact'),

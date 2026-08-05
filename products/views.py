@@ -1139,3 +1139,46 @@ def erp_barcode_lookup(request):
             'image': product.image.url if product.image else ''
         })
     return JsonResponse({'success': False, 'message': 'Product not found!'})
+
+@staff_member_required(login_url='/login/')
+def erp_gst_report(request):
+    orders = Order.objects.filter(status='Completed').order_by('-created_at')
+    
+    total_taxable_sales = 0
+    total_cgst = 0
+    total_sgst = 0
+    total_invoice_amount = 0
+    
+    report_data = []
+    for order in orders:
+        amt = float(order.total_amount)
+        # Assuming 18% inclusive GST (Subtotal = Amt / 1.18)
+        subtotal = round(amt / 1.18, 2)
+        tax_amount = round(amt - subtotal, 2)
+        cgst = round(tax_amount / 2, 2)
+        sgst = cgst
+        
+        total_taxable_sales += subtotal
+        total_cgst += cgst
+        total_sgst += sgst
+        total_invoice_amount += amt
+        
+        report_data.append({
+            'order_id': order.id,
+            'date': order.created_at,
+            'customer': order.customer_name,
+            'mobile': order.mobile_number,
+            'subtotal': subtotal,
+            'cgst': cgst,
+            'sgst': sgst,
+            'total': amt
+        })
+
+    context = {
+        'report_data': report_data,
+        'total_taxable_sales': round(total_taxable_sales, 2),
+        'total_cgst': round(total_cgst, 2),
+        'total_sgst': round(total_sgst, 2),
+        'total_invoice_amount': round(total_invoice_amount, 2),
+    }
+    return render(request, 'erp/gst_report.html', context)
