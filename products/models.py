@@ -243,16 +243,6 @@ class WalletTransaction(models.Model):
     def __str__(self):
         return f"{self.user.first_name} | {self.transaction_type} | ₹{self.amount}"
 
-class StoreSetting(models.Model):
-    company_name = models.CharField(max_length=255, default="Chachan General Store")
-    tagline = models.CharField(max_length=255, default="Premium Corporate Retail & Essentials")
-    store_address = models.TextField(blank=True, null=True, help_text="Full address to print on Bill of Supply")
-    store_phone = models.CharField(max_length=20, blank=True, null=True)
-    gstin = models.CharField(max_length=50, blank=True, null=True, help_text="GST Number")
-    
-    def __str__(self):
-        return "Store Configuration Settings"
-
 class OTPVerification(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6)
@@ -272,3 +262,16 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.product.name} ({self.rating} Stars)"
+
+# 🏢 Store Configuration & Settings Model (Combined & Cleaned)
+class StoreSetting(models.Model):
+    store_name = models.CharField(max_length=255, default="Chachan General Store")
+    tagline = models.CharField(max_length=255, default="Premium Corporate Retail & Essentials", blank=True, null=True)
+    owner_name = models.CharField(max_length=100, default="Proprietor", blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.TextField(blank=True, null=True, default="Nohar, Rajasthan")
+    gstin = models.CharField(max_length=50, blank=True, null=True, help_text="GST Number")
+    receipt_footer = models.CharField(max_length=255, default="Thank you, please visit again!")
+
+    def __str__(self):
+        return self.store_name

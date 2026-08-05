@@ -957,3 +957,19 @@ def erp_customer_ledger(request):
         'customer_orders': customer_orders,
     }
     return render(request, 'erp/ledger.html', context)
+
+# 🏢 ERP Store Settings View
+@staff_member_required(login_url='/login/')
+def erp_store_settings(request):
+    setting, created = StoreSetting.objects.get_or_create(pk=1)
+    if request.method == 'POST':
+        setting.store_name = request.POST.get('store_name', setting.store_name)
+        setting.owner_name = request.POST.get('owner_name', setting.owner_name)
+        setting.phone = request.POST.get('phone', setting.phone)
+        setting.address = request.POST.get('address', setting.address)
+        setting.gstin = request.POST.get('gstin', setting.gstin)
+        setting.receipt_footer = request.POST.get('receipt_footer', setting.receipt_footer)
+        setting.save()
+        return redirect('erp_settings')
+    
+    return render(request, 'erp/settings.html', {'setting': setting})

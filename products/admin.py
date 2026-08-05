@@ -128,7 +128,7 @@ class ProductAdmin(admin.ModelAdmin):
 # -----------------------------
 @admin.register(StoreSetting)
 class StoreSettingAdmin(admin.ModelAdmin):
-    list_display = ['company_name', 'store_phone', 'gstin']
+    list_display = ('store_name', 'phone', 'gstin')
 
 # -----------------------------
 # Coupon Admin
