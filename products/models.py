@@ -34,15 +34,12 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     description = models.TextField(blank=True, null=True)
     
-    # MRP Field add kiya for real calculations
     mrp = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) 
     
-    # Frontend Filters ke liye fields
     color = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., Black, White, Red, Blue")
     size = models.CharField(max_length=50, blank=True, null=True, help_text="General Size e.g., S, M, L, XL (Filter ke liye)")
 
-    # Cloudinary Storage for images
     image = models.ImageField(
         upload_to='products/', 
         storage=MediaCloudinaryStorage(), 
@@ -87,8 +84,8 @@ class Coupon(models.Model):
 
 class Order(models.Model):
     STATUS_CHOICES = (
-        ('Pending', 'Pending'),        # 🌟 Synced with views.py
-        ('Processing', 'Processing'),  # Order is being packed
+        ('Pending', 'Pending'),
+        ('Processing', 'Processing'),
         ('Out for Delivery', 'Out for Delivery'),
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
@@ -101,13 +98,15 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     applied_coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     
-    # Default status fixed to 'Pending'
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', db_index=True)
     
     courier_name = models.CharField(max_length=100, blank=True, null=True, help_text="E.g., Trackon, Delivery, etc.")
     tracking_id = models.CharField(max_length=100, blank=True, null=True, help_text="Courier Tracking ID/AWB")
     tracking_url = models.URLField(max_length=500, blank=True, null=True, help_text="Paste direct tracking link here")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
         return f"Order #{self.id} - {self.customer_name}"
@@ -204,6 +203,16 @@ class Banner(models.Model):
         blank=True, 
         null=True
     )
+    # 🌟 FIX: product_list.html already does `{% if banner.category %}
+    # ?category={{ banner.category.id }}{% endif %}` but this field never
+    # existed on the model — every banner silently fell back to
+    # #full-collection, never linking to a specific category no matter
+    # what was intended.
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='banners',
+        help_text="Agar select karein, to banner click karne par is category ke products dikhenge"
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -258,10 +267,7 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.TextField(blank=True, null=True)
-    
-    # 🌟 NAYI FIELD: Photo Reviews ke liye
     image = models.ImageField(upload_to='review_pics/', blank=True, null=True)
-    
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

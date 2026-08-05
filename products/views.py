@@ -15,13 +15,13 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt # 🌟 NAYA: CSRF bypass ke liye
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser
-from django.db.models import Avg
+from django.db.models import Avg, F, ExpressionWrapper, FloatField
 
 # 🌟 100% SAFE SMART SEARCH IMPORTS
 from django.db.models import Q
@@ -69,7 +69,7 @@ def product_list(request):
     categories = Category.objects.all()
     brands = Brand.objects.all()
     products = Product.objects.select_related('brand', 'category').prefetch_related('variants')
-    banners = Banner.objects.filter(is_active=True).order_by('-id')
+    banners = Banner.objects.filter(is_active=True).select_related('category').order_by('-id')
 
     search_query = request.GET.get('search', '').strip(' .')
     sort = request.GET.get('sort')
@@ -127,9 +127,18 @@ def product_list(request):
         except ValueError:
             pass
 
+    # 🌟 ADVANCED DISCOUNT FILTER
     if discount:
-        try: products = products.filter(discount_percentage__gte=discount)
-        except: pass
+        try:
+            discount_val = float(discount)
+            products = products.filter(mrp__isnull=False, mrp__gt=0).annotate(
+                calc_discount=ExpressionWrapper(
+                    (F('mrp') - F('price')) * 100.0 / F('mrp'),
+                    output_field=FloatField()
+                )
+            ).filter(calc_discount__gte=discount_val)
+        except (ValueError, TypeError):
+            pass
         
     if rating:
         try:
@@ -218,9 +227,9 @@ def add_to_cart(request, product_id):
     
     request.session['cart'] = cart
 
-    # 🌟 NAYA: "Buy Now" Button ka Logic
+    # 🌟 "Buy Now" Button ka Logic
     if request.POST.get('buy_now'):
-        return redirect('checkout') # Seedha checkout page par bhejo
+        return redirect('checkout')
         
     messages.success(request, f"{item_name} cart mein add hua!")
     return redirect('home')
@@ -448,32 +457,6 @@ def terms_conditions(request): return render(request, 'policies/terms.html')
 def refund_policy(request): return render(request, 'policies/refund.html')
 def custom_logout(request): logout(request); return redirect('home')
 
-# 🛡️ --- SECURE VERSION of make_admin --- 🛡️
-def make_admin(request):
-    setup_secret = os.environ.get('SETUP_SECRET_KEY')
-
-    if not setup_secret:
-        return HttpResponseForbidden("Setup disabled.")
-
-    provided_secret = request.GET.get('secret')
-
-    if provided_secret != setup_secret:
-        return HttpResponseForbidden("Forbidden.")
-
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@cgsmart.in', 'Admin@1234')
-        return HttpResponse(
-            "<div style='text-align:center; margin-top:50px;'>"
-            "<h2>✅ Admin Created!</h2>"
-            "<a href='/secret-cgs-main/'>Go to Admin</a></div>"
-        )
-
-    return HttpResponse(
-        "<div style='text-align:center; margin-top:50px;'>"
-        "<h2>⚠️ Admin Exists!</h2>"
-        "<a href='/secret-cgs-main/'>Go to Admin</a></div>"
-    )
-
 def trigger_import(request): return render(request, 'products/import_trigger.html')
 
 def register_page(request):
@@ -586,19 +569,19 @@ def remove_from_wishlist(request, product_id):
     messages.success(request, "Item wishlist se hata diya gaya!")
     return redirect('view_wishlist')
 
-# 📝 Product Detail View (With Photo Upload Logic)
+# 📝 Product Detail View
 def product_detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = product.reviews.all().order_by('-created_at')
     
-    similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
+    similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4] if product.category else Product.objects.none()
 
     if request.method == 'POST':
         if not request.user.is_authenticated: return redirect('login')
         
         rating = request.POST.get('rating')
         comment = request.POST.get('comment')
-        review_image = request.FILES.get('review_image') # 🌟 Photo Receive
+        review_image = request.FILES.get('review_image')
 
         if rating: 
             Review.objects.create(
@@ -606,7 +589,7 @@ def product_detail(request, product_id):
                 user=request.user, 
                 rating=int(rating), 
                 comment=comment,
-                image=review_image # 🌟 Photo Save
+                image=review_image
             )
             messages.success(request, "✅ Aapka review submit ho gaya!")
         return redirect('product_detail', product_id=product.id)
@@ -646,15 +629,23 @@ def edit_address(request, address_id):
     return render(request, 'products/edit_address.html', {'address': address})
 
 def verify_otp(request):
-    if not (user_id := request.session.get('verify_user_id')): return redirect('login')
+    if not (user_id := request.session.get('verify_user_id')): 
+        return redirect('login')
     user = User.objects.get(id=user_id)
     if request.method == 'POST':
         try:
-            otp_obj = OTPVerification.objects.get(user=user, otp=request.POST.get('otp')); otp_obj.is_verified = True; otp_obj.save(); user.is_active = True; user.save(); del request.session['verify_user_id']; return redirect('login')
-        except: messages.error(request, 'Galat OTP!')
+            otp_obj = OTPVerification.objects.get(user=user, otp=request.POST.get('otp'))
+            otp_obj.is_verified = True
+            otp_obj.save()
+            user.is_active = True
+            user.save()
+            del request.session['verify_user_id']
+            return redirect('login')
+        except OTPVerification.DoesNotExist: 
+            messages.error(request, 'Galat OTP!')
     return render(request, 'products/verify_otp.html', {'email': user.email})
 
-# --- AJAX CART (🌟 CSRF EXEMPT FIX LAGA DIYA) ---
+# --- AJAX CART ---
 def cart_summary_ajax(request):
     cart = request.session.get('cart', {})
     items = sum(item['quantity'] for item in cart.values() if isinstance(item, dict) and 'quantity' in item)
@@ -666,24 +657,40 @@ def add_to_cart_ajax(request, product_id):
     if request.method == 'POST':
         product = get_object_or_404(Product, id=product_id)
         cart = request.session.get('cart', {})
-        try: data = json.loads(request.body); qty = int(data.get('quantity', 1)); variant_id = data.get('variant_id') 
-        except: qty = 1; variant_id = None
+        try: 
+            data = json.loads(request.body)
+            qty = int(data.get('quantity', 1))
+            variant_id = data.get('variant_id') 
+        except (json.JSONDecodeError, ValueError, TypeError): 
+            qty = 1
+            variant_id = None
             
         if variant_id:
             variant = get_object_or_404(ProductVariant, id=variant_id)
-            cart_key = f"{product_id}_{variant_id}"; item_name = f"{product.name} ({variant.size_name})"; item_price = float(variant.price)
-        else: cart_key = str(product_id); item_name = product.name; item_price = float(product.price)
+            cart_key = f"{product_id}_{variant_id}"
+            item_name = f"{product.name} ({variant.size_name})"
+            item_price = float(variant.price)
+        else: 
+            cart_key = str(product_id)
+            item_name = product.name
+            item_price = float(product.price)
         
-        if cart_key in cart: cart[cart_key]['quantity'] += qty
-        else: cart[cart_key] = {'name': item_name, 'price': item_price, 'quantity': qty}
-        request.session['cart'] = cart; request.session.modified = True
+        if cart_key in cart: 
+            cart[cart_key]['quantity'] += qty
+        else: 
+            cart[cart_key] = {'name': item_name, 'price': item_price, 'quantity': qty}
+        request.session['cart'] = cart
+        request.session.modified = True
         return cart_summary_ajax(request)
 
 @csrf_exempt
 def remove_from_cart_ajax(request, product_id):
     if request.method == 'POST':
         cart = request.session.get('cart', {})
-        if str(product_id) in cart: cart.pop(str(product_id), None); request.session['cart'] = cart; request.session.modified = True
+        if str(product_id) in cart: 
+            cart.pop(str(product_id), None)
+            request.session['cart'] = cart
+            request.session.modified = True
         return cart_summary_ajax(request)
 
 # --- FORGOT PASSWORD ---
@@ -691,9 +698,12 @@ def forgot_password(request):
     if request.method == 'POST':
         user = User.objects.filter(email__iexact=request.POST.get('email', '')).first()
         if user:
-            otp = str(random.randint(100000, 999999)); OTPVerification.objects.filter(user=user).delete(); OTPVerification.objects.create(user=user, otp=otp, is_verified=False)
+            otp = str(random.randint(100000, 999999))
+            OTPVerification.objects.filter(user=user).delete()
+            OTPVerification.objects.create(user=user, otp=otp, is_verified=False)
             send_brevo_api_email('Password Reset', f'OTP: {otp}', user.email)
-            request.session['reset_user_email'] = user.email; return redirect('reset_verify_otp')
+            request.session['reset_user_email'] = user.email
+            return redirect('reset_verify_otp')
         else:
             messages.error(request, 'Account nahi mila.')
     return render(request, 'registration/forgot_password.html')
@@ -702,8 +712,14 @@ def reset_verify_otp(request):
     if not (email := request.session.get('reset_user_email')): return redirect('forgot_password')
     if request.method == 'POST':
         try:
-            otp_obj = OTPVerification.objects.get(user=User.objects.get(email=email), otp=request.POST.get('otp')); otp_obj.is_verified = True; otp_obj.save(); request.session['can_reset_password'] = True; return redirect('set_new_password')
-        except: messages.error(request, 'Galat OTP!')
+            user = User.objects.get(email=email)
+            otp_obj = OTPVerification.objects.get(user=user, otp=request.POST.get('otp'))
+            otp_obj.is_verified = True
+            otp_obj.save()
+            request.session['can_reset_password'] = True
+            return redirect('set_new_password')
+        except (OTPVerification.DoesNotExist, User.DoesNotExist): 
+            messages.error(request, 'Galat OTP!')
     return render(request, 'registration/reset_verify_otp.html', {'email': email})
 
 def set_new_password(request):
@@ -712,11 +728,17 @@ def set_new_password(request):
         pwd = request.POST.get('password')
         if pwd != request.POST.get('confirm_password'): messages.error(request, 'Passwords mismatch')
         else:
-            user = User.objects.get(email=request.session.get('reset_user_email')); user.set_password(pwd); user.save(); OTPVerification.objects.filter(user=user).delete()
-            del request.session['reset_user_email']; del request.session['can_reset_password']; messages.success(request, 'Password changed!'); return redirect('login')
+            user = User.objects.get(email=request.session.get('reset_user_email'))
+            user.set_password(pwd)
+            user.save()
+            OTPVerification.objects.filter(user=user).delete()
+            del request.session['reset_user_email']
+            del request.session['can_reset_password']
+            messages.success(request, 'Password changed!')
+            return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-# 🤖 AI ASSISTANT CHAT LOGIC (🌟 CSRF EXEMPT FIX LAGA DIYA)
+# 🤖 AI ASSISTANT CHAT LOGIC
 @csrf_exempt
 def ai_assistant_chat(request):
     if request.method == 'POST':
@@ -769,9 +791,13 @@ def ai_assistant_chat(request):
                 ai_reply = response.json()['choices'][0]['message']['content']
                 return JsonResponse({'response': ai_reply})
             else:
-                return JsonResponse({'response': f"🛑 Groq API Error: {response.text}"})
+                # 🌟 NAYA: Sanitized error response for users
+                print(f"Groq API Error: {response.text}")
+                return JsonResponse({'response': "Maafi chahunga, abhi system thoda busy hai. Kripya humein WhatsApp par message karein!"})
 
         except Exception as e:
-            return JsonResponse({'response': f"🛑 System Error: {str(e)}"})
+            # 🌟 NAYA: Sanitized system error response
+            print(f"System Error in AI Chat: {str(e)}")
+            return JsonResponse({'response': "Technical error aaya hai, humari team isey theek kar rahi hai. Kripya WhatsApp par sampark karein."})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
