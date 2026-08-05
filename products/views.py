@@ -1360,33 +1360,39 @@ def erp_update_order(request, order_id):
 # ==========================================
 @login_required(login_url='/login/')
 def delivery_boy_dashboard(request):
-    # Check karein ki logged-in user ek delivery boy hai ya nahi
     if not hasattr(request.user, 'delivery_profile'):
         messages.error(request, "Aapko Delivery Boy Dashboard ka access nahi hai.")
         return redirect('home')
         
     delivery_boy = request.user.delivery_profile
     
-    # Agar delivery boy order ko 'Completed' mark karta hai
+    # Agar delivery boy OTP verify karke order complete karta hai
     if request.method == 'POST':
         order_id = request.POST.get('order_id')
+        entered_otp = request.POST.get('delivery_otp', '').strip()
+        payment_collected = request.POST.get('payment_status', 'Paid')
+        
         order = get_object_or_404(Order, id=order_id, delivery_boy=delivery_boy)
         
+        # 🛡️ OTP Verification Check
+        if order.delivery_otp and order.delivery_otp != entered_otp:
+            messages.error(request, f"❌ Galat Delivery OTP! Customer se sahi OTP puchein.")
+            return redirect('delivery_boy_dashboard')
+        
+        # Order Complete aur Payment Status update karein
         order.status = 'Completed'
+        order.payment_status = payment_collected
         order.save()
-        messages.success(request, f"🎉 Order #ORD-{order.id} Delivered mark ho gaya!")
+        
+        # Customer ko success WhatsApp message bhejein
+        success_msg = f"✅ Order #ORD-{order.id} successfully deliver ho gaya hai! Payment: {order.payment_status}. Thank you for shopping with Chachan General Store!"
+        send_brevo_whatsapp(order.mobile_number, success_msg)
+        
+        messages.success(request, f"🎉 Order #ORD-{order.id} Successfully Delivered & Payment Recorded!")
         return redirect('delivery_boy_dashboard')
 
-    # Pending Orders (Jo deliver karne hain)
-    pending_orders = Order.objects.filter(
-        delivery_boy=delivery_boy
-    ).exclude(status__in=['Completed', 'Cancelled']).order_by('-created_at')
-    
-    # Completed Orders (Jo deliver ho chuke hain)
-    completed_orders = Order.objects.filter(
-        delivery_boy=delivery_boy, 
-        status='Completed'
-    ).order_by('-created_at')[:10]  # Aakhri 10 orders dikhayenge
+    pending_orders = Order.objects.filter(delivery_boy=delivery_boy).exclude(status__in=['Completed', 'Cancelled']).order_by('-created_at')
+    completed_orders = Order.objects.filter(delivery_boy=delivery_boy, status='Completed').order_by('-created_at')[:10]
 
     context = {
         'delivery_boy': delivery_boy,

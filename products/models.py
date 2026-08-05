@@ -94,6 +94,8 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, default='Pending')
     applied_coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
+    delivery_otp = models.CharField(max_length=6, blank=True, null=True)
+    payment_status = models.CharField(max_length=20, default='Pending', choices=[('Pending', 'Pending'),
     delivery_boy = models.ForeignKey('DeliveryBoy', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_orders', help_text="Is order ko kaun deliver karega?")
     
     # Courier Tracking Fields

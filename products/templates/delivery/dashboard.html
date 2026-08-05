@@ -31,7 +31,7 @@
         <!-- Messages -->
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-success fw-bold p-2 small">{{ message }}</div>
+                <div class="alert alert-success fw-bold p-2 small mb-3">{{ message }}</div>
             {% endfor %}
         {% endif %}
 
@@ -44,17 +44,32 @@
                 <span class="fw-bold fs-5 text-danger">₹{{ order.total_amount }}</span>
             </div>
             <h6 class="fw-bold m-0">{{ order.customer_name }}</h6>
-            <p class="small text-muted mb-2">📍 {{ order.shipping_address|default:"Address not provided" }}</p>
+            <p class="small text-muted mb-2">📍 {{ order.address|default:"Address not provided" }}</p>
             
             <div class="d-flex gap-2 mb-3">
                 <a href="tel:{{ order.mobile_number }}" class="btn btn-sm btn-call w-50 fw-bold">📞 Call Customer</a>
-                <a href="https://maps.google.com/?q={{ order.shipping_address }}" target="_blank" class="btn btn-sm btn-map w-50 fw-bold">🗺️ Map</a>
+                <a href="https://maps.google.com/?q={{ order.address }}" target="_blank" class="btn btn-sm btn-map w-50 fw-bold">🗺️ Map</a>
             </div>
 
-            <form method="POST" action="{% url 'delivery_boy_dashboard' %}" onsubmit="return confirm('Kaya aapne yeh order deliver kar diya hai?');">
+            <!-- 🌟 OTP & PAYMENT COLLECTION FORM -->
+            <form method="POST" action="{% url 'delivery_boy_dashboard' %}" class="bg-light p-3 rounded-3 border">
                 {% csrf_token %}
                 <input type="hidden" name="order_id" value="{{ order.id }}">
-                <button type="submit" class="btn btn-dark w-100 fw-bold py-2">✅ Mark as Delivered</button>
+                
+                <div class="mb-2">
+                    <label class="form-label small fw-bold text-dark">🔑 Customer Delivery OTP (4 Digits)</label>
+                    <input type="text" name="delivery_otp" class="form-control form-control-sm fw-bold text-center bg-white" placeholder="Customer se OTP puchein" maxlength="4" required style="letter-spacing: 3px; font-size: 1.1rem;">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-dark">💰 Payment Collection</label>
+                    <select name="payment_status" class="form-select form-select-sm fw-bold" required>
+                        <option value="Paid">💵 Cash / Online Received (Paid)</option>
+                        <option value="Pending">⏳ Payment Pending / Later</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 fw-bold py-2 shadow-sm">✅ Verify OTP & Complete Delivery</button>
             </form>
         </div>
         {% empty %}
@@ -73,7 +88,7 @@
                 <span class="fw-bold text-success">#ORD-{{ order.id }}</span>
                 <span class="small fw-bold">₹{{ order.total_amount }}</span>
             </div>
-            <small class="text-muted">{{ order.customer_name }}</small>
+            <small class="text-muted">{{ order.customer_name }} | Payment: <span class="badge bg-success">{{ order.payment_status|default:"Paid" }}</span></small>
         </div>
         {% empty %}
         <p class="text-muted small">Aaj koi order deliver nahi kiya.</p>

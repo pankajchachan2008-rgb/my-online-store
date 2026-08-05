@@ -86,7 +86,6 @@
         background: #fff; 
         box-shadow: 0 -10px 20px rgba(0,0,0,0.05); 
         position: fixed; 
-        /* Shifted up to avoid clashing with bottom navigation bar */
         bottom: calc(65px + env(safe-area-inset-bottom, 0px)); 
         left: 0; 
         width: 100%; 
@@ -155,6 +154,12 @@
                                     <label class="text-muted small fw-medium mb-1">Complete Address</label>
                                     <textarea name="address" class="form-control-custom bg-white" rows="3" {% if not saved_addresses %}required{% endif %} placeholder="House No, Building Name, Street, Area, City, State, Pincode"></textarea>
                                 </div>
+                                {% if not user.is_authenticated %}
+                                <div class="col-12 mt-3">
+                                    <label class="text-muted small fw-medium mb-1">Email Address (For Order Updates & OTP)</label>
+                                    <input type="email" name="email" class="form-control-custom bg-white" placeholder="Enter your email address">
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -196,13 +201,12 @@
                     <div class="checkout-header"><span class="step-num">4</span> PAYMENT OPTIONS</div>
                     <div class="checkout-body border-top bg-white p-4">
                         <div class="form-check d-flex align-items-center mb-3">
-                            <!-- 🌟 FIXED: Added value="whatsapp" to the radio button -->
                             <input class="form-check-input me-3 shadow-none" type="radio" name="payment_mode" value="whatsapp" id="cod" checked style="width: 20px; height: 20px;">
                             <label class="form-check-label fw-bold text-dark d-flex align-items-center" for="cod" style="font-size: 15px;">
-                                <span style="color: #25D366; font-size: 1.3rem; margin-right: 8px;">💬</span> Pay via WhatsApp
+                                <span style="color: #25D366; font-size: 1.3rem; margin-right: 8px;">💬</span> Pay via WhatsApp & Cash on Delivery
                             </label>
                         </div>
-                        <p class="text-muted small ms-4 ps-4 mb-4" style="line-height: 1.6;">Clicking the button below will securely process your order and generate a detailed invoice via our official WhatsApp channel.</p>
+                        <p class="text-muted small ms-4 ps-4 mb-4" style="line-height: 1.6;">Clicking confirm will generate your secure order invoice and send your delivery verification OTP via WhatsApp and Email.</p>
                         
                         <div class="text-end mt-4 d-none d-lg-block">
                             <button type="submit" class="btn-place-order d-inline-flex align-items-center justify-content-center gap-2" style="width: auto;">
@@ -267,7 +271,7 @@
 </div>
 <div class="d-block d-lg-none" style="height: 120px;"></div>
 
-<!-- JS Logic (Preserved entirely, works perfectly) -->
+<!-- JS Logic -->
 <script>
     let couponDiscountAmount = 0;
 
