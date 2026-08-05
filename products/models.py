@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
 from cloudinary_storage.storage import VideoMediaCloudinaryStorage, MediaCloudinaryStorage
+import uuid
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -84,33 +85,31 @@ class Coupon(models.Model):
         return f"{self.code} - {self.discount_percentage}% OFF"
 
 class Order(models.Model):
-    STATUS_CHOICES = (
-        ('Pending', 'Pending'),
-        ('Processing', 'Processing'),
-        ('Out for Delivery', 'Out for Delivery'),
-        ('Completed', 'Completed'),
-        ('Cancelled', 'Cancelled'),
-    )
-    
+    # 🌟 Unique Professional Order ID (e.g., CG-948210)
+    order_id = models.CharField(max_length=20, unique=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     customer_name = models.CharField(max_length=100)
     mobile_number = models.CharField(max_length=15)
     address = models.TextField()
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=50, default='Pending')
     applied_coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending', db_index=True)
+    # Courier Tracking Fields
+    courier_name = models.CharField(max_length=100, blank=True, null=True)
+    tracking_id = models.CharField(max_length=100, blank=True, null=True)
+    tracking_url = models.URLField(blank=True, null=True)
     
-    courier_name = models.CharField(max_length=100, blank=True, null=True, help_text="E.g., Trackon, Delivery, etc.")
-    tracking_id = models.CharField(max_length=100, blank=True, null=True, help_text="Courier Tracking ID/AWB")
-    tracking_url = models.URLField(max_length=500, blank=True, null=True, help_text="Paste direct tracking link here")
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        ordering = ['-created_at']
+    def save(self, *args, **kwargs):
+        if not self.order_id:
+            # Generates a unique secure code like CG-782910
+            self.order_id = f"CG-{uuid.uuid4().int[:6].upper()}"
+        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Order #{self.id} - {self.customer_name}"
+        return f"Order {self.order_id} - {self.customer_name}"
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
