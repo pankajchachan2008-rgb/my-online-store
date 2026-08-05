@@ -302,7 +302,7 @@ def cart_detail(request):
         
     return render(request, 'products/cart_detail.html', {'cart_items': cart_items, 'cart_total': cart_total})
 
-# 🛍️ 4. Checkout (With Automated WhatsApp & Email Notifications)
+# 🛍️ 4. Checkout (With Automated WhatsApp & Email Notifications + Ledger Entry)
 def checkout_page(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -382,6 +382,15 @@ def checkout_page(request):
             user=request.user if request.user.is_authenticated else None,
             customer_name=name, mobile_number=mobile, address=address,
             total_amount=final_total, applied_coupon=active_coupon, status='Pending'
+        )
+
+        # 🌟 AUTOMATIC ENTRY IN CUSTOMER LEDGER (Khata Book)
+        CustomerLedger.objects.create(
+            customer_name=name,
+            mobile_number=mobile,
+            transaction_type='DEBIT',  # Udhaar / Payable Amount
+            amount=final_total,
+            description=f"Auto-entry from Online Order #{order.id}"
         )
 
         if wallet_deducted > 0:
