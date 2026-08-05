@@ -871,3 +871,36 @@ def erp_update_order(request, order_id):
         return redirect('erp_dashboard')
     
     return render(request, 'erp/update_order.html', {'order': order})
+
+# 🏢 ERP Product Master & Inventory
+@staff_member_required(login_url='/login/')
+def erp_products(request):
+    products = Product.objects.all().order_by('-id')
+    return render(request, 'erp/products.html', {'products': products})
+
+@staff_member_required(login_url='/login/')
+def erp_add_product(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        price = request.POST.get('price')
+        stock = request.POST.get('stock')
+        description = request.POST.get('description', '')
+        hsn_code = request.POST.get('hsn_code', '')
+        category_id = request.POST.get('category')
+        image = request.FILES.get('image')
+
+        category = Category.objects.filter(id=category_id).first()
+
+        Product.objects.create(
+            name=name,
+            price=price,
+            stock=stock,
+            description=description,
+            hsn_code=hsn_code,
+            category=category,
+            image=image
+        )
+        return redirect('erp_products')
+    
+    categories = Category.objects.all()
+    return render(request, 'erp/add_product.html', {'categories': categories})

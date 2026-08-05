@@ -106,6 +106,8 @@ urlpatterns = [
 # 🏢 Custom ERP Routes
     path('cgs-erp/dashboard/', views.erp_dashboard, name='erp_dashboard'),
     path('cgs-erp/order/update/<int:order_id>/', views.erp_update_order, name='erp_update_order'),
+    path('cgs-erp/products/', views.erp_products, name='erp_products'),
+    path('cgs-erp/products/add/', views.erp_add_product, name='erp_add_product'),
     
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
