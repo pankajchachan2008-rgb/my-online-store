@@ -108,6 +108,7 @@ urlpatterns = [
     path('cgs-erp/order/update/<int:order_id>/', views.erp_update_order, name='erp_update_order'),
     path('cgs-erp/products/', views.erp_products, name='erp_products'),
     path('cgs-erp/products/add/', views.erp_add_product, name='erp_add_product'),
+    path('cgs-erp/pos/', views.erp_pos_billing, name='erp_pos'),
     
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

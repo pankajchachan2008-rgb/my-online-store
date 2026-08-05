@@ -904,3 +904,14 @@ def erp_add_product(request):
     
     categories = Category.objects.all()
     return render(request, 'erp/add_product.html', {'categories': categories})
+
+# 🏢 ERP Billing & POS Screen
+@staff_member_required(login_url='/login/')
+def erp_pos_billing(request):
+    products = Product.objects.all()
+    categories = Category.objects.all()
+    context = {
+        'products': products,
+        'categories': categories,
+    }
+    return render(request, 'erp/pos.html', context)
