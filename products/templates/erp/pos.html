@@ -114,7 +114,7 @@
                         </div>
                         <div class="row g-2">
                             <div class="col-6">
-                                <button class="btn btn-outline-dark w-100 fw-bold py-2">🖨️ Print Thermal</button>
+                                <button class="btn btn-outline-dark w-100 fw-bold py-2" onclick="checkout()">🖨️ Print Thermal</button>
                             </div>
                             <div class="col-6">
                                 <button class="btn btn-success w-100 fw-bold py-2" onclick="checkout()">✅ Complete Sale</button>
@@ -194,7 +194,79 @@
                 alert("Cart khali hai!");
                 return;
             }
-            alert("Sale successfully completed! (Thermal Invoice Generated)");
+
+            // Thermal 80mm Receipt Window Generation
+            let printWindow = window.open('', '_blank', 'width=400,height=600');
+            let totalAmount = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let currentDate = new Date().toLocaleString();
+
+            let receiptHTML = `
+                <html>
+                <head>
+                    <title>Thermal Receipt</title>
+                    <style>
+                        body { font-family: 'Courier New', Courier, monospace; font-size: 12px; width: 280px; margin: 0; padding: 10px; color: #000; }
+                        .text-center { text-align: center; }
+                        .fw-bold { font-weight: bold; }
+                        .border-bottom { border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px; }
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { text-align: left; padding: 3px 0; font-size: 11px; }
+                        .right { text-align: right; }
+                    </style>
+                </head>
+                <body>
+                    <div class="text-center fw-bold" style="font-size: 16px;">CHACHAN GENERAL STORE</div>
+                    <div class="text-center">Nohar, Rajasthan</div>
+                    <div class="text-center border-bottom">Mob: 9414XXXXXX | GSTIN: 08XXXXX</div>
+                    
+                    <div>Date: ${currentDate}</div>
+                    <div class="border-bottom">Bill Type: POS Cash Sale</div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Qty</th>
+                                <th class="right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            cart.forEach(item => {
+                let itemTotal = item.price * item.qty;
+                receiptHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.qty}</td>
+                        <td class="right">₹${itemTotal.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            receiptHTML += `
+                        </tbody>
+                    </table>
+
+                    <div class="border-bottom" style="margin-top: 5px;"></div>
+                    <div class="fw-bold right" style="font-size: 14px;">Grand Total: ₹${totalAmount.toFixed(2)}</div>
+                    <div class="border-bottom" style="margin-top: 5px;"></div>
+                    
+                    <div class="text-center" style="margin-top: 10px;">Thank You! Visit Again.</div>
+                    <div class="text-center" style="font-size: 10px; color: #555;">Powered by CGSMART ERP</div>
+
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            window.close();
+                        }
+                    </script>
+                </body>
+                </html>
+            `;
+
+            printWindow.document.write(receiptHTML);
+            printWindow.document.close();
             clearCart();
         }
 
@@ -221,13 +293,12 @@
                 const transcript = event.results[0][0].transcript.toLowerCase();
                 document.getElementById('posSearch').value = transcript;
                 
-                // Match with product catalog tiles
                 let tiles = document.querySelectorAll('.product-tile');
                 let found = false;
                 tiles.forEach(tile => {
                     let productName = tile.querySelector('.fw-bold').innerText.toLowerCase();
                     if (productName.includes(transcript)) {
-                        tile.click(); // Automatically trigger item add
+                        tile.click();
                         found = true;
                     }
                 });
