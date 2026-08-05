@@ -301,3 +301,51 @@ class ServiceablePincode(models.Model):
 
     def __str__(self):
         return f"{self.pincode} - {self.city_name} ({self.branch_name})"
+
+# ==========================================
+# 🌟 DAILY EXPENSE & SUPPLIER KHATA MODELS
+# ==========================================
+
+class Expense(models.Model):
+    EXPENSE_CATEGORIES = (
+        ('Salary', 'Staff Salary'),
+        ('Bills', 'Electricity/Water/Internet Bills'),
+        ('Maintenance', 'Shop Maintenance/Repair'),
+        ('Tea/Snacks', 'Chai & Snacks'),
+        ('Fuel', 'Petrol/Travel'),
+        ('Other', 'Other/Miscellaneous'),
+    )
+    
+    category = models.CharField(max_length=50, choices=EXPENSE_CATEGORIES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=255, help_text="Kharcha kis cheez ke liye hua?")
+    date = models.DateField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.category} - ₹{self.amount} on {self.date}"
+
+class Supplier(models.Model):
+    name = models.CharField(max_length=100)
+    company_name = models.CharField(max_length=150, blank=True, null=True)
+    mobile_number = models.CharField(max_length=15, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        if self.company_name:
+            return f"{self.name} ({self.company_name})"
+        return self.name
+
+class SupplierLedger(models.Model):
+    TRANSACTION_TYPES = (
+        ('DEBIT', 'Payment Given (Jama kiya)'),
+        ('CREDIT', 'Goods Received (Maal Udhaar liya)'),
+    )
+    
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name='ledger_entries')
+    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=255, help_text="Bill No. ya Payment details")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.supplier.name} - {self.get_transaction_type_display()} - ₹{self.amount}"

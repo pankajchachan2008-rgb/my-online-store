@@ -26,6 +26,8 @@ from django.views.decorators.cache import never_cache
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Sum, Count
 from datetime import timedelta
+from .models import Expense, Supplier, SupplierLedger
+from django.db.models import Sum
 
 # 🌟 RATELIMIT IMPORT FOR SECURITY
 from django_ratelimit.decorators import ratelimit
@@ -1231,3 +1233,91 @@ def send_customer_khata_whatsapp(request, mobile):
     send_brevo_whatsapp(mobile, msg)
     messages.success(request, f"✅ Khata statement successfully sent to {customer_name} ({mobile}) via WhatsApp!")
     return redirect('erp_ledger')
+
+# ==========================================
+# 🌟 DAILY EXPENSE TRACKER VIEW
+# ==========================================
+@staff_member_required(login_url='/login/')
+def erp_expenses(request):
+    if request.method == 'POST':
+        category = request.POST.get('category')
+        amount = request.POST.get('amount')
+        description = request.POST.get('description')
+        
+        # Naya kharcha database mein save karein
+        Expense.objects.create(
+            category=category, 
+            amount=amount, 
+            description=description
+        )
+        messages.success(request, "✅ Kharcha (Expense) successfully add ho gaya!")
+        return redirect('erp_expenses')
+        
+    # Saare kharche fetch karein (Naye pehle dikhenge)
+    expenses = Expense.objects.all().order_by('-date', '-id')
+    
+    # Total kharcha calculate karein
+    total_expense = expenses.aggregate(Sum('amount'))['amount__sum'] or 0
+    
+    context = {
+        'expenses': expenses,
+        'total_expense': total_expense,
+    }
+    return render(request, 'erp/expenses.html', context)
+
+# ==========================================
+# 🌟 SUPPLIER / WHOLESALER KHATA VIEW
+# ==========================================
+@staff_member_required(login_url='/login/')
+def erp_supplier_ledger(request):
+    suppliers = Supplier.objects.all().order_by('name')
+    selected_supplier_id = request.GET.get('supplier_id')
+    selected_supplier = None
+    ledger_entries = []
+    total_credit = 0  # Total Maal Udhaar Liya
+    total_debit = 0   # Total Payment Diya
+    net_balance = 0   # Kitna dena baaki hai
+
+    # Agar POST request hai, toh naya transaction add karein
+    if request.method == 'POST':
+        supp_id = request.POST.get('supplier_id')
+        t_type = request.POST.get('transaction_type')
+        amount = request.POST.get('amount')
+        desc = request.POST.get('description')
+        
+        supplier_obj = get_object_or_404(Supplier, id=supp_id)
+        SupplierLedger.objects.create(
+            supplier=supplier_obj,
+            transaction_type=t_type,
+            amount=amount,
+            description=desc
+        )
+        messages.success(request, f"✅ {supplier_obj.name} ke khate mein entry add ho gayi!")
+        return redirect(f"/erp/supplier-ledger/?supplier_id={supp_id}")
+
+    # Default selection logic
+    if suppliers.exists():
+        if selected_supplier_id:
+            selected_supplier = get_object_or_404(Supplier, id=selected_supplier_id)
+        else:
+            selected_supplier = suppliers.first()
+
+        # Balance aur Entries calculate karein
+        if selected_supplier:
+            ledger_entries = selected_supplier.ledger_entries.all().order_by('-created_at')
+            
+            total_credit = ledger_entries.filter(transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
+            total_debit = ledger_entries.filter(transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
+            
+            # Net Balance: Agar positive hai toh hamein paise dene hain
+            net_balance = total_credit - total_debit
+
+    context = {
+        'suppliers': suppliers,
+        'selected_supplier': selected_supplier,
+        'ledger_entries': ledger_entries,
+        'total_credit': total_credit,
+        'total_debit': total_debit,
+        'net_balance': net_balance,
+    }
+    return render(request, 'erp/supplier_ledger.html', context)

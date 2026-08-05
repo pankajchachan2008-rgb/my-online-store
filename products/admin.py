@@ -10,6 +10,7 @@ from django.template.response import TemplateResponse
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth # 🌟 NAYA: Chart ke liye import add kiya
 from .models import ServiceablePincode
+from .models import Expense, Supplier, SupplierLedger
 
 from .models import (
     Category, Brand, Product, Coupon, Order, OrderItem,
@@ -85,6 +86,9 @@ class BrandAdmin(admin.ModelAdmin):
 admin.site.register(CustomerProfile)
 admin.site.register(Banner)
 admin.site.register(ProductVariant)
+admin.site.register(Expense)
+admin.site.register(Supplier)
+admin.site.register(SupplierLedger)
 
 # -----------------------------
 # Product Variant Inline

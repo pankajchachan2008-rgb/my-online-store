@@ -85,6 +85,8 @@ urlpatterns = [
     path('edit-address/<int:address_id>/', edit_address, name='edit_address'),
     path('track-order/', views.track_order_page, name='track_order'),
     path('erp/ledger/whatsapp/<str:mobile>/', views.send_customer_khata_whatsapp, name='send_customer_khata_whatsapp'),
+    path('erp/expenses/', views.erp_expenses, name='erp_expenses'),
+    path('erp/supplier-ledger/', views.erp_supplier_ledger, name='erp_supplier_ledger'),
 
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('reset-verify-otp/', views.reset_verify_otp, name='reset_verify_otp'),
