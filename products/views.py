@@ -828,7 +828,6 @@ def ai_assistant_chat(request):
 
 @staff_member_required(login_url='/login/')
 def erp_dashboard(request):
-    # Live Business Analytics
     total_orders = Order.objects.count()
     total_sales = Order.objects.filter(status='Completed').aggregate(Sum('total_amount'))['total_amount__sum'] or 0
     pending_orders = Order.objects.filter(status='Pending').count()
@@ -843,4 +842,6 @@ def erp_dashboard(request):
         'total_customers': total_customers,
         'recent_orders': recent_orders,
     }
+    # 🌟 Yahan path change karke 'erp/dashboard.html' hi rehne dein, 
+    # bas main templates folder mein rakhne se Django ise turant pakad lega.
     return render(request, 'erp/dashboard.html', context)
