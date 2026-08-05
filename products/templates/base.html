@@ -128,6 +128,26 @@
         }
         .search-btn:hover { background-color: #F3A847; }
 
+        /* 🌟 Live Search Dropdown Styles */
+        #searchResultsDropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #FFFFFF;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 0 0 6px 6px;
+            border: 1px solid #E2E8F0;
+            border-top: none;
+            z-index: 1050;
+            display: none;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        .search-suggestion-item:hover {
+            background-color: #F8FAFC;
+        }
+
         .nav-action-btn {
             color: white;
             text-decoration: none;
@@ -298,11 +318,14 @@
                     </a>
                 </div>
 
-                <!-- 2. 🌟 Header Search Bar with Voice (Configured with en-IN for accurate English product search matching) -->
-                <form class="header-search-form order-3 order-lg-2 mt-2 mt-lg-0" action="{% url 'home' %}#full-collection" method="GET">
+                <!-- 2. 🌟 Header Search Bar with Voice and Live Suggestions Dropdown -->
+                <form class="header-search-form order-3 order-lg-2 mt-2 mt-lg-0 position-relative" action="{% url 'home' %}#full-collection" method="GET" autocomplete="off">
                     <input type="text" id="globalSearchInput" name="search" class="header-search-input" placeholder="Search Chachan General Store..." value="{{ search_query|default:'' }}">
                     <button type="button" id="globalVoiceBtn" class="voice-btn" title="Search by Voice">🎤</button>
                     <button type="submit" class="search-btn">🔍</button>
+                    
+                    <!-- 🌟 Live Search Dropdown Box -->
+                    <div id="searchResultsDropdown"></div>
                 </form>
 
                 <!-- 3. Actions (Account, Wishlist, Cart) -->
@@ -676,7 +699,61 @@
             }
         });
 
-        // 5. Register Service Worker for PWA
+        // 5. LIVE SEARCH AUTO-SUGGEST DROPDOWN LOGIC
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("globalSearchInput");
+            const dropdownBox = document.getElementById("searchResultsDropdown");
+
+            if (searchInput && dropdownBox) {
+                let debounceTimer;
+
+                searchInput.addEventListener("input", function () {
+                    clearTimeout(debounceTimer);
+                    let query = this.value.trim();
+
+                    if (query.length < 2) {
+                        dropdownBox.style.display = "none";
+                        return;
+                    }
+
+                    debounceTimer = setTimeout(() => {
+                        fetch(`/api/search-suggestions/?q=${encodeURIComponent(query)}`, {
+                            headers: { "X-Requested-With": "XMLHttpRequest" }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.products && data.products.length > 0) {
+                                let html = "";
+                                data.products.forEach(p => {
+                                    html += `
+                                        <a href="${p.url}" class="d-flex align-items-center gap-3 p-2 text-decoration-none border-bottom text-dark search-suggestion-item">
+                                            <img src="${p.image}" alt="${p.name}" style="width: 40px; height: 40px; object-fit: contain; mix-blend-mode: multiply;">
+                                            <div class="flex-grow-1">
+                                                <div class="fw-semibold text-truncate" style="font-size: 0.9rem; max-width: 250px;">${p.name}</div>
+                                                <div class="text-success small fw-bold">₹${p.price}</div>
+                                            </div>
+                                        </a>
+                                    `;
+                                });
+                                dropdownBox.innerHTML = html;
+                                dropdownBox.style.display = "block";
+                            } else {
+                                dropdownBox.style.display = "none";
+                            }
+                        })
+                        .catch(err => console.error("Search suggestion error:", err));
+                    }, 300);
+                });
+
+                document.addEventListener("click", function (e) {
+                    if (!searchInput.contains(e.target) && !dropdownBox.contains(e.target)) {
+                        dropdownBox.style.display = "none";
+                    }
+                });
+            }
+        });
+
+        // 6. Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js').then(function(registration) {
@@ -687,7 +764,7 @@
             });
         }
 
-        // 6. Browser Back/Forward Cache Login State Issue Fix
+        // 7. Browser Back/Forward Cache Login State Issue Fix
         window.addEventListener('pageshow', function (event) {
             if (event.persisted) {
                 window.location.reload();

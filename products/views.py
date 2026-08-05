@@ -965,3 +965,21 @@ def erp_store_settings(request):
         return redirect('erp_settings')
     
     return render(request, 'erp/settings.html', {'setting': setting})
+
+def search_suggestions(api_request):
+    query = api_request.GET.get('q', '').strip()
+    results = []
+    if query:
+        products = Product.objects.filter(
+            Q(name__icontains=query) | Q(brand__name__icontains=query)
+        )[:6]  # Top 6 results
+        
+        for p in products:
+            results.append({
+                'id': p.id,
+                'name': p.name,
+                'price': float(p.price),
+                'url': f"/product/{p.id}/",
+                'image': p.image.url if p.image else ''
+            })
+    return JsonResponse({'products': results})

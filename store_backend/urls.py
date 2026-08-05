@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from products.sitemaps import ProductSitemap, StaticViewSitemap
+from products.views import search_suggestions
 
 from products import views
 
@@ -43,6 +44,7 @@ urlpatterns = [
     path('', product_list, name='home'),
     
     path('product/<int:product_id>/', product_detail, name='product_detail'),
+    path('api/search-suggestions/', search_suggestions, name='search_suggestions'),
     
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('cart/', cart_detail, name='cart_detail'),
