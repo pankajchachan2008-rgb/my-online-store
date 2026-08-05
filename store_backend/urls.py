@@ -61,6 +61,7 @@ urlpatterns = [
     path('refund-policy/', refund_policy, name='refund_policy'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
+    path('manifest.json', TemplateView.as_view(template_name="manifest.json", content_type="application/json")),
     
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
