@@ -845,3 +845,29 @@ def erp_dashboard(request):
     # 🌟 Yahan path change karke 'erp/dashboard.html' hi rehne dein, 
     # bas main templates folder mein rakhne se Django ise turant pakad lega.
     return render(request, 'erp/dashboard.html', context)
+
+# 🏢 Update Order Status from ERP Dashboard
+@staff_member_required(login_url='/login/')
+def erp_update_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        courier_name = request.POST.get('courier_name')
+        tracking_id = request.POST.get('tracking_id')
+        tracking_url = request.POST.get('tracking_url')
+
+        if new_status:
+            order.status = new_status
+        if courier_name:
+            order.courier_name = courier_name
+        if tracking_id:
+            order.tracking_id = tracking_id
+        if tracking_url:
+            order.tracking_url = tracking_url
+            
+        order.save()
+        
+        # Agar order completed ho gaya, toh customer ke wallet mein cashback ya points dena ho toh de sakte hain
+        return redirect('erp_dashboard')
+    
+    return render(request, 'erp/update_order.html', {'order': order})
