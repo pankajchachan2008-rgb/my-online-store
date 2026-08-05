@@ -42,12 +42,8 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from .forms import CustomRegisterForm
 from django.utils import timezone 
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render, redirect
-from django.db.models import Sum
-from .models import CustomerLedger
 
-from .models import Product, Category, SubCategory, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand, Review
+from .models import Product, Category, SubCategory, Coupon, Order, OrderItem, CustomerProfile, Banner, Wishlist, ProductVariant, Address, WalletTransaction, StoreSetting, Brand, Review, CustomerLedger
 
 # --- HELPER FUNCTION FOR BREVO API ---
 def send_brevo_api_email(subject, message, to_email):
@@ -384,7 +380,7 @@ def checkout_page(request):
     })
 
 # 👤 5. Premium Profile
-@never_cache   # 🌟 NAYA: Isse browser humesha fresh naam dikhayega
+@never_cache   
 @login_required(login_url='/login/')
 def profile_page(request):
     if request.user.is_staff or request.user.is_superuser: return redirect('home')
@@ -523,7 +519,6 @@ def download_invoice(request, order_id):
     bc.write(bc_buffer, options={'write_text': False})
     barcode_base64 = base64.b64encode(bc_buffer.getvalue()).decode("utf-8")
     
-    # 🌟 NAYA: Real GST Calculation (Assuming 18% Inclusive GST for overall bill)
     total_amt = float(order.total_amount)
     subtotal = total_amt / 1.18
     cgst = (total_amt - subtotal) / 2
@@ -535,11 +530,11 @@ def download_invoice(request, order_id):
     context = {
         'order': order,
         'items': items,
-        'company_name': store.company_name if store else 'Chachan General Store',
+        'company_name': store.store_name if store else 'Chachan General Store',
         'tagline': store.tagline if store else 'Premium Corporate Retail & Essentials',
         'gstin': store.gstin if store else '',
-        'store_address': store.store_address if store else '',
-        'store_phone': store.store_phone if store else '',
+        'store_address': store.address if store else '',
+        'store_phone': store.phone if store else '',
         'bill_no': bill_no,
         'customer_phone': order.mobile_number,
         'customer_address': order.address,
@@ -547,7 +542,6 @@ def download_invoice(request, order_id):
         'status': order.status,
         'qr_code_base64': qr_base64,
         'barcode_base64': barcode_base64,
-        # 🌟 NAYA: Sending real calculations to PDF
         'subtotal': subtotal,
         'cgst': cgst,
         'sgst': sgst,
@@ -815,16 +809,15 @@ def ai_assistant_chat(request):
                 ai_reply = response.json()['choices'][0]['message']['content']
                 return JsonResponse({'response': ai_reply})
             else:
-                # 🌟 NAYA: Sanitized error response for users
                 print(f"Groq API Error: {response.text}")
                 return JsonResponse({'response': "Maafi chahunga, abhi system thoda busy hai. Kripya humein WhatsApp par message karein!"})
 
         except Exception as e:
-            # 🌟 NAYA: Sanitized system error response
             print(f"System Error in AI Chat: {str(e)}")
             return JsonResponse({'response': "Technical error aaya hai, humari team isey theek kar rahi hai. Kripya WhatsApp par sampark karein."})
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 # ==========================================
 # 🏢 CUSTOM ERP / ADMIN DASHBOARD SECTION
@@ -846,11 +839,8 @@ def erp_dashboard(request):
         'total_customers': total_customers,
         'recent_orders': recent_orders,
     }
-    # 🌟 Yahan path change karke 'erp/dashboard.html' hi rehne dein, 
-    # bas main templates folder mein rakhne se Django ise turant pakad lega.
     return render(request, 'erp/dashboard.html', context)
 
-# 🏢 Update Order Status from ERP Dashboard
 @staff_member_required(login_url='/login/')
 def erp_update_order(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -860,25 +850,35 @@ def erp_update_order(request, order_id):
         tracking_id = request.POST.get('tracking_id')
         tracking_url = request.POST.get('tracking_url')
 
-        if new_status:
-            order.status = new_status
-        if courier_name:
-            order.courier_name = courier_name
-        if tracking_id:
-            order.tracking_id = tracking_id
-        if tracking_url:
-            order.tracking_url = tracking_url
+        if new_status: order.status = new_status
+        if courier_name: order.courier_name = courier_name
+        if tracking_id: order.tracking_id = tracking_id
+        if tracking_url: order.tracking_url = tracking_url
             
         order.save()
-        
-        # Agar order completed ho gaya, toh customer ke wallet mein cashback ya points dena ho toh de sakte hain
         return redirect('erp_dashboard')
     
     return render(request, 'erp/update_order.html', {'order': order})
 
-# 🏢 ERP Product Master & Inventory
+# 🏢 ERP Product Master & Bulk Update
 @staff_member_required(login_url='/login/')
 def erp_products(request):
+    if request.method == 'POST':
+        product_ids = request.POST.getlist('product_ids[]')
+        for p_id in product_ids:
+            new_name = request.POST.get(f'name_{p_id}')
+            new_stock = request.POST.get(f'stock_{p_id}')
+            new_price = request.POST.get(f'price_{p_id}')
+
+            product = Product.objects.filter(id=p_id).first()
+            if product:
+                if new_name: product.name = new_name
+                if new_stock is not None and new_stock != '': product.stock = int(new_stock)
+                if new_price is not None and new_price != '': product.price = float(new_price)
+                product.save()
+        
+        return redirect('erp_products')
+
     products = Product.objects.all().order_by('-id')
     return render(request, 'erp/products.html', {'products': products})
 
@@ -896,13 +896,8 @@ def erp_add_product(request):
         category = Category.objects.filter(id=category_id).first()
 
         Product.objects.create(
-            name=name,
-            price=price,
-            stock=stock,
-            description=description,
-            hsn_code=hsn_code,
-            category=category,
-            image=image
+            name=name, price=price, stock=stock, description=description,
+            hsn_code=hsn_code, category=category, image=image
         )
         return redirect('erp_products')
     
@@ -914,101 +909,15 @@ def erp_add_product(request):
 def erp_pos_billing(request):
     products = Product.objects.all()
     categories = Category.objects.all()
+    store_setting = StoreSetting.objects.first()
     context = {
         'products': products,
         'categories': categories,
+        'store_setting': store_setting,
     }
     return render(request, 'erp/pos.html', context)
 
-# 🏢 ERP Customer Ledger & Khata Management
-@staff_member_required(login_url='/login/')
-def erp_customer_ledger(request):
-    # Customers jo registered hain (is_staff=False)
-    customers = User.objects.filter(is_staff=False)
-    
-    selected_customer = None
-    customer_orders = []
-    
-    customer_id = request.GET.get('customer_id')
-    if customer_id:
-        selected_customer = User.objects.filter(id=customer_id).first()
-        if selected_customer:
-            customer_orders = Order.objects.filter(user=selected_customer).order_by('-created_at')
-
-    context = {
-        'customers': customers,
-        'selected_customer': selected_customer,
-        'customer_orders': customer_orders,
-    }
-    return render(request, 'erp/ledger.html', context)
-
-# 🏢 ERP Customer Ledger & Khata Management
-@staff_member_required(login_url='/login/')
-def erp_customer_ledger(request):
-    customers = User.objects.filter(is_staff=False)
-    selected_customer = None
-    customer_orders = []
-    
-    customer_id = request.GET.get('customer_id')
-    if customer_id:
-        selected_customer = User.objects.filter(id=customer_id).first()
-        if selected_customer:
-            customer_orders = Order.objects.filter(user=selected_customer).order_by('-created_at')
-
-    context = {
-        'customers': customers,
-        'selected_customer': selected_customer,
-        'customer_orders': customer_orders,
-    }
-    return render(request, 'erp/ledger.html', context)
-
-# 🏢 ERP Store Settings View
-@staff_member_required(login_url='/login/')
-def erp_store_settings(request):
-    setting, created = StoreSetting.objects.get_or_create(pk=1)
-    if request.method == 'POST':
-        setting.store_name = request.POST.get('store_name', setting.store_name)
-        setting.owner_name = request.POST.get('owner_name', setting.owner_name)
-        setting.phone = request.POST.get('phone', setting.phone)
-        setting.address = request.POST.get('address', setting.address)
-        setting.gstin = request.POST.get('gstin', setting.gstin)
-        setting.receipt_footer = request.POST.get('receipt_footer', setting.receipt_footer)
-        setting.save()
-        return redirect('erp_settings')
-    
-    return render(request, 'erp/settings.html', {'setting': setting})
-
-# 🏢 ERP Product Master & Bulk Update
-@staff_member_required(login_url='/login/')
-def erp_products(request):
-    if request.method == 'POST':
-        product_ids = request.POST.getlist('product_ids[]')
-        for p_id in product_ids:
-            new_name = request.POST.get(f'name_{p_id}')
-            new_stock = request.POST.get(f'stock_{p_id}')
-            new_price = request.POST.get(f'price_{p_id}')
-
-            product = Product.objects.filter(id=p_id).first()
-            if product:
-                if new_name:
-                    product.name = new_name
-                if new_stock is not None and new_stock != '':
-                    product.stock = int(new_stock)
-                if new_price is not None and new_price != '':
-                    product.price = float(new_price)
-                product.save()
-        
-        return redirect('erp_products')
-
-    products = Product.objects.all().order_by('-id')
-    return render(request, 'erp/products.html', {'products': products})
-
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render, redirect
-from django.db.models import Sum
-from .models import CustomerLedger
-
-# 📒 Customer Ledger & Khata View
+# 📒 ERP Customer Ledger & Khata View
 @staff_member_required(login_url='/login/')
 def erp_customer_ledger(request):
     if request.method == 'POST':
@@ -1040,3 +949,19 @@ def erp_customer_ledger(request):
         'net_balance': net_balance,
     }
     return render(request, 'erp/ledger.html', context)
+
+# 🏢 ERP Store Settings View
+@staff_member_required(login_url='/login/')
+def erp_store_settings(request):
+    setting, created = StoreSetting.objects.get_or_create(pk=1)
+    if request.method == 'POST':
+        setting.store_name = request.POST.get('store_name', setting.store_name)
+        setting.owner_name = request.POST.get('owner_name', setting.owner_name)
+        setting.phone = request.POST.get('phone', setting.phone)
+        setting.address = request.POST.get('address', setting.address)
+        setting.gstin = request.POST.get('gstin', setting.gstin)
+        setting.receipt_footer = request.POST.get('receipt_footer', setting.receipt_footer)
+        setting.save()
+        return redirect('erp_settings')
+    
+    return render(request, 'erp/settings.html', {'setting': setting})
