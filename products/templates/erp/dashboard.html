@@ -239,7 +239,8 @@
                             {% endif %}
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-dark fw-bold px-3 rounded-pill">Update</button>
+                            <!-- 🌟 LINKED TO UPDATE ORDER VIEW -->
+                            <a href="{% url 'erp_update_order' order.id %}" class="btn btn-sm btn-dark fw-bold px-3 rounded-pill">Update</a>
                             <a href="{% url 'download_invoice' order.id %}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill ms-1">🖨️ Print</a>
                         </td>
                     </tr>
@@ -259,12 +260,11 @@
         const micBtn = document.getElementById('micBtn');
         const searchInput = document.getElementById('voiceSearchInput');
 
-        // Check for browser support
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
-            recognition.lang = 'hi-IN'; // Hinglish & Hindi Support
+            recognition.lang = 'hi-IN';
             recognition.continuous = false;
 
             micBtn.addEventListener('click', () => {
@@ -280,9 +280,8 @@
                 const transcript = event.results[0][0].transcript;
                 searchInput.value = transcript;
                 
-                // Demo: Agar input mein kuch bola hai toh automatically alert/search chalao
                 console.log("Voice Command Detected:", transcript);
-                alert("Aapne bola: " + transcript + "\n(Jaldi hi isey database search se link karenge!)");
+                alert("Aapne bola: " + transcript);
             };
 
             recognition.onspeechend = function() {

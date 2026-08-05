@@ -105,6 +105,7 @@ urlpatterns = [
     path('ping/', ping, name='ping'),
 # 🏢 Custom ERP Routes
     path('cgs-erp/dashboard/', views.erp_dashboard, name='erp_dashboard'),
+    path('cgs-erp/order/update/<int:order_id>/', views.erp_update_order, name='erp_update_order'),
     
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
