@@ -22,6 +22,7 @@ from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAdminUser
 from django.db.models import Avg, F, ExpressionWrapper, FloatField
+from django.views.decorators.cache import never_cache
 
 # 🌟 100% SAFE SMART SEARCH IMPORTS
 from django.db.models import Q
@@ -376,6 +377,7 @@ def checkout_page(request):
     })
 
 # 👤 5. Premium Profile
+@never_cache   # 🌟 NAYA: Isse browser humesha fresh naam dikhayega
 @login_required(login_url='/login/')
 def profile_page(request):
     if request.user.is_staff or request.user.is_superuser: return redirect('home')

@@ -679,7 +679,15 @@
                     console.log('ServiceWorker registration failed: ', err);
                 });
             });
-        }
+
+<!-- 🌟 FIX: Browser Back/Forward Cache Login State Issue -->
+    <script>
+        window.addEventListener('pageshow', function (event) {
+            // Agar browser ne page apni cache memory se uthaya hai, toh usko jabardasti fresh reload karo
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
     </script>
 </body>
 </html>
