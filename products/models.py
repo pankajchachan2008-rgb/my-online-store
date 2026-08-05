@@ -119,7 +119,8 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.order_id:
-            self.order_id = f"CG-{uuid.uuid4().int[:6].upper()}"
+            # 🌟 FIXED: Convert UUID to string before slicing
+            self.order_id = f"CG-{str(uuid.uuid4().int)[:6].upper()}"
         super().save(*args, **kwargs)
 
     def __str__(self):
