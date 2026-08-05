@@ -1014,3 +1014,24 @@ def check_delivery(request):
         except Exception as e:
             return JsonResponse({'available': False, 'message': 'Invalid request.'}, status=400)
     return JsonResponse({'error': 'Invalid method'}, status=405)
+
+def track_order_page(request):
+    order = None
+    searched = False
+    if request.method == 'GET' and ('order_id' in request.GET or 'mobile' in request.GET):
+        searched = True
+        order_id = request.GET.get('order_id', '').strip()
+        mobile = request.GET.get('mobile', '').strip()
+        
+        query = Q()
+        if order_id:
+            # Agar #INV-2026-12 ya sirf 12 dala ho
+            clean_id = order_id.replace('#INV-2026-', '').replace('#', '')
+            query &= Q(id=clean_id)
+        if mobile:
+            query &= Q(mobile_number=mobile)
+            
+        if order_id or mobile:
+            order = Order.objects.filter(query).first()
+            
+    return render(request, 'products/track_order.html', {'order': order, 'searched': searched})

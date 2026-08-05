@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Track Your Order - CGSMART{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 800px;">
+    <div class="text-center mb-5" data-aos="fade-down">
+        <h2 class="fw-bold" style="font-family: 'Jost', sans-serif;">📦 Track Your Order Status</h2>
+        <p class="text-muted">Enter your Order ID and Mobile Number for live updates.</p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white" data-aos="fade-up">
+        <form method="GET" action="{% url 'track_order' %}" class="row g-3">
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-muted">Order ID</label>
+                <input type="text" name="order_id" class="form-control" placeholder="e.g. 12 or #INV-2026-12" value="{{ request.GET.order_id|default:'' }}">
+            </div>
+            <div class="col-md-5">
+                <label class="form-label small fw-bold text-muted">Mobile Number</label>
+                <input type="text" name="mobile" class="form-control" placeholder="Registered Mobile Number" value="{{ request.GET.mobile|default:'' }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-dark w-100 fw-bold py-2">Track</button>
+            </div>
+        </form>
+    </div>
+
+    {% if searched %}
+        {% if order %}
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white" data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-center flex-wrap border-bottom pb-3 mb-4">
+                    <div>
+                        <h5 class="fw-bold mb-1">Order #{{ order.id }}</h5>
+                        <span class="text-muted small">Placed on: {{ order.created_at|date:"M d, Y - H:i" }}</span>
+                    </div>
+                    <div>
+                        <span class="badge bg-{% if order.status == 'Completed' %}success{% elif order.status == 'Cancelled' %}danger{% else %}warning text-dark{% endif %} px-3 py-2 fs-6">
+                            {{ order.status }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Customer & Delivery Info -->
+                <div class="row g-3 mb-4 bg-light p-3 rounded-3">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Customer Name</small>
+                        <strong>{{ order.customer_name }}</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Delivery Address</small>
+                        <strong>{{ order.address }}</strong>
+                    </div>
+                </div>
+
+                <!-- Live Timeline Status -->
+                <h6 class="fw-bold mb-3">📍 Delivery Timeline</h6>
+                <ul class="list-unstyled timeline-steps">
+                    <li class="mb-3 d-flex align-items-center gap-3">
+                        <span class="badge rounded-pill bg-success p-2">✓</span>
+                        <div>
+                            <strong>Order Placed</strong>
+                            <div class="small text-muted">Your order has been successfully received.</div>
+                        </div>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center gap-3">
+                        <span class="badge rounded-pill {% if order.status != 'Pending' %}bg-success{% else %}bg-secondary{% endif %} p-2">✓</span>
+                        <div>
+                            <strong>Packed at Nohar Hub</strong>
+                            <div class="small text-muted">Items are verified and securely packed.</div>
+                        </div>
+                    </li>
+                    <li class="mb-3 d-flex align-items-center gap-3">
+                        <span class="badge rounded-pill {% if order.status == 'Completed' or order.status == 'Dispatched' %}bg-success{% else %}bg-secondary{% endif %} p-2">⚡</span>
+                        <div>
+                            <strong>Out for Delivery (10 Mins - 1 Hour)</strong>
+                            <div class="small text-muted">Our local delivery executive is on the way to your address!</div>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">Total Amount:</span>
+                    <span class="fs-4 fw-bold text-success">₹{{ order.total_amount }}</span>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-warning text-center p-4 rounded-4" data-aos="fade-up">
+                ❌ No order found with the given Order ID and Mobile Number. Please check and try again.
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -367,6 +367,7 @@
         <!-- 💎 Sub Navbar -->
         <div class="sub-navbar shadow-sm">
             <a href="{% url 'home' %}#full-collection">☰ All Products</a>
+            <a href="{% url 'track_order' %}">📦 Track Order</a>
             <a href="{% url 'about' %}">About Us</a>
             <a href="{% url 'contact' %}">Customer Service</a>
             <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
@@ -413,6 +414,7 @@
                     </div>
 
                     <a href="{% url 'home' %}" class="mobile-menu-link">🏠 <span class="ms-3">Home</span></a>
+                    <a href="{% url 'track_order' %}" class="mobile-menu-link" data-bs-dismiss="offcanvas">📦 <span class="ms-3">Track Order</span></a>
                     <a href="{% url 'home' %}#full-collection" class="mobile-menu-link" data-bs-dismiss="offcanvas">🛍️ <span class="ms-3">Shop Products</span></a>
                     <a href="{% url 'about' %}" class="mobile-menu-link">🏢 <span class="ms-3">About Us</span></a>
                     <a href="{% url 'contact' %}" class="mobile-menu-link">📞 <span class="ms-3">Contact Support</span></a>
@@ -492,6 +494,7 @@
                     <h6 class="fw-bold mb-4 text-uppercase text-white" style="letter-spacing: 1px;">Quick Links</h6>
                     <ul class="list-unstyled" style="line-height: 2;">
                         <li><a href="{% url 'home' %}" class="text-white-50 text-decoration-none transition">Home</a></li>
+                        <li><a href="{% url 'track_order' %}" class="text-white-50 text-decoration-none transition">Track Order</a></li>
                         <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none transition">About Us</a></li>
                         <li><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none transition">Contact Support</a></li>
                     </ul>

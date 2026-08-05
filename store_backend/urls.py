@@ -82,6 +82,7 @@ urlpatterns = [
     path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='registration/password_change.html', success_url='/profile/'), name='password_change'),
     path('delete-address/<int:address_id>/', delete_address, name='delete_address'),
     path('edit-address/<int:address_id>/', edit_address, name='edit_address'),
+    path('track-order/', views.track_order_page, name='track_order'),
 
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('reset-verify-otp/', views.reset_verify_otp, name='reset_verify_otp'),
