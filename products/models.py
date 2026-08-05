@@ -37,7 +37,7 @@ class Product(models.Model):
     
     mrp = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    stock = models.IntegerField(default=0) # 🌟 Yeh naya field add karein 
+    stock = models.IntegerField(default=0)
     
     color = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., Black, White, Red, Blue")
     size = models.CharField(max_length=50, blank=True, null=True, help_text="General Size e.g., S, M, L, XL (Filter ke liye)")
@@ -85,7 +85,6 @@ class Coupon(models.Model):
         return f"{self.code} - {self.discount_percentage}% OFF"
 
 class Order(models.Model):
-    # 🌟 Unique Professional Order ID (e.g., CG-948210)
     order_id = models.CharField(max_length=20, unique=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     customer_name = models.CharField(max_length=100)
@@ -94,9 +93,22 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, default='Pending')
     applied_coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # 🌟 FIXED SYNTAX ERROR HERE
     delivery_otp = models.CharField(max_length=6, blank=True, null=True)
-    payment_status = models.CharField(max_length=20, default='Pending', choices=[('Pending', 'Pending'),
-    delivery_boy = models.ForeignKey('DeliveryBoy', on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_orders', help_text="Is order ko kaun deliver karega?")
+    payment_status = models.CharField(
+        max_length=20, 
+        default='Pending', 
+        choices=[('Pending', 'Pending'), ('Paid', 'Paid')]
+    )
+    delivery_boy = models.ForeignKey(
+        'DeliveryBoy', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='assigned_orders', 
+        help_text="Is order ko kaun deliver karega?"
+    )
     
     # Courier Tracking Fields
     courier_name = models.CharField(max_length=100, blank=True, null=True)
@@ -107,7 +119,6 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.order_id:
-            # Generates a unique secure code like CG-782910
             self.order_id = f"CG-{uuid.uuid4().int[:6].upper()}"
         super().save(*args, **kwargs)
 
@@ -206,11 +217,6 @@ class Banner(models.Model):
         blank=True, 
         null=True
     )
-    # 🌟 FIX: product_list.html already does `{% if banner.category %}
-    # ?category={{ banner.category.id }}{% endif %}` but this field never
-    # existed on the model — every banner silently fell back to
-    # #full-collection, never linking to a specific category no matter
-    # what was intended.
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='banners',
@@ -266,7 +272,6 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.product.name} ({self.rating} Stars)"
 
-# 🏢 Store Configuration & Settings Model (Combined & Cleaned)
 class StoreSetting(models.Model):
     store_name = models.CharField(max_length=255, default="Chachan General Store")
     tagline = models.CharField(max_length=255, default="Premium Corporate Retail & Essentials", blank=True, null=True)
@@ -299,15 +304,11 @@ class ServiceablePincode(models.Model):
     city_name = models.CharField(max_length=100)
     branch_name = models.CharField(max_length=100, default='Nohar Main Hub')
     is_serviceable = models.BooleanField(default=True)
-    delivery_estimate = models.CharField(max_length=100, default='10 Mins - 1 Hour') # 👈 Quick local time default
+    delivery_estimate = models.CharField(max_length=100, default='10 Mins - 1 Hour')
     shipping_charge = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
     def __str__(self):
         return f"{self.pincode} - {self.city_name} ({self.branch_name})"
-
-# ==========================================
-# 🌟 DAILY EXPENSE & SUPPLIER KHATA MODELS
-# ==========================================
 
 class Expense(models.Model):
     EXPENSE_CATEGORIES = (
@@ -352,11 +353,6 @@ class SupplierLedger(models.Model):
     
     def __str__(self):
         return f"{self.supplier.name} - {self.get_transaction_type_display()} - ₹{self.amount}"
-
-# ==========================================
-# 🛵 DELIVERY BOY / STAFF MODEL
-# ==========================================
-from django.contrib.auth.models import User
 
 class DeliveryBoy(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='delivery_profile', null=True, blank=True)
