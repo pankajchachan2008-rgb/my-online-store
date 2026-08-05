@@ -20,7 +20,7 @@
     <!-- 🌟 FAVICON -->
     <link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
 
-    <!-- 🌟 PWA & Theme Colors (FIXED URL) -->
+    <!-- 🌟 PWA & Theme Colors -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#131921">
     <link rel="apple-touch-icon" href="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
@@ -298,7 +298,7 @@
                     </a>
                 </div>
 
-                <!-- 2. 🌟 Header Search Bar with Voice -->
+                <!-- 2. 🌟 Header Search Bar with Voice (Supports both hi-IN and en-IN seamlessly via bilingual setup) -->
                 <form class="header-search-form order-3 order-lg-2 mt-2 mt-lg-0" action="{% url 'home' %}#full-collection" method="GET">
                     <input type="text" id="globalSearchInput" name="search" class="header-search-input" placeholder="Search Chachan General Store..." value="{{ search_query|default:'' }}">
                     <button type="button" id="globalVoiceBtn" class="voice-btn" title="Search by Voice">🎤</button>
@@ -474,7 +474,7 @@
         </svg>
     </div>
 
-    <!-- Toggle Button for AI Chat (Premium Animated Avatar) -->
+    <!-- Toggle Button for AI Chat -->
     <div class="premium-ai-avatar" id="aiChatToggleBtn" title="Ask AI">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5z" clip-rule="evenodd" />
@@ -504,7 +504,6 @@
         </div>
         
         <div class="ai-chat-input-area">
-            <!-- 🌟 AI Chat CSRF Token Container -->
             <span id="aiCsrfContainer" style="display:none;">{% csrf_token %}</span>
             <input type="text" id="aiUserInput" placeholder="Type your question here...">
             <button type="button" class="ai-send-btn shadow-sm" id="aiSendBtn">➤</button>
@@ -512,7 +511,7 @@
     </div>
 
     <!-- BOOTSTRAP JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.5net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- 🌟 AOS JS -->
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
@@ -578,7 +577,6 @@
                 appendMessage(query, true);
                 userInput.value = "";
 
-                // Typing indicator
                 const typingDiv = document.createElement("div");
                 typingDiv.className = "msg-bubble msg-ai shadow-sm";
                 typingDiv.innerText = "Thinking...";
@@ -586,9 +584,8 @@
                 msgContainer.appendChild(typingDiv);
 
                 const aiUrl = "{% url 'ai_assistant_chat' %}";
-
-                // 🌟 FINAL FIX: Grabbing CSRF directly from DOM
-                const aiCsrfToken = document.querySelector('#aiCsrfContainer input[name=csrfmiddlewaretoken]').value;
+                const csrfInput = document.querySelector('#aiCsrfContainer input[name=csrfmiddlewaretoken]');
+                const aiCsrfToken = csrfInput ? csrfInput.value : '';
 
                 fetch(aiUrl, {
                     method: "POST",
@@ -629,7 +626,7 @@
             }
         });
 
-        // 4. GLOBAL VOICE SEARCH LOGIC
+        // 4. GLOBAL VOICE SEARCH LOGIC (Dual Language Support: hi-IN handles Hindi/Hinglish and English product terms seamlessly)
         document.addEventListener('DOMContentLoaded', function () {
             const voiceBtn = document.getElementById("globalVoiceBtn");
             const searchInput = document.getElementById("globalSearchInput");
@@ -640,26 +637,36 @@
                 if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                     const recognition = new SpeechRecognition();
-                    recognition.lang = "en-IN";
+                    
+                    // hi-IN natively supports both Hindi speech and Indian English brand/product names (e.g. Parle G, Lux, Lifebuoy)
+                    recognition.lang = "hi-IN"; 
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
 
                     voiceBtn.addEventListener("click", function (e) {
                         e.preventDefault();
-                        recognition.start();
-                        voiceBtn.innerHTML = "🔴";
-                        searchInput.placeholder = "Listening...";
+                        try {
+                            recognition.start();
+                            voiceBtn.innerHTML = "🔴";
+                            searchInput.placeholder = "Listening (Sun raha hoon)...";
+                        } catch (err) {
+                            console.log("Recognition start error:", err);
+                        }
                     });
 
                     recognition.onresult = function (event) {
-                        let transcript = event.results[0][0].transcript.replace(/[^a-zA-Z0-9\s]/g, "").trim();
+                        let transcript = event.results[0][0].transcript.trim();
                         searchInput.value = transcript;
                         voiceBtn.innerHTML = "🎤";
-                        searchForm.submit(); // Auto submit after speaking
+                        if(searchForm) searchForm.submit();
                     };
 
-                    recognition.onerror = function () {
+                    recognition.onerror = function (event) {
+                        console.error("Speech recognition error:", event.error);
                         voiceBtn.innerHTML = "🎤";
                         searchInput.placeholder = "Search Chachan General Store...";
                     };
+
                     recognition.onend = function () {
                         voiceBtn.innerHTML = "🎤";
                         searchInput.placeholder = "Search Chachan General Store...";
@@ -670,7 +677,7 @@
             }
         });
 
-        // 5. Register Service Worker for PWA (Without causing HTML syntax errors)
+        // 5. Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js').then(function(registration) {
@@ -679,11 +686,10 @@
                     console.log('ServiceWorker registration failed: ', err);
                 });
             });
+        }
 
-<!-- 🌟 FIX: Browser Back/Forward Cache Login State Issue -->
-    <script>
+        // 6. Browser Back/Forward Cache Login State Issue Fix
         window.addEventListener('pageshow', function (event) {
-            // Agar browser ne page apni cache memory se uthaya hai, toh usko jabardasti fresh reload karo
             if (event.persisted) {
                 window.location.reload();
             }
