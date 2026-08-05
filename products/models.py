@@ -89,6 +89,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     customer_name = models.CharField(max_length=100)
     mobile_number = models.CharField(max_length=15)
+    email = models.EmailField(blank=True, null=True)
     address = models.TextField()
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, default='Pending')

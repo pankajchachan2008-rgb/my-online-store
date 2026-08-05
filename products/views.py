@@ -360,6 +360,9 @@ def checkout_page(request):
         else:
             name = request.POST.get('name'); mobile = request.POST.get('mobile_number'); address = request.POST.get('address')
         
+        # 🌟 Customer Email capture logic (User profile or Guest input form)
+        customer_email = request.user.email if request.user.is_authenticated and request.user.email else request.POST.get('email')
+        
         promo_code = request.POST.get('promo_code', '').strip().upper()
         active_coupon = None; coupon_discount_applied = 0
         
@@ -383,17 +386,26 @@ def checkout_page(request):
                 wallet_deducted = profile.wallet_balance; final_total -= profile.wallet_balance; profile.wallet_balance = 0
             profile.save()
 
+        # 🌟 4-DIGIT DELIVERY OTP GENERATE
+        delivery_otp_code = str(random.randint(1000, 9999))
+
         order = Order.objects.create(
             user=request.user if request.user.is_authenticated else None,
-            customer_name=name, mobile_number=mobile, address=address,
-            total_amount=final_total, applied_coupon=active_coupon, status='Pending'
+            customer_name=name, 
+            mobile_number=mobile, 
+            email=customer_email,  # 👈 Saved successfully in Order model for Resend OTP feature
+            address=address,
+            total_amount=final_total, 
+            applied_coupon=active_coupon, 
+            status='Pending',
+            delivery_otp=delivery_otp_code
         )
 
         # 🌟 AUTOMATIC ENTRY IN CUSTOMER LEDGER (Khata Book)
         CustomerLedger.objects.create(
             customer_name=name,
             mobile_number=mobile,
-            transaction_type='DEBIT',  # Udhaar / Payable Amount
+            transaction_type='DEBIT', 
             amount=final_total,
             description=f"Auto-entry from Online Order #{order.id}"
         )
@@ -409,7 +421,7 @@ def checkout_page(request):
         wa_text = f"📢 *Naya Order Aaya Hai!*\n\n*Order ID:* #{order.id}\n*Customer:* {name}\n*Mobile:* {mobile}\n*Address:* {address}\n\n*Items:*\n{items_str}\n*Delivery Charge:* ₹{delivery_fee}{coupon_text}\n*Wallet Used:* ₹{wallet_deducted}\n*Total Payable:* ₹{final_total}"
         whatsapp_url = f"https://wa.me/917357073316?{urlencode({'text': wa_text})}"
 
-# 🌟 AUTOMATED NOTIFICATIONS TO CUSTOMER (Highlighting OTP)
+        # 🌟 AUTOMATED NOTIFICATIONS TO CUSTOMER (Highlighting OTP)
         tracking_link = "https://www.cgsmart.in/track-order/"
         
         customer_wa_msg = (
@@ -424,7 +436,6 @@ def checkout_page(request):
         )
         send_brevo_whatsapp(mobile, customer_wa_msg)
 
-        customer_email = request.user.email if request.user.is_authenticated and request.user.email else request.POST.get('email')
         if customer_email:
             email_html = f"""
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -445,6 +456,15 @@ def checkout_page(request):
             </div>
             """
             send_brevo_api_email(f"Order Confirmation & Delivery OTP - Order #{order.id}", email_html, customer_email)
+
+        request.session['cart'] = {}
+        return render(request, 'products/order_success.html', {'order': order, 'whatsapp_url': whatsapp_url})
+
+    saved_addresses = Address.objects.filter(user=request.user) if request.user.is_authenticated else []
+    return render(request, 'products/checkout.html', {
+        'cart_total': subtotal, 'total_mrp': total_mrp, 'regular_discount': regular_discount, 'hidden_discount_total': hidden_discount_total,
+        'delivery_fee': delivery_fee, 'final_total': final_total, 'total_savings': total_savings, 'saved_addresses': saved_addresses, 'profile': profile,
+    })
 
 # 👤 5. Premium Profile
 @never_cache   
@@ -1503,13 +1523,13 @@ def export_ca_accounting_report(request):
 def resend_delivery_otp(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     
-    # Permission Check: Sirf Staff (Admin) ya wahi Delivery Boy jise order assign hai
+    # Permission Check
     is_assigned_delivery_boy = hasattr(request.user, 'delivery_profile') and order.delivery_boy == request.user.delivery_profile
     if not request.user.is_staff and not is_assigned_delivery_boy:
         messages.error(request, "Aapko yeh action lene ki permission nahi hai.")
         return redirect('home')
         
-    # Agar OTP pehle se nahi hai toh naya generate karein, warna wahi bhej dein
+    # Agar OTP pehle nahi tha toh naya generate karein
     if not order.delivery_otp:
         order.delivery_otp = str(random.randint(1000, 9999))
         order.save()
@@ -1517,7 +1537,7 @@ def resend_delivery_otp(request, order_id):
     otp_code = order.delivery_otp
     tracking_link = "https://www.cgsmart.in/track-order/"
     
-    # 1. WhatsApp par dubara bhejein
+    # 1. WhatsApp par bhejein
     wa_msg = (
         f"🔄 *OTP Resend - CGSmart*\n\n"
         f"Namaste {order.customer_name}!\n"
@@ -1527,8 +1547,8 @@ def resend_delivery_otp(request, order_id):
     )
     send_brevo_whatsapp(order.mobile_number, wa_msg)
     
-    # 2. Email par dubara bhejein (agar email available hai)
-    customer_email = order.user.email if order.user and order.user.email else None
+    # 2. Email par bhejein (Order table se direct email uthayega)
+    customer_email = order.email or (order.user.email if order.user and order.user.email else None)
     if customer_email:
         email_html = f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -1547,7 +1567,6 @@ def resend_delivery_otp(request, order_id):
         
     messages.success(request, f"✅ Order #{order.id} ka OTP customer ke WhatsApp aur Email par dubara bhej diya gaya hai!")
     
-    # Jahan se request aayi thi wahi redirect karein
     if request.user.is_staff:
         return redirect('erp_dashboard')
     else:
