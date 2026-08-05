@@ -52,7 +52,7 @@
             </div>
 
             <!-- 🌟 OTP & PAYMENT COLLECTION FORM -->
-            <form method="POST" action="{% url 'delivery_boy_dashboard' %}" class="bg-light p-3 rounded-3 border">
+            <form method="POST" action="{% url 'delivery_boy_dashboard' %}" class="bg-light p-3 rounded-3 border mb-2">
                 {% csrf_token %}
                 <input type="hidden" name="order_id" value="{{ order.id }}">
                 
@@ -71,6 +71,13 @@
 
                 <button type="submit" class="btn btn-success w-100 fw-bold py-2 shadow-sm">✅ Verify OTP & Complete Delivery</button>
             </form>
+
+            <!-- 🌟 RESEND OTP BUTTON -->
+            <div class="text-center">
+                <a href="{% url 'resend_delivery_otp' order.id %}" class="btn btn-outline-secondary btn-sm w-100 fw-bold py-1" style="font-size: 12px;">
+                    🔄 Resend OTP (WhatsApp & Email)
+                </a>
+            </div>
         </div>
         {% empty %}
         <div class="text-center p-4">

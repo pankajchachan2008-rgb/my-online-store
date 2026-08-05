@@ -129,6 +129,7 @@ urlpatterns = [
     
     # Delivery Boy Mobile Portal
     path('delivery-dashboard/', views.delivery_boy_dashboard, name='delivery_boy_dashboard'),
+    path('erp/resend-otp/<int:order_id>/', views.resend_delivery_otp, name='resend_delivery_otp'),
     
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

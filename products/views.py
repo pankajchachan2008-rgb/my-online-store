@@ -1498,3 +1498,57 @@ def export_ca_accounting_report(request):
         ])
         
     return response
+
+@login_required(login_url='/login/')
+def resend_delivery_otp(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    
+    # Permission Check: Sirf Staff (Admin) ya wahi Delivery Boy jise order assign hai
+    is_assigned_delivery_boy = hasattr(request.user, 'delivery_profile') and order.delivery_boy == request.user.delivery_profile
+    if not request.user.is_staff and not is_assigned_delivery_boy:
+        messages.error(request, "Aapko yeh action lene ki permission nahi hai.")
+        return redirect('home')
+        
+    # Agar OTP pehle se nahi hai toh naya generate karein, warna wahi bhej dein
+    if not order.delivery_otp:
+        order.delivery_otp = str(random.randint(1000, 9999))
+        order.save()
+        
+    otp_code = order.delivery_otp
+    tracking_link = "https://www.cgsmart.in/track-order/"
+    
+    # 1. WhatsApp par dubara bhejein
+    wa_msg = (
+        f"🔄 *OTP Resend - CGSmart*\n\n"
+        f"Namaste {order.customer_name}!\n"
+        f"Aapke order *#{order.id}* ka Delivery OTP dubara bheja gaya hai:\n\n"
+        f"🔑 *DELIVERY OTP: {otp_code}*\n\n"
+        f"Ise apne delivery partner ko dein."
+    )
+    send_brevo_whatsapp(order.mobile_number, wa_msg)
+    
+    # 2. Email par dubara bhejein (agar email available hai)
+    customer_email = order.user.email if order.user and order.user.email else None
+    if customer_email:
+        email_html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <h3 style="color: #002D62; margin-top: 0;">Resend Delivery OTP - Order #{order.id}</h3>
+            <p>Hello <strong>{order.customer_name}</strong>,</p>
+            <p>Aapke maangne par aapka delivery verification OTP dubara bheja ja raha hai:</p>
+            
+            <div style="background: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #D4AF37;">
+                <p style="margin: 0; font-size: 14px; color: #64748B;">YOUR DELIVERY OTP</p>
+                <h1 style="margin: 5px 0 0 0; color: #002D62; letter-spacing: 5px;">{otp_code}</h1>
+            </div>
+            <p><a href="{tracking_link}" style="background: #002D62; color: #fff; padding: 8px 15px; text-decoration: none; border-radius: 5px; display: inline-block;">Track Order</a></p>
+        </div>
+        """
+        send_brevo_api_email(f"Resend Delivery OTP - Order #{order.id}", email_html, customer_email)
+        
+    messages.success(request, f"✅ Order #{order.id} ka OTP customer ke WhatsApp aur Email par dubara bhej diya gaya hai!")
+    
+    # Jahan se request aayi thi wahi redirect karein
+    if request.user.is_staff:
+        return redirect('erp_dashboard')
+    else:
+        return redirect('delivery_boy_dashboard')
