@@ -109,6 +109,7 @@ urlpatterns = [
     path('cgs-erp/products/', views.erp_products, name='erp_products'),
     path('cgs-erp/products/add/', views.erp_add_product, name='erp_add_product'),
     path('cgs-erp/pos/', views.erp_pos_billing, name='erp_pos'),
+    path('cgs-erp/ledger/', views.erp_customer_ledger, name='erp_ledger'),
     
     re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
