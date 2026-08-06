@@ -12,6 +12,8 @@ from django.views.generic import TemplateView
 from products import views
 from products.views import search_suggestions, check_delivery
 from products.sitemaps import ProductSitemap, StaticViewSitemap
+from django.urls import path
+from . import views
 
 # 🌟 Specific View Imports for cleaner path definitions
 from products.views import (
@@ -155,6 +157,8 @@ urlpatterns = [
     # 🛵 DELIVERY BOY MOBILE PORTAL
     # ==========================================
     path('delivery-dashboard/', views.delivery_boy_dashboard, name='delivery_boy_dashboard'),
+    path('delivery/mark-collected/<int:order_id>/', views.delivery_mark_collected, name='delivery_mark_collected'),
+    path('admin-panel/confirm-payment/<int:order_id>/', views.admin_confirm_payment, name='admin_confirm_payment'),
 ]
 
 # 🌟 Best Practice: Serve media files efficiently.

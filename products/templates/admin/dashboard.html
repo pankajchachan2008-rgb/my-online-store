@@ -63,6 +63,71 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         margin-bottom: 40px;
     }
+
+    /* 🌟 NEW: Custom Premium Table for Pending Payments 🌟 */
+    .pending-payments-container {
+        background: #FFFFFF;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 40px;
+        overflow: hidden;
+    }
+    .pending-payments-header {
+        background: #0F172A;
+        color: #FFFFFF;
+        padding: 16px 20px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-left: 5px solid #D4AF37;
+    }
+    .erp-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    .erp-table th {
+        background: #F8FAFC;
+        color: #64748B;
+        font-weight: 600;
+        padding: 14px 20px;
+        border-bottom: 1px solid #E2E8F0;
+        font-size: 0.95rem;
+    }
+    .erp-table td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #E2E8F0;
+        color: #1E293B;
+        vertical-align: middle;
+    }
+    .erp-table tr:last-child td { border-bottom: none; }
+    .erp-table tr:hover { background: #F8FAFC; }
+    
+    .btn-confirm {
+        background: #10B981; /* Success Green */
+        color: #FFFFFF;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .btn-confirm:hover { background: #059669; }
+    .badge-warning {
+        background: #FEF3C7;
+        color: #D97706;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
 </style>
 
 <h1 class="dashboard-header">📊 Executive Sales Dashboard</h1>
@@ -80,6 +145,53 @@
     <h3>Active Coupons</h3>
     <p>{{ coupon_usage }}</p>
   </div>
+</div>
+
+<!-- 🌟 ADMIN PENDING PAYMENTS SECTION 🌟 -->
+<div class="pending-payments-container">
+    <div class="pending-payments-header">
+        <span>🔔</span> Pending QR Payments (Awaiting Your Verification)
+    </div>
+    <div style="overflow-x: auto;">
+        <table class="erp-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer Details</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in pending_payment_orders %}
+                <tr>
+                    <td style="font-weight: 800; color: #3B82F6;">#ORD-{{ order.id }}</td>
+                    <td>
+                        <strong style="display:block; font-size: 1.05rem;">{{ order.customer_name }}</strong>
+                        <span style="font-size: 0.85rem; color: #64748B;">📞 {{ order.mobile_number }}</span>
+                    </td>
+                    <td style="font-weight: 800; color: #10B981; font-size: 1.2rem;">₹{{ order.total_amount }}</td>
+                    <td><span class="badge-warning">⏳ Awaiting Verification</span></td>
+                    <td>
+                        <form action="{% url 'admin_confirm_payment' order.id %}" method="POST" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-confirm">
+                                ✅ Confirm & Credit Ledger
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: #64748B; font-weight: 600; font-size: 1.1rem;">
+                        🎉 No pending QR payments to verify right now. Relax!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <h2 style="color: #0F172A; font-weight: 700; margin-bottom: 20px;">📈 Monthly Sales Trend</h2>

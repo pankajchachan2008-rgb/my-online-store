@@ -870,6 +870,31 @@ def erp_dashboard(request):
     return render(request, 'erp/dashboard.html', context)
 
 @staff_member_required(login_url='/login/')
+def admin_confirm_payment(request, order_id):
+    """ Admin verify karega ki QR payment aa gaya hai aur Ledger me Credit add karega """
+    if request.method == "POST":
+        order = get_object_or_404(Order, id=order_id)
+        
+        if order.payment_status == "Pending Admin Approval":
+            order.payment_status = "Paid & Confirmed"
+            order.save()
+            
+            # 🌟 MASTER STROKE: Auto Ledger Update 🌟
+            CustomerLedger.objects.create(
+                customer_name=order.customer_name,
+                mobile_number=order.mobile_number,
+                transaction_type="CREDIT",
+                amount=order.total_amount,
+                description=f"Admin Verified Online QR Payment for Order #{order.id}"
+            )
+            
+            messages.success(request, f"✅ Payment for Order #{order.id} Verified! Ledger Update ho gaya.")
+        else:
+            messages.error(request, "This order is not pending for approval.")
+            
+    return redirect('erp_dashboard')
+
+@staff_member_required(login_url='/login/')
 def erp_products(request):
     if request.method == 'POST':
         product_ids = request.POST.getlist('product_ids[]')
@@ -1085,7 +1110,7 @@ def delivery_boy_dashboard(request):
     if request.method == 'POST':
         order_id = request.POST.get('order_id')
         entered_otp = request.POST.get('delivery_otp', '').strip()
-        payment_collected = request.POST.get('payment_status', 'Paid')
+        payment_collected = request.POST.get('payment_status', 'Pending')
         
         order = get_object_or_404(Order, id=order_id, delivery_boy=delivery_boy)
         
@@ -1093,8 +1118,21 @@ def delivery_boy_dashboard(request):
             messages.error(request, f"❌ Galat Delivery OTP! Customer se sahi OTP puchein.")
             return redirect('delivery_boy_dashboard')
             
-        order.status = 'Completed'; order.payment_status = payment_collected; order.save()
-        send_brevo_whatsapp(order.mobile_number, f"✅ Order #ORD-{order.id} successfully deliver ho gaya hai! Payment: {order.payment_status}. Thank you for shopping with Chachan General Store!")
+        order.status = 'Completed'
+        
+        # 🌟 NEW LOGIC FOR DYNAMIC QR SELECTION 🌟
+        if payment_collected == 'Paid_QR':
+            order.payment_status = 'Pending Admin Approval'
+            wa_payment_text = "Online QR (Pending Admin Verification)"
+        elif payment_collected == 'Paid_Cash':
+            order.payment_status = 'Paid'
+            wa_payment_text = "Cash Received"
+        else:
+            order.payment_status = 'Pending'
+            wa_payment_text = "Payment Pending"
+            
+        order.save()
+        send_brevo_whatsapp(order.mobile_number, f"✅ Order #ORD-{order.id} successfully deliver ho gaya hai! Payment: {wa_payment_text}. Thank you for shopping with Chachan General Store!")
         messages.success(request, f"🎉 Order #ORD-{order.id} Successfully Delivered & Payment Recorded!")
         return redirect('delivery_boy_dashboard')
 
