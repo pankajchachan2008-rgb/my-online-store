@@ -304,7 +304,7 @@
                         </a>
 
                         <!-- AJAX Add To Cart Form & Quantity -->
-                        <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form m-0 d-flex flex-column h-100" data-product-id="{{ product.id }}" data-add-url="{% url 'add_to_cart' product.id %}">
+                        <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form m-0 d-flex flex-column h-100" data-product-id="{{ product.id }}" data-add-url="{% url 'add_to_cart_ajax' product.id %}">
                             {% csrf_token %}
                             <div class="mt-auto">
                                 {% if product.variants.exists %}
