@@ -310,7 +310,6 @@ class ReviewAdmin(admin.ModelAdmin):
 # -----------------------------
 # Serviceable Pincode Admin
 # -----------------------------
-@admin.register(ServiceablePincode, site=admin.site) if hasattr(admin.site, 'register') else None
 @admin.register(ServiceablePincode)
 class ServiceablePincodeAdmin(admin.ModelAdmin):
     list_display = ('pincode', 'city_name', 'branch_name', 'is_serviceable', 'delivery_estimate')
