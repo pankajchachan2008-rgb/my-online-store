@@ -157,9 +157,7 @@ urlpatterns = [
     # 🛵 DELIVERY BOY MOBILE PORTAL
     # ==========================================
     path('delivery-dashboard/', views.delivery_boy_dashboard, name='delivery_boy_dashboard'),
-    path('delivery/mark-collected/<int:order_id>/', views.delivery_mark_collected, name='delivery_mark_collected'),
     path('admin-panel/confirm-payment/<int:order_id>/', views.admin_confirm_payment, name='admin_confirm_payment'),
-    path('delivery/mark-collected/<int:order_id>/', views.delivery_mark_collected, name='delivery_mark_collected'),
 ]
 
 # 🌟 Best Practice: Serve media files efficiently.
