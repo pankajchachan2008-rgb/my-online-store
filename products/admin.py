@@ -1,5 +1,7 @@
+import pandas as pd
+import re
 from django.contrib import admin
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.template.loader import get_template
@@ -9,6 +11,8 @@ from django.urls import path
 from django.template.response import TemplateResponse
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth 
+from django.contrib import messages
+from django.utils.text import slugify
 
 # Apne models import karein
 from .models import ServiceablePincode
@@ -115,7 +119,7 @@ class ProductVariantInline(admin.TabularInline):
 
 
 # -----------------------------
-# Product Admin
+# Product Admin (With Bulk Excel Import Automation)
 # -----------------------------
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -142,6 +146,79 @@ class ProductAdmin(admin.ModelAdmin):
             )
         return "No Image"
     product_image.short_description = 'Image'
+
+    # 🌟 NAYA: Admin mein Excel Import ka Custom URL jorna
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('bulk-excel-import/', self.admin_site.admin_view(self.excel_import_view), name='product_bulk_excel_import'),
+        ]
+        return custom_urls + urls
+
+    # 🌟 NAYA: Excel processing view jo spellings theek karega aur auto-create karega
+    def excel_import_view(self, request):
+        if request.method == 'POST' and request.FILES.get('excel_file'):
+            excel_file = request.FILES['excel_file']
+            try:
+                if excel_file.name.endswith('.csv'):
+                    df = pd.read_csv(excel_file)
+                else:
+                    df = pd.read_excel(excel_file)
+
+                success_count = 0
+                error_count = 0
+
+                for index, row in df.iterrows():
+                    try:
+                        raw_name = str(row.get('name', ''))
+                        if not raw_name or raw_name == 'nan':
+                            continue
+                        
+                        # 1. Text Cleaning & Auto Spelling Fix (Title Case & Spacing)
+                        clean_name = re.sub(r'\s+', ' ', raw_name).strip().title()
+                        brand_name = re.sub(r'\s+', ' ', str(row.get('brand', 'General'))).strip().title()
+                        category_name = re.sub(r'\s+', ' ', str(row.get('category', 'Essentials'))).strip().title()
+
+                        # 2. Auto-Create or Fetch Brand & Category (Groups)
+                        brand_obj, _ = Brand.objects.get_or_create(name=brand_name)
+                        category_obj, _ = Category.objects.get_or_create(name=category_name)
+
+                        # 3. Parsing numbers safely
+                        price = float(row.get('price', 0))
+                        mrp = float(row.get('mrp', price))
+                        stock = int(row.get('stock', 10))
+                        image_url = str(row.get('image_url', ''))
+
+                        # 4. Prevent Duplicates using Slug / SKU update or create
+                        product_slug = slugify(clean_name)
+
+                        Product.objects.update_or_create(
+                            slug=product_slug,
+                            defaults={
+                                'name': clean_name,
+                                'brand': brand_obj,
+                                'category': category_obj,
+                                'price': price,
+                                'mrp': mrp,
+                                'stock': stock,
+                                'image': image_url if image_url != 'nan' else '',
+                            }
+                        )
+                        success_count += 1
+                    except Exception as row_err:
+                        error_count += 1
+
+                messages.success(request, f"✨ Successfully imported/updated {success_count} products! (Errors: {error_count})")
+                return HttpResponseRedirect("../")
+
+            except Exception as e:
+                messages.error(request, f"❌ Error reading file: {e}")
+
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'Bulk Import Products via Excel',
+        }
+        return TemplateResponse(request, "admin/excel_import_form.html", context)
 
 
 # -----------------------------
@@ -198,14 +275,11 @@ class OrderItemInline(admin.TabularInline):
 # -----------------------------
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    # 🌟 NAYA: delivery_boy bahar table mein add kiya
     list_display = ('id', 'customer_name', 'mobile_number', 'total_amount', 'status', 'delivery_boy', 'created_at')
     list_filter = ('status', 'delivery_boy', 'created_at')
     search_fields = ('customer_name', 'mobile_number', 'id')
     inlines = [OrderItemInline]
     actions = [print_shipping_labels]
-    
-    # 🌟 NAYA: status aur delivery_boy dono bahar se edit ho payenge
     list_editable = ('status', 'delivery_boy')
 
 
@@ -236,6 +310,7 @@ class ReviewAdmin(admin.ModelAdmin):
 # -----------------------------
 # Serviceable Pincode Admin
 # -----------------------------
+@admin.register(ServiceablePincode, site=admin.site) if hasattr(admin.site, 'register') else None
 @admin.register(ServiceablePincode)
 class ServiceablePincodeAdmin(admin.ModelAdmin):
     list_display = ('pincode', 'city_name', 'branch_name', 'is_serviceable', 'delivery_estimate')
