@@ -304,7 +304,7 @@
                         </a>
 
                         <!-- AJAX Add To Cart Form & Quantity -->
-                        <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form m-0 d-flex flex-column h-100" data-product-id="{{ product.id }}" data-add-url="{% url 'add_to_cart_ajax' product.id %}">
+                        <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form m-0 d-flex flex-column h-100" data-product-id="{{ product.id }}">
                             {% csrf_token %}
                             <div class="mt-auto">
                                 {% if product.variants.exists %}
@@ -424,116 +424,4 @@
     <button class="view-cart-btn shadow-sm" onclick="window.location.href='{% url 'cart_detail' %}'">VIEW CART</button>
 </div>
 
-<!-- 🌟 BULLETPROOF AJAX CART SCRIPT -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        
-        // 🌟 1. DYNAMIC PRICE UPDATER (When user selects a variant)
-        document.querySelectorAll('.variant-selector').forEach(select => {
-            select.addEventListener('change', function() {
-                const productId = this.getAttribute('data-product-id');
-                const newPrice = this.options[this.selectedIndex].getAttribute('data-price');
-                
-                const priceEl = document.getElementById(`price-display-${productId}`);
-                if(priceEl) priceEl.innerText = `₹${newPrice}`;
-                
-                this.classList.remove('is-invalid');
-                const errorMsg = document.getElementById(`error-msg-${productId}`);
-                if(errorMsg) errorMsg.style.display = 'none';
-            });
-        });
-
-        // 🌟 2. CART BAR UPDATER
-        function updateCartBar(items, total) {
-            const cartBar = document.getElementById("stickyCart");
-            const cartBadge = document.getElementById("cartBadge");
-            const cartSummary = document.getElementById("cartSummary");
-
-            if (items > 0) {
-                cartBar.style.display = "flex";
-                cartBadge.textContent = items;
-                cartSummary.textContent = `${items} Items | ₹${parseFloat(total).toFixed(2)}`;
-            } else {
-                cartBar.style.display = "none";
-            }
-        }
-
-        function refreshCartBar() {
-            fetch("/cart-ajax/summary/") 
-                .then((response) => response.json())
-                .then((data) => updateCartBar(data.items, data.total))
-                .catch((error) => console.error("Cart summary error:", error));
-        }
-
-        refreshCartBar();
-
-        // 🌟 3. ADD TO CART & BUY NOW HANDLER
-        document.querySelectorAll(".add-to-cart-form").forEach((form) => {
-            const addBtn = form.querySelector(".add-to-cart-ajax");
-            const buyBtn = form.querySelector(".buy-now-btn");
-
-            function handleCartAction(btn, isBuyNow) {
-                const addUrl = form.dataset.addUrl; 
-                const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
-
-                let variantId = null;
-                const variantSelect = form.querySelector('select[name="variant_id"]');
-                if (variantSelect) {
-                    if (!variantSelect.value) {
-                        variantSelect.classList.add('is-invalid');
-                        const errorMsg = document.getElementById(`error-msg-${form.dataset.productId}`);
-                        if(errorMsg) errorMsg.style.display = 'block';
-                        variantSelect.focus();
-                        return;
-                    }
-                    variantId = variantSelect.value;
-                }
-
-                btn.disabled = true;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = "⏳";
-
-                const formData = new FormData();
-                formData.append('quantity', 1);
-                if(variantId) formData.append('variant_id', variantId);
-
-                fetch(addUrl, {
-                    method: "POST",
-                    headers: { "X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest" },
-                    body: formData, 
-                })
-                .then(async (response) => {
-                    if (!response.ok) throw new Error("Server Error");
-                    return response.json();
-                })
-                .then((data) => {
-                    if(isBuyNow) {
-                        window.location.href = "{% url 'checkout' %}"; 
-                    } else {
-                        updateCartBar(data.items, data.total);
-                        btn.innerHTML = "✔";
-                        btn.style.background = "#2ECC71";
-                        btn.style.color = "#FFFFFF";
-                        btn.style.borderColor = "#27AE60";
-                        setTimeout(() => {
-                            btn.innerHTML = originalText;
-                            btn.style.background = "transparent";
-                            btn.style.color = "#0056b3";
-                            btn.style.borderColor = "#0056b3";
-                            btn.disabled = false;
-                        }, 1500);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Add to cart error:", error);
-                    btn.innerHTML = "❌";
-                    setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; }, 1500);
-                });
-            }
-
-            if(addBtn) addBtn.addEventListener("click", (e) => { e.preventDefault(); handleCartAction(addBtn, false); });
-            if(buyBtn) buyBtn.addEventListener("click", (e) => { e.preventDefault(); handleCartAction(buyBtn, true); });
-        });
-    });
-</script>
 {% endblock %}

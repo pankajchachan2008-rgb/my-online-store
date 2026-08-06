@@ -859,7 +859,7 @@
                 });
             } catch(e) { console.log(e); }
 
-            // 🌟 THE BULLETPROOF CART & VARIANT LOGIC 🌟
+            // 🌟 8. THE BULLETPROOF CART & VARIANT LOGIC 🌟
             try {
                 // Dynamic Price Updater
                 document.querySelectorAll('.variant-selector').forEach(select => {
@@ -902,12 +902,25 @@
 
                 refreshCartBar();
 
-                // Add to Cart Handlers
+                // 🌟 BULLETPROOF ADD TO CART HANDLERS 🌟
                 document.querySelectorAll(".add-to-cart-form").forEach((form) => {
+                    
+                    // Prevent Double Binding
+                    if (form.dataset.bound) return;
+                    form.dataset.bound = "true";
+
+                    // Form ko normal tarike se submit hone se rokna
+                    form.addEventListener("submit", (e) => { e.preventDefault(); });
+
                     const addBtn = form.querySelector(".add-to-cart-ajax");
                     const buyBtn = form.querySelector(".buy-now-btn");
 
-                    function handleCartAction(btn, isBuyNow) {
+                    function handleCartAction(e, btn, isBuyNow) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation(); 
+
+                        if (btn.disabled) return; 
+                        
                         const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
                         const productId = form.getAttribute("data-product-id");
 
@@ -924,13 +937,19 @@
                             variantId = variantSelect.value;
                         }
 
+                        let itemQty = 1;
+                        const qtyInput = form.querySelector('input[name="quantity"]');
+                        if (qtyInput && qtyInput.value) {
+                            itemQty = parseInt(qtyInput.value) || 1;
+                        }
+
+                        // Button Processing Animation
                         btn.disabled = true;
                         const originalText = btn.innerHTML;
                         btn.innerHTML = "⏳";
 
-                        // ✅ EXACT AJAX URL AND JSON PAYLOAD
                         const exactAjaxUrl = "/cart-ajax/add/" + productId + "/";
-                        const payload = { quantity: 1 };
+                        const payload = { quantity: itemQty };
                         if(variantId) payload.variant_id = variantId;
 
                         fetch(exactAjaxUrl, {
@@ -957,22 +976,24 @@
                                 btn.style.borderColor = "#27AE60";
                                 setTimeout(() => {
                                     btn.innerHTML = originalText;
-                                    btn.style.background = "transparent";
-                                    btn.style.color = "#0056b3";
-                                    btn.style.borderColor = "#0056b3";
+                                    btn.style.background = ""; 
+                                    btn.style.color = "";
+                                    btn.style.borderColor = "";
                                     btn.disabled = false;
                                 }, 1500);
                             }
                         })
                         .catch((error) => {
-                            btn.innerHTML = "❌";
-                            btn.disabled = false;
-                            setTimeout(() => { btn.innerHTML = originalText; }, 1500);
+                            btn.innerHTML = "❌ Error";
+                            setTimeout(() => { 
+                                btn.innerHTML = originalText; 
+                                btn.disabled = false;
+                            }, 1500);
                         });
                     }
 
-                    if(addBtn) addBtn.addEventListener("click", (e) => { e.preventDefault(); handleCartAction(addBtn, false); });
-                    if(buyBtn) buyBtn.addEventListener("click", (e) => { e.preventDefault(); handleCartAction(buyBtn, true); });
+                    if(addBtn) addBtn.addEventListener("click", (e) => handleCartAction(e, addBtn, false));
+                    if(buyBtn) buyBtn.addEventListener("click", (e) => handleCartAction(e, buyBtn, true));
                 });
             } catch(e) { console.log(e); }
 
