@@ -1529,10 +1529,25 @@ def resend_delivery_otp(request, order_id):
         messages.error(request, "Aapko yeh action lene ki permission nahi hai.")
         return redirect('home')
         
+    # 🌟 COOLDOWN RATE LIMITING (60 Seconds Protection against OTP Bombing)
+    if order.last_otp_sent_at:
+        time_difference = timezone.now() - order.last_otp_sent_at
+        cooldown_seconds = 60  # 60 seconds gap required
+        if time_difference.total_seconds() < cooldown_seconds:
+            remaining_time = int(cooldown_seconds - time_difference.total_seconds())
+            messages.error(request, f"⏳ Bahut jaldi click kar diya! Naya OTP bhejne ke liye {remaining_time} seconds baaki hain.")
+            if request.user.is_staff:
+                return redirect('erp_dashboard')
+            else:
+                return redirect('delivery_boy_dashboard')
+
     # Agar OTP pehle nahi tha toh naya generate karein
     if not order.delivery_otp:
         order.delivery_otp = str(random.randint(1000, 9999))
-        order.save()
+        
+    # 🌟 Update last sent timestamp and save
+    order.last_otp_sent_at = timezone.now()
+    order.save()
         
     otp_code = order.delivery_otp
     tracking_link = "https://www.cgsmart.in/track-order/"

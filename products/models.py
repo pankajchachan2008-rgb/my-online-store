@@ -89,19 +89,23 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     customer_name = models.CharField(max_length=100)
     mobile_number = models.CharField(max_length=15)
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)  # 👈 Resend OTP email support
     address = models.TextField()
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, default='Pending')
     applied_coupon = models.ForeignKey(Coupon, on_delete=models.SET_NULL, null=True, blank=True)
     
-    # 🌟 FIXED SYNTAX ERROR HERE
     delivery_otp = models.CharField(max_length=6, blank=True, null=True)
     payment_status = models.CharField(
         max_length=20, 
         default='Pending', 
         choices=[('Pending', 'Pending'), ('Paid', 'Paid')]
     )
+    
+    # 🌟 Payment Mode & Rate Limiting Fields Added
+    payment_mode = models.CharField(max_length=50, default='Cash on Delivery (COD)')
+    last_otp_sent_at = models.DateTimeField(blank=True, null=True)
+
     delivery_boy = models.ForeignKey(
         'DeliveryBoy', 
         on_delete=models.SET_NULL, 
@@ -120,7 +124,6 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.order_id:
-            # 🌟 FIXED: Convert UUID to string before slicing
             self.order_id = f"CG-{str(uuid.uuid4().int)[:6].upper()}"
         super().save(*args, **kwargs)
 

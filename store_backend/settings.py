@@ -200,3 +200,19 @@ LOGGING = {
         },
     },
 }
+
+# 🌟 DJANGO PRODUCTION SECURITY SETTINGS
+
+# 1. Cookies ko sirf HTTPS par allow karein (Session hijacking rokne ke liye)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# 2. XSS (Cross-Site Scripting) aur MIME-sniffing protection
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# 3. Clickjacking Protection (Koi dusri site aapki site ko iframe mein nahi dikha payegi)
+X_FRAME_OPTIONS = 'DENY'
+
+# 4. HTTPS Redirect (Agar Cloudflare se koi HTTP traffic aa jaye)
+SECURE_SSL_REDIRECT = True
