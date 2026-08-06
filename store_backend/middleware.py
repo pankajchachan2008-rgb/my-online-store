@@ -11,7 +11,6 @@ class BlockBadBotsMiddleware:
 
     def __call__(self, request):
         path = request.path.lower()
-        # Fake bot scanner paths match hone par turant reject karo
         if any(keyword in path for keyword in BLOCKED_PATH_KEYWORDS):
             return HttpResponseForbidden("Access Denied: Scanning is blocked.")
         return self.get_response(request)
@@ -22,6 +21,12 @@ class FixCSPMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        # Yeh line pichle saare strict aur hidden CSP rules ko overwrite kar degi
-        response['Content-Security-Policy'] = "default-src 'self' https: http: data: blob: 'unsafe-inline' 'unsafe-eval';"
+        # 🌟 Sabhi restrictions ko hata kar sab kuch explicitly allow kar rahe hain
+        response['Content-Security-Policy'] = (
+            "default-src 'self' https: http: data: blob: 'unsafe-inline' 'unsafe-eval'; "
+            "connect-src 'self' https: http: *; "
+            "img-src 'self' https: http: data: blob: *; "
+            "script-src 'self' https: http: 'unsafe-inline' 'unsafe-eval'; "
+            "style-src 'self' https: http: 'unsafe-inline';"
+        )
         return response
