@@ -15,3 +15,13 @@ class BlockBadBotsMiddleware:
         if any(keyword in path for keyword in BLOCKED_PATH_KEYWORDS):
             return HttpResponseForbidden("Access Denied: Scanning is blocked.")
         return self.get_response(request)
+
+class FixCSPMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        # Yeh line pichle saare strict aur hidden CSP rules ko overwrite kar degi
+        response['Content-Security-Policy'] = "default-src 'self' https: http: data: blob: 'unsafe-inline' 'unsafe-eval';"
+        return response
