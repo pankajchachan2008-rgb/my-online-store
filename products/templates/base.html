@@ -3,12 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    
-    <!-- 🌟 NEW: Content Security Policy to Allow AOS, Bootstrap & APIs -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://unpkg.com; connect-src 'self' https://api.brevo.com https://cdn.jsdelivr.net;">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Baaki ka code waisa hi rahega... -->
 
     <!-- 🌟 Dynamic SEO Meta Tags -->
     <title>{% block title %}CGSMART - Premium Online Store & Essentials{% endblock %}</title>
@@ -18,7 +13,7 @@
     <!-- 📱 Open Graph / WhatsApp / Facebook Share Tags -->
     <meta property="og:title" content="{% block og_title %}CGSMART - Premium Online Store{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Discover premium quality essentials in Nohar with fast delivery.{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg{% endblock %}">
+    <meta property="og:image" content="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:type" content="website">
 
@@ -33,9 +28,6 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- 🌟 AOS CSS (For Scroll Animations) -->
-    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -296,10 +288,6 @@
         }
         .whatsapp-float:hover { transform: translateY(-4px) scale(1.05); }
         .whatsapp-float svg { width: 30px; height: 30px; fill: #fff; }
-
-        /* AOS fallback */
-        [data-aos] { opacity: 0; transition: opacity .6s ease, transform .6s ease; }
-        [data-aos].aos-animate { opacity: 1; transform: none; }
     </style>
 </head>
 <body>
@@ -322,7 +310,7 @@
                         <span class="brand-name">CGSMART</span>
                     </a>
 
-                    <!-- 📍 Header Global Pincode / Location Selector (Blinkit Style) -->
+                    <!-- 📍 Header Global Pincode / Location Selector -->
                     <div class="d-none d-md-flex align-items-center text-white ms-3 px-2 py-1 rounded" style="background-color: #374151; cursor: pointer; border: 1px solid rgba(255,255,255,0.15);" data-bs-toggle="modal" data-bs-target="#globalPincodeModal" title="Change Location">
                         <span class="fs-6 me-1">📍</span>
                         <div style="line-height: 1.1; font-size: 0.75rem;">
@@ -409,7 +397,6 @@
         <div class="offcanvas-body p-0">
             <div class="d-flex flex-column h-100">
                 <div class="flex-grow-1 mt-2">
-                    <!-- Mobile Location option -->
                     <div class="p-3 bg-light border-bottom d-flex align-items-center justify-content-between" data-bs-toggle="modal" data-bs-target="#globalPincodeModal" data-bs-dismiss="offcanvas">
                         <div class="d-flex align-items-center gap-2">
                             <span>📍</span>
@@ -579,306 +566,408 @@
         </div>
     </div>
 
-    <!-- BOOTSTRAP JS -->
+    <!-- BOOTSTRAP JS (Safe CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- 🌟 AOS JS -->
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
-    <!-- 🌟 ALL JAVASCRIPT LOGIC BUNDLED PROPERLY -->
+    <!-- 🌟 SAFE & BULLETPROOF JAVASCRIPT LOGIC -->
     <script>
-        // 1. Initialize AOS Animations
         document.addEventListener('DOMContentLoaded', function () {
-            if (window.AOS) {
-                AOS.init({
-                    duration: 700,
-                    easing: 'ease-out-cubic',
-                    once: true,
-                    offset: 80
-                });
-            }
 
-            // Sync Header Location from localStorage
-            const savedPin = localStorage.getItem("cgsmart_user_pincode");
-            const savedCity = localStorage.getItem("cgsmart_user_city");
-            const headerPinEl = document.getElementById("headerSelectedPincode");
-            const mobilePinEl = document.getElementById("mobileSelectedPincode");
-            
-            if(savedPin && headerPinEl) {
-                headerPinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
-            }
-            if(savedPin && mobilePinEl) {
-                mobilePinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
-            }
-
-            // Global Pincode Modal Save Logic
-            const applyBtn = document.getElementById("saveGlobalPincodeBtn");
-            const inputEl = document.getElementById("globalModalPincode");
-            const resEl = document.getElementById("globalModalResult");
-
-            if(applyBtn && inputEl) {
-                applyBtn.addEventListener("click", function() {
-                    let pin = inputEl.value.trim();
-                    if(pin.length !== 6) {
-                        resEl.style.display = "block";
-                        resEl.className = "small fw-semibold text-danger";
-                        resEl.innerText = "Enter valid 6-digit pincode.";
-                        return;
-                    }
-
-                    applyBtn.innerText = "...";
-                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
-
-                    fetch('/api/check-delivery/', {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRFToken": csrfToken,
-                            "X-Requested-With": "XMLHttpRequest"
-                        },
-                        body: JSON.stringify({ pincode: pin })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        applyBtn.innerText = "Apply";
-                        resEl.style.display = "block";
-                        if(data.available) {
-                            resEl.className = "small fw-semibold text-success";
-                            resEl.innerText = "⚡ 10 Mins delivery available!";
-                            localStorage.setItem("cgsmart_user_pincode", pin);
-                            localStorage.setItem("cgsmart_user_city", data.city || "Nohar");
-                            if(headerPinEl) headerPinEl.innerText = (data.city || "Nohar") + " " + pin;
-                            if(mobilePinEl) mobilePinEl.innerText = (data.city || "Nohar") + " " + pin;
-                            setTimeout(() => { location.reload(); }, 1000);
-                        } else {
-                            resEl.className = "small fw-semibold text-danger";
-                            resEl.innerText = data.message;
-                        }
-                    })
-                    .catch(err => {
-                        applyBtn.innerText = "Apply";
-                        console.error(err);
-                    });
-                });
-            }
-        });
-
-        // 2. WhatsApp Float Logic
-        document.addEventListener('DOMContentLoaded', function () {
-            var btn = document.getElementById('whatsappFloat');
-            if (btn) {
-                btn.addEventListener('click', function () {
-                    var phone = '917357073316'; 
-                    var text = encodeURIComponent('Hi Chachan General Store, I need help with...');
-                    var url = 'https://wa.me/' + phone + '?text=' + text;
-                    window.open(url, '_blank');
-                });
-            }
-        });
-
-        // 3. AI Assistant Logic
-        document.addEventListener("DOMContentLoaded", function() {
-            const toggleBtn = document.getElementById("aiChatToggleBtn");
-            const chatWindow = document.getElementById("aiChatWindow");
-            const closeBtn = document.getElementById("closeAiChat");
-            const sendBtn = document.getElementById("aiSendBtn");
-            const userInput = document.getElementById("aiUserInput");
-            const msgContainer = document.getElementById("aiMsgContainer");
-
-            if(toggleBtn) {
-                toggleBtn.addEventListener("click", () => {
-                    chatWindow.style.display = (chatWindow.style.display === "flex") ? "none" : "flex";
-                });
-            }
-
-            if(closeBtn) {
-                closeBtn.addEventListener("click", () => { chatWindow.style.display = "none"; });
-            }
-
-            function appendMessage(text, isUser) {
-                const msgDiv = document.createElement("div");
-                msgDiv.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-ai'} shadow-sm`;
-                msgDiv.innerText = text;
-                msgContainer.appendChild(msgDiv);
-                msgContainer.scrollTop = msgContainer.scrollHeight;
-            }
-
-            function sendAiMessage() {
-                const query = userInput.value.trim();
-                if (!query) return;
-
-                appendMessage(query, true);
-                userInput.value = "";
-
-                const typingDiv = document.createElement("div");
-                typingDiv.className = "msg-bubble msg-ai shadow-sm";
-                typingDiv.innerText = "Thinking...";
-                typingDiv.id = "aiTyping";
-                msgContainer.appendChild(typingDiv);
-
-                const aiUrl = "{% url 'ai_assistant_chat' %}";
-                const csrfInput = document.querySelector('#aiCsrfContainer input[name=csrfmiddlewaretoken]');
-                const aiCsrfToken = csrfInput ? csrfInput.value : '';
-
-                fetch(aiUrl, {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": aiCsrfToken,
-                        "X-Requested-With": "XMLHttpRequest"
-                    },
-                    body: JSON.stringify({ message: query })
-                })
-                .then(async response => {
-                    if (!response.ok) {
-                        const errText = await response.text();
-                        console.error("Server Error Response:", errText);
-                        throw new Error("Server ne error return kiya: " + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById("aiTyping")?.remove();
-                    appendMessage(data.response || "No response received.", false);
-                })
-                .catch(error => {
-                    console.error("Complete Error Detail:", error);
-                    document.getElementById("aiTyping")?.remove();
-                    appendMessage("Technical error! System URL find nahi kar pa raha, F12 daba kar Console check karein.", false);
-                });
-            }
-
-            if(sendBtn) {
-                sendBtn.addEventListener("click", sendAiMessage);
-            }
-            
-            if(userInput) {
-                userInput.addEventListener("keypress", (e) => {
-                    if (e.key === "Enter") sendAiMessage();
-                });
-            }
-        });
-
-        // 4. GLOBAL VOICE SEARCH LOGIC (Configured with en-IN for English product text matching)
-        document.addEventListener('DOMContentLoaded', function () {
-            const voiceBtn = document.getElementById("globalVoiceBtn");
-            const searchInput = document.getElementById("globalSearchInput");
-            
-            if (voiceBtn && searchInput) {
-                const searchForm = searchInput.closest("form");
-
-                if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    const recognition = new SpeechRecognition();
-                    
-                    recognition.lang = "en-IN"; 
-                    recognition.continuous = false;
-                    recognition.interimResults = false;
-
-                    voiceBtn.addEventListener("click", function (e) {
-                        e.preventDefault();
-                        try {
-                            recognition.start();
-                            voiceBtn.innerHTML = "🔴";
-                            searchInput.placeholder = "Listening...";
-                        } catch (err) {
-                            console.log("Recognition start error:", err);
-                        }
-                    });
-
-                    recognition.onresult = function (event) {
-                        let transcript = event.results[0][0].transcript.trim();
-                        searchInput.value = transcript;
-                        voiceBtn.innerHTML = "🎤";
-                        if(searchForm) searchForm.submit();
-                    };
-
-                    recognition.onerror = function (event) {
-                        console.error("Speech recognition error:", event.error);
-                        voiceBtn.innerHTML = "🎤";
-                        searchInput.placeholder = "Search Chachan General Store...";
-                    };
-
-                    recognition.onend = function () {
-                        voiceBtn.innerHTML = "🎤";
-                        searchInput.placeholder = "Search Chachan General Store...";
-                    };
-                } else {
-                    voiceBtn.style.display = "none";
+            try {
+                // Sync Header Location from localStorage
+                const savedPin = localStorage.getItem("cgsmart_user_pincode");
+                const savedCity = localStorage.getItem("cgsmart_user_city");
+                const headerPinEl = document.getElementById("headerSelectedPincode");
+                const mobilePinEl = document.getElementById("mobileSelectedPincode");
+                
+                if(savedPin && headerPinEl) {
+                    headerPinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
                 }
-            }
-        });
+                if(savedPin && mobilePinEl) {
+                    mobilePinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
+                }
 
-        // 5. LIVE SEARCH AUTO-SUGGEST DROPDOWN LOGIC
-        document.addEventListener("DOMContentLoaded", function () {
-            const searchInput = document.getElementById("globalSearchInput");
-            const dropdownBox = document.getElementById("searchResultsDropdown");
+                // Global Pincode Modal Save Logic
+                const applyBtn = document.getElementById("saveGlobalPincodeBtn");
+                const inputEl = document.getElementById("globalModalPincode");
+                const resEl = document.getElementById("globalModalResult");
 
-            if (searchInput && dropdownBox) {
-                let debounceTimer;
+                if(applyBtn && inputEl) {
+                    applyBtn.addEventListener("click", function() {
+                        let pin = inputEl.value.trim();
+                        if(pin.length !== 6) {
+                            resEl.style.display = "block";
+                            resEl.className = "small fw-semibold text-danger";
+                            resEl.innerText = "Enter valid 6-digit pincode.";
+                            return;
+                        }
 
-                searchInput.addEventListener("input", function () {
-                    clearTimeout(debounceTimer);
-                    let query = this.value.trim();
+                        applyBtn.innerText = "...";
+                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
 
-                    if (query.length < 2) {
-                        dropdownBox.style.display = "none";
-                        return;
-                    }
-
-                    debounceTimer = setTimeout(() => {
-                        fetch(`/api/search-suggestions/?q=${encodeURIComponent(query)}`, {
-                            headers: { "X-Requested-With": "XMLHttpRequest" }
+                        fetch('/api/check-delivery/', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRFToken": csrfToken,
+                                "X-Requested-With": "XMLHttpRequest"
+                            },
+                            body: JSON.stringify({ pincode: pin })
                         })
-                        .then(response => response.json())
+                        .then(res => res.json())
                         .then(data => {
-                            if (data.products && data.products.length > 0) {
-                                let html = "";
-                                data.products.forEach(p => {
-                                    html += `
-                                        <a href="${p.url}" class="d-flex align-items-center gap-3 p-2 text-decoration-none border-bottom text-dark search-suggestion-item">
-                                            <img src="${p.image}" alt="${p.name}" style="width: 40px; height: 40px; object-fit: contain; mix-blend-mode: multiply;">
-                                            <div class="flex-grow-1">
-                                                <div class="fw-semibold text-truncate" style="font-size: 0.9rem; max-width: 250px;">${p.name}</div>
-                                                <div class="text-success small fw-bold">₹${p.price}</div>
-                                            </div>
-                                        </a>
-                                    `;
-                                });
-                                dropdownBox.innerHTML = html;
-                                dropdownBox.style.display = "block";
+                            applyBtn.innerText = "Apply";
+                            resEl.style.display = "block";
+                            if(data.available) {
+                                resEl.className = "small fw-semibold text-success";
+                                resEl.innerText = "⚡ 10 Mins delivery available!";
+                                localStorage.setItem("cgsmart_user_pincode", pin);
+                                localStorage.setItem("cgsmart_user_city", data.city || "Nohar");
+                                if(headerPinEl) headerPinEl.innerText = (data.city || "Nohar") + " " + pin;
+                                if(mobilePinEl) mobilePinEl.innerText = (data.city || "Nohar") + " " + pin;
+                                setTimeout(() => { location.reload(); }, 1000);
                             } else {
-                                dropdownBox.style.display = "none";
+                                resEl.className = "small fw-semibold text-danger";
+                                resEl.innerText = data.message;
                             }
                         })
-                        .catch(err => console.error("Search suggestion error:", err));
-                    }, 300);
-                });
+                        .catch(err => {
+                            applyBtn.innerText = "Apply";
+                            console.error(err);
+                        });
+                    });
+                }
+            } catch(e) { console.log(e); }
 
-                document.addEventListener("click", function (e) {
-                    if (!searchInput.contains(e.target) && !dropdownBox.contains(e.target)) {
-                        dropdownBox.style.display = "none";
+            try {
+                // 2. WhatsApp Float Logic
+                var btn = document.getElementById('whatsappFloat');
+                if (btn) {
+                    btn.addEventListener('click', function () {
+                        var phone = '917357073316'; 
+                        var text = encodeURIComponent('Hi Chachan General Store, I need help with...');
+                        var url = 'https://wa.me/' + phone + '?text=' + text;
+                        window.open(url, '_blank');
+                    });
+                }
+            } catch(e) { console.log(e); }
+
+            try {
+                // 3. AI Assistant Logic
+                const toggleBtn = document.getElementById("aiChatToggleBtn");
+                const chatWindow = document.getElementById("aiChatWindow");
+                const closeBtn = document.getElementById("closeAiChat");
+                const sendBtn = document.getElementById("aiSendBtn");
+                const userInput = document.getElementById("aiUserInput");
+                const msgContainer = document.getElementById("aiMsgContainer");
+
+                if(toggleBtn) {
+                    toggleBtn.addEventListener("click", () => {
+                        chatWindow.style.display = (chatWindow.style.display === "flex") ? "none" : "flex";
+                    });
+                }
+
+                if(closeBtn) {
+                    closeBtn.addEventListener("click", () => { chatWindow.style.display = "none"; });
+                }
+
+                function appendMessage(text, isUser) {
+                    const msgDiv = document.createElement("div");
+                    msgDiv.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-ai'} shadow-sm`;
+                    msgDiv.innerText = text;
+                    msgContainer.appendChild(msgDiv);
+                    msgContainer.scrollTop = msgContainer.scrollHeight;
+                }
+
+                function sendAiMessage() {
+                    const query = userInput.value.trim();
+                    if (!query) return;
+
+                    appendMessage(query, true);
+                    userInput.value = "";
+
+                    const typingDiv = document.createElement("div");
+                    typingDiv.className = "msg-bubble msg-ai shadow-sm";
+                    typingDiv.innerText = "Thinking...";
+                    typingDiv.id = "aiTyping";
+                    msgContainer.appendChild(typingDiv);
+
+                    const aiUrl = "{% url 'ai_assistant_chat' %}";
+                    const csrfInput = document.querySelector('#aiCsrfContainer input[name=csrfmiddlewaretoken]');
+                    const aiCsrfToken = csrfInput ? csrfInput.value : '';
+
+                    fetch(aiUrl, {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": aiCsrfToken,
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        body: JSON.stringify({ message: query })
+                    })
+                    .then(async response => {
+                        if (!response.ok) {
+                            throw new Error("Server ne error return kiya: " + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById("aiTyping")?.remove();
+                        appendMessage(data.response || "No response received.", false);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        document.getElementById("aiTyping")?.remove();
+                        appendMessage("Technical error! System URL find nahi kar pa raha, F12 daba kar Console check karein.", false);
+                    });
+                }
+
+                if(sendBtn) {
+                    sendBtn.addEventListener("click", sendAiMessage);
+                }
+                
+                if(userInput) {
+                    userInput.addEventListener("keypress", (e) => {
+                        if (e.key === "Enter") sendAiMessage();
+                    });
+                }
+            } catch(e) { console.log(e); }
+
+            try {
+                // 4. GLOBAL VOICE SEARCH LOGIC
+                const voiceBtn = document.getElementById("globalVoiceBtn");
+                const searchInput = document.getElementById("globalSearchInput");
+                
+                if (voiceBtn && searchInput) {
+                    const searchForm = searchInput.closest("form");
+
+                    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+                        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                        const recognition = new SpeechRecognition();
+                        
+                        recognition.lang = "en-IN"; 
+                        recognition.continuous = false;
+                        recognition.interimResults = false;
+
+                        voiceBtn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            try {
+                                recognition.start();
+                                voiceBtn.innerHTML = "🔴";
+                                searchInput.placeholder = "Listening...";
+                            } catch (err) {
+                                console.log("Recognition start error:", err);
+                            }
+                        });
+
+                        recognition.onresult = function (event) {
+                            let transcript = event.results[0][0].transcript.trim();
+                            searchInput.value = transcript;
+                            voiceBtn.innerHTML = "🎤";
+                            if(searchForm) searchForm.submit();
+                        };
+
+                        recognition.onerror = function (event) {
+                            voiceBtn.innerHTML = "🎤";
+                            searchInput.placeholder = "Search Chachan General Store...";
+                        };
+
+                        recognition.onend = function () {
+                            voiceBtn.innerHTML = "🎤";
+                            searchInput.placeholder = "Search Chachan General Store...";
+                        };
+                    } else {
+                        voiceBtn.style.display = "none";
+                    }
+                }
+            } catch(e) { console.log(e); }
+
+            try {
+                // 5. LIVE SEARCH AUTO-SUGGEST DROPDOWN LOGIC
+                const searchInput = document.getElementById("globalSearchInput");
+                const dropdownBox = document.getElementById("searchResultsDropdown");
+
+                if (searchInput && dropdownBox) {
+                    let debounceTimer;
+
+                    searchInput.addEventListener("input", function () {
+                        clearTimeout(debounceTimer);
+                        let query = this.value.trim();
+
+                        if (query.length < 2) {
+                            dropdownBox.style.display = "none";
+                            return;
+                        }
+
+                        debounceTimer = setTimeout(() => {
+                            fetch(`/api/search-suggestions/?q=${encodeURIComponent(query)}`, {
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.products && data.products.length > 0) {
+                                    let html = "";
+                                    data.products.forEach(p => {
+                                        html += `
+                                            <a href="${p.url}" class="d-flex align-items-center gap-3 p-2 text-decoration-none border-bottom text-dark search-suggestion-item">
+                                                <img src="${p.image}" alt="${p.name}" style="width: 40px; height: 40px; object-fit: contain; mix-blend-mode: multiply;">
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem; max-width: 250px;">${p.name}</div>
+                                                    <div class="text-success small fw-bold">₹${p.price}</div>
+                                                </div>
+                                            </a>
+                                        `;
+                                    });
+                                    dropdownBox.innerHTML = html;
+                                    dropdownBox.style.display = "block";
+                                } else {
+                                    dropdownBox.style.display = "none";
+                                }
+                            })
+                            .catch(err => console.error("Search suggestion error:", err));
+                        }, 300);
+                    });
+
+                    document.addEventListener("click", function (e) {
+                        if (!searchInput.contains(e.target) && !dropdownBox.contains(e.target)) {
+                            dropdownBox.style.display = "none";
+                        }
+                    });
+                }
+            } catch(e) { console.log(e); }
+            
+            try {
+                // 6. Register Service Worker for PWA
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', function() {
+                        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                            console.log('ServiceWorker registration successful');
+                        }, function(err) {
+                            console.log('ServiceWorker registration failed: ', err);
+                        });
+                    });
+                }
+
+                // 7. Browser Back/Forward Cache Login State Issue Fix
+                window.addEventListener('pageshow', function (event) {
+                    if (event.persisted) {
+                        window.location.reload();
                     }
                 });
-            }
-        });
+            } catch(e) { console.log(e); }
 
-        // 6. Register Service Worker for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js').then(function(registration) {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
+            // 🌟 THE BULLETPROOF CART & VARIANT LOGIC 🌟
+            try {
+                // Dynamic Price Updater
+                document.querySelectorAll('.variant-selector').forEach(select => {
+                    select.addEventListener('change', function() {
+                        const productId = this.getAttribute('data-product-id');
+                        const newPrice = this.options[this.selectedIndex].getAttribute('data-price');
+                        
+                        const priceEl = document.getElementById(`price-display-${productId}`);
+                        if(priceEl) priceEl.innerText = `₹${newPrice}`;
+                        
+                        this.classList.remove('is-invalid');
+                        const errorMsg = document.getElementById(`error-msg-${productId}`);
+                        if(errorMsg) errorMsg.style.display = 'none';
+                    });
                 });
-            });
-        }
 
-        // 7. Browser Back/Forward Cache Login State Issue Fix
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
+                // Cart Bar Updater
+                function updateCartBar(items, total) {
+                    const cartBar = document.getElementById("stickyCart");
+                    const cartBadge = document.getElementById("cartBadge");
+                    const cartSummary = document.getElementById("cartSummary");
+
+                    if (cartBar && cartBadge && cartSummary) {
+                        if (items > 0) {
+                            cartBar.style.display = "flex";
+                            cartBadge.textContent = items;
+                            cartSummary.textContent = `${items} Items | ₹${parseFloat(total).toFixed(2)}`;
+                        } else {
+                            cartBar.style.display = "none";
+                        }
+                    }
+                }
+
+                function refreshCartBar() {
+                    fetch("/cart-ajax/summary/") 
+                        .then((response) => response.json())
+                        .then((data) => updateCartBar(data.items, data.total))
+                        .catch((error) => console.error(error));
+                }
+
+                refreshCartBar();
+
+                // Add to Cart Handlers
+                document.querySelectorAll(".add-to-cart-form").forEach((form) => {
+                    const addBtn = form.querySelector(".add-to-cart-ajax");
+                    const buyBtn = form.querySelector(".buy-now-btn");
+
+                    function handleCartAction(btn, isBuyNow) {
+                        const addUrl = form.dataset.addUrl; 
+                        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+
+                        let variantId = null;
+                        const variantSelect = form.querySelector('select[name="variant_id"]');
+                        if (variantSelect) {
+                            if (!variantSelect.value) {
+                                variantSelect.classList.add('is-invalid');
+                                const errorMsg = document.getElementById(`error-msg-${form.dataset.productId}`);
+                                if(errorMsg) errorMsg.style.display = 'block';
+                                variantSelect.focus();
+                                return;
+                            }
+                            variantId = variantSelect.value;
+                        }
+
+                        btn.disabled = true;
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = "⏳";
+
+                        const formData = new FormData();
+                        formData.append('quantity', 1);
+                        if(variantId) formData.append('variant_id', variantId);
+
+                        fetch(addUrl, {
+                            method: "POST",
+                            headers: { "X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest" },
+                            body: formData, 
+                        })
+                        .then(async (response) => {
+                            if (!response.ok) throw new Error("Server Error");
+                            return response.json();
+                        })
+                        .then((data) => {
+                            if(isBuyNow) {
+                                window.location.href = "/checkout/"; 
+                            } else {
+                                updateCartBar(data.items, data.total);
+                                btn.innerHTML = "✔";
+                                btn.style.background = "#2ECC71";
+                                btn.style.color = "#FFFFFF";
+                                btn.style.borderColor = "#27AE60";
+                                setTimeout(() => {
+                                    btn.innerHTML = originalText;
+                                    btn.style.background = "transparent";
+                                    btn.style.color = "#0056b3";
+                                    btn.style.borderColor = "#0056b3";
+                                    btn.disabled = false;
+                                }, 1500);
+                            }
+                        })
+                        .catch((error) => {
+                            btn.innerHTML = "❌";
+                            btn.disabled = false;
+                            setTimeout(() => { btn.innerHTML = originalText; }, 1500);
+                        });
+                    }
+
+                    if(addBtn) addBtn.addEventListener("click", (e) => { e.preventDefault(); handleCartAction(addBtn, false); });
+                    if(buyBtn) buyBtn.addEventListener("click", (e) => { e.preventDefault(); handleCartAction(buyBtn, true); });
+                });
+            } catch(e) { console.log(e); }
+
         });
     </script>
 </body>
