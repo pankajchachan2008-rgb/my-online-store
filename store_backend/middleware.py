@@ -21,12 +21,7 @@ class FixCSPMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        # 🌟 Sabhi restrictions ko hata kar sab kuch explicitly allow kar rahe hain
-        response['Content-Security-Policy'] = (
-            "default-src 'self' https: http: data: blob: 'unsafe-inline' 'unsafe-eval'; "
-            "connect-src 'self' https: http: *; "
-            "img-src 'self' https: http: data: blob: *; "
-            "script-src 'self' https: http: 'unsafe-inline' 'unsafe-eval'; "
-            "style-src 'self' https: http: 'unsafe-inline';"
-        )
+        # Disable strict browser CSP headers completely for AJAX and Cart to work
+        if 'Content-Security-Policy' in response:
+            del response['Content-Security-Policy']
         return response

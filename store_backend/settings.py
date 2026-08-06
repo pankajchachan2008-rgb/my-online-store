@@ -217,3 +217,6 @@ X_FRAME_OPTIONS = 'DENY'
 
 # 4. HTTPS Redirect (Agar Cloudflare se koi HTTP traffic aa jaye)
 SECURE_SSL_REDIRECT = True
+
+# settings.py ke sabse neeche yeh add karein:
+SECURE_CSP_POLICY = False
