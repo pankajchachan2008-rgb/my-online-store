@@ -89,7 +89,7 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     customer_name = models.CharField(max_length=100)
     mobile_number = models.CharField(max_length=15)
-    email = models.EmailField(blank=True, null=True)  # 👈 Resend OTP email support
+    email = models.EmailField(blank=True, null=True)
     address = models.TextField()
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, default='Pending')
@@ -101,8 +101,6 @@ class Order(models.Model):
         default='Pending', 
         choices=[('Pending', 'Pending'), ('Paid', 'Paid')]
     )
-    
-    # 🌟 Payment Mode & Rate Limiting Fields Added
     payment_mode = models.CharField(max_length=50, default='Cash on Delivery (COD)')
     last_otp_sent_at = models.DateTimeField(blank=True, null=True)
 
@@ -115,7 +113,6 @@ class Order(models.Model):
         help_text="Is order ko kaun deliver karega?"
     )
     
-    # Courier Tracking Fields
     courier_name = models.CharField(max_length=100, blank=True, null=True)
     tracking_id = models.CharField(max_length=100, blank=True, null=True)
     tracking_url = models.URLField(blank=True, null=True)
@@ -123,8 +120,13 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
+        # 🌟 Guaranteed Unique Order ID / Invoice Series Generation
         if not self.order_id:
-            self.order_id = f"CG-{str(uuid.uuid4().int)[:6].upper()}"
+            while True:
+                generated_id = f"CG-{str(uuid.uuid4().int)[:6].upper()}"
+                if not Order.objects.filter(order_id=generated_id).exists():
+                    self.order_id = generated_id
+                    break
         super().save(*args, **kwargs)
 
     def __str__(self):
