@@ -13,7 +13,7 @@ from products import views
 from products.views import search_suggestions, check_delivery
 from products.sitemaps import ProductSitemap, StaticViewSitemap
 from django.urls import path
-from . import views
+from products import views
 
 # 🌟 Specific View Imports for cleaner path definitions
 from products.views import (
