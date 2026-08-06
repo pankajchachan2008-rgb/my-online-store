@@ -3,6 +3,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    
+    <!-- 🌟 NEW: Content Security Policy to Allow AOS, Bootstrap & APIs -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://unpkg.com; connect-src 'self' https://api.brevo.com https://cdn.jsdelivr.net;">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- 🌟 Dynamic SEO Meta Tags -->
@@ -13,7 +17,7 @@
     <!-- 📱 Open Graph / WhatsApp / Facebook Share Tags -->
     <meta property="og:title" content="{% block og_title %}CGSMART - Premium Online Store{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Discover premium quality essentials in Nohar with fast delivery.{% endblock %}">
-    <meta property="og:image" content="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
+    <meta property="og:image" content="{% block og_image %}https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg{% endblock %}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:type" content="website">
 
@@ -28,6 +32,9 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- 🌟 AOS CSS (For Scroll Animations) -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -288,6 +295,10 @@
         }
         .whatsapp-float:hover { transform: translateY(-4px) scale(1.05); }
         .whatsapp-float svg { width: 30px; height: 30px; fill: #fff; }
+
+        /* AOS fallback */
+        [data-aos] { opacity: 0; transition: opacity .6s ease, transform .6s ease; }
+        [data-aos].aos-animate { opacity: 1; transform: none; }
     </style>
 </head>
 <body>
@@ -310,7 +321,7 @@
                         <span class="brand-name">CGSMART</span>
                     </a>
 
-                    <!-- 📍 Header Global Pincode / Location Selector -->
+                    <!-- 📍 Header Global Pincode / Location Selector (Blinkit Style) -->
                     <div class="d-none d-md-flex align-items-center text-white ms-3 px-2 py-1 rounded" style="background-color: #374151; cursor: pointer; border: 1px solid rgba(255,255,255,0.15);" data-bs-toggle="modal" data-bs-target="#globalPincodeModal" title="Change Location">
                         <span class="fs-6 me-1">📍</span>
                         <div style="line-height: 1.1; font-size: 0.75rem;">
@@ -754,9 +765,10 @@
                             try {
                                 recognition.start();
                                 voiceBtn.innerHTML = "🔴";
-                                searchInput.placeholder = "Listening...";
+                                searchInput.placeholder = "Listening (Bolna shuru karein)...";
                             } catch (err) {
                                 console.log("Recognition start error:", err);
+                                alert("Microphone system is busy or blocked. Please allow mic permissions.");
                             }
                         });
 
@@ -768,6 +780,8 @@
                         };
 
                         recognition.onerror = function (event) {
+                            console.error("Speech recognition error:", event.error);
+                            alert("Mic Error: " + event.error + " (Kripya browser mein Microphone permission ON karein)");
                             voiceBtn.innerHTML = "🎤";
                             searchInput.placeholder = "Search Chachan General Store...";
                         };
@@ -905,15 +919,15 @@
                     const buyBtn = form.querySelector(".buy-now-btn");
 
                     function handleCartAction(btn, isBuyNow) {
-                        const addUrl = form.dataset.addUrl; 
                         const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+                        const productId = form.getAttribute("data-product-id");
 
                         let variantId = null;
                         const variantSelect = form.querySelector('select[name="variant_id"]');
                         if (variantSelect) {
                             if (!variantSelect.value) {
                                 variantSelect.classList.add('is-invalid');
-                                const errorMsg = document.getElementById(`error-msg-${form.dataset.productId}`);
+                                const errorMsg = document.getElementById(`error-msg-${productId}`);
                                 if(errorMsg) errorMsg.style.display = 'block';
                                 variantSelect.focus();
                                 return;
@@ -925,14 +939,19 @@
                         const originalText = btn.innerHTML;
                         btn.innerHTML = "⏳";
 
-                        const formData = new FormData();
-                        formData.append('quantity', 1);
-                        if(variantId) formData.append('variant_id', variantId);
+                        // ✅ EXACT AJAX URL AND JSON PAYLOAD
+                        const exactAjaxUrl = "/cart-ajax/add/" + productId + "/";
+                        const payload = { quantity: 1 };
+                        if(variantId) payload.variant_id = variantId;
 
-                        fetch(addUrl, {
+                        fetch(exactAjaxUrl, {
                             method: "POST",
-                            headers: { "X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest" },
-                            body: formData, 
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRFToken": csrfToken,
+                                "X-Requested-With": "XMLHttpRequest"
+                            },
+                            body: JSON.stringify(payload)
                         })
                         .then(async (response) => {
                             if (!response.ok) throw new Error("Server Error");
@@ -940,7 +959,7 @@
                         })
                         .then((data) => {
                             if(isBuyNow) {
-                                window.location.href = "/checkout/"; 
+                                window.location.href = "/checkout/";
                             } else {
                                 updateCartBar(data.items, data.total);
                                 btn.innerHTML = "✔";
