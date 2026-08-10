@@ -26,6 +26,8 @@ from django.utils.http import urlencode
 from django.template.loader import get_template
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
+from django.contrib.auth.decorators import user_passes_test
 
 # REST Framework Imports
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -575,7 +577,7 @@ def add_to_cart_ajax(request, product_id):
         return cart_summary_ajax(request)
 
 @csrf_exempt
-def remove_from_cart_ajax(request, cart_key): # 🛠️ FIX: Changed from product_id to cart_key
+def remove_from_cart_ajax(request, cart_key):
     if request.method == 'POST':
         cart = request.session.get('cart', {})
         if str(cart_key) in cart: 
@@ -1143,15 +1145,11 @@ def delivery_boy_dashboard(request):
     }
     return render(request, 'delivery/dashboard.html', context)
 
-from django.contrib.sessions.models import Session
-from django.utils import timezone
-from django.contrib.auth.decorators import user_passes_test
-from django.shortcuts import redirect
-from django.contrib import messages
-
+# ==========================================
+# 🛡️ 10. SECURITY & SESSION TERMINATION VIEW
+# ==========================================
 @user_passes_test(lambda u: u.is_superuser)
 def terminate_all_sessions_view(request):
-    # Current user ko chhod kar ya sabke sessions delete karne ke liye
     Session.objects.filter(expire_date__gte=timezone.now()).delete()
     messages.success(request, "🛡️ Security Alert: All active sessions have been successfully terminated!")
     return redirect('admin:index')
