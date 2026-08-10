@@ -21,7 +21,18 @@ class FixCSPMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        # Disable strict browser CSP headers completely for AJAX and Cart to work
-        if 'Content-Security-Policy' in response:
-            del response['Content-Security-Policy']
+        
+        # 🌟 Update CSP Header with all required domains
+        csp_policy = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; "
+            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+            "img-src 'self' data: https://res.cloudinary.com https://images.unsplash.com; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "connect-src 'self' https://api.brevo.com https://www.cgsmart.in; "
+            "frame-src 'self' https://www.google.com; "
+            "worker-src 'self'; "
+            "frame-ancestors 'none';"
+        )
+        response['Content-Security-Policy'] = csp_policy
         return response
