@@ -104,23 +104,23 @@ USE_I18N = True
 USE_TZ = True
 
 # =====================================================================
-#                 STATIC & MEDIA STORAGE 
+#                 STATIC & MEDIA STORAGE (BULLETPROOF FIX)
 # =====================================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 
-# Legacy Storage Fallbacks for third-party packages (Cloudinary & WhiteNoise)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Legacy fallback for packages
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
+# Modern Django 4.2+ Storage Dictionary (No post-processing crash)
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
