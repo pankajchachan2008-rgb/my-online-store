@@ -40,14 +40,14 @@
             --primary-luxury: #0c0d12;
             --accent-gold: #D4AF37;
             --accent-champagne: #F3E5AB;
-            --glass-surface: rgba(255, 255, 255, 0.7);
+            --glass-surface: rgba(255, 255, 255, 0.65);
             --glass-border: rgba(255, 255, 255, 0.9);
         }
 
-        /* 🌟 TRUE LUXURY CRYSTAL GLASS BACKGROUND */
+        /* 🌟 RICH LUXURY GRADIENT BACKGROUND (Glass Blur ke liye behtareen) */
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f4f6f9 0%, #e9edf2 50%, #dfe4ed 100%) !important;
+            background: linear-gradient(135deg, #e6ecf5 0%, #f0f3f9 50%, #e2e8f0 100%) !important;
             background-attachment: fixed !important;
             color: var(--text-dark);
             display: flex;
@@ -56,6 +56,17 @@
             padding-bottom: calc(70px + env(safe-area-inset-bottom)); 
             line-height: 1.7;
             overflow-x: hidden;
+        }
+
+        /* 💎 GLOBAL FORCE-GLASS OVERRIDE (Har page/card/box par glass feel lane ke liye) */
+        .card, .card-body, .bg-white, .bg-light, .modal-content, .dropdown-menu, .table-responsive {
+            background: rgba(255, 255, 255, 0.65) !important;
+            backdrop-filter: blur(30px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.9) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.9) !important;
+            color: var(--text-dark) !important;
         }
 
         /* 💎 REAL 3D CRYSTAL GLASS NAVBAR */
@@ -249,77 +260,32 @@
 
         @media (max-width: 991px) { body { padding-bottom: 90px; } }
 
-        /* 💎 GLOBAL CRYSTAL CARDS, TABLES & CONTAINERS */
-        .crystal-card, .card, .product-card {
-            background: rgba(255, 255, 255, 0.7) !important;
-            backdrop-filter: blur(25px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.9) !important;
-            border-radius: 20px !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.8) !important;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
-            color: #0f172a !important;
-        }
-
-        .crystal-card:hover, .card:hover, .product-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(212, 175, 55, 0.4) !important;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1), 0 0 25px rgba(212, 175, 55, 0.15) !important;
-        }
-
-        .product-detail-container {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.95);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
-        }
-
-        .table {
-            background: rgba(255, 255, 255, 0.65) !important;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.8) !important;
-            overflow: hidden;
-        }
-
-        .table th, .table td {
-            background: transparent !important;
-            color: #0f172a !important;
-            border-color: rgba(0, 0, 0, 0.05) !important;
-            vertical-align: middle;
-        }
-
-        /* 🌟 LUXURY GLOSSY CRYSTAL BANNER STYLES (Auto-Fit & Cut Fix) */
+        /* 🌟 LUXURY GLOSSY CRYSTAL BANNER STYLES */
         .luxury-banner-wrapper {
             position: relative;
             width: 100%;
-            border-radius: 24px;
+            height: 100%;
+            border-radius: 16px;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.35);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
-            margin-bottom: 25px;
         }
 
         .luxury-banner-wrapper img, 
-        .banner-img, 
-        .carousel-item img {
+        .luxury-banner-wrapper video {
             width: 100% !important;
-            height: 400px !important;
-            max-height: 450px !important;
+            height: 100% !important;
             object-fit: cover !important;
             object-position: center center !important;
             display: block;
             transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        .luxury-banner-wrapper:hover img {
+        .luxury-banner-wrapper:hover img,
+        .luxury-banner-wrapper:hover video {
             transform: scale(1.02);
         }
 
@@ -339,6 +305,7 @@
             transform: skewX(-25deg);
             pointer-events: none;
             animation: glassReflection 5s infinite;
+            z-index: 6;
         }
 
         @keyframes glassReflection {
@@ -347,19 +314,8 @@
             100% { left: 150%; }
         }
 
-        @media (max-width: 768px) {
-            .luxury-banner-wrapper img, 
-            .banner-img, 
-            .carousel-item img {
-                height: 210px !important;
-            }
-            .luxury-banner-wrapper {
-                border-radius: 16px;
-            }
-        }
-
         /* 🌟 LUXURY BUTTONS */
-        .btn-primary, .btn-warning, .add-to-cart-ajax, .buy-now-btn {
+        .btn-primary, .btn-warning, .add-to-cart-ajax, .buy-now-btn, button[type="submit"] {
             background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%) !important;
             color: #ffffff !important;
             border: 1px solid rgba(212, 175, 55, 0.3) !important;
@@ -370,7 +326,7 @@
             transition: all 0.3s ease !important;
         }
 
-        .btn-primary:hover, .btn-warning:hover, .add-to-cart-ajax:hover, .buy-now-btn:hover {
+        .btn-primary:hover, .btn-warning:hover, .add-to-cart-ajax:hover, .buy-now-btn:hover, button[type="submit"]:hover {
             background: linear-gradient(135deg, #1f2430 0%, #0c0d12 100%) !important;
             border-color: #D4AF37 !important;
             box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3) !important;
@@ -696,7 +652,7 @@
         </div>
         
         <div class="ai-chat-quick-actions">
-            <a href="https://wa.me/917357073316?text=Hi%20CGS MART%20Team,%20mujhe%20help%20chahiye!" target="_blank" class="wa-btn">
+            <a href="https://wa.me/917357073316?text=Hi%20CGS%20MART%20Team,%20mujhe%20help%20chahiye!" target="_blank" class="wa-btn">
                 <span style="font-size: 1.1rem;">💬</span> Chat on WhatsApp
             </a>
         </div>
@@ -723,8 +679,8 @@
 
             try {
                 // Sync Header Location from localStorage
-                const savedPin = localStorage.getItem("CGS MART_user_pincode");
-                const savedCity = localStorage.getItem("CGS MART_user_city");
+                const savedPin = localStorage.getItem("CGS_MART_user_pincode");
+                const savedCity = localStorage.getItem("CGS_MART_user_city");
                 const headerPinEl = document.getElementById("headerSelectedPincode");
                 const mobilePinEl = document.getElementById("mobileSelectedPincode");
                 
@@ -769,8 +725,8 @@
                             if(data.available) {
                                 resEl.className = "small fw-semibold text-success";
                                 resEl.innerText = "⚡ 10 Mins delivery available!";
-                                localStorage.setItem("CGS MART_user_pincode", pin);
-                                localStorage.setItem("CGS MART_user_city", data.city || "Nohar");
+                                localStorage.setItem("CGS_MART_user_pincode", pin);
+                                localStorage.setItem("CGS_MART_user_city", data.city || "Nohar");
                                 if(headerPinEl) headerPinEl.innerText = (data.city || "Nohar") + " " + pin;
                                 if(mobilePinEl) mobilePinEl.innerText = (data.city || "Nohar") + " " + pin;
                                 setTimeout(() => { location.reload(); }, 1000);
@@ -1140,7 +1096,7 @@
                         });
                     }
 
-                    if(addBtn) addBtn.addEventListener("click", (e) => handleCartAction(e, addBtn, false));
+                    if(addBtn) addBtn.addEventlistener("click", (e) => handleCartAction(e, addBtn, false));
                     if(buyBtn) buyBtn.addEventListener("click", (e) => handleCartAction(e, buyBtn, true));
                 });
             } catch(e) { console.log(e); }
