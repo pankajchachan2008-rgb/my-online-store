@@ -46,7 +46,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # 'store_backend.middleware.FixCSPMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'store_backend.middleware.BlockBadBotsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -104,31 +103,25 @@ TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
-
 # =====================================================================
-#                 STATIC & MEDIA STORAGE (FIXED FOR CLOUDINARY)
+#                 STATIC & MEDIA STORAGE (FIXED FOR CLOUDINARY & WHITENOISE)
 # =====================================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 
-# Storage setup
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-# Django 4.2+ Storage Dictionary
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
 # =====================================================================
-#                 SECURITY HARDENING SETTINGS
+#                 SECURITY HARDENING & CSP SETTINGS
 # =====================================================================
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -145,16 +138,26 @@ SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 3600
 
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 SECURE_REFERRER_POLICY = "same-origin"
 
+# Content Security Policy (CSP) Directives
+SECURE_CSP_POLICY = False
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'", "data:", "https://res.cloudinary.com", "https://images.unsplash.com")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://static.cloudflareinsights.com")
+CSP_CONNECT_SRC = ("'self'", "https://www.cgsmart.in", "https://*.cgsmart.in", "https://api.brevo.com", "https://static.cloudflareinsights.com")
+CSP_FRAME_SRC = ("'self'", "https://www.google.com")
+CSP_WORKER_SRC = ("'self'",)
+
 # =====================================================================
 #                 EMAIL & CLOUDINARY CONFIGURATION
 # =====================================================================
-# Email Configuration (Brevo)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_PORT = 587  
@@ -173,10 +176,8 @@ CLOUDINARY_STORAGE = {
 # =====================================================================
 #                 ADMIN & LOGGING
 # =====================================================================
-# Admin setup 
 ADMINS = []
 
-# Logging Configuration (Optimized for Render)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -201,32 +202,3 @@ LOGGING = {
         },
     },
 }
-
-# 🌟 DJANGO PRODUCTION SECURITY SETTINGS
-
-# 1. Cookies ko sirf HTTPS par allow karein (Session hijacking rokne ke liye)
-# Session & Cookie Security
-SESSION_COOKIE_SECURE = True          # Sirf HTTPS par chalega
-CSRF_COOKIE_SECURE = True             # CSRF cookie bhi secure rahegi
-SESSION_COOKIE_HTTPONLY = True        # JavaScript se cookie chori nahi ho payegi
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True # Browser band hote hi session khatam
-SESSION_COOKIE_AGE = 3600             # 2 ghante mein automatic session expire (seconds mein)
-
-# 2. XSS (Cross-Site Scripting) aur MIME-sniffing protection
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# 3. Clickjacking Protection (Koi dusri site aapki site ko iframe mein nahi dikha payegi)
-X_FRAME_OPTIONS = 'DENY'
-
-# 4. HTTPS Redirect (Agar Cloudflare se koi HTTP traffic aa jaye)
-SECURE_SSL_REDIRECT = True
-
-# settings.py ke sabse neeche yeh add karein:
-SECURE_CSP_POLICY = False
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_IMG_SRC = ("'self'", "data:", "https://res.cloudinary.com", "https://images.unsplash.com")
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://static.cloudflareinsights.com")
-CSP_CONNECT_SRC = ("'self'", "https://api.brevo.com", "https://www.cgsmart.in")
-CSP_FRAME_SRC = ("'self'", "https://www.google.com")
-CSP_WORKER_SRC = ("'self'",)
