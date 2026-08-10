@@ -14,10 +14,3 @@ class BlockBadBotsMiddleware:
         if any(keyword in path for keyword in BLOCKED_PATH_KEYWORDS):
             return HttpResponseForbidden("Access Denied: Scanning is blocked.")
         return self.get_response(request)
-
-class FixCSPMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        response = self.get_response(request)
