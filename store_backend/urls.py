@@ -42,6 +42,7 @@ urlpatterns = [
     # ==========================================
     path('secret-cgs-main/', admin.site.urls),
     path('ping/', ping, name='ping'),
+    path('secret-cgs-main/security/terminate-sessions/', terminate_all_sessions_view, name='terminate_sessions'),
 
     # ==========================================
     # 🏠 HOMEPAGE & CATALOG

@@ -205,8 +205,12 @@ LOGGING = {
 # 🌟 DJANGO PRODUCTION SECURITY SETTINGS
 
 # 1. Cookies ko sirf HTTPS par allow karein (Session hijacking rokne ke liye)
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# Session & Cookie Security
+SESSION_COOKIE_SECURE = True          # Sirf HTTPS par chalega
+CSRF_COOKIE_SECURE = True             # CSRF cookie bhi secure rahegi
+SESSION_COOKIE_HTTPONLY = True        # JavaScript se cookie chori nahi ho payegi
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True # Browser band hote hi session khatam
+SESSION_COOKIE_AGE = 3600             # 2 ghante mein automatic session expire (seconds mein)
 
 # 2. XSS (Cross-Site Scripting) aur MIME-sniffing protection
 SECURE_BROWSER_XSS_FILTER = True

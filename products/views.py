@@ -1142,3 +1142,16 @@ def delivery_boy_dashboard(request):
         'completed_orders': Order.objects.filter(delivery_boy=delivery_boy, status='Completed').order_by('-created_at')[:10]
     }
     return render(request, 'delivery/dashboard.html', context)
+
+from django.contrib.sessions.models import Session
+from django.utils import timezone
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import redirect
+from django.contrib import messages
+
+@user_passes_test(lambda u: u.is_superuser)
+def terminate_all_sessions_view(request):
+    # Current user ko chhod kar ya sabke sessions delete karne ke liye
+    Session.objects.filter(expire_date__gte=timezone.now()).delete()
+    messages.success(request, "🛡️ Security Alert: All active sessions have been successfully terminated!")
+    return redirect('admin:index')

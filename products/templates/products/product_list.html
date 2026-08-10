@@ -3,12 +3,14 @@
 
 {% block content %}
 <style>
-    /* 🌟 DYNAMIC LIFESTYLE CAROUSEL HERO */
+    /* 🌟 DYNAMIC LIFESTYLE CAROUSEL HERO (Glass Style) */
     .lifestyle-carousel .carousel-item {
         height: 45vh;
         min-height: 350px;
-        background-color: #131921;
+        background: rgba(19, 25, 33, 0.85);
+        backdrop-filter: blur(10px);
         overflow: hidden;
+        border-radius: 16px;
     }
     .lifestyle-carousel img, .lifestyle-carousel video {
         width: 100%;
@@ -43,12 +45,16 @@
     #full-collection { scroll-margin-top: 115px; }
     @media (max-width: 767px) { #full-collection { scroll-margin-top: 175px; } }
 
-    /* 🌟 AMAZON STYLE LAYOUT & SIDEBAR */
+    /* 🌟 GLASS SIDEBAR FILTERS */
     .sidebar-filters {
-        background: #FFFFFF;
-        border-right: 1px solid #E7E7E7;
-        padding: 20px 20px 20px 0;
+        background: rgba(255, 255, 255, 0.45) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        padding: 20px 20px 20px 20px;
+        border-radius: 16px;
         min-height: 100vh;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
     }
     .filter-group { margin-bottom: 25px; }
     .filter-title {
@@ -56,40 +62,50 @@
         color: #0F1111; text-transform: uppercase; letter-spacing: 1px;
     }
     .filter-select, .filter-input {
-        width: 100%; padding: 8px 12px; border: 1px solid #888C8C; border-radius: 6px;
-        font-size: 0.9rem; color: #0F1111; background-color: #F0F2F2;
-        box-shadow: 0 1px 2px rgba(15,17,17,0.15) inset; transition: 0.2s;
+        width: 100%; padding: 8px 12px; border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 10px;
+        font-size: 0.9rem; color: #0F1111; background-color: rgba(255, 255, 255, 0.6) !important;
+        backdrop-filter: blur(5px);
     }
     .filter-select:focus, .filter-input:focus {
-        border-color: #E47911; outline: none; background-color: #FFFFFF;
+        border-color: #E47911; outline: none; background-color: #FFFFFF !important;
         box-shadow: 0 0 0 2px rgba(228,121,17,0.3);
     }
     .btn-apply-filter {
-        background: #FFD814; color: #0F1111; border: 1px solid #FCD200;
-        padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;
-        transition: 0.3s; width: 100%;
+        background: rgba(255, 216, 20, 0.9); color: #0F1111; border: 1px solid rgba(252, 210, 0, 0.5);
+        padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;
+        transition: 0.3s; width: 100%; backdrop-filter: blur(5px);
     }
     .btn-apply-filter:hover { background: #F7CA00; }
     .btn-clear-filter {
         color: #007185; font-size: 0.85rem; text-decoration: none;
-        display: block; margin-top: 10px; font-weight: 500;
+        display: block; margin-top: 10px; font-weight: 500; text-align: center;
     }
     .btn-clear-filter:hover { color: #C45500; text-decoration: underline; }
     .mobile-filter-btn { 
-        background: #F0F2F2; border: 1px solid #D5D9D9; border-radius: 8px; 
-        padding: 10px; width: 100%; font-weight: 600; 
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05); color: #0F1111;
+        background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); 
+        border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 10px; 
+        padding: 10px; width: 100%; font-weight: 600; color: #0F1111;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    /* 🌟 COMPACT & MODERN PRODUCT CARD (JioMart/Blinkit Style) */
+    /* 💎 CRYSTAL TRANSPARENT GLASS PRODUCT CARDS */
     .smart-card {
-        background: #fff; border: 1px solid #f0f0f0; border-radius: 12px;
-        padding: 10px; position: relative; display: flex; flex-direction: column;
-        height: 100%; transition: box-shadow 0.2s ease;
+        background: rgba(255, 255, 255, 0.35) !important;
+        backdrop-filter: blur(15px) !important;
+        -webkit-backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        border-radius: 18px !important;
+        padding: 12px; position: relative; display: flex; flex-direction: column;
+        height: 100%; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08) !important;
+        transition: all 0.3s ease;
     }
-    .smart-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .smart-card:hover {
+        background: rgba(255, 255, 255, 0.55) !important;
+        transform: translateY(-6px);
+        box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15) !important;
+    }
     .smart-wishlist-btn {
-        position: absolute; top: 10px; right: 10px; background: rgba(255, 255, 255, 0.85);
+        position: absolute; top: 12px; right: 12px; background: rgba(255, 255, 255, 0.8);
         border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center;
         justify-content: center; text-decoration: none; color: #999; font-size: 1.1rem;
         z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.2s;
@@ -105,13 +121,13 @@
     }
     .smart-card:hover .smart-img-container img { transform: scale(1.05); }
     .smart-qty {
-        font-size: 0.75rem; color: #666; font-weight: 500; background: #f8f8f8;
-        padding: 4px 6px; border-radius: 4px; text-align: center; width: 100%; margin-bottom: 8px;
+        font-size: 0.75rem; color: #666; font-weight: 500; background: rgba(255, 255, 255, 0.5);
+        padding: 4px 6px; border-radius: 6px; text-align: center; width: 100%; margin-bottom: 8px;
     }
     .smart-add-btn {
-        border: 1px solid #0056b3; color: #0056b3; background: transparent;
-        padding: 6px 0; border-radius: 6px; font-weight: 700; font-size: 0.85rem;
-        transition: 0.2s; text-align: center;
+        border: 1px solid rgba(0, 86, 179, 0.4); color: #0056b3; background: rgba(255, 255, 255, 0.6);
+        padding: 6px 0; border-radius: 8px; font-weight: 700; font-size: 0.85rem;
+        transition: 0.2s; text-align: center; backdrop-filter: blur(5px);
     }
     .smart-add-btn:hover { background: #f0f8ff; }
     .smart-price-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
@@ -125,12 +141,13 @@
     }
     .smart-brand { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* 🌟 STICKY CART BAR (AJAX) */
+    /* 🌟 STICKY GLASS CART BAR */
     .sticky-cart {
         position: fixed; bottom: calc(60px + env(safe-area-inset-bottom, 0px));
-        left: 10px; right: 10px; background: #232F3E; color: #fff; border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; justify-content: space-between;
-        align-items: center; padding: 12px 18px; font-family: 'Inter', sans-serif; z-index: 1000;
+        left: 15px; right: 15px; background: rgba(35, 47, 62, 0.85); backdrop-filter: blur(15px);
+        color: #fff; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); 
+        display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; 
+        font-family: 'Inter', sans-serif; z-index: 1000; border: 1px solid rgba(255,255,255,0.2);
     }
     .sticky-cart .cart-icon { position: relative; font-size: 22px; }
     .sticky-cart .cart-badge {
@@ -139,7 +156,7 @@
     }
     .sticky-cart .cart-info { flex: 1; text-align: center; font-size: 14px; font-weight: 600; }
     .sticky-cart .view-cart-btn {
-        background: #FFD814; color: #0F1111; border: none; border-radius: 6px;
+        background: #FFD814; color: #0F1111; border: none; border-radius: 8px;
         padding: 8px 16px; font-weight: 700; cursor: pointer; transition: 0.3s ease; font-size: 0.85rem;
     }
     .sticky-cart .view-cart-btn:hover { background: #F7CA00; }
@@ -205,7 +222,7 @@
     <div class="row">
         <!-- 🌟 LEFT SIDEBAR (DESKTOP FILTERS) -->
         <aside class="col-lg-3 col-xl-2 d-none d-lg-block">
-            <div class="sidebar-filters">
+            <div class="sidebar-filters shadow-sm">
                 <h5 class="fw-bold mb-4" style="color: #0F1111;">Filters</h5>
                 <form method="GET" action="{% url 'home' %}#full-collection" id="desktopFilterForm">
                     {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
@@ -271,7 +288,7 @@
                 <!-- 🎯 VERTICAL BANNER INJECTION -->
                 {% if forloop.counter == 4 and banners|length > 1 %}
                 <div class="col d-none d-md-block">
-                    <div class="h-100 rounded-2 overflow-hidden shadow-sm position-relative border-0" style="background: #131921; border-radius: 12px !important;">
+                    <div class="h-100 rounded-2 overflow-hidden shadow-sm position-relative border-0" style="background: rgba(19, 25, 33, 0.9); backdrop-filter: blur(10px); border-radius: 16px !important;">
                         <a href="{% if banners.1.category %}{% url 'home' %}?category={{ banners.1.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
                             {% if banners.1.image %}<img src="{{ banners.1.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8;" alt="Promo">{% endif %}
                             <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3" style="pointer-events: none;">
@@ -308,7 +325,7 @@
                             {% csrf_token %}
                             <div class="mt-auto">
                                 {% if product.variants.exists %}
-                                    <select name="variant_id" class="form-select form-select-sm mb-2 border-secondary variant-selector" data-product-id="{{ product.id }}" id="variant-select-{{ product.id }}" style="font-size: 0.75rem; padding: 2px 8px; height: auto;" required>
+                                    <select name="variant_id" class="form-select form-select-sm mb-2 variant-selector" data-product-id="{{ product.id }}" id="variant-select-{{ product.id }}" style="font-size: 0.75rem; padding: 2px 8px; height: auto; background: rgba(255,255,255,0.7);" required>
                                         <option value="" disabled selected>Select Size</option>
                                         {% for variant in product.variants.all %}
                                             <option value="{{ variant.id }}" data-price="{{ variant.price }}">{{ variant.size_name }} (₹{{ variant.price }})</option>
@@ -321,7 +338,7 @@
                                 
                                 <div class="d-flex gap-2">
                                     <button type="button" class="smart-add-btn add-to-cart-ajax flex-grow-1">Add</button>
-                                    <button type="button" class="smart-add-btn buy-now-btn flex-grow-1" style="background:#FFA41C; color:#111; border-color:#FF8F00;">⚡ Buy</button>
+                                    <button type="button" class="smart-add-btn buy-now-btn flex-grow-1" style="background:rgba(254, 189, 105, 0.85); color:#111; border:none;">⚡ Buy</button>
                                 </div>
                             </div>
                         </form>
@@ -343,7 +360,7 @@
                 <!-- 🎯 HORIZONTAL BANNER INJECTION -->
                 {% if forloop.counter == 8 and banners|length > 2 %}
                 <div class="col-12 mt-3 mb-3">
-                    <div class="rounded-2 overflow-hidden shadow-sm position-relative border" style="height: 140px; background: #131921; border-radius: 12px !important;">
+                    <div class="rounded-2 overflow-hidden shadow-sm position-relative border" style="height: 140px; background: rgba(19, 25, 33, 0.9); backdrop-filter: blur(10px); border-radius: 16px !important;">
                         <a href="{% if banners.2.category %}{% url 'home' %}?category={{ banners.2.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
                             {% if banners.2.image %}<img src="{{ banners.2.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.7;" alt="Promo" loading="lazy">{% endif %}
                             <div class="position-absolute top-50 start-50 translate-middle text-center w-100" style="pointer-events: none;">
@@ -382,7 +399,7 @@
 </div>
 
 <!-- 📱 Mobile Filter Offcanvas -->
-<div class="offcanvas offcanvas-bottom h-75" tabindex="-1" id="mobileFilters">
+<div class="offcanvas offcanvas-bottom h-75" tabindex="-1" id="mobileFilters" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);">
     <div class="offcanvas-header bg-light border-bottom">
         <h5 class="offcanvas-title fw-bold" style="color: #0F1111;">Filters & Sort</h5>
         <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
