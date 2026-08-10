@@ -104,23 +104,20 @@ USE_I18N = True
 USE_TZ = True
 
 # =====================================================================
-#                 STATIC & MEDIA STORAGE (FIXED FOR CLOUDINARY & WHITENOISE)
+#                 STATIC & MEDIA STORAGE 
 # =====================================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 
-# Legacy setting required by django-cloudinary-storage package
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Modern Django 4.2+ Storage Dictionary
+# Safe Storage backend that won't crash on missing optional files
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
