@@ -10,10 +10,8 @@ from django.views.generic import TemplateView
 
 # App Imports
 from products import views
-from products.views import search_suggestions, check_delivery
+from products.views import search_suggestions, check_delivery, terminate_all_sessions_view
 from products.sitemaps import ProductSitemap, StaticViewSitemap
-from django.urls import path
-from products import views
 
 # 🌟 Specific View Imports for cleaner path definitions
 from products.views import (
@@ -161,12 +159,9 @@ urlpatterns = [
     path('admin-panel/confirm-payment/<int:order_id>/', views.admin_confirm_payment, name='admin_confirm_payment'),
 ]
 
-# 🌟 Best Practice: Serve media files efficiently.
-# In DEBUG mode, Django serves them. In Production, Nginx/Apache should serve them.
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 else:
-    # Fallback for production if Nginx isn't configured to serve media yet
     urlpatterns += [
         re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     ]
