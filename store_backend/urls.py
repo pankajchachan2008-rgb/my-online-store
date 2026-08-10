@@ -7,7 +7,6 @@ from django.contrib.auth import views as auth_views
 from django.http import HttpResponse  
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
-from . import views
 
 # App Imports
 from products import views
