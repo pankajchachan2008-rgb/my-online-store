@@ -22,7 +22,7 @@ class FixCSPMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         
-        # 🌟 Update CSP Header with all required domains
+        # 🌟 Complete CSP policy with all necessary external domains allowed
         csp_policy = (
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; "
