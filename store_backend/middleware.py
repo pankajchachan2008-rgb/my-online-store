@@ -22,12 +22,13 @@ class FixCSPMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         
-        # 🌟 Complete CSP policy with all necessary external domains allowed
+        # 🌟 COMPREHENSIVE CSP POLICY (Fixes all media, script, image, connect & worker errors)
         csp_policy = (
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; "
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
             "img-src 'self' data: https://res.cloudinary.com https://images.unsplash.com; "
+            "media-src 'self' https://res.cloudinary.com; "
             "font-src 'self' https://fonts.gstatic.com; "
             "connect-src 'self' https://api.brevo.com https://www.cgsmart.in; "
             "frame-src 'self' https://www.google.com; "
