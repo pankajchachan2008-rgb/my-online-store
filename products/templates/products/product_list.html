@@ -16,7 +16,7 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        object-position: center top;
+        object-position: center center;
         opacity: 0.85;
     }
     .carousel-caption-custom {
@@ -41,6 +41,61 @@
         text-shadow: 2px 4px 15px rgba(0,0,0,0.6);
     }
 
+    /* 🌟 LUXURY GLOSSY CRYSTAL BANNER STYLES (Auto-Fit & Cut Fix) */
+    .luxury-banner-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 16px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+    }
+
+    .luxury-banner-wrapper img, 
+    .luxury-banner-wrapper video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center center !important;
+        display: block;
+        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .luxury-banner-wrapper:hover img,
+    .luxury-banner-wrapper:hover video {
+        transform: scale(1.02);
+    }
+
+    /* ✨ Glossy Glass Light Reflection Animation */
+    .luxury-banner-wrapper::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+            90deg, 
+            transparent, 
+            rgba(255, 255, 255, 0.2), 
+            transparent
+        );
+        transform: skewX(-25deg);
+        pointer-events: none;
+        animation: glassReflection 5s infinite;
+        z-index: 6;
+    }
+
+    @keyframes glassReflection {
+        0% { left: -100%; }
+        25% { left: 150%; }
+        100% { left: 150%; }
+    }
+
     /* 🌟 SCROLL MARGIN FIX */
     #full-collection { scroll-margin-top: 115px; }
     @media (max-width: 767px) { #full-collection { scroll-margin-top: 175px; } }
@@ -51,7 +106,7 @@
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
         border: 1px solid rgba(255, 255, 255, 0.6) !important;
-        padding: 20px 20px 20px 20px;
+        padding: 20px;
         border-radius: 16px;
         min-height: 100vh;
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
@@ -181,23 +236,25 @@
         {% for banner in banners %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="5000">
             <a href="{% if banner.category %}{% url 'home' %}?category={{ banner.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
-                {% if banner.animated_file %}
-                    <video class="d-block w-100" autoplay loop muted playsinline>
-                        <source src="{{ banner.animated_file.url }}" type="video/mp4">
-                    </video>
-                {% elif banner.image %}
-                    <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}">
-                {% endif %}
-                {% if banner.title %}
-                <div class="carousel-caption-custom"><h2>{{ banner.title }}</h2></div>
-                {% endif %}
+                <div class="luxury-banner-wrapper">
+                    {% if banner.animated_file %}
+                        <video autoplay loop muted playsinline>
+                            <source src="{{ banner.animated_file.url }}" type="video/mp4">
+                        </video>
+                    {% elif banner.image %}
+                        <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}">
+                    {% endif %}
+                    {% if banner.title %}
+                    <div class="carousel-caption-custom"><h2>{{ banner.title }}</h2></div>
+                    {% endif %}
+                </div>
             </a>
         </div>
         {% endfor %}
     </div>
     {% if banners|length > 1 %}
-    <button class="carousel-control-prev" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="prev" style="width: 5%;"><span class="carousel-control-prev-icon" style="width: 3rem; height: 3rem;"></span></button>
-    <button class="carousel-control-next" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="next" style="width: 5%;"><span class="carousel-control-next-icon" style="width: 3rem; height: 3rem;"></span></button>
+    <button class="carousel-control-prev" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="prev" style="width: 5%; z-index: 7;"><span class="carousel-control-prev-icon" style="width: 3rem; height: 3rem;"></span></button>
+    <button class="carousel-control-next" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="next" style="width: 5%; z-index: 7;"><span class="carousel-control-next-icon" style="width: 3rem; height: 3rem;"></span></button>
     {% endif %}
 </div>
 {% else %}
@@ -205,8 +262,10 @@
     <div class="carousel-inner">
         <div class="carousel-item active">
             <a href="#full-collection" style="display: block; width: 100%; height: 100%;">
-                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070" alt="Premium Fashion">
-                <div class="carousel-caption-custom"><h2>The Style Edit</h2></div>
+                <div class="luxury-banner-wrapper">
+                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070" alt="Premium Fashion">
+                    <div class="carousel-caption-custom"><h2>The Style Edit</h2></div>
+                </div>
             </a>
         </div>
     </div>
@@ -288,11 +347,11 @@
                 <!-- 🎯 VERTICAL BANNER INJECTION -->
                 {% if forloop.counter == 4 and banners|length > 1 %}
                 <div class="col d-none d-md-block">
-                    <div class="h-100 rounded-2 overflow-hidden shadow-sm position-relative border-0" style="background: rgba(19, 25, 33, 0.9); backdrop-filter: blur(10px); border-radius: 16px !important;">
+                    <div class="h-100 luxury-banner-wrapper">
                         <a href="{% if banners.1.category %}{% url 'home' %}?category={{ banners.1.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
-                            {% if banners.1.image %}<img src="{{ banners.1.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.8;" alt="Promo">{% endif %}
-                            <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3" style="pointer-events: none;">
-                                <h4 class="text-white fw-bold text-uppercase" style="letter-spacing: 1px;">{{ banners.1.title|default:"Special Offer" }}</h4>
+                            {% if banners.1.image %}<img src="{{ banners.1.image.url }}" style="opacity: 0.85;" alt="Promo">{% endif %}
+                            <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3" style="pointer-events: none; z-index: 5;">
+                                <h4 class="text-white fw-bold text-uppercase" style="letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">{{ banners.1.title|default:"Special Offer" }}</h4>
                             </div>
                         </a>
                     </div>
@@ -360,12 +419,12 @@
                 <!-- 🎯 HORIZONTAL BANNER INJECTION -->
                 {% if forloop.counter == 8 and banners|length > 2 %}
                 <div class="col-12 mt-3 mb-3">
-                    <div class="rounded-2 overflow-hidden shadow-sm position-relative border" style="height: 140px; background: rgba(19, 25, 33, 0.9); backdrop-filter: blur(10px); border-radius: 16px !important;">
+                    <div class="luxury-banner-wrapper" style="height: 140px;">
                         <a href="{% if banners.2.category %}{% url 'home' %}?category={{ banners.2.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
-                            {% if banners.2.image %}<img src="{{ banners.2.image.url }}" class="w-100 h-100" style="object-fit: cover; opacity: 0.7;" alt="Promo" loading="lazy">{% endif %}
-                            <div class="position-absolute top-50 start-50 translate-middle text-center w-100" style="pointer-events: none;">
-                                <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 2px;">{{ banners.2.title|default:"Mega Savings" }}</h3>
-                                <p class="text-white-50 mb-0">Use Code <strong style="color: #FF9900;">CGSMART10</strong> for extra discount!</p>
+                            {% if banners.2.image %}<img src="{{ banners.2.image.url }}" style="opacity: 0.75;" alt="Promo" loading="lazy">{% endif %}
+                            <div class="position-absolute top-50 start-50 translate-middle text-center w-100" style="pointer-events: none; z-index: 5;">
+                                <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">{{ banners.2.title|default:"Mega Savings" }}</h3>
+                                <p class="text-white-50 mb-0" style="text-shadow: 0 1px 5px rgba(0,0,0,0.8);">Use Code <strong style="color: #FF9900;">CGSMART10</strong> for extra discount!</p>
                             </div>
                         </a>
                     </div>

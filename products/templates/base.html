@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- 🌟 Dynamic SEO Meta Tags -->
-    <title>{% block title %}CGSMART - Premium Online Store & Essentials{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}Shop premium quality products, groceries, and essentials at Chachan General Store (CGSmart) in Nohar. Fast delivery and secure payments.{% endblock %}">
-    <meta name="keywords" content="CGSmart, Chachan General Store, Nohar online store, buy groceries online, premium essentials, local online store">
+    <title>{% block title %}CGS MART - Premium Online Store & Essentials{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Shop premium quality products, groceries, and essentials at Chachan General Store (CGS MART) in Nohar. Fast delivery and secure payments.{% endblock %}">
+    <meta name="keywords" content="CGS MART, Chachan General Store, Nohar online store, buy groceries online, premium essentials, local online store">
     
     <!-- 📱 Open Graph / WhatsApp / Facebook Share Tags -->
-    <meta property="og:title" content="{% block og_title %}CGSMART - Premium Online Store{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}CGS MART - Premium Online Store{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Discover premium quality essentials in Nohar with fast delivery.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg{% endblock %}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
@@ -293,6 +293,71 @@
             vertical-align: middle;
         }
 
+        /* 🌟 LUXURY GLOSSY CRYSTAL BANNER STYLES (Auto-Fit & Cut Fix) */
+        .luxury-banner-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+            margin-bottom: 25px;
+        }
+
+        .luxury-banner-wrapper img, 
+        .banner-img, 
+        .carousel-item img {
+            width: 100% !important;
+            height: 400px !important;
+            max-height: 450px !important;
+            object-fit: cover !important;
+            object-position: center center !important;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .luxury-banner-wrapper:hover img {
+            transform: scale(1.02);
+        }
+
+        .luxury-banner-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent
+            );
+            transform: skewX(-25deg);
+            pointer-events: none;
+            animation: glassReflection 5s infinite;
+        }
+
+        @keyframes glassReflection {
+            0% { left: -100%; }
+            25% { left: 150%; }
+            100% { left: 150%; }
+        }
+
+        @media (max-width: 768px) {
+            .luxury-banner-wrapper img, 
+            .banner-img, 
+            .carousel-item img {
+                height: 210px !important;
+            }
+            .luxury-banner-wrapper {
+                border-radius: 16px;
+            }
+        }
+
         /* 🌟 LUXURY BUTTONS */
         .btn-primary, .btn-warning, .add-to-cart-ajax, .buy-now-btn {
             background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%) !important;
@@ -377,7 +442,7 @@
 
     <!-- 🌟 TOP ANNOUNCEMENT RIBBON -->
     <div class="text-center py-2 px-3" style="background-color: rgba(12, 13, 18, 0.9); backdrop-filter: blur(5px); color: var(--accent-gold); font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; z-index: 1050; position: relative; border-bottom: 1px solid rgba(212,175,55,0.2);">
-        🎉 ⚡ 10 MINS - 1 HOUR LOCAL DELIVERY IN NOHAR | USE CODE: <span class="text-white">CGSMART10</span> FOR 1.5% OFF
+        🎉 ⚡ 10 MINS - 1 HOUR LOCAL DELIVERY IN NOHAR | USE CODE: <span class="text-white">CGS MART10</span> FOR 1.5% OFF
     </div>
 
     <!-- 💎 LUXURY CRYSTAL HEADER -->
@@ -390,7 +455,7 @@
                     <button class="btn text-white d-lg-none p-1 me-1 fs-4 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">☰</button>
                     <a href="{% url 'home' %}" class="brand-container">
                         <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
-                        <span class="brand-name">CGSMART</span>
+                        <span class="brand-name">CGS MART</span>
                     </a>
 
                     <!-- 📍 Header Global Pincode / Location Selector -->
@@ -559,7 +624,7 @@
         <div class="container" style="max-width: 1400px; padding: 0 25px;">
             <div class="row g-5">
                 <div class="col-lg-4">
-                    <h5 class="fw-bold mb-4 text-uppercase" style="color: var(--accent-gold); font-size: 1.5rem; letter-spacing: 2px;">CGSMART.</h5>
+                    <h5 class="fw-bold mb-4 text-uppercase" style="color: var(--accent-gold); font-size: 1.5rem; letter-spacing: 2px;">CGS MART.</h5>
                     <p class="text-white-50" style="line-height: 1.8;">
                         Nohar's premium destination for quality fashion, skincare, and daily essentials. 
                         Delivering happiness to your doorstep with trust and speed in 10 mins - 1 hour.
@@ -585,7 +650,7 @@
             </div>
             <hr class="my-5 border-light opacity-25">
             <div class="text-center text-white-50 pb-4 pb-lg-0">
-                <p class="mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">© 2026 CGSMART. All Rights Reserved.</p>
+                <p class="mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">© 2026 CGS MART. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
@@ -625,20 +690,20 @@
         <div class="ai-chat-header">
             <div class="d-flex align-items-center gap-2">
                 <span class="fs-5">✨</span>
-                <span style="letter-spacing: 0.5px;">CGSMART Assistant</span>
+                <span style="letter-spacing: 0.5px;">CGS MART Assistant</span>
             </div>
             <button type="button" class="btn-close btn-close-white shadow-none" id="closeAiChat"></button>
         </div>
         
         <div class="ai-chat-quick-actions">
-            <a href="https://wa.me/917357073316?text=Hi%20CGSMART%20Team,%20mujhe%20help%20chahiye!" target="_blank" class="wa-btn">
+            <a href="https://wa.me/917357073316?text=Hi%20CGS MART%20Team,%20mujhe%20help%20chahiye!" target="_blank" class="wa-btn">
                 <span style="font-size: 1.1rem;">💬</span> Chat on WhatsApp
             </a>
         </div>
         
         <div class="ai-chat-messages" id="aiMsgContainer">
             <div class="msg-bubble msg-ai shadow-sm border border-light">
-                Namaste! 🙏 Main CGSMART AI hu. Aap mujhse koi bhi sawaal pooch sakte hain, ya seedha WhatsApp par message kar sakte hain!
+                Namaste! 🙏 Main CGS MART AI hu. Aap mujhse koi bhi sawaal pooch sakte hain, ya seedha WhatsApp par message kar sakte hain!
             </div>
         </div>
         
@@ -658,8 +723,8 @@
 
             try {
                 // Sync Header Location from localStorage
-                const savedPin = localStorage.getItem("cgsmart_user_pincode");
-                const savedCity = localStorage.getItem("cgsmart_user_city");
+                const savedPin = localStorage.getItem("CGS MART_user_pincode");
+                const savedCity = localStorage.getItem("CGS MART_user_city");
                 const headerPinEl = document.getElementById("headerSelectedPincode");
                 const mobilePinEl = document.getElementById("mobileSelectedPincode");
                 
@@ -704,8 +769,8 @@
                             if(data.available) {
                                 resEl.className = "small fw-semibold text-success";
                                 resEl.innerText = "⚡ 10 Mins delivery available!";
-                                localStorage.setItem("cgsmart_user_pincode", pin);
-                                localStorage.setItem("cgsmart_user_city", data.city || "Nohar");
+                                localStorage.setItem("CGS MART_user_pincode", pin);
+                                localStorage.setItem("CGS MART_user_city", data.city || "Nohar");
                                 if(headerPinEl) headerPinEl.innerText = (data.city || "Nohar") + " " + pin;
                                 if(mobilePinEl) mobilePinEl.innerText = (data.city || "Nohar") + " " + pin;
                                 setTimeout(() => { location.reload(); }, 1000);
