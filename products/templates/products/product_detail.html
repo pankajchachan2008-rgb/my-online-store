@@ -1,26 +1,29 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load cloudinary_filters %}
 
 <!-- 🌟 Product Specific SEO -->
-{% block title %}{{ product.name }} - Buy Online at CGSMART{% endblock %}
+{% block title %}{{ product.name }} - Buy Online at CGS MART{% endblock %}
 {% block meta_description %}Buy {{ product.name }} online at the best price. {{ product.description|default:""|truncatechars:100 }}{% endblock %}
-{% block og_title %}{{ product.name }} | CGSMART{% endblock %}
+{% block og_title %}{{ product.name }} | CGS MART{% endblock %}
 {% block og_description %}Buy {{ product.name }} for ₹{{ product.price }}. Fast delivery available!{% endblock %}
 {% block og_image %}{% if product.image %}{{ product.image.url }}{% endif %}{% endblock %}
 
 {% block content %}
 <style>
-    /* 🌟 PREMIUM STICKY BOTTOM CART FOR MOBILE */
+    /* 🌟 PREMIUM STICKY BOTTOM CART FOR MOBILE (Crystal Glass Style) */
     .sticky-bottom-cart {
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
-        background-color: #FFFFFF;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(25px) saturate(200%);
+        -webkit-backdrop-filter: blur(25px) saturate(200%);
         padding: 12px 20px;
-        border-top: 1px solid #E2E8F0;
+        border-top: 1px solid rgba(255, 255, 255, 0.9);
         z-index: 1050;
-        box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.1);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
         transform: translateY(100%);
         animation: slideUp 0.5s forwards ease-out;
     }
@@ -29,27 +32,9 @@
         to { transform: translateY(0); }
     }
 
-    .btn-sticky-cart {
-        background-color: var(--primary-blue, #002D62); 
-        color: #FFFFFF;
-        font-family: 'Jost', sans-serif;
-        font-weight: 600;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        border: none;
-        border-radius: 8px;
-        padding: 12px 30px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-sticky-cart:hover {
-        background-color: var(--accent-gold, #D4AF37); 
-        color: var(--primary-blue, #002D62);
-    }
-
     .sticky-price {
         font-family: 'Jost', sans-serif;
-        color: var(--primary-blue, #0F172A);
+        color: #0F172A;
         font-size: 1.4rem;
         font-weight: 700;
         line-height: 1.1;
@@ -69,7 +54,9 @@
         align-items: center;
         justify-content: center;
         border-radius: 1rem;
-        background: #F8FAFC;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.7);
     }
     .zoom-image {
         max-height: 100%;
@@ -79,38 +66,36 @@
         transition: transform 0.2s ease-out;
     }
 
-    .btn-add-to-cart-brand {
-        background-color: var(--primary-blue, #002D62);
-        border: none;
-        color: #fff;
-        transition: 0.3s ease;
-    }
-    .btn-add-to-cart-brand:hover {
-        background-color: var(--accent-gold, #D4AF37);
-        color: var(--primary-blue, #002D62);
+    /* 💎 CRYSTAL GLASS CARDS & CONTAINERS OVERRIDE */
+    .card, .border-0, .bg-white, .bg-light, .review-card, .amazon-card {
+        background: rgba(255, 255, 255, 0.65) !important;
+        backdrop-filter: blur(25px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.9) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+        color: #0f172a !important;
     }
 
     /* 🌟 AMAZON STYLE PRODUCT CARDS (For Similar Products) */
     .amazon-card {
-        background: #FFFFFF;
-        border: 1px solid #E7E7E7;
-        border-radius: 8px;
         padding: 15px;
         height: 100%;
         display: flex;
         flex-direction: column;
-        transition: box-shadow 0.2s, border-color 0.2s;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .amazon-card:hover { 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
-        border-color: #D5D9D9;
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1), 0 0 20px rgba(212, 175, 55, 0.2) !important;
+        border-color: rgba(212, 175, 55, 0.5) !important;
     }
     .img-box-amazon {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #F8F8F8;
-        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 12px;
         overflow: hidden;
         margin-bottom: 15px;
     }
@@ -141,7 +126,7 @@
                 {% if product.image %}
                     <!-- Hover Zoom Container -->
                     <div class="zoom-container" id="zoomContainer" data-bs-toggle="modal" data-bs-target="#imageModal" title="Click to view full screen">
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="zoom-image" id="zoomImage" loading="lazy">
+                        <img src="{{ product.image.url|optimize_img }}" alt="{{ product.name }}" class="zoom-image" id="zoomImage" loading="lazy">
                     </div>
                     <!-- Hint Text -->
                     <div class="text-center mt-2 text-muted small fw-medium">
@@ -177,7 +162,7 @@
                 </p>
 
                 <!-- ⚡ Blinkit Style Superfast Local Delivery Highlight -->
-                <div class="alert p-3 mb-3 rounded-3 border shadow-sm d-flex align-items-center gap-3" style="background-color: #F0FDF4; border-color: #BBF7D0 !importnat;" data-aos="fade-up" data-aos-delay="260">
+                <div class="alert p-3 mb-3 rounded-3 border shadow-sm d-flex align-items-center gap-3" style="background-color: rgba(240, 253, 244, 0.8); border-color: #BBF7D0 !important;" data-aos="fade-up" data-aos-delay="260">
                     <span class="fs-2">⚡</span>
                     <div>
                         <div class="fw-bold text-success" style="font-size: 0.95rem;">Superfast Local Delivery</div>
@@ -198,7 +183,7 @@
                 <hr class="my-4 border-secondary opacity-25">
 
                 <!-- 🛒 Add to Cart Form -->
-                <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST" class="bg-white p-4 rounded-4 shadow-sm border" style="border-color: #E2E8F0 !important;" data-aos="fade-up" data-aos-delay="300">
+                <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST" class="p-4 rounded-4 shadow-sm border" style="background: rgba(255, 255, 255, 0.75) !important; border-color: rgba(255,255,255,0.9) !important;" data-aos="fade-up" data-aos-delay="300">
                     {% csrf_token %}
                     
                     {% if product.variants.exists %}
@@ -234,7 +219,7 @@
 
                     <!-- 🌟 Buttons (Desktop & Tablet) -->
                     <div class="d-flex gap-2 mt-4 flex-wrap">
-                        <button type="submit" class="btn btn-lg btn-add-to-cart-brand flex-grow-1 fw-bold text-uppercase rounded-3 shadow-sm" style="letter-spacing: 1px;">
+                        <button type="submit" class="btn btn-lg flex-grow-1 fw-bold text-uppercase rounded-3 shadow-sm" style="background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%); color: #fff; border: 1px solid rgba(212,175,55,0.3); letter-spacing: 1px;">
                             🛒 Add To Cart
                         </button>
                         
@@ -249,7 +234,7 @@
                 </form>
 
                 <!-- 🛡️ TRUST SIGNALS & SECURE BADGES -->
-                <div class="mt-4 p-3 bg-light rounded-3 border" data-aos="fade-up" data-aos-delay="400">
+                <div class="mt-4 p-3 rounded-3 border" data-aos="fade-up" data-aos-delay="400">
                     <p class="small text-muted fw-bold mb-2 text-center text-uppercase" style="letter-spacing: 1px;">Guaranteed Safe & Secure Checkout</p>
                     <div class="d-flex justify-content-center gap-3 align-items-center flex-wrap">
                         <div class="badge bg-white text-dark border px-3 py-2 fs-6 shadow-sm">🔒 256-bit SSL Secure</div>
@@ -276,7 +261,7 @@
                     <h4 class="fw-bold mb-4">Customer Reviews ({{ review_count }})</h4>
                     
                     {% if user.is_authenticated %}
-                        <div class="bg-white p-4 rounded-4 shadow-sm border mb-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="p-4 rounded-4 shadow-sm border mb-4" data-aos="fade-up" data-aos-delay="100">
                             <h6 class="fw-bold mb-3">Write a Review</h6>
                             <form method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
@@ -312,7 +297,7 @@
                     <!-- Display Existing Reviews -->
                     <div class="reviews-list mt-4">
                         {% for review in reviews %}
-                            <div class="review-card bg-white p-4 rounded-4 border mb-3 shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                            <div class="review-card p-4 rounded-4 border mb-3 shadow-sm" data-aos="fade-up" data-aos-delay="100">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <div class="fw-bold text-dark fs-5">
                                         {{ review.user.first_name|default:review.user.username }} 
@@ -400,7 +385,7 @@
         <!-- Smart Submit Buttons -->
         <div class="d-flex gap-2 flex-grow-1 justify-content-end">
             <!-- Normal Add To Cart -->
-            <button type="submit" form="addToCartForm" class="btn fw-bold px-3 py-2 rounded-3 text-white shadow-sm" style="background-color: var(--primary-blue, #002D62); font-size: 0.85rem;">
+            <button type="submit" form="addToCartForm" class="btn fw-bold px-3 py-2 rounded-3 text-white shadow-sm" style="background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%); font-size: 0.85rem;">
                 Add
             </button>
             
@@ -420,7 +405,7 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff; border-radius: 50%; opacity: 1; padding: 10px; margin: 10px;"></button>
       </div>
       <div class="modal-body text-center p-0">
-        <img src="{{ product.image.url }}" class="img-fluid rounded" style="max-height: 85vh; object-fit: contain;">
+        <img src="{{ product.image.url|optimize_img }}" class="img-fluid rounded" style="max-height: 85vh; object-fit: contain;" alt="Full Screen Product">
       </div>
     </div>
   </div>

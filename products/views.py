@@ -1153,3 +1153,23 @@ def terminate_all_sessions_view(request):
     Session.objects.filter(expire_date__gte=timezone.now()).delete()
     messages.success(request, "🛡️ Security Alert: All active sessions have been successfully terminated!")
     return redirect('admin:index')
+
+import json
+from django.http import JsonResponse
+
+def check_delivery_api(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            pincode = data.get("pincode", "").strip()
+            
+            # Nohar and surrounding local service pincodes list
+            valid_pincodes = ["335523", "335524", "335501"] 
+            
+            if pincode in valid_pincodes:
+                return JsonResponse({"available": True, "city": "Nohar", "message": "⚡ 10-Min delivery available!"})
+            else:
+                return JsonResponse({"available": False, "message": "Delivery not available for this pincode yet."})
+        except Exception as e:
+            return JsonResponse({"available": False, "message": "Invalid request."})
+    return JsonResponse({"available": False, "message": "Method not allowed."})

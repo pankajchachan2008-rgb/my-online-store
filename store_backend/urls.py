@@ -7,6 +7,7 @@ from django.contrib.auth import views as auth_views
 from django.http import HttpResponse  
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
+from . import views
 
 # App Imports
 from products import views
@@ -49,6 +50,7 @@ urlpatterns = [
     path('product/<int:product_id>/', product_detail, name='product_detail'),
     path('api/search-suggestions/', search_suggestions, name='search_suggestions'),
     path('api/check-delivery/', check_delivery, name='check_delivery'),
+    path('api/check-delivery/', views.check_delivery_api, name='check_delivery_api'),
 
     # ==========================================
     # 🛒 CART & CHECKOUT

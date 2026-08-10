@@ -44,7 +44,7 @@
             --glass-border: rgba(255, 255, 255, 0.9);
         }
 
-        /* 🌟 RICH LUXURY GRADIENT BACKGROUND (Glass Blur ke liye behtareen) */
+        /* 🌟 RICH LUXURY GRADIENT BACKGROUND */
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #e6ecf5 0%, #f0f3f9 50%, #e2e8f0 100%) !important;
@@ -58,7 +58,7 @@
             overflow-x: hidden;
         }
 
-        /* 💎 GLOBAL FORCE-GLASS OVERRIDE (Har page/card/box par glass feel lane ke liye) */
+        /* 💎 GLOBAL FORCE-GLASS OVERRIDE */
         .card, .card-body, .bg-white, .bg-light, .modal-content, .dropdown-menu, .table-responsive {
             background: rgba(255, 255, 255, 0.65) !important;
             backdrop-filter: blur(30px) saturate(200%) !important;
@@ -67,6 +67,18 @@
             border-radius: 20px !important;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.9) !important;
             color: var(--text-dark) !important;
+        }
+
+        /* 🌟 CRYSTAL SKELETON SHIMMER ANIMATION */
+        .skeleton-loader {
+            background: linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.2) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 12px;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         /* 💎 REAL 3D CRYSTAL GLASS NAVBAR */
@@ -487,6 +499,29 @@
                         <button class="btn fw-bold" type="button" id="saveGlobalPincodeBtn" style="background-color: var(--accent-gold); color: #0c0d12;">Apply</button>
                     </div>
                     <div id="globalModalResult" class="small fw-semibold text-center" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🌟 Global Quick View Modal -->
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content p-4" style="background: rgba(255,255,255,0.85); backdrop-filter: blur(25px); border-radius: 24px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="qvTitle">Product Quick View</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row align-items-center">
+                    <div class="col-md-6 text-center">
+                        <img id="qvImage" src="" alt="Product" class="img-fluid rounded-4 shadow-sm" style="max-height: 280px; object-fit: contain;">
+                    </div>
+                    <div class="col-md-6">
+                        <h3 id="qvName" class="fw-bold mb-2"></h3>
+                        <h4 id="qvPrice" class="text-success fw-bold mb-3"></h4>
+                        <p id="qvDesc" class="text-muted small mb-4"></p>
+                        <a id="qvDetailBtn" href="#" class="btn w-100 fw-bold py-2" style="background: var(--primary-luxury); color: #fff;">View Full Details</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1096,7 +1131,7 @@
                         });
                     }
 
-                    if(addBtn) addBtn.addEventlistener("click", (e) => handleCartAction(e, addBtn, false));
+                    if(addBtn) addBtn.addEventListener("click", (e) => handleCartAction(e, addBtn, false));
                     if(buyBtn) buyBtn.addEventListener("click", (e) => handleCartAction(e, buyBtn, true));
                 });
             } catch(e) { console.log(e); }
