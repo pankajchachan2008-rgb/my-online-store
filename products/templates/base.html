@@ -34,243 +34,253 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --text-dark: #0F1111;
-            --text-muted: #565959;
-            --primary-blue: #131921;
-            --nav-blue: #232F3E;
-            --accent-gold: #FEBD69;
-            --surface: rgba(255, 255, 255, 0.75);
-        }
+:root {
+        --text-dark: #111827;
+        --text-muted: #64748B;
+        --primary-luxury: #0c0d12;
+        --accent-gold: #D4AF37;
+        --accent-champagne: #F3E5AB;
+        --glass-surface: rgba(255, 255, 255, 0.65);
+        --glass-border: rgba(255, 255, 255, 0.8);
+    }
 
-        /* 🌟 GLASSMORPHISM & PASTEL BACKGROUND OVERRIDE */
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%) !important;
-            background-attachment: fixed !important;
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding-bottom: calc(70px + env(safe-area-inset-bottom)); 
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+    /* 🌟 TRUE LUXURY CRYSTAL GLASS BACKGROUND */
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f4f6f9 0%, #e9edf2 50%, #dfe4ed 100%) !important;
+        background-attachment: fixed !important;
+        color: var(--text-dark);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-bottom: calc(70px + env(safe-area-inset-bottom)); 
+        line-height: 1.7;
+        overflow-x: hidden;
+    }
 
-        /* 💎 GLASSMORPHISM NAVBAR & HEADER */
-        .premium-navbar {
-            background-color: rgba(19, 25, 33, 0.85) !important;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 10px 0;
-            color: white;
-            z-index: 1040;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        
-        .brand-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none !important;
-        }
-        
-        .brand-logo { 
-            height: 42px; 
-            width: auto; 
-            border-radius: 4px;
-            border: 1px solid var(--accent-gold);
-        }
+    /* 💎 HIGH-END BOUTIQUE NAVBAR */
+    .premium-navbar {
+        background-color: rgba(12, 13, 18, 0.85) !important;
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        padding: 14px 0;
+        color: white;
+        z-index: 1040;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    
+    .brand-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none !important;
+    }
+    
+    .brand-logo { 
+        height: 44px; 
+        width: auto; 
+        border-radius: 8px;
+        border: 1px solid var(--accent-gold);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    }
 
-        .brand-name {
-            font-family: 'Jost', sans-serif;
-            font-weight: 800;
-            font-size: 1.6rem;
-            color: #FFFFFF;
-            margin: 0;
-            line-height: 1;
-        }
+    .brand-name {
+        font-family: 'Jost', sans-serif;
+        font-weight: 800;
+        font-size: 1.7rem;
+        letter-spacing: 2px;
+        color: #FFFFFF;
+        margin: 0;
+        line-height: 1;
+        background: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
-        .header-search-form {
-            display: flex;
-            flex-grow: 1;
-            max-width: 800px;
-            margin: 0 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .header-search-input {
-            border: none;
-            padding: 10px 15px;
-            font-size: 1rem;
-            width: 100%;
-            outline: none;
-            background: rgba(255, 255, 255, 0.9);
-        }
-        .header-search-input:focus {
-            background: #FFFFFF;
-            box-shadow: 0 0 0 2px var(--accent-gold) inset;
-        }
-        .voice-btn {
-            background-color: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-left: 1px solid #ccc;
-            padding: 0 15px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #555;
-        }
-        .search-btn {
-            background-color: var(--accent-gold);
-            border: none;
-            padding: 0 20px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.2s;
-            color: #111;
-        }
-        .search-btn:hover { background-color: #F3A847; }
+    /* 🌟 LUXURY SEARCH BAR */
+    .header-search-form {
+        display: flex;
+        flex-grow: 1;
+        max-width: 650px;
+        margin: 0 30px;
+        border-radius: 30px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    .header-search-form:focus-within {
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+        background: rgba(255, 255, 255, 0.12);
+    }
+    .header-search-input {
+        border: none;
+        padding: 12px 20px;
+        font-size: 0.95rem;
+        width: 100%;
+        outline: none;
+        background: transparent;
+        color: #fff;
+    }
+    .header-search-input::placeholder { color: rgba(255, 255, 255, 0.6); }
+    .header-search-input:focus { background: transparent; box-shadow: none; }
+    
+    .voice-btn {
+        background: transparent;
+        border: none;
+        padding: 0 15px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #ccc;
+        transition: color 0.2s;
+    }
+    .voice-btn:hover { color: var(--accent-gold); }
 
-        /* 🌟 Live Search Dropdown Styles (Glass) */
-        #searchResultsDropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border-radius: 0 0 8px 8px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-top: none;
-            z-index: 1050;
-            display: none;
-            max-height: 350px;
-            overflow-y: auto;
-        }
-        .search-suggestion-item:hover {
-            background-color: rgba(240, 242, 242, 0.8);
-        }
+    .search-btn {
+        background: var(--accent-gold);
+        border: none;
+        padding: 0 22px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: 0.3s;
+        color: #0c0d12;
+        font-weight: bold;
+    }
+    .search-btn:hover { background: #e6c55c; }
 
-        .nav-action-btn {
-            color: white;
-            text-decoration: none;
-            padding: 8px 12px;
-            border: 1px solid transparent;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .nav-action-btn:hover { background: rgba(255, 255, 255, 0.1); color: white; }
-        .nav-action-btn strong { font-weight: 700; font-size: 1rem; }
+    /* 🌟 Crystal Live Search Dropdown */
+    #searchResultsDropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        z-index: 1050;
+        display: none;
+        max-height: 380px;
+        overflow-y: auto;
+    }
+    .search-suggestion-item:hover {
+        background-color: rgba(212, 175, 55, 0.08);
+    }
 
-        /* Sub Navbar (Glass) */
-        .sub-navbar {
-            background-color: rgba(35, 47, 62, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 8px 20px;
-            color: white;
-            font-size: 0.9rem;
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            white-space: nowrap;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .sub-navbar::-webkit-scrollbar { display: none; }
-        .sub-navbar a { color: white; text-decoration: none; padding: 4px 8px; border-radius: 4px; transition: 0.2s; }
-        .sub-navbar a:hover { background: rgba(255, 255, 255, 0.15); }
+    .nav-action-btn {
+        color: rgba(255, 255, 255, 0.85);
+        text-decoration: none;
+        padding: 8px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.03);
+    }
+    .nav-action-btn:hover { background: rgba(255, 255, 255, 0.08); color: white; border-color: rgba(212, 175, 55, 0.3); }
+    .nav-action-btn strong { font-weight: 600; font-size: 0.95rem; color: #fff; }
 
-        /* 📱 Mobile Specific Fixes for Header */
-        @media (max-width: 768px) {
-            .header-search-form { margin: 10px 0 0 0; width: 100%; order: 3; }
-            .mobile-header-block { flex-wrap: wrap; }
-            .nav-action-btn span { display: none; }
-            .nav-action-btn strong { font-size: 0.85rem; }
-            .sub-navbar { gap: 10px; padding: 8px 10px; }
-        }
+    /* Sub Navbar (Crystal Glass) */
+    .sub-navbar {
+        background-color: rgba(12, 13, 18, 0.75);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        padding: 10px 25px;
+        color: white;
+        font-size: 0.9rem;
+        display: flex;
+        gap: 25px;
+        overflow-x: auto;
+        white-space: nowrap;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sub-navbar::-webkit-scrollbar { display: none; }
+    .sub-navbar a { color: rgba(255,255,255,0.8); text-decoration: none; padding: 6px 12px; border-radius: 8px; transition: 0.3s; font-weight: 500; }
+    .sub-navbar a:hover { background: rgba(212, 175, 55, 0.15); color: var(--accent-gold); }
 
-        /* Offcanvas Sidebar (Glass) */
-        .offcanvas { border-right: none; box-shadow: 4px 0 25px rgba(0,0,0,0.1); background: rgba(255, 255, 255, 0.95) !important; backdrop-filter: blur(20px); }
-        .offcanvas-header { background-color: var(--nav-blue); padding: 20px; color: white; }
-        .mobile-menu-link { display: flex; align-items: center; padding: 16px 20px; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.05); transition: 0.3s; font-size: 1.05rem; }
-        .mobile-menu-link:hover { background-color: rgba(0,0,0,0.03); color: var(--primary-blue); padding-left: 25px; }
+    /* 📱 Mobile Header Fixes */
+    @media (max-width: 768px) {
+        .header-search-form { margin: 12px 0 0 0; width: 100%; order: 3; }
+        .mobile-header-block { flex-wrap: wrap; }
+        .nav-action-btn span { display: none; }
+        .nav-action-btn strong { font-size: 0.8rem; }
+        .sub-navbar { gap: 12px; padding: 8px 15px; }
+    }
 
-        /* Mobile Bottom Nav (Glass) */
-        .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); box-shadow: 0 -10px 20px rgba(0,0,0,0.05); display: flex; justify-content: space-around; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; z-index: 1050; border-top: 1px solid rgba(255,255,255,0.4); }
-        .nav-item-bottom { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94A3B8; font-size: 0.75rem; font-weight: 500; transition: 0.2s; letter-spacing: 0.5px; text-transform: uppercase; }
-        .nav-item-bottom.active { color: var(--primary-blue); font-weight: 700; }
-        .nav-icon { font-size: 1.4rem; margin-bottom: 4px; }
+    /* Offcanvas Sidebar (Crystal Glass) */
+    .offcanvas { border-right: none; box-shadow: 10px 0 40px rgba(0,0,0,0.15); background: rgba(255, 255, 255, 0.9) !important; backdrop-filter: blur(25px); }
+    .offcanvas-header { background-color: var(--primary-luxury); padding: 22px; color: white; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+    .mobile-menu-link { display: flex; align-items: center; padding: 16px 22px; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.04); transition: 0.3s; font-size: 1rem; }
+    .mobile-menu-link:hover { background-color: rgba(212, 175, 55, 0.08); color: var(--primary-luxury); padding-left: 28px; }
 
-        @media (max-width: 991px) { body { padding-bottom: 85px; } }
+    /* Mobile Bottom Nav (Crystal Glass) */
+    .mobile-bottom-nav { 
+        position: fixed; bottom: 0; left: 0; right: 0; 
+        background: rgba(255, 255, 255, 0.85); 
+        backdrop-filter: blur(20px); 
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+        display: flex; justify-content: space-around; 
+        padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; 
+        z-index: 1050; 
+        border-top: 1px solid rgba(255,255,255,0.8); 
+    }
+    .nav-item-bottom { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #64748B; font-size: 0.72rem; font-weight: 500; transition: 0.3s; letter-spacing: 0.5px; text-transform: uppercase; }
+    .nav-item-bottom.active { color: var(--primary-luxury); font-weight: 700; transform: translateY(-2px); }
+    .nav-icon { font-size: 1.4rem; margin-bottom: 4px; }
 
-        /* 🤖 PREMIUM AI ASSISTANT WIDGET */
-        .premium-ai-avatar {
-            position: fixed;
-            bottom: 95px; 
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);
-            box-shadow: 0 4px 15px rgba(142, 45, 226, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1060;
-            border: 2px solid #FFFFFF;
-            transition: transform 0.3s ease;
-            animation: aiPulseGlow 2s infinite;
-        }
-        .premium-ai-avatar:hover { transform: scale(1.1) rotate(5deg); }
-        .premium-ai-avatar svg { width: 32px; height: 32px; fill: #FFFFFF; animation: floatSparkle 3s ease-in-out infinite; }
+    @media (max-width: 991px) { body { padding-bottom: 90px; } }
 
-        @keyframes aiPulseGlow {
-            0% { box-shadow: 0 0 0 0 rgba(142, 45, 226, 0.6); }
-            70% { box-shadow: 0 0 0 15px rgba(142, 45, 226, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(142, 45, 226, 0); }
-        }
-        @keyframes floatSparkle {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-4px) scale(1.05); }
-            100% { transform: translateY(0px); }
-        }
-        
-        .ai-chat-box {
-            position: fixed;
-            bottom: 160px;
-            right: 20px;
-            width: 340px;
-            max-width: 90vw;
-            height: 480px;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            display: none;
-            flex-direction: column;
-            z-index: 1060;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-        .ai-chat-header { background: #00539C; color: white; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; }
-        .ai-chat-quick-actions { padding: 12px 15px; background: rgba(248, 250, 252, 0.8); border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .wa-btn { background: #25D366; color: white; text-decoration: none; padding: 10px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.3s; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); }
-        .wa-btn:hover { background: #1EBE55; color: white; }
-        .ai-chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: transparent; }
-        .msg-bubble { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; line-height: 1.4; }
-        .msg-user { background: #00539C; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg-ai { background: rgba(241, 245, 249, 0.85); color: #0F172A; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .ai-chat-input-area { padding: 12px; background: rgba(255,255,255,0.8); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 8px; }
-        .ai-chat-input-area input { flex-grow: 1; border: 1px solid #CBD5E1; border-radius: 25px; padding: 10px 15px; font-size: 0.85rem; outline: none; background: rgba(248, 250, 252, 0.8); }
-        .ai-send-btn { background: #00539C; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    /* 🤖 LUXURY AI & WHATSAPP WIDGETS */
+    .whatsapp-float {
+        position: fixed; right: 20px; bottom: 165px; z-index: 1060;
+        width: 56px; height: 56px; border-radius: 50%;
+        background: linear-gradient(135deg, #25D366, #128C7E);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 25px rgba(18,140,126,0.35);
+        cursor: pointer; transition: transform .2s ease;
+    }
+    .whatsapp-float:hover { transform: translateY(-5px) scale(1.08); }
+    .whatsapp-float svg { width: 30px; height: 30px; fill: #fff; }
+
+    .premium-ai-avatar {
+        position: fixed; bottom: 95px; right: 20px; width: 56px; height: 56px;
+        border-radius: 50%; background: linear-gradient(135deg, #D4AF37 0%, #aa771c 100%);
+        box-shadow: 0 10px 25px rgba(212, 175, 55, 0.35);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 1060; border: 2px solid #FFFFFF;
+        transition: transform 0.3s ease;
+    }
+    .premium-ai-avatar:hover { transform: scale(1.08) rotate(5deg); }
+    .premium-ai-avatar svg { width: 28px; height: 28px; fill: #0c0d12; }
+    
+    .ai-chat-box {
+        position: fixed; bottom: 165px; right: 20px; width: 350px; max-width: 90vw; height: 480px;
+        background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px); border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.18); display: none; flex-direction: column;
+        z-index: 1060; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    .ai-chat-header { background: var(--primary-luxury); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+    .ai-chat-quick-actions { padding: 12px 16px; background: rgba(248, 250, 252, 0.9); border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .wa-btn { background: #25D366; color: white; text-decoration: none; padding: 10px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.3s; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25); }
+    .wa-btn:hover { background: #1EBE55; color: white; }
+    .ai-chat-messages { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .msg-bubble { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 0.88rem; line-height: 1.5; }
+    .msg-user { background: var(--primary-luxury); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .msg-ai { background: rgba(241, 245, 249, 0.9); color: #0F172A; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(0,0,0,0.04); }
+    .ai-chat-input-area { padding: 14px; background: rgba(255,255,255,0.9); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 10px; }
+    .ai-chat-input-area input { flex-grow: 1; border: 1px solid #CBD5E1; border-radius: 30px; padding: 10px 18px; font-size: 0.88rem; outline: none; background: rgba(248, 250, 252, 0.8); }
+    .ai-send-btn { background: var(--primary-luxury); color: white; border: none; border-radius: 50%; width: 42px; height: 42px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    .ai-send-btn:hover { background: #232F3E; }
 
         /* 🌟 FLOATING WHATSAPP BUTTON CSS */
         .whatsapp-float {
