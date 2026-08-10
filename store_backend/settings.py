@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'store_backend.middleware.FixCSPMiddleware',
+    # 'store_backend.middleware.FixCSPMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'store_backend.middleware.BlockBadBotsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
