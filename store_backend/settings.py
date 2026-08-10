@@ -224,3 +224,10 @@ SECURE_SSL_REDIRECT = True
 
 # settings.py ke sabse neeche yeh add karein:
 SECURE_CSP_POLICY = False
+# Content Security Policy Settings
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'", "data:", "https://res.cloudinary.com", "https://images.unsplash.com")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://static.cloudflareinsights.com")
+CSP_CONNECT_SRC = ("'self'", "https://api.brevo.com", "https://www.cgsmart.in")
+CSP_FRAME_SRC = ("'self'", "https://www.google.com")
+CSP_WORKER_SRC = ("'self'",)
