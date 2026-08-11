@@ -6,6 +6,11 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from cloudinary_storage.storage import VideoMediaCloudinaryStorage, MediaCloudinaryStorage
 import uuid
 
+# 🌟 Image Processing ke liye required libraries
+from PIL import Image
+from io import BytesIO
+from django.core.files import File
+
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -59,6 +64,47 @@ class Product(models.Model):
         if self.mrp and self.price and self.mrp > self.price:
             return int(((self.mrp - self.price) / self.mrp) * 100)
         return 0
+
+    # 🌟 AUTOMATIC HD IMAGE RESIZER & SQUARE CROPPER
+    def save(self, *args, **kwargs):
+        # Image process sirf tab karein jab nayi image aayi ho (performance optimize karne ke liye)
+        if self.image and not self.image.name.endswith('_hd.jpg'):
+            try:
+                img = Image.open(self.image)
+                
+                # Agar PNG transparent hai toh RGB mein convert karein
+                if img.mode in ('RGBA', 'P'):
+                    img = img.convert('RGB')
+                
+                # Target Fixed Size: 800x800 pixels (High Definition Square)
+                output_size = (800, 800)
+                
+                # Center Crop to Square (Taaki photo kete nahi aur barabar fit ho)
+                width, height = img.size
+                min_dim = min(width, height)
+                
+                left = (width - min_dim) / 2
+                top = (height - min_dim) / 2
+                right = (width + min_dim) / 2
+                bottom = (height + min_dim) / 2
+                
+                img = img.crop((left, top, right, bottom))
+                img = img.resize(output_size, Image.Resampling.LANCZOS)
+                
+                # Save processed image to memory buffer
+                output = BytesIO()
+                img.save(output, format='JPEG', quality=95, optimize=True)
+                output.seek(0)
+                
+                # Naya file name set karein taaki loop na bane
+                original_name = self.image.name.rsplit('.', 1)[0]
+                new_image_name = f"{original_name}_hd.jpg"
+                
+                self.image = File(output, name=new_image_name)
+            except Exception as e:
+                print(f"Image processing error: {e}")
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
