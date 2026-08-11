@@ -43,44 +43,48 @@
 {% endif %}
 
 <!-- 🌟 2. MAIN LAYOUT (SIDEBAR + GRID) -->
-<div class="max-w-[1600px] mx-auto px-4 lg:px-8 mb-20 scroll-mt-[120px]" id="full-collection">
+<div class="max-w-[1600px] mx-auto px-4 lg:px-8 mb-20 scroll-mt-[120px]" id="full-collection" x-data="{ filtersOpen: false }">
     
     <!-- Mobile Filter Trigger -->
-    <div class="lg:hidden mb-6" x-data>
-        <button @click="$dispatch('open-filters')" class="w-full bg-white/70 backdrop-blur-md border border-white/80 rounded-xl py-3 font-bold text-gray-900 shadow-sm">
-            Filters & Sort ▾
+    <div class="lg:hidden mb-6">
+        <button @click="filtersOpen = !filtersOpen" class="w-full bg-white/70 backdrop-blur-md border border-white/80 rounded-xl py-3 font-bold text-gray-900 shadow-sm transition">
+            <span x-show="!filtersOpen">Filters & Sort ▾</span>
+            <span x-show="filtersOpen">Close Filters ▴</span>
         </button>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-8">
         
-        <!-- 🌟 LEFT SIDEBAR (DESKTOP FILTERS) -->
-        <aside class="hidden lg:block w-1/4 xl:w-1/5">
-            <div class="bg-white/45 backdrop-blur-xl border border-white/60 p-6 rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.05)] sticky top-32">
+        <!-- 🌟 LEFT SIDEBAR (FILTERS) -->
+        <!-- Added Alpine class to toggle visibility on mobile -->
+        <aside :class="filtersOpen ? 'block mb-6' : 'hidden'" class="lg:block w-full lg:w-1/4 xl:w-1/5">
+            <div class="bg-white/45 backdrop-blur-xl border border-white/60 p-6 rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.05)] lg:sticky lg:top-32">
                 <h5 class="font-bold text-lg text-gray-900 mb-6 uppercase tracking-wider">Filters</h5>
                 
-                <form method="GET" action="{% url 'home' %}#full-collection" class="space-y-6">
+                <!-- ⚠️ ADDED ID="filterForm" SO PAGINATION CAN USE THIS FORM -->
+                <form id="filterForm" method="GET" action="{% url 'home' %}#full-collection" class="space-y-6">
                     {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+                    <input type="hidden" name="page" id="pageInput" value="{{ products.number|default:1 }}">
                     
                     <div>
                         <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Category</label>
-                        <select name="category" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] outline-none transition">
+                        <select name="category" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] outline-none transition cursor-pointer">
                             <option value="">All Categories</option>
-                            {% for cat in categories %}<option value="{{ cat.id }}" {% if active_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>{% endfor %}
+                            {% for cat in categories %}<option value="{{ cat.id }}" {% if active_category|stringformat:"s" == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>{% endfor %}
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Brand</label>
-                        <select name="brand" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition">
+                        <select name="brand" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition cursor-pointer">
                             <option value="">Any Brand</option>
-                            {% for brand in brands %}<option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>{% endfor %}
+                            {% for brand in brands %}<option value="{{ brand.id }}" {% if active_brand|stringformat:"s" == brand.id|stringformat:"s" %}selected{% endif %}>{{ brand.name }}</option>{% endfor %}
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Sort By</label>
-                        <select name="sort" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition">
+                        <select name="sort" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition cursor-pointer">
                             <option value="">Featured</option>
                             <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
                             <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
@@ -94,7 +98,7 @@
                             <input type="number" name="max_price" class="w-1/2 bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" placeholder="Max" value="{{ max_price|default:'' }}">
                         </div>
                         <button type="submit" class="w-full bg-gradient-to-r from-gray-900 to-slate-800 text-[#D4AF37] font-bold py-3 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition duration-300 border border-[#D4AF37]/30">Apply Filters</button>
-                        <a href="{% url 'home' %}" class="block text-center text-sm text-slate-500 hover:text-slate-800 font-medium mt-3 transition">Clear All</a>
+                        <a href="{% url 'home' %}#full-collection" class="block text-center text-sm text-slate-500 hover:text-slate-800 font-medium mt-3 transition">Clear All</a>
                     </div>
                 </form>
             </div>
@@ -108,14 +112,14 @@
                     {% elif active_category %}Category Products
                     {% else %}Trending Essentials{% endif %}
                 </h4>
-                <span class="text-sm text-gray-500 font-medium">Showing {{ products|length }} results</span>
+                <span class="text-sm text-gray-500 font-medium">Showing results</span>
             </div>
 
             <!-- Grid Setup -->
             <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-12">
                 {% for product in products %}
                 
-                <!-- 🌟 COMPACT SMART CARD (Tailwind Crystal Glass) -->
+                <!-- 🌟 COMPACT SMART CARD -->
                 <div class="relative flex flex-col bg-white/40 backdrop-blur-2xl border border-white/70 rounded-2xl p-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:bg-white/75 hover:border-[#D4AF37]/50 hover:shadow-[0_25px_50px_rgba(0,0,0,0.12),0_0_25px_rgba(212,175,55,0.18)] hover:-translate-y-2 transition-all duration-400">
                     
                     {% if product.stock and product.stock < 5 %}
@@ -177,10 +181,48 @@
                     <span class="text-6xl opacity-50">🛒</span>
                     <h4 class="mt-4 text-xl font-bold text-gray-900">No products found.</h4>
                     <p class="text-gray-500">Try adjusting your filters or search query.</p>
-                    <a href="{% url 'home' %}" class="inline-block mt-4 px-6 py-2 border border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-900 hover:text-white transition">Clear all filters</a>
+                    <a href="{% url 'home' %}#full-collection" class="inline-block mt-4 px-6 py-2 border border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-900 hover:text-white transition">Clear all filters</a>
                 </div>
                 {% endfor %}
             </div>
+
+            <!-- 🌟 NEW: SMART PAGINATION (Preserves Filters) -->
+            {% if products.has_other_pages %}
+            <div class="flex flex-wrap justify-center items-center gap-2 mt-8">
+                {% if products.has_previous %}
+                <button onclick="goToPage({{ products.previous_page_number }})" class="bg-white border border-gray-300 text-gray-700 hover:bg-[#D4AF37] hover:text-white hover:border-[#D4AF37] font-bold px-4 py-2 rounded-xl transition shadow-sm text-sm">
+                    &laquo; Prev
+                </button>
+                {% endif %}
+
+                {% for i in products.paginator.page_range %}
+                    {% if products.number == i %}
+                        <span class="bg-[#D4AF37] text-white border border-[#D4AF37] font-extrabold px-4 py-2 rounded-xl shadow-md text-sm">{{ i }}</span>
+                    {% else %}
+                        <button onclick="goToPage({{ i }})" class="bg-white border border-gray-300 text-gray-700 hover:bg-[#D4AF37] hover:text-white hover:border-[#D4AF37] font-bold px-4 py-2 rounded-xl transition shadow-sm text-sm">
+                            {{ i }}
+                        </button>
+                    {% endif %}
+                {% endfor %}
+
+                {% if products.has_next %}
+                <button onclick="goToPage({{ products.next_page_number }})" class="bg-white border border-gray-300 text-gray-700 hover:bg-[#D4AF37] hover:text-white hover:border-[#D4AF37] font-bold px-4 py-2 rounded-xl transition shadow-sm text-sm">
+                    Next &raquo;
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- JavaScript to handle Pagination clicks and attach current Filters -->
+            <script>
+                function goToPage(pageNumber) {
+                    const form = document.getElementById('filterForm');
+                    const pageInput = document.getElementById('pageInput');
+                    pageInput.value = pageNumber;
+                    form.submit();
+                }
+            </script>
+            {% endif %}
+
         </main>
     </div>
 </div>
