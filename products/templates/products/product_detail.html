@@ -2,7 +2,6 @@
 {% load static %}
 {% load cloudinary_filters %}
 
-<!-- 🌟 Product Specific SEO -->
 {% block title %}{{ product.name }} - Buy Online at CGS MART{% endblock %}
 {% block meta_description %}Buy {{ product.name }} online at the best price. {{ product.description|default:""|truncatechars:100 }}{% endblock %}
 {% block og_title %}{{ product.name }} | CGS MART{% endblock %}
@@ -10,187 +9,79 @@
 {% block og_image %}{% if product.image %}{{ product.image.url }}{% endif %}{% endblock %}
 
 {% block content %}
-<style>
-    /* 🌟 PREMIUM STICKY BOTTOM CART FOR MOBILE (Crystal Glass Style) */
-    .sticky-bottom-cart {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(25px) saturate(200%);
-        -webkit-backdrop-filter: blur(25px) saturate(200%);
-        padding: 12px 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.9);
-        z-index: 1050;
-        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
-        transform: translateY(100%);
-        animation: slideUp 0.5s forwards ease-out;
-    }
-    
-    @keyframes slideUp {
-        to { transform: translateY(0); }
-    }
 
-    .sticky-price {
-        font-family: 'Jost', sans-serif;
-        color: #0F172A;
-        font-size: 1.4rem;
-        font-weight: 700;
-        line-height: 1.1;
-    }
-
-    @media (max-width: 768px) {
-        body { padding-bottom: 80px; }
-    }
-
-    /* 🌟 IMAGE ZOOM CSS */
-    .zoom-container {
-        position: relative;
-        overflow: hidden;
-        cursor: crosshair;
-        height: 450px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 1rem;
-        background: rgba(255, 255, 255, 0.4);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.7);
-    }
-    .zoom-image {
-        max-height: 100%;
-        max-width: 100%;
-        object-fit: contain;
-        mix-blend-mode: multiply;
-        transition: transform 0.2s ease-out;
-    }
-
-    /* 💎 CRYSTAL GLASS CARDS & CONTAINERS OVERRIDE */
-    .card, .border-0, .bg-white, .bg-light, .review-card, .amazon-card {
-        background: rgba(255, 255, 255, 0.65) !important;
-        backdrop-filter: blur(25px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.9) !important;
-        border-radius: 20px !important;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
-        color: #0f172a !important;
-    }
-
-    /* 🌟 AMAZON STYLE PRODUCT CARDS (For Similar Products) */
-    .amazon-card {
-        padding: 15px;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .amazon-card:hover { 
-        transform: translateY(-5px);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1), 0 0 20px rgba(212, 175, 55, 0.2) !important;
-        border-color: rgba(212, 175, 55, 0.5) !important;
-    }
-    .img-box-amazon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.4);
-        border-radius: 12px;
-        overflow: hidden;
-        margin-bottom: 15px;
-    }
-    .img-box-amazon img {
-        mix-blend-mode: multiply;
-        transition: transform 0.4s ease;
-    }
-    .amazon-card:hover .img-box-amazon img { transform: scale(1.05); }
-    .prod-title {
-        font-size: 1rem;
-        font-weight: 500;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        line-height: 1.4;
-        margin-bottom: 6px;
-        color: #0F1111;
-    }
-</style>
-
-<div class="container py-5" style="max-width: 1200px;">
-    <div class="row g-5">
-        
-        <!-- 📸 Product Image Gallery (With Hover Zoom & Click Modal) -->
-        <div class="col-lg-5" data-aos="fade-right" data-aos-duration="800">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-2">
-                {% if product.image %}
-                    <!-- Hover Zoom Container -->
-                    <div class="zoom-container" id="zoomContainer" data-bs-toggle="modal" data-bs-target="#imageModal" title="Click to view full screen">
-                        <img src="{{ product.image.url|optimize_img }}" alt="{{ product.name }}" class="zoom-image" id="zoomImage" loading="lazy">
-                    </div>
-                    <!-- Hint Text -->
-                    <div class="text-center mt-2 text-muted small fw-medium">
-                        🔍 Hover to zoom | Click to expand
-                    </div>
-                {% else %}
-                    <div class="zoom-container">
-                        <img src="https://placehold.co/400x400/E2E8F0/64748B?text=No+Image" class="img-fluid rounded-3" loading="lazy">
-                    </div>
-                {% endif %}
-            </div>
+    <!-- 📸 Product Image Gallery (With Hover Zoom & Click Modal) -->
+    <div class="col-lg-5" data-aos="fade-right" data-aos-duration="800">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-2">
+            {% if product.image %}
+                <!-- Hover Zoom Container -->
+                <div class="zoom-container" id="zoomContainer" data-bs-toggle="modal" data-bs-target="#imageModal" title="Click to view full screen">
+                    <img src="{{ product.image.url|optimize_img }}" alt="{{ product.name }}" class="zoom-image" id="zoomImage" loading="lazy">
+                </div>
+                <!-- Hint Text -->
+                <div class="text-center mt-2 text-muted small fw-medium">
+                    🔍 Hover to zoom | Click to expand
+                </div>
+            {% else %}
+                <div class="zoom-container">
+                    <img src="[https://placehold.co/400x400/E2E8F0/64748B?text=No+Image](https://placehold.co/400x400/E2E8F0/64748B?text=No+Image)" class="img-fluid rounded-3" loading="lazy" alt="Placeholder image">
+                </div>
+            {% endif %}
         </div>
+    </div>
 
-        <!-- 📝 Product Information -->
-        <div class="col-lg-7" data-aos="fade-left" data-aos-duration="800">
-            <div class="ps-lg-4">
-                
-                <!-- Brand & Name -->
-                {% if product.brand %}
-                    <span class="badge bg-dark mb-2 px-3 py-2 rounded-pill text-uppercase letter-spacing-1" data-aos="fade-down" data-aos-delay="100">{{ product.brand.name }}</span>
-                {% endif %}
-                <h1 class="fw-bold text-dark mb-2" style="font-family: 'Jost', sans-serif;" data-aos="fade-up" data-aos-delay="150">{{ product.name }}</h1>
-                
-                <!-- Average Rating Display -->
-                <div class="d-flex align-items-center mb-3" data-aos="fade-up" data-aos-delay="200">
-                    <span class="text-warning fs-5" style="letter-spacing: 2px;">★</span>
-                    <span class="fw-bold text-dark ms-2 fs-5">{{ avg_rating|default:"0.0" }}</span>
-                    <span class="text-muted ms-2">({{ review_count }} Reviews)</span>
+    <!-- 📝 Product Information -->
+    <div class="col-lg-7" data-aos="fade-left" data-aos-duration="800">
+        <div class="ps-lg-4">
+            
+            <!-- Brand & Name -->
+            {% if product.brand %}
+                <span class="badge bg-dark mb-2 px-3 py-2 rounded-pill text-uppercase letter-spacing-1" data-aos="fade-down" data-aos-delay="100">{{ product.brand.name }}</span>
+            {% endif %}
+            <h1 class="fw-bold text-dark mb-2" style="font-family: 'Jost', sans-serif;" data-aos="fade-up" data-aos-delay="150">{{ product.name }}</h1>
+            
+            <!-- Average Rating Display -->
+            <div class="d-flex align-items-center mb-3" data-aos="fade-up" data-aos-delay="200">
+                <span class="text-warning fs-5" style="letter-spacing: 2px;">★</span>
+                <span class="fw-bold text-dark ms-2 fs-5">{{ avg_rating|default:"0.0" }}</span>
+                <span class="text-muted ms-2">({{ review_count }} Reviews)</span>
+            </div>
+            
+            <p class="text-muted fs-6 mb-4" style="line-height: 1.8;" data-aos="fade-up" data-aos-delay="250">
+                {{ product.description|default:"No description available for this premium product yet." }}
+            </p>
+
+            <!-- ⚡ Blinkit Style Superfast Local Delivery Highlight -->
+            <div class="alert p-3 mb-3 rounded-3 border shadow-sm d-flex align-items-center gap-3" style="background-color: rgba(240, 253, 244, 0.8); border-color: #BBF7D0 !important;" data-aos="fade-up" data-aos-delay="260">
+                <span class="fs-2">⚡</span>
+                <div>
+                    <div class="fw-bold text-success" style="font-size: 0.95rem;">Superfast Local Delivery</div>
+                    <div class="text-secondary small">Get it in <strong class="text-dark">10 Minutes to 1 Hour</strong> at your doorstep in Nohar!</div>
                 </div>
-                
-                <p class="text-muted fs-6 mb-4" style="line-height: 1.8;" data-aos="fade-up" data-aos-delay="250">
-                    {{ product.description|default:"No description available for this premium product yet." }}
-                </p>
+            </div>
 
-                <!-- ⚡ Blinkit Style Superfast Local Delivery Highlight -->
-                <div class="alert p-3 mb-3 rounded-3 border shadow-sm d-flex align-items-center gap-3" style="background-color: rgba(240, 253, 244, 0.8); border-color: #BBF7D0 !important;" data-aos="fade-up" data-aos-delay="260">
-                    <span class="fs-2">⚡</span>
-                    <div>
-                        <div class="fw-bold text-success" style="font-size: 0.95rem;">Superfast Local Delivery</div>
-                        <div class="text-secondary small">Get it in <strong class="text-dark">10 Minutes to 1 Hour</strong> at your doorstep in Nohar!</div>
-                    </div>
+            <!-- 📍 Dynamic Multi-City Delivery & Pincode Checker -->
+            <div class="card p-3 my-3 bg-light border-0 rounded-3 shadow-sm" data-aos="fade-up" data-aos-delay="270">
+                <label for="pincodeInput" class="form-label fw-bold small text-dark mb-1">📦 Delivery & Branch Availability</label>
+                <div class="input-group input-group-sm">
+                    <input type="text" id="pincodeInput" class="form-control" placeholder="Enter 6-digit Pincode" maxlength="6" autocomplete="postal-code">
+                    <button class="btn btn-dark fw-bold px-3" type="button" id="checkPincodeBtn">Check</button>
                 </div>
+                <div id="pincodeResult" class="small mt-2 fw-semibold" style="display: none;"></div>
+            </div>
 
-                <!-- 📍 Dynamic Multi-City Delivery & Pincode Checker -->
-                <div class="card p-3 my-3 bg-light border-0 rounded-3 shadow-sm" data-aos="fade-up" data-aos-delay="270">
-                    <label for="pincodeInput" class="form-label fw-bold small text-dark mb-1">📦 Delivery & Branch Availability</label>
-                    <div class="input-group input-group-sm">
-                        <input type="text" id="pincodeInput" class="form-control" placeholder="Enter 6-digit Pincode" maxlength="6">
-                        <button class="btn btn-dark fw-bold px-3" type="button" id="checkPincodeBtn">Check</button>
-                    </div>
-                    <div id="pincodeResult" class="small mt-2 fw-semibold" style="display: none;"></div>
-                </div>
+            <hr class="my-4 border-secondary opacity-25">
 
-                <hr class="my-4 border-secondary opacity-25">
-
-                <!-- 🛒 Add to Cart Form -->
-                <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST" class="p-4 rounded-4 shadow-sm border" style="background: rgba(255, 255, 255, 0.75) !important; border-color: rgba(255,255,255,0.9) !important;" data-aos="fade-up" data-aos-delay="300">
+            <!-- 🛒 Add to Cart Form (Integrated with Modern AJAX / Variant Handlers in base.html) -->
+            <div class="p-4 rounded-4 shadow-sm border add-to-cart-form" data-product-id="{{ product.id }}" style="background: rgba(255, 255, 255, 0.75) !important; border-color: rgba(255,255,255,0.9) !important;" data-aos="fade-up" data-aos-delay="300">
+                <form id="addToCartForm" action="{% url 'add_to_cart' product.id %}" method="POST">
                     {% csrf_token %}
                     
                     {% if product.variants.exists %}
                         <!-- Varieties (Variants) -->
                         <h5 class="fw-bold mb-3">Select Variety:</h5>
                         <div class="mb-4">
-                            <select name="variant_id" id="variantSelect" class="form-select form-select-lg border-2 shadow-none focus-ring" required onchange="updatePrice()">
+                            <select name="variant_id" id="variantSelect" class="form-select form-select-lg border-2 shadow-none focus-ring variant-selector" data-product-id="{{ product.id }}" required>
                                 <option value="" disabled selected>-- Choose Size/Weight --</option>
                                 {% for variant in product.variants.all %}
                                     <option value="{{ variant.id }}" data-price="{{ variant.price }}" {% if variant.stock == 0 %}disabled{% endif %}>
@@ -199,17 +90,18 @@
                                     </option>
                                 {% endfor %}
                             </select>
+                            <div id="error-msg-{{ product.id }}" class="invalid-feedback" style="display: none;">Please select a variety first.</div>
                         </div>
                         
                         <div class="d-flex align-items-baseline mb-4">
                             <span class="fs-5 text-muted me-2">Price:</span>
-                            <span class="fs-2 fw-bold text-dark" id="displayPrice">₹ --</span>
+                            <span class="fs-2 fw-bold text-dark" id="price-display-{{ product.id }}">₹ --</span>
                         </div>
                         
                     {% else %}
                         <!-- Normal Product -->
                         <div class="d-flex align-items-baseline mb-4">
-                            <span class="fs-1 fw-bold text-dark">₹{{ product.price }}</span>
+                            <span class="fs-1 fw-bold text-dark" id="price-display-{{ product.id }}">₹{{ product.price }}</span>
                             {% if product.mrp and product.mrp > product.price %}
                                 <span class="fs-5 text-muted text-decoration-line-through ms-3">₹{{ product.mrp }}</span>
                                 <span class="badge bg-danger ms-3 fs-6">{{ product.discount_percentage }}% OFF</span>
@@ -217,13 +109,19 @@
                         </div>
                     {% endif %}
 
-                    <!-- 🌟 Buttons (Desktop & Tablet) -->
+                    <!-- Quantity Selector -->
+                    <div class="mb-4 d-flex align-items-center gap-3">
+                        <label class="fw-semibold text-muted small">Quantity:</label>
+                        <input type="number" name="quantity" value="1" min="1" max="10" class="form-control text-center fw-bold" style="width: 90px; padding: 8px;">
+                    </div>
+
+                    <!-- 🌟 Modern AJAX Action Buttons -->
                     <div class="d-flex gap-2 mt-4 flex-wrap">
-                        <button type="submit" class="btn btn-lg flex-grow-1 fw-bold text-uppercase rounded-3 shadow-sm" style="background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%); color: #fff; border: 1px solid rgba(212,175,55,0.3); letter-spacing: 1px;">
+                        <button type="button" class="btn btn-lg flex-grow-1 fw-bold text-uppercase rounded-3 shadow-sm add-to-cart-ajax" style="background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%); color: #fff; border: 1px solid rgba(212,175,55,0.3); letter-spacing: 1px;">
                             🛒 Add To Cart
                         </button>
                         
-                        <button type="submit" name="buy_now" value="true" class="btn btn-lg flex-grow-1 fw-bold text-uppercase rounded-3 shadow-sm" style="background-color: #FFA41C; color: #0F1111; letter-spacing: 1px; border: 1px solid #FF8F00;">
+                        <button type="button" class="btn btn-lg flex-grow-1 fw-bold text-uppercase rounded-3 shadow-sm buy-now-btn" style="background-color: #FFA41C; color: #0F1111; letter-spacing: 1px; border: 1px solid #FF8F00;">
                             ⚡ Buy Now
                         </button>
                         
@@ -232,305 +130,147 @@
                         </a>
                     </div>
                 </form>
+            </div>
 
-                <!-- 🛡️ TRUST SIGNALS & SECURE BADGES -->
-                <div class="mt-4 p-3 rounded-3 border" data-aos="fade-up" data-aos-delay="400">
-                    <p class="small text-muted fw-bold mb-2 text-center text-uppercase" style="letter-spacing: 1px;">Guaranteed Safe & Secure Checkout</p>
-                    <div class="d-flex justify-content-center gap-3 align-items-center flex-wrap">
-                        <div class="badge bg-white text-dark border px-3 py-2 fs-6 shadow-sm">🔒 256-bit SSL Secure</div>
-                        <div class="badge bg-white text-dark border px-3 py-2 fs-6 shadow-sm">💳 UPI / Cards / COD</div>
-                        <div class="badge bg-white text-dark border px-3 py-2 fs-6 shadow-sm">✅ Verified Product</div>
-                    </div>
+            <!-- 🛡️ TRUST SIGNALS & SECURE BADGES -->
+            <div class="mt-4 p-3 rounded-3 border" data-aos="fade-up" data-aos-delay="400">
+                <p class="small text-muted fw-bold mb-2 text-center text-uppercase" style="letter-spacing: 1px;">Guaranteed Safe & Secure Checkout</p>
+                <div class="d-flex justify-content-center gap-3 align-items-center flex-wrap">
+                    <div class="badge bg-white text-dark border px-3 py-2 fs-6 shadow-sm">🔒 256-bit SSL Secure</div>
+                    <div class="badge bg-white text-dark border px-3 py-2 fs-6 shadow-sm">💳 UPI / Cards / COD</div>
+                    <div class="badge bg-white text-dark border px-3 py-2 fs-6 shadow-sm">✅ Verified Product</div>
                 </div>
+            </div>
 
-                <!-- Delivery Features -->
-                <div class="d-flex gap-4 mt-4 pt-3 border-top" data-aos="fade-up" data-aos-delay="500">
-                    <div class="d-flex align-items-center text-muted">
-                        <span class="fs-4 me-2">⚡</span> <small class="fw-medium">10 Mins Delivery</small>
-                    </div>
-                    <div class="d-flex align-items-center text-muted">
-                        <span class="fs-4 me-2">🛡️</span> <small class="fw-medium">Secure Payment</small>
-                    </div>
-                    <div class="d-flex align-items-center text-muted">
-                        <span class="fs-4 me-2">✅</span> <small class="fw-medium">Verified Quality</small>
-                    </div>
+            <!-- Delivery Features -->
+            <div class="d-flex gap-4 mt-4 pt-3 border-top" data-aos="fade-up" data-aos-delay="500">
+                <div class="d-flex align-items-center text-muted">
+                    <span class="fs-4 me-2">⚡</span> <small class="fw-medium">10 Mins Delivery</small>
                 </div>
+                <div class="d-flex align-items-center text-muted">
+                    <span class="fs-4 me-2">🛡️</span> <small class="fw-medium">Secure Payment</small>
+                </div>
+                <div class="d-flex align-items-center text-muted">
+                    <span class="fs-4 me-2">✅</span> <small class="fw-medium">Verified Quality</small>
+                </div>
+            </div>
 
-                <!-- ⭐ CUSTOMER REVIEWS SECTION -->
-                <div class="mt-5 pt-4 border-top" data-aos="fade-up">
-                    <h4 class="fw-bold mb-4">Customer Reviews ({{ review_count }})</h4>
-                    
-                    {% if user.is_authenticated %}
-                        <div class="p-4 rounded-4 shadow-sm border mb-4" data-aos="fade-up" data-aos-delay="100">
-                            <h6 class="fw-bold mb-3">Write a Review</h6>
-                            <form method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small fw-medium">Rating (1 to 5 Stars)</label>
-                                    <select name="rating" class="form-select border-2 shadow-none" required>
-                                        <option value="5">⭐⭐⭐⭐⭐ (5/5) - Excellent!</option>
-                                        <option value="4">⭐⭐⭐⭐ (4/5) - Very Good</option>
-                                        <option value="3">⭐⭐⭐ (3/5) - Average</option>
-                                        <option value="2">⭐⭐ (2/5) - Poor</option>
-                                        <option value="1">⭐ (1/5) - Terrible</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small fw-medium">Your Comment (Optional)</label>
-                                    <textarea name="comment" class="form-control border-2 shadow-none" rows="3" placeholder="What did you like about this product?"></textarea>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label text-muted small fw-medium">Upload Product Photo (Optional)</label>
-                                    <input type="file" name="review_image" class="form-control border-2 shadow-none" accept="image/*">
-                                </div>
+            <!-- ⭐ CUSTOMER REVIEWS SECTION -->
+            <div class="mt-5 pt-4 border-top" data-aos="fade-up">
+                <h4 class="fw-bold mb-4">Customer Reviews ({{ review_count }})</h4>
+                
+                {% if user.is_authenticated %}
+                    <div class="p-4 rounded-4 shadow-sm border mb-4" data-aos="fade-up" data-aos-delay="100">
+                        <h6 class="fw-bold mb-3">Write a Review</h6>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-medium">Rating (1 to 5 Stars)</label>
+                                <select name="rating" class="form-select border-2 shadow-none" required>
+                                    <option value="5">⭐⭐⭐⭐⭐ (5/5) - Excellent!</option>
+                                    <option value="4">⭐⭐⭐⭐ (4/5) - Very Good</option>
+                                    <option value="3">⭐⭐⭐ (3/5) - Average</option>
+                                    <option value="2">⭐⭐ (2/5) - Poor</option>
+                                    <option value="1">⭐ (1/5) - Terrible</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-medium">Your Comment (Optional)</label>
+                                <textarea name="comment" class="form-control border-2 shadow-none" rows="3" placeholder="What did you like about this product?" autocomplete="off"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-medium">Upload Product Photo (Optional)</label>
+                                <input type="file" name="review_image" class="form-control border-2 shadow-none" accept="image/*">
+                            </div>
 
-                                <button type="submit" class="btn btn-dark fw-bold px-4">Submit Review</button>
-                            </form>
-                        </div>
-                    {% else %}
-                        <div class="alert alert-light border text-center p-4 rounded-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-                            Please <a href="{% url 'login' %}" class="fw-bold text-primary">Login</a> to leave a review for this product.
-                        </div>
-                    {% endif %}
+                            <button type="submit" class="btn btn-dark fw-bold px-4">Submit Review</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="alert alert-light border text-center p-4 rounded-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                        Please <a href="{% url 'login' %}" class="fw-bold text-primary">Login</a> to leave a review for this product.
+                    </div>
+                {% endif %}
 
-                    <!-- Display Existing Reviews -->
-                    <div class="reviews-list mt-4">
-                        {% for review in reviews %}
-                            <div class="review-card p-4 rounded-4 border mb-3 shadow-sm" data-aos="fade-up" data-aos-delay="100">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div class="fw-bold text-dark fs-5">
-                                        {{ review.user.first_name|default:review.user.username }} 
-                                        <span class="badge bg-success ms-2" style="font-size: 0.7rem;">Verified Buyer</span>
-                                    </div>
-                                    <div class="text-muted small">{{ review.created_at|date:"M d, Y" }}</div>
+                <!-- Display Existing Reviews -->
+                <div class="reviews-list mt-4">
+                    {% for review in reviews %}
+                        <div class="review-card p-4 rounded-4 border mb-3 shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="fw-bold text-dark fs-5">
+                                    {{ review.user.first_name|default:review.user.username }} 
+                                    <span class="badge bg-success ms-2" style="font-size: 0.7rem;">Verified Buyer</span>
                                 </div>
-                                <div class="text-warning mb-2" style="font-size: 1.1rem; letter-spacing: 2px;">
-                                    {% if review.rating == 5 %}★★★★★
-                                    {% elif review.rating == 4 %}★★★★<span class="text-light">★</span>
-                                    {% elif review.rating == 3 %}★★★<span class="text-light">★★</span>
-                                    {% elif review.rating == 2 %}★★<span class="text-light">★★★</span>
-                                    {% else %}★<span class="text-light">★★★★</span>
-                                    {% endif %}
-                                </div>
-                                {% if review.comment %}
-                                    <p class="text-muted mb-2" style="line-height: 1.6;">"{{ review.comment }}"</p>
-                                {% endif %}
-                                
-                                {% if review.image %}
-                                    <div class="mt-3">
-                                        <a href="{{ review.image.url }}" target="_blank">
-                                            <img src="{{ review.image.url }}" alt="Customer Photo" class="img-thumbnail rounded" style="width: 100px; height: 100px; object-fit: cover;">
-                                        </a>
-                                    </div>
+                                <div class="text-muted small">{{ review.created_at|date:"M d, Y" }}</div>
+                            </div>
+                            <div class="text-warning mb-2" style="font-size: 1.1rem; letter-spacing: 2px;">
+                                {% if review.rating == 5 %}★★★★★
+                                {% elif review.rating == 4 %}★★★★<span class="text-light">★</span>
+                                {% elif review.rating == 3 %}★★★<span class="text-light">★★</span>
+                                {% elif review.rating == 2 %}★★<span class="text-light">★★★</span>
+                                {% else %}★<span class="text-light">★★★★</span>
                                 {% endif %}
                             </div>
-                        {% empty %}
-                            <p class="text-muted font-italic" data-aos="fade-up">No reviews yet. Be the first one to review this product!</p>
-                        {% endfor %}
-                    </div>
+                            {% if review.comment %}
+                                <p class="text-muted mb-2" style="line-height: 1.6;">"{{ review.comment }}"</p>
+                            {% endif %}
+                            
+                            {% if review.image %}
+                                <div class="mt-3">
+                                    <a href="{{ review.image.url }}" target="_blank">
+                                        <img src="{{ review.image.url }}" alt="Customer Photo" class="img-thumbnail rounded" style="width: 100px; height: 100px; object-fit: cover;" loading="lazy">
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <p class="text-muted font-italic" data-aos="fade-up">No reviews yet. Be the first one to review this product!</p>
+                    {% endfor %}
                 </div>
-
             </div>
+
         </div>
     </div>
 </div>
-
-<!-- 🌟 SIMILAR PRODUCTS RECOMMENDATION SECTION -->
 {% if similar_products %}
-<div class="container mb-5" style="max-width: 1200px;" data-aos="fade-up">
-    <hr class="mb-5 border-secondary opacity-25">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold m-0" style="font-family: 'Jost', sans-serif; letter-spacing: 1px; color: #0F1111;">Similar Products You May Like</h3>
-        <a href="{% url 'home' %}?category={{ product.category.id }}" class="text-primary text-decoration-none fw-bold small">View All →</a>
-    </div>
-    
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
-        {% for sim_prod in similar_products %}
-        <div class="col">
-            <div class="amazon-card">
-                <a href="{% url 'product_detail' sim_prod.id %}" class="text-decoration-none d-flex flex-column flex-grow-1">
-                    <div class="img-box-amazon" style="height: 200px;">
-                        {% if sim_prod.image %}
-                            <img src="{{ sim_prod.image.url }}" alt="{{ sim_prod.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy">
-                        {% else %}
-                            <img src="https://placehold.co/400x500/F8F8F8/565959?text={{ sim_prod.name|urlencode }}" alt="{{ sim_prod.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy">
-                        {% endif %}
-                    </div>
-                    <div class="prod-brand mt-2" style="font-size: 0.75rem; color: #565959; text-transform: uppercase; font-weight: 600;">{{ sim_prod.brand.name|default:"Premium" }}</div>
-                    <h2 class="prod-title">{{ sim_prod.name }}</h2>
-                    <div class="prod-price mt-auto pt-2">
-                        <span class="fs-4 fw-bold text-dark">₹{{ sim_prod.price }}</span>
-                        {% if sim_prod.mrp and sim_prod.mrp > sim_prod.price %}
-                            <span class="small text-muted text-decoration-line-through ms-2">₹{{ sim_prod.mrp }}</span>
-                        {% endif %}
-                    </div>
-                </a>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
 
-<!-- 📱 STICKY ADD TO CART (Only visible on Mobile screens) -->
-<div class="sticky-bottom-cart d-block d-md-none">
-    <div class="d-flex justify-content-between align-items-center">
-        <!-- Price Section -->
-        <div class="me-2">
-            <span class="text-muted d-block" style="font-size: 0.70rem; text-transform: uppercase; letter-spacing: 1px;">Total Price</span>
-            <span class="sticky-price fs-5" id="stickyPrice">₹{{ product.price }}</span>
+<div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
+    {% for sim_prod in similar_products %}
+    <div class="col">
+        <div class="amazon-card">
+            <a href="{% url 'product_detail' sim_prod.id %}" class="text-decoration-none d-flex flex-column flex-grow-1">
+                <div class="img-box-amazon" style="height: 200px;">
+                    {% if sim_prod.image %}
+                        <img src="{{ sim_prod.image.url }}" alt="{{ sim_prod.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy">
+                    {% else %}
+                        <img src="[https://placehold.co/400x500/F8F8F8/565959?text=](https://placehold.co/400x500/F8F8F8/565959?text=){{ sim_prod.name|urlencode }}" alt="{{ sim_prod.name }}" style="max-height: 100%; max-width: 100%; object-fit: contain;" loading="lazy">
+                    {% endif %}
+                </div>
+                <div class="prod-brand mt-2" style="font-size: 0.75rem; color: #565959; text-transform: uppercase; font-weight: 600;">{{ sim_prod.brand.name|default:"Premium" }}</div>
+                <h2 class="prod-title">{{ sim_prod.name }}</h2>
+                <div class="prod-price mt-auto pt-2">
+                    <span class="fs-4 fw-bold text-dark">₹{{ sim_prod.price }}</span>
+                    {% if sim_prod.mrp and sim_prod.mrp > sim_prod.price %}
+                        <span class="small text-muted text-decoration-line-through ms-2">₹{{ sim_prod.mrp }}</span>
+                    {% endif %}
+                </div>
+            </a>
         </div>
+    </div>
+    {% endfor %}
+</div>
+    <!-- Smart Submit Buttons -->
+    <div class="d-flex gap-2 flex-grow-1 justify-content-end">
+        <button type="button" class="btn fw-bold px-3 py-2 rounded-3 text-white shadow-sm add-to-cart-ajax" style="background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%); font-size: 0.85rem;">
+            Add
+        </button>
         
-        <!-- Smart Submit Buttons -->
-        <div class="d-flex gap-2 flex-grow-1 justify-content-end">
-            <!-- Normal Add To Cart -->
-            <button type="submit" form="addToCartForm" class="btn fw-bold px-3 py-2 rounded-3 text-white shadow-sm" style="background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%); font-size: 0.85rem;">
-                Add
-            </button>
-            
-            <button type="submit" form="addToCartForm" name="buy_now" value="true" class="btn fw-bold px-3 py-2 rounded-3 shadow-sm" style="background-color: #FFA41C; color: #0F1111; border: 1px solid #FF8F00; font-size: 0.85rem; white-space: nowrap;">
-                ⚡ Buy Now
-            </button>
-        </div>
+        <button type="button" class="btn fw-bold px-3 py-2 rounded-3 shadow-sm buy-now-btn" style="background-color: #FFA41C; color: #0F1111; border: 1px solid #FF8F00; font-size: 0.85rem; white-space: nowrap;">
+            ⚡ Buy Now
+        </button>
     </div>
 </div>
+{% if product.image %}  
 
-<!-- 🖼️ FULL SCREEN IMAGE MODAL -->
-{% if product.image %}
-<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
-    <div class="modal-content bg-transparent border-0">
-      <div class="modal-header border-0 pb-0 justify-content-end">
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="background-color: #fff; border-radius: 50%; opacity: 1; padding: 10px; margin: 10px;"></button>
-      </div>
-      <div class="modal-body text-center p-0">
-        <img src="{{ product.image.url|optimize_img }}" class="img-fluid rounded" style="max-height: 85vh; object-fit: contain;" alt="Full Screen Product">
-      </div>
-    </div>
-  </div>
-</div>
-{% endif %}
-
-<!-- Dynamic Price Update & Pincode Checker Script -->
-<script>
-    function updatePrice() {
-        var select = document.getElementById("variantSelect");
-        var price = select.options[select.selectedIndex].getAttribute("data-price");
-        if(price) {
-            document.getElementById("displayPrice").innerText = "₹" + price;
-            
-            var stickyPriceEl = document.getElementById("stickyPrice");
-            if(stickyPriceEl) {
-                stickyPriceEl.innerText = "₹" + price;
-            }
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const btn = document.getElementById("checkPincodeBtn");
-        const input = document.getElementById("pincodeInput");
-        const resultDiv = document.getElementById("pincodeResult");
-
-        if(btn && input) {
-            btn.addEventListener("click", function() {
-                let pincode = input.value.trim();
-                if(pincode.length !== 6) {
-                    resultDiv.style.display = "block";
-                    resultDiv.className = "small mt-2 fw-semibold text-danger";
-                    resultDiv.innerText = "Please enter a valid 6-digit pincode.";
-                    return;
-                }
-
-                btn.innerText = "...⏳";
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
-
-                fetch('/api/check-delivery/', {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken,
-                        "X-Requested-With": "XMLHttpRequest"
-                    },
-                    body: JSON.stringify({ pincode: pincode })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    btn.innerText = "Check";
-                    resultDiv.style.display = "block";
-                    if(data.available) {
-                        resultDiv.className = "small mt-2 fw-semibold text-success";
-                    } else {
-                        resultDiv.className = "small mt-2 fw-semibold text-danger";
-                    }
-                    resultDiv.innerText = data.message;
-                })
-                .catch(err => {
-                    btn.innerText = "Check";
-                    console.error("Pincode check error:", err);
-                });
-            });
-        }
-    });
-</script>
-
-<!-- 🌟 INNER HOVER ZOOM JAVASCRIPT -->
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const container = document.getElementById('zoomContainer');
-        const img = document.getElementById('zoomImage');
-        
-        if (container && img) {
-            container.addEventListener('mousemove', function(e) {
-                const rect = container.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const xPercent = (x / rect.width) * 100;
-                const yPercent = (y / rect.height) * 100;
-                
-                img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-                img.style.transform = "scale(2.5)";
-            });
-            
-            container.addEventListener('mouseleave', function() {
-                img.style.transformOrigin = "center center";
-                img.style.transform = "scale(1)";
-            });
-        }
-    });
-</script>
-
-<!-- Google Rich Results (Schema Markup) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org/",
-  "@type": "Product",
-  "name": "{{ product.name }}",
-  "image": "{% if product.image %}{{ product.image.url }}{% endif %}",
-  "description": "{{ product.description|default:""|escapejs }}",
-  "sku": "{{ product.sku|default:product.id }}",
-  {% if product.brand %}
-  "brand": {
-    "@type": "Brand",
-    "name": "{{ product.brand.name }}"
-  },
-  {% endif %}
-  {% if review_count > 0 %}
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "{{ avg_rating }}",
-    "reviewCount": "{{ review_count }}"
-  },
-  {% endif %}
-  "offers": {
-    "@type": "Offer",
-    "url": "{{ request.build_absolute_uri }}",
-    "priceCurrency": "INR",
-    "price": "{{ product.price }}",
-    "availability": "https://schema.org/InStock",
-    "itemCondition": "https://schema.org/NewCondition"
-  }
-}
-</script>
 {% endblock %}
