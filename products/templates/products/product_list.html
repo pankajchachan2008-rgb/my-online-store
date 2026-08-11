@@ -2,513 +2,196 @@
 {% load static %}
 
 {% block content %}
-<style>
-    /* 🌟 DYNAMIC LIFESTYLE CAROUSEL HERO (Glass Style) */
-    .lifestyle-carousel .carousel-item {
-        height: 45vh;
-        min-height: 350px;
-        background: rgba(19, 25, 33, 0.85);
-        backdrop-filter: blur(10px);
-        overflow: hidden;
-        border-radius: 16px;
-    }
-    .lifestyle-carousel img, .lifestyle-carousel video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center center;
-        opacity: 0.85;
-    }
-    .carousel-caption-custom {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        color: white;
-        width: 100%;
-        padding: 0 20px;
-        z-index: 10;
-        pointer-events: none;
-    }
-    .carousel-caption-custom h2 {
-        font-family: 'Jost', sans-serif;
-        font-size: 3.5rem;
-        font-weight: 800;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        margin-bottom: 20px;
-        text-shadow: 2px 4px 15px rgba(0,0,0,0.6);
-    }
-
-    /* 🌟 LUXURY GLOSSY CRYSTAL BANNER STYLES (Auto-Fit & Cut Fix) */
-    .luxury-banner-wrapper {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        border-radius: 16px;
-        overflow: hidden;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
-    }
-
-    .luxury-banner-wrapper img, 
-    .luxury-banner-wrapper video {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-        object-position: center center !important;
-        display: block;
-        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
-
-    .luxury-banner-wrapper:hover img,
-    .luxury-banner-wrapper:hover video {
-        transform: scale(1.02);
-    }
-
-    /* ✨ Glossy Glass Light Reflection Animation */
-    .luxury-banner-wrapper::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 50%;
-        height: 100%;
-        background: linear-gradient(
-            90deg, 
-            transparent, 
-            rgba(255, 255, 255, 0.2), 
-            transparent
-        );
-        transform: skewX(-25deg);
-        pointer-events: none;
-        animation: glassReflection 5s infinite;
-        z-index: 6;
-    }
-
-    @keyframes glassReflection {
-        0% { left: -100%; }
-        25% { left: 150%; }
-        100% { left: 150%; }
-    }
-
-    /* 🌟 SCROLL MARGIN FIX */
-    #full-collection { scroll-margin-top: 115px; }
-    @media (max-width: 767px) { #full-collection { scroll-margin-top: 175px; } }
-
-    /* 🌟 GLASS SIDEBAR FILTERS */
-    .sidebar-filters {
-        background: rgba(255, 255, 255, 0.45) !important;
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.6) !important;
-        padding: 20px;
-        border-radius: 16px;
-        min-height: 100vh;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
-    }
-    .filter-group { margin-bottom: 25px; }
-    .filter-title {
-        font-weight: 700; font-size: 0.95rem; margin-bottom: 12px;
-        color: #0F1111; text-transform: uppercase; letter-spacing: 1px;
-    }
-    .filter-select, .filter-input {
-        width: 100%; padding: 8px 12px; border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 10px;
-        font-size: 0.9rem; color: #0F1111; background-color: rgba(255, 255, 255, 0.6) !important;
-        backdrop-filter: blur(5px);
-    }
-    .filter-select:focus, .filter-input:focus {
-        border-color: #E47911; outline: none; background-color: #FFFFFF !important;
-        box-shadow: 0 0 0 2px rgba(228,121,17,0.3);
-    }
-    .btn-apply-filter {
-        background: rgba(255, 216, 20, 0.9); color: #0F1111; border: 1px solid rgba(252, 210, 0, 0.5);
-        padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer;
-        transition: 0.3s; width: 100%; backdrop-filter: blur(5px);
-    }
-    .btn-apply-filter:hover { background: #F7CA00; }
-    .btn-clear-filter {
-        color: #007185; font-size: 0.85rem; text-decoration: none;
-        display: block; margin-top: 10px; font-weight: 500; text-align: center;
-    }
-    .btn-clear-filter:hover { color: #C45500; text-decoration: underline; }
-    .mobile-filter-btn { 
-        background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); 
-        border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 10px; 
-        padding: 10px; width: 100%; font-weight: 600; color: #0F1111;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-
-/* 💎 ENHANCED TACTILE LUXURY PRODUCT CARDS */
-    .smart-card {
-        background: rgba(255, 255, 255, 0.4) !important;
-        backdrop-filter: blur(25px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.7) !important;
-        border-radius: 20px !important;
-        padding: 14px; 
-        position: relative; 
-        display: flex; 
-        flex-direction: column;
-        height: 100%; 
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), background 0.4s ease, border-color 0.4s ease;
-    }
-    
-    .smart-card:hover {
-        background: rgba(255, 255, 255, 0.75) !important;
-        transform: translateY(-8px) scale(1.015);
-        border-color: rgba(212, 175, 55, 0.5) !important; /* Soft Champagne Gold Border Glow */
-        box-shadow: 
-            0 25px 50px rgba(0, 0, 0, 0.12), 
-            0 0 25px rgba(212, 175, 55, 0.18), 
-            inset 0 1px 0 rgba(255, 255, 255, 1) !important;
-    }
-
-    .smart-wishlist-btn {
-        position: absolute; top: 14px; right: 14px; background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(10px);
-        border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center;
-        justify-content: center; text-decoration: none; color: #999; font-size: 1.1rem;
-        z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all 0.3s ease;
-    }
-    .smart-wishlist-btn:hover { color: #ff3366; transform: scale(1.15); background: #ffffff; }
-
-    .smart-img-container {
-        height: 150px; width: 100%; display: flex; align-items: center;
-        justify-content: center; margin-bottom: 12px; position: relative;
-    }
-    .smart-img-container img {
-        max-height: 100%; max-width: 100%; object-fit: contain;
-        mix-blend-mode: multiply; transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
-    .smart-card:hover .smart-img-container img { transform: scale(1.06); }
-    .smart-qty {font-size: 0.75rem; color: #666; font-weight: 500; background: rgba(255, 255, 255, 0.5);
-        padding: 4px 6px; border-radius: 6px; text-align: center; width: 100%; margin-bottom: 8px;
-    }
-    .smart-add-btn {
-        border: 1px solid rgba(0, 86, 179, 0.4); color: #0056b3; background: rgba(255, 255, 255, 0.6);
-        padding: 6px 0; border-radius: 8px; font-weight: 700; font-size: 0.85rem;
-        transition: 0.2s; text-align: center; backdrop-filter: blur(5px);
-    }
-    .smart-add-btn:hover { background: #f0f8ff; }
-    .smart-price-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
-    .smart-price { font-size: 1.1rem; font-weight: 800; color: #111; }
-    .smart-mrp { font-size: 0.75rem; color: #888; text-decoration: line-through; }
-    .smart-discount { font-size: 0.75rem; color: #1a9a4c; font-weight: 700; }
-    .smart-title {
-        font-size: 0.85rem; color: #333; line-height: 1.35; font-weight: 500;
-        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-        overflow: hidden; margin-bottom: 4px;
-    }
-    .smart-brand { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    /* 🌟 STICKY GLASS CART BAR */
-    .sticky-cart {
-        position: fixed; bottom: calc(60px + env(safe-area-inset-bottom, 0px));
-        left: 15px; right: 15px; background: rgba(35, 47, 62, 0.85); backdrop-filter: blur(15px);
-        color: #fff; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); 
-        display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; 
-        font-family: 'Inter', sans-serif; z-index: 1000; border: 1px solid rgba(255,255,255,0.2);
-    }
-    .sticky-cart .cart-icon { position: relative; font-size: 22px; }
-    .sticky-cart .cart-badge {
-        position: absolute; top: -6px; right: -10px; background: #FF9900;
-        color: #131921; font-weight: 700; border-radius: 50%; padding: 2px 6px; font-size: 11px;
-    }
-    .sticky-cart .cart-info { flex: 1; text-align: center; font-size: 14px; font-weight: 600; }
-    .sticky-cart .view-cart-btn {
-        background: #FFD814; color: #0F1111; border: none; border-radius: 8px;
-        padding: 8px 16px; font-weight: 700; cursor: pointer; transition: 0.3s ease; font-size: 0.85rem;
-    }
-    .sticky-cart .view-cart-btn:hover { background: #F7CA00; }
-
-    /* 📱 MOBILE VIEW FIXES */
-    @media (max-width: 991px) {
-        .lifestyle-carousel .carousel-item { height: 35vh; min-height: 250px; }
-        .carousel-caption-custom h2 { font-size: 2rem; letter-spacing: 2px; }
-        .sticky-cart { bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
-    }
-</style>
-
-<!-- 🌟 1. DYNAMIC ADMIN CONTROLLED CAROUSEL -->
+<!-- 🌟 1. ALPINE.JS DYNAMIC CAROUSEL (Glass Style) -->
 {% if banners %}
-<div id="lifestyleCarousel" class="carousel slide lifestyle-carousel mb-4" data-bs-ride="carousel">
-    <div class="carousel-indicators">
+<div x-data="{ activeSlide: 0, slides: {{ banners|length }}, init() { setInterval(() => this.activeSlide = (this.activeSlide + 1) % this.slides, 5000) } }" class="relative w-full h-[350px] md:h-[45vh] mb-8 rounded-2xl overflow-hidden shadow-2xl">
+    
+    <div class="relative w-full h-full">
         {% for banner in banners %}
-            <button type="button" data-bs-target="#lifestyleCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></button>
-        {% endfor %}
-    </div>
-    <div class="carousel-inner">
-        {% for banner in banners %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}" data-bs-interval="5000">
-            <a href="{% if banner.category %}{% url 'home' %}?category={{ banner.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
-                <div class="luxury-banner-wrapper">
-                    {% if banner.animated_file %}
-                        <video autoplay loop muted playsinline>
-                            <source src="{{ banner.animated_file.url }}" type="video/mp4">
-                        </video>
-                    {% elif banner.image %}
-                        <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}">
-                    {% endif %}
-                    {% if banner.title %}
-                    <div class="carousel-caption-custom"><h2>{{ banner.title }}</h2></div>
-                    {% endif %}
+        <div x-show="activeSlide === {{ forloop.counter0 }}" x-transition.opacity.duration.700ms class="absolute inset-0">
+            <a href="{% if banner.category %}{% url 'home' %}?category={{ banner.category.id }}{% else %}#full-collection{% endif %}" class="block w-full h-full relative group">
+                <!-- Glass Overlay -->
+                <div class="absolute inset-0 bg-white/5 backdrop-blur-sm border border-white/20 z-10 group-hover:bg-white/10 transition duration-500"></div>
+                
+                {% if banner.animated_file %}
+                    <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition duration-700">
+                        <source src="{{ banner.animated_file.url }}" type="video/mp4">
+                    </video>
+                {% elif banner.image %}
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition duration-700">
+                {% endif %}
+                
+                {% if banner.title %}
+                <div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none px-4">
+                    <h2 class="text-4xl md:text-6xl font-extrabold text-white uppercase tracking-widest drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)] font-['Jost']">
+                        {{ banner.title }}
+                    </h2>
                 </div>
+                {% endif %}
             </a>
         </div>
         {% endfor %}
     </div>
-    {% if banners|length > 1 %}
-    <button class="carousel-control-prev" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="prev" style="width: 5%; z-index: 7;"><span class="carousel-control-prev-icon" style="width: 3rem; height: 3rem;"></span></button>
-    <button class="carousel-control-next" type="button" data-bs-target="#lifestyleCarousel" data-bs-slide="next" style="width: 5%; z-index: 7;"><span class="carousel-control-next-icon" style="width: 3rem; height: 3rem;"></span></button>
-    {% endif %}
-</div>
-{% else %}
-<div id="lifestyleCarousel" class="carousel slide lifestyle-carousel mb-4" data-bs-ride="carousel">
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <a href="#full-collection" style="display: block; width: 100%; height: 100%;">
-                <div class="luxury-banner-wrapper">
-                    <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070" alt="Premium Fashion">
-                    <div class="carousel-caption-custom"><h2>The Style Edit</h2></div>
-                </div>
-            </a>
-        </div>
+
+    <!-- Carousel Indicators -->
+    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-30">
+        {% for banner in banners %}
+        <button @click="activeSlide = {{ forloop.counter0 }}" :class="{'w-8 bg-[#D4AF37]': activeSlide === {{ forloop.counter0 }}, 'w-3 bg-white/50': activeSlide !== {{ forloop.counter0 }}}" class="h-3 rounded-full transition-all duration-300"></button>
+        {% endfor %}
     </div>
 </div>
 {% endif %}
 
 <!-- 🌟 2. MAIN LAYOUT (SIDEBAR + GRID) -->
-<div class="container-fluid px-3 px-lg-4 mb-5" id="full-collection" style="max-width: 1600px;">
-    <div class="d-lg-none mb-4">
-        <button class="mobile-filter-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileFilters">Filters & Sort ▾</button>
+<div class="max-w-[1600px] mx-auto px-4 lg:px-8 mb-20 scroll-mt-[120px]" id="full-collection">
+    
+    <!-- Mobile Filter Trigger -->
+    <div class="lg:hidden mb-6" x-data>
+        <button @click="$dispatch('open-filters')" class="w-full bg-white/70 backdrop-blur-md border border-white/80 rounded-xl py-3 font-bold text-gray-900 shadow-sm">
+            Filters & Sort ▾
+        </button>
     </div>
 
-    <div class="row">
+    <div class="flex flex-col lg:flex-row gap-8">
+        
         <!-- 🌟 LEFT SIDEBAR (DESKTOP FILTERS) -->
-        <aside class="col-lg-3 col-xl-2 d-none d-lg-block">
-            <div class="sidebar-filters shadow-sm">
-                <h5 class="fw-bold mb-4" style="color: #0F1111;">Filters</h5>
-                <form method="GET" action="{% url 'home' %}#full-collection" id="desktopFilterForm">
+        <aside class="hidden lg:block w-1/4 xl:w-1/5">
+            <div class="bg-white/45 backdrop-blur-xl border border-white/60 p-6 rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.05)] sticky top-32">
+                <h5 class="font-bold text-lg text-gray-900 mb-6 uppercase tracking-wider">Filters</h5>
+                
+                <form method="GET" action="{% url 'home' %}#full-collection" class="space-y-6">
                     {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
-                    <div class="filter-group">
-                        <h6 class="filter-title">Department</h6>
-                        <select name="category" class="filter-select">
+                    
+                    <div>
+                        <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Category</label>
+                        <select name="category" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] outline-none transition">
                             <option value="">All Categories</option>
                             {% for cat in categories %}<option value="{{ cat.id }}" {% if active_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>{% endfor %}
                         </select>
                     </div>
-                    <div class="filter-group">
-                        <h6 class="filter-title">Brands</h6>
-                        <select name="brand" class="filter-select">
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Brand</label>
+                        <select name="brand" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition">
                             <option value="">Any Brand</option>
                             {% for brand in brands %}<option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>{% endfor %}
                         </select>
                     </div>
-                    <div class="filter-group">
-                        <h6 class="filter-title">Sort By</h6>
-                        <select name="sort" class="filter-select">
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Sort By</label>
+                        <select name="sort" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition">
                             <option value="">Featured</option>
                             <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
                             <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
                         </select>
                     </div>
-                    <div class="filter-group">
-                        <h6 class="filter-title">Discount</h6>
-                        <select name="discount" class="filter-select">
-                            <option value="">Any Discount</option>
-                            <option value="10" {% if active_discount == '10' %}selected{% endif %}>10% Off or more</option>
-                            <option value="20" {% if active_discount == '20' %}selected{% endif %}>20% Off or more</option>
-                            <option value="30" {% if active_discount == '30' %}selected{% endif %}>30% Off or more</option>
-                            <option value="50" {% if active_discount == '50' %}selected{% endif %}>50% Off or more</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <h6 class="filter-title">Price (₹)</h6>
-                        <div class="d-flex gap-2 mb-3">
-                            <input type="number" name="min_price" class="filter-input" placeholder="Min" value="{{ min_price|default:'' }}" min="0">
-                            <input type="number" name="max_price" class="filter-input" placeholder="Max" value="{{ max_price|default:'' }}" min="0">
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Price (₹)</label>
+                        <div class="flex gap-2 mb-4">
+                            <input type="number" name="min_price" class="w-1/2 bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" placeholder="Min" value="{{ min_price|default:'' }}">
+                            <input type="number" name="max_price" class="w-1/2 bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" placeholder="Max" value="{{ max_price|default:'' }}">
                         </div>
-                        <button type="submit" class="btn-apply-filter shadow-sm">Apply Filters</button>
-                        <a href="{% url 'home' %}" class="btn-clear-filter text-center mt-3">Clear All</a>
+                        <button type="submit" class="w-full bg-gradient-to-r from-gray-900 to-slate-800 text-[#D4AF37] font-bold py-3 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition duration-300 border border-[#D4AF37]/30">Apply Filters</button>
+                        <a href="{% url 'home' %}" class="block text-center text-sm text-slate-500 hover:text-slate-800 font-medium mt-3 transition">Clear All</a>
                     </div>
                 </form>
             </div>
         </aside>
 
         <!-- 🌟 RIGHT CONTENT (PRODUCT GRID) -->
-        <main class="col-12 col-lg-9 col-xl-10">
-            <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-                <h4 class="fw-bold m-0" style="color: #0F1111;">
+        <main class="w-full lg:w-3/4 xl:w-4/5">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-300/50">
+                <h4 class="text-xl md:text-2xl font-extrabold text-gray-900">
                     {% if search_query %}Results for "{{ search_query }}"
                     {% elif active_category %}Category Products
                     {% else %}Trending Essentials{% endif %}
                 </h4>
-                <span class="text-muted small">Showing {{ products|length }} results</span>
+                <span class="text-sm text-gray-500 font-medium">Showing {{ products|length }} results</span>
             </div>
 
-            <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-2 g-md-3 mb-5">
+            <!-- Grid Setup -->
+            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-12">
                 {% for product in products %}
+                
+                <!-- 🌟 COMPACT SMART CARD (Tailwind Crystal Glass) -->
+                <div class="relative flex flex-col bg-white/40 backdrop-blur-2xl border border-white/70 rounded-2xl p-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:bg-white/75 hover:border-[#D4AF37]/50 hover:shadow-[0_25px_50px_rgba(0,0,0,0.12),0_0_25px_rgba(212,175,55,0.18)] hover:-translate-y-2 transition-all duration-400">
+                    
+                    {% if product.stock and product.stock < 5 %}
+                        <span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">Only {{ product.stock }} left</span>
+                    {% elif product.discount_percentage > 0 %}
+                        <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">{{ product.discount_percentage }}% OFF</span>
+                    {% endif %}
 
-                <!-- 🎯 VERTICAL BANNER INJECTION -->
-                {% if forloop.counter == 4 and banners|length > 1 %}
-                <div class="col d-none d-md-block">
-                    <div class="h-100 luxury-banner-wrapper">
-                        <a href="{% if banners.1.category %}{% url 'home' %}?category={{ banners.1.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
-                            {% if banners.1.image %}<img src="{{ banners.1.image.url }}" style="opacity: 0.85;" alt="Promo">{% endif %}
-                            <div class="position-absolute top-50 start-50 translate-middle text-center w-100 px-3" style="pointer-events: none; z-index: 5;">
-                                <h4 class="text-white fw-bold text-uppercase" style="letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">{{ banners.1.title|default:"Special Offer" }}</h4>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                {% endif %}
+                    <a href="{% url 'add_to_wishlist' product.id %}" class="absolute top-3 right-3 bg-white/85 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center text-gray-400 hover:text-rose-500 hover:scale-110 shadow-sm transition z-10">❤️</a>
 
-                <!-- 🌟 COMPACT SMART CARD (Fully Updated) -->
-                <div class="col">
-                    <div class="smart-card">
-                        {% if product.stock and product.stock < 5 %}
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-2 z-2 shadow-sm" style="font-size: 0.7rem;">Only {{ product.stock }} left</span>
-                        {% elif product.discount_percentage > 0 %}
-                            <span class="badge bg-dark position-absolute top-0 start-0 m-2 z-2 shadow-sm" style="font-size: 0.7rem;">{{ product.discount_percentage }}% OFF</span>
+                    <a href="{% url 'product_detail' product.id %}" class="block h-[150px] mb-4 overflow-hidden relative group">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition duration-500" loading="lazy">
+                        {% else %}
+                            <img src="https://placehold.co/400x500/F8F8F8/565959?text={{ product.name|urlencode }}" alt="{{ product.name }}" class="w-full h-full object-contain mix-blend-multiply" loading="lazy">
+                        {% endif %}
+                    </a>
+
+                    <!-- Alpine.js Add To Cart Logic -->
+                    <form x-data="{ variant: '', qty: 1, loading: false }" @submit.prevent="loading = true; fetch('{% url 'add_to_cart' product.id %}', { method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value}, body: JSON.stringify({quantity: qty, variant_id: variant}) }).then(r => r.json()).then(d => { loading = false; window.dispatchEvent(new CustomEvent('cart-updated', {detail: d})); })" class="mt-auto flex flex-col">
+                        
+                        {% if product.variants.exists %}
+                            <select x-model="variant" class="w-full bg-white/70 border border-gray-200 rounded-lg text-xs py-1.5 px-2 mb-2 focus:ring-[#D4AF37] outline-none" required>
+                                <option value="" disabled selected>Select Size</option>
+                                {% for variant in product.variants.all %}
+                                    <option value="{{ variant.id }}">{{ variant.size_name }} (₹{{ variant.price }})</option>
+                                {% endfor %}
+                            </select>
                         {% endif %}
 
-                        <a href="{% url 'add_to_wishlist' product.id %}" class="smart-wishlist-btn" title="Add to Wishlist">❤️</a>
+                        <div class="text-center w-full bg-white/50 text-gray-500 text-[11px] font-medium py-1 rounded-md mb-3">
+                            {% if not product.variants.exists %}1 Unit{% else %}Select Variant{% endif %}
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <button type="submit" :disabled="loading" class="flex-1 bg-white/60 border border-blue-600/40 text-blue-700 font-bold text-xs py-2 rounded-lg hover:bg-blue-50 transition backdrop-blur-sm">
+                                <span x-show="!loading">Add</span>
+                                <span x-show="loading">⏳</span>
+                            </button>
+                            <button type="button" @click="window.location.href='{% url 'checkout' %}'" class="flex-1 bg-orange-400/85 text-gray-900 font-bold text-xs py-2 rounded-lg hover:bg-orange-400 transition">⚡ Buy</button>
+                        </div>
+                    </form>
 
-                        <a href="{% url 'product_detail' product.id %}" class="text-decoration-none">
-                            <div class="smart-img-container">
-                                {% if product.image %}
-                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
-                                {% else %}
-                                    <img src="https://placehold.co/400x500/F8F8F8/565959?text={{ product.name|urlencode }}" alt="{{ product.name }}" loading="lazy">
-                                {% endif %}
-                            </div>
-                        </a>
-
-                        <!-- AJAX Add To Cart Form & Quantity -->
-                        <form action="{% url 'add_to_cart' product.id %}" method="POST" class="add-to-cart-form m-0 d-flex flex-column h-100" data-product-id="{{ product.id }}">
-                            {% csrf_token %}
-                            <div class="mt-auto">
-                                {% if product.variants.exists %}
-                                    <select name="variant_id" class="form-select form-select-sm mb-2 variant-selector" data-product-id="{{ product.id }}" id="variant-select-{{ product.id }}" style="font-size: 0.75rem; padding: 2px 8px; height: auto; background: rgba(255,255,255,0.7);" required>
-                                        <option value="" disabled selected>Select Size</option>
-                                        {% for variant in product.variants.all %}
-                                            <option value="{{ variant.id }}" data-price="{{ variant.price }}">{{ variant.size_name }} (₹{{ variant.price }})</option>
-                                        {% endfor %}
-                                    </select>
-                                    <div class="invalid-feedback" id="error-msg-{{ product.id }}" style="font-size: 0.7rem; display: none;">⚠️ Kripya size select karein!</div>
-                                {% endif %}
-
-                                <div class="smart-qty">{% if not product.variants.exists %}1 Unit{% else %}Select Variant{% endif %}</div>
-                                
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="smart-add-btn add-to-cart-ajax flex-grow-1">Add</button>
-                                    <button type="button" class="smart-add-btn buy-now-btn flex-grow-1" style="background:rgba(254, 189, 105, 0.85); color:#111; border:none;">⚡ Buy</button>
-                                </div>
-                            </div>
-                        </form>
-
-                        <a href="{% url 'product_detail' product.id %}" class="text-decoration-none mt-2">
-                            <div class="smart-price-row">
-                                <span class="smart-price" id="price-display-{{ product.id }}">₹{{ product.price }}</span>
-                                {% if product.mrp and product.mrp > product.price %}
-                                    <span class="smart-mrp">₹{{ product.mrp }}</span>
-                                    <span class="smart-discount">{{ product.discount_percentage }}% off</span>
-                                {% endif %}
-                            </div>
-                            <h3 class="smart-title">{{ product.name }}</h3>
-                            <div class="smart-brand">{{ product.brand.name|default:"Premium" }}</div>
-                        </a>
-                    </div>
+                    <a href="{% url 'product_detail' product.id %}" class="block mt-3">
+                        <div class="flex items-baseline gap-2 mb-1 flex-wrap">
+                            <span class="text-lg font-extrabold text-gray-900">₹{{ product.price }}</span>
+                            {% if product.mrp and product.mrp > product.price %}
+                                <span class="text-xs text-gray-500 line-through">₹{{ product.mrp }}</span>
+                                <span class="text-[11px] font-bold text-green-600">{{ product.discount_percentage }}% off</span>
+                            {% endif %}
+                        </div>
+                        <h3 class="text-sm text-gray-800 font-medium leading-snug line-clamp-2 mb-1">{{ product.name }}</h3>
+                        <div class="text-[10px] text-gray-500 uppercase tracking-wider">{{ product.brand.name|default:"Premium" }}</div>
+                    </a>
                 </div>
-
-                <!-- 🎯 HORIZONTAL BANNER INJECTION -->
-                {% if forloop.counter == 8 and banners|length > 2 %}
-                <div class="col-12 mt-3 mb-3">
-                    <div class="luxury-banner-wrapper" style="height: 140px;">
-                        <a href="{% if banners.2.category %}{% url 'home' %}?category={{ banners.2.category.id }}{% else %}#full-collection{% endif %}" style="display: block; width: 100%; height: 100%;">
-                            {% if banners.2.image %}<img src="{{ banners.2.image.url }}" style="opacity: 0.75;" alt="Promo" loading="lazy">{% endif %}
-                            <div class="position-absolute top-50 start-50 translate-middle text-center w-100" style="pointer-events: none; z-index: 5;">
-                                <h3 class="text-white fw-bold text-uppercase mb-1" style="letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.8);">{{ banners.2.title|default:"Mega Savings" }}</h3>
-                                <p class="text-white-50 mb-0" style="text-shadow: 0 1px 5px rgba(0,0,0,0.8);">Use Code <strong style="color: #FF9900;">CGSMART10</strong> for extra discount!</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                {% endif %}
-
+                
                 {% empty %}
-                <div class="col-12 text-center py-5 w-100">
-                    <span style="font-size: 4rem; opacity: 0.5;">🛒</span>
-                    <h4 class="mt-3 text-dark">No products found.</h4>
-                    <p class="text-muted">Try adjusting your filters or search query.</p>
-                    <a href="{% url 'home' %}" class="btn btn-outline-dark mt-2">Clear all filters</a>
+                <div class="col-span-full text-center py-20">
+                    <span class="text-6xl opacity-50">🛒</span>
+                    <h4 class="mt-4 text-xl font-bold text-gray-900">No products found.</h4>
+                    <p class="text-gray-500">Try adjusting your filters or search query.</p>
+                    <a href="{% url 'home' %}" class="inline-block mt-4 px-6 py-2 border border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-900 hover:text-white transition">Clear all filters</a>
                 </div>
                 {% endfor %}
             </div>
-
-            <!-- 🌟 PAGINATION -->
-            <nav aria-label="Product list pagination" class="mt-4 pt-4 border-top d-flex justify-content-center">
-                <ul class="pagination shadow-sm">
-                    {% if products.has_previous %}
-                        <li class="page-item"><a class="page-link text-dark" href="{% url 'home' %}?page={{ products.previous_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">← Previous</a></li>
-                    {% endif %}
-                    <li class="page-item active"><span class="page-link" style="background-color: #0F1111; border-color: #0F1111;">Page {{ products.number }} of {{ products.paginator.num_pages }}</span></li>
-                    {% if products.has_next %}
-                        <li class="page-item"><a class="page-link text-dark" href="{% url 'home' %}?page={{ products.next_page_number }}{% if querystring %}&{{ querystring }}{% endif %}">Next →</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
         </main>
     </div>
 </div>
 
-<!-- 📱 Mobile Filter Offcanvas -->
-<div class="offcanvas offcanvas-bottom h-75" tabindex="-1" id="mobileFilters" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);">
-    <div class="offcanvas-header bg-light border-bottom">
-        <h5 class="offcanvas-title fw-bold" style="color: #0F1111;">Filters & Sort</h5>
-        <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+<!-- 🌟 STICKY CART BAR (Alpine.js State Management) -->
+<div x-data="{ items: 0, total: 0, show: false }" @cart-updated.window="items = $event.detail.items; total = $event.detail.total; show = items > 0" x-show="show" x-transition.translate.y.bottom class="fixed bottom-[80px] lg:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-[350px] bg-slate-900/90 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl z-50 flex justify-between items-center text-white">
+    <div class="flex items-center gap-3">
+        <div class="relative text-2xl">🛒 <span x-text="items" class="absolute -top-2 -right-2 bg-orange-500 text-gray-900 text-[10px] font-extrabold w-5 h-5 flex items-center justify-center rounded-full"></span></div>
+        <div class="font-semibold text-sm"><span x-text="items"></span> Items <br><span class="text-orange-400">₹<span x-text="total"></span></span></div>
     </div>
-    <div class="offcanvas-body">
-        <form method="GET" action="{% url 'home' %}#full-collection">
-            {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
-            <label class="fw-bold mb-2">Category</label>
-            <select name="category" class="filter-select mb-3">
-                <option value="">All Categories</option>
-                {% for cat in categories %}<option value="{{ cat.id }}" {% if active_category == cat.id %}selected{% endif %}>{{ cat.name }}</option>{% endfor %}
-            </select>
-            <label class="fw-bold mb-2">Brand</label>
-            <select name="brand" class="filter-select mb-3">
-                <option value="">Any Brand</option>
-                {% for brand in brands %}<option value="{{ brand.id }}" {% if active_brand == brand.id %}selected{% endif %}>{{ brand.name }}</option>{% endfor %}
-            </select>
-            <label class="fw-bold mb-2">Sort By</label>
-            <select name="sort" class="filter-select mb-3">
-                <option value="">Featured</option>
-                <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
-                <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
-            </select>
-            <label class="fw-bold mb-2">Price (₹)</label>
-            <div class="d-flex gap-2 mb-3">
-                <input type="number" name="min_price" class="filter-input" placeholder="Min" value="{{ min_price|default:'' }}">
-                <input type="number" name="max_price" class="filter-input" placeholder="Max" value="{{ max_price|default:'' }}">
-            </div>
-            <button type="submit" class="btn-apply-filter mt-2">Apply Filters</button>
-            <a href="{% url 'home' %}" class="btn btn-light border w-100 fw-bold py-2 mt-2">Clear All</a>
-        </form>
-    </div>
-</div>
-
-<!-- 🌟 STICKY CART BAR (AJAX) -->
-<div id="stickyCart" class="sticky-cart" style="display:none;" role="status" aria-live="polite">
-    <div class="cart-icon">🛒 <span id="cartBadge" class="cart-badge">0</span></div>
-    <div class="cart-info"><span id="cartSummary">0 Items | ₹0.00</span></div>
-    <button class="view-cart-btn shadow-sm" onclick="window.location.href='{% url 'cart_detail' %}'">VIEW CART</button>
+    <a href="{% url 'cart_detail' %}" class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold px-5 py-2.5 rounded-xl text-sm transition shadow-md">VIEW CART</a>
 </div>
 
 {% endblock %}

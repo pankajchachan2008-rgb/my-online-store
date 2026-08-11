@@ -1,0 +1,15 @@
+{% if active_banners %}
+<div class="w-full overflow-hidden my-4 space-y-4">
+    {% for banner in active_banners %}
+        <div class="block w-full">
+            {% if banner.link %}
+                <a href="{{ banner.link }}" class="block group">
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-auto rounded-2xl shadow-sm group-hover:shadow-md transition duration-300">
+                </a>
+            {% else %}
+                <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-auto rounded-2xl shadow-sm">
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}

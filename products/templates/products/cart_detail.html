@@ -2,267 +2,186 @@
 {% load static %}
 {% block content %}
 
-<style>
-    /* 🌟 Premium Minimalist Style CSS */
-    body { background-color: #f1f3f6; font-family: 'Jost', sans-serif; }
+<div class="max-w-[1200px] mx-auto px-4 py-8 mb-20 font-['Jost']" 
+     x-data="{ 
+        cartTotal: {{ cart_total|default:0 }}, 
+        isWinner: Math.random() < 0.05, 
+        scratched: false 
+     }">
     
-    .cart-left-box { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); padding: 0; }
-    .cart-header { padding: 18px 24px; border-bottom: 1px solid #f0f0f0; }
-    .cart-item-card { padding: 24px; border-bottom: 1px solid #f0f0f0; display: flex; flex-direction: column; }
-    @media (min-width: 768px) { .cart-item-card { flex-direction: row; gap: 20px; } }
-    
-    /* Quantity Buttons */
-    .qty-control { display: flex; align-items: center; margin-top: 20px; }
-    .qty-form { display: inline-flex; margin: 0; }
-    .qty-btn { 
-        width: 28px; height: 28px; background: #fff; border: 1px solid #c2c2c2; 
-        border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-        font-weight: 600; color: #212121; text-decoration: none; font-size: 16px; cursor: pointer;
-        padding: 0; line-height: 1;
-    }
-    .qty-btn:hover { background: #f0f0f0; color: #212121; }
-    .qty-btn:disabled { pointer-events: none; opacity: 0.4; cursor: not-allowed; }
-    .qty-input { 
-        width: 46px; height: 28px; margin: 0 10px; border: 1px solid #c2c2c2; 
-        border-radius: 2px; text-align: center; font-weight: 500; font-size: 14px;
-        color: #212121; outline: none; background: #fff;
-    }
-    
-    /* Remove Button */
-    .remove-btn { 
-        color: #212121; font-weight: 600; text-transform: uppercase; font-size: 14px; 
-        text-decoration: none; margin-left: 24px; transition: 0.3s ease; 
-        background: none; border: none; padding: 0; cursor: pointer;
-    }
-    .remove-btn:hover { color: #2874f0; }
-
-    /* Right Side Price Box */
-    .price-box { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); position: sticky; top: 100px; }
-    .price-box-header { padding: 13px 24px; border-bottom: 1px solid #f0f0f0; color: #878787; text-transform: uppercase; font-weight: 600; font-size: 14px; }
-    .price-box-body { padding: 0 24px; }
-    .price-row { display: flex; justify-content: space-between; padding: 20px 0; font-size: 15px; color: #212121; }
-    .border-dash { border-bottom: 1px dashed #e0e0e0; }
-    .total-row { display: flex; justify-content: space-between; padding: 20px 0; font-weight: 600; font-size: 18px; border-top: 1px dashed #e0e0e0; border-bottom: 1px dashed #e0e0e0; margin-bottom: 15px;}
-    
-    /* Place Order Button */
-    .btn-place-order { 
-        background: #fb641b; color: #fff; border-radius: 2px; font-size: 16px; 
-        font-weight: 600; padding: 16px 30px; border: none; width: 100%; box-shadow: 0 1px 2px 0 rgba(0,0,0,.2); text-transform: uppercase;
-    }
-    .btn-place-order:hover { background: #df5815; color: white; }
-</style>
-
-<div class="container mt-4 mb-5" style="max-width: 1200px;">
-    
-    <!-- Upsell Alert (Animated) -->
-    <div class="row justify-content-center mb-3" data-aos="fade-down" data-aos-duration="600">
-        <div class="col-12">
-            <div id="upsell-alert" class="alert text-center fw-semibold d-none" style="background: #e8f4f8; border: 1px solid #2874f0; color: #212121; border-radius: 4px;">
-                ✨ Sirf <strong class="text-danger">₹<span id="amount-needed"></span></strong> ka samaan aur add karein aur Next Order ke liye <strong style="color: #2874f0;">Surprise Scratch Card</strong> jeetein!
+    <!-- 🌟 Upsell Alert & Scratch Card (Alpine Logic) -->
+    <div class="flex justify-center mb-6">
+        <div class="w-full">
+            <!-- Upsell Message -->
+            <div x-show="cartTotal > 0 && cartTotal < 699" x-cloak class="bg-blue-50 border border-blue-600 text-center font-semibold text-gray-900 px-4 py-3 rounded-lg shadow-sm">
+                ✨ Sirf <strong class="text-red-500">₹<span x-text="(699 - cartTotal).toFixed(2)"></span></strong> ka samaan aur add karein aur Next Order ke liye <strong class="text-blue-600">Surprise Scratch Card</strong> jeetein!
             </div>
             
-            <div id="scratch-box" class="card border-0 shadow-sm d-none mb-3" style="background: linear-gradient(135deg, #2874f0, #1c5ab5); border-radius: 4px;">
-                <div class="card-body text-center py-3">
-                    <h5 class="fw-bold text-white mb-1">🎉 You Got a Scratch Card!</h5>
-                    <div class="mx-auto mt-3 position-relative" style="width: 250px; height: 75px; cursor: pointer;" onclick="revealCard()">
-                        <div class="bg-white w-100 h-100 d-flex align-items-center justify-content-center rounded border border-warning shadow-sm">
-                            <h5 id="coupon-code" class="fw-bold m-0" style="color: #212121;"></h5>
-                        </div>
-                        <div id="scratch-cover" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center fw-bold shadow-sm rounded" style="background: #e0e0e0; transition: opacity 0.6s ease; font-size: 1.1rem; color: #878787;">
-                            🪙 Tap to Scratch
-                        </div>
+            <!-- Scratch Card -->
+            <div x-show="cartTotal >= 699" x-cloak class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl shadow-md p-5 text-center mb-4 border border-blue-500">
+                <h5 class="font-bold text-white mb-3 text-lg">🎉 You Got a Scratch Card!</h5>
+                <div class="mx-auto relative w-[250px] h-[75px] cursor-pointer" @click="scratched = true">
+                    <!-- Revealed Content -->
+                    <div class="bg-white w-full h-full flex items-center justify-center rounded-lg border-2 border-yellow-400 shadow-inner">
+                        <template x-if="isWinner && cartTotal >= 999">
+                            <h5 class="font-bold text-gray-900 m-0 leading-tight">🎁 CGSMART10 <br><span class="text-xs text-gray-500 font-medium">(10% OFF NEXT ORDER)</span></h5>
+                        </template>
+                        <template x-if="isWinner && cartTotal < 999">
+                            <h5 class="font-bold text-gray-900 m-0 leading-tight">🎉 CGSMART08 <br><span class="text-xs text-gray-500 font-medium">(8% OFF NEXT ORDER)</span></h5>
+                        </template>
+                        <template x-if="!isWinner">
+                            <h5 class="font-bold text-red-500 m-0 leading-tight">🥺 Better Luck<br><span class="text-xs text-gray-500 font-medium">Try Next Time!</span></h5>
+                        </template>
+                    </div>
+                    <!-- Cover (Disappears on click) -->
+                    <div :class="scratched ? 'opacity-0 pointer-events-none' : 'opacity-100'" class="absolute inset-0 flex items-center justify-center font-bold shadow-md rounded-lg bg-gray-300 text-gray-600 transition-opacity duration-700 text-lg">
+                        🪙 Tap to Scratch
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row align-items-start g-4">
+    <div class="flex flex-col lg:flex-row gap-6 items-start">
         
-        <!-- LEFT SIDE: CART ITEMS (Animated) -->
-        <div class="col-lg-8" data-aos="fade-right" data-aos-delay="100" data-aos-duration="800">
-            <div class="cart-left-box">
-                <div class="cart-header d-flex justify-content-between align-items-center">
-                    <h4 class="fw-bold m-0" style="color: #212121; font-size: 18px;">My Cart ({{ cart_items|length }})</h4>
+        <!-- LEFT SIDE: CART ITEMS -->
+        <div class="w-full lg:w-2/3">
+            <div class="bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h4 class="font-bold text-gray-900 text-lg m-0">My Cart ({{ cart_items|length }})</h4>
                 </div>
                 
                 {% if cart_items %}
-                    {% for item in cart_items %}
-                    <div class="cart-item-card">
-                        
-                        <!-- Product Image -->
-                        <div style="width: 112px; flex-shrink: 0;" class="text-center mx-auto mx-md-0 mb-3 mb-md-0">
-                            {% if item.product.image %}
-                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid" style="max-height: 112px; max-width: 100%; object-fit: contain;">
-                            {% else %}
-                                <img src="{% static 'logo.png' %}" alt="Placeholder" class="img-fluid" style="max-height: 100px; opacity: 0.2;">
-                            {% endif %}
+                    <div class="divide-y divide-gray-100">
+                        {% for item in cart_items %}
+                        <div class="p-6 flex flex-col md:flex-row gap-6 group hover:bg-slate-50 transition">
                             
-                            <!-- Mobile-only Quantity Control -->
-                            <div class="qty-control d-flex d-md-none justify-content-center mt-3">
-                                <form class="qty-form" method="POST" action="{% url 'update_cart_item' item.key 'decrease' %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="qty-btn" {% if item.quantity == 1 %}disabled{% endif %} aria-label="Decrease quantity">−</button>
-                                </form>
-                                <input type="text" class="qty-input" value="{{ item.quantity }}" readonly aria-label="Quantity">
-                                <form class="qty-form" method="POST" action="{% url 'update_cart_item' item.key 'increase' %}">
-                                    {% csrf_token %}
-                                    <button type="submit" class="qty-btn" aria-label="Increase quantity">+</button>
-                                </form>
-                            </div>
-                        </div>
-                        
-                        <!-- Product Details -->
-                        <div class="flex-grow-1 ps-md-4">
-                            <a href="{% url 'product_detail' item.product.id %}" class="text-decoration-none text-dark">
-                                <h5 class="fw-medium mb-1" style="font-size: 16px; line-height: 1.4; color: #212121; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">{{ item.name }}</h5>
-                            </a>
-                            <p class="mb-2" style="color: #878787; font-size: 14px;">Seller: CGSMART Retail <span class="ms-1" style="color: #388e3c; font-size: 12px;">✅ Verified</span></p>
-                            
-                            <div class="d-flex align-items-center gap-2 mb-2">
-                                {% if item.product.mrp and item.product.mrp > item.unit_price %}
-                                    <span class="text-decoration-line-through" style="color: #878787; font-size: 14px;">₹{{ item.product.mrp }}</span>
+                            <!-- Product Image -->
+                            <div class="w-28 flex-shrink-0 mx-auto md:mx-0">
+                                {% if item.product.image %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-28 object-contain mix-blend-multiply">
+                                {% else %}
+                                    <div class="w-full h-28 bg-gray-100 flex items-center justify-center rounded">No Image</div>
                                 {% endif %}
-                                <span class="fw-bold" style="font-size: 18px; color: #212121;">₹{{ item.unit_price }}</span>
-                                {% if item.product.discount_percentage > 0 %}
-                                    <span class="fw-bold ms-2" style="color: #388e3c; font-size: 14px;">{{ item.product.discount_percentage }}% Off</span>
-                                {% endif %}
-                            </div>
-
-                            <!-- Desktop Controls -->
-                            <div class="d-none d-md-flex align-items-center mt-4">
-                                <div class="qty-control mt-0">
-                                    <form class="qty-form" method="POST" action="{% url 'update_cart_item' item.key 'decrease' %}">
+                                
+                                <!-- Mobile-only Quantity Control -->
+                                <div class="flex md:hidden justify-center items-center mt-4">
+                                    <form method="POST" action="{% url 'update_cart_item' item.key 'decrease' %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="qty-btn" {% if item.quantity == 1 %}disabled{% endif %} aria-label="Decrease quantity">−</button>
+                                        <button type="submit" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center font-bold text-gray-700 hover:bg-gray-100 disabled:opacity-40" {% if item.quantity == 1 %}disabled{% endif %}>−</button>
                                     </form>
-                                    <input type="text" class="qty-input" value="{{ item.quantity }}" readonly aria-label="Quantity">
-                                    <form class="qty-form" method="POST" action="{% url 'update_cart_item' item.key 'increase' %}">
+                                    <input type="text" value="{{ item.quantity }}" readonly class="w-12 text-center text-sm font-bold bg-transparent outline-none">
+                                    <form method="POST" action="{% url 'update_cart_item' item.key 'increase' %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="qty-btn" aria-label="Increase quantity">+</button>
+                                        <button type="submit" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center font-bold text-gray-700 hover:bg-gray-100">+</button>
                                     </form>
                                 </div>
-                                <form method="POST" action="{% url 'update_cart_item' item.key 'remove' %}" class="ms-3">
+                            </div>
+                            
+                            <!-- Product Details -->
+                            <div class="flex-grow flex flex-col justify-between">
+                                <div>
+                                    <a href="{% url 'product_detail' item.product.id %}" class="text-gray-900 hover:text-blue-700 transition">
+                                        <h5 class="font-semibold text-base line-clamp-2 leading-snug mb-1">{{ item.name }}</h5>
+                                    </a>
+                                    <p class="text-xs text-gray-500 mb-2">Seller: CGSMART Retail <span class="text-green-600 font-bold ml-1">✅ Verified</span></p>
+                                    
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="font-extrabold text-xl text-gray-900">₹{{ item.unit_price }}</span>
+                                        {% if item.product.mrp and item.product.mrp > item.unit_price %}
+                                            <span class="text-sm text-gray-400 line-through">₹{{ item.product.mrp }}</span>
+                                        {% endif %}
+                                        {% if item.product.discount_percentage > 0 %}
+                                            <span class="text-sm font-bold text-green-600">{{ item.product.discount_percentage }}% Off</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Desktop Controls -->
+                                <div class="hidden md:flex items-center mt-4">
+                                    <div class="flex items-center">
+                                        <form method="POST" action="{% url 'update_cart_item' item.key 'decrease' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center font-bold text-gray-700 hover:bg-gray-100 disabled:opacity-40" {% if item.quantity == 1 %}disabled{% endif %}>−</button>
+                                        </form>
+                                        <input type="text" value="{{ item.quantity }}" readonly class="w-12 text-center text-sm font-bold bg-transparent outline-none">
+                                        <form method="POST" action="{% url 'update_cart_item' item.key 'increase' %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center font-bold text-gray-700 hover:bg-gray-100">+</button>
+                                        </form>
+                                    </div>
+                                    <form method="POST" action="{% url 'update_cart_item' item.key 'remove' %}" class="ml-6">
+                                        {% csrf_token %}
+                                        <button type="submit" class="font-bold text-sm text-gray-800 hover:text-red-600 uppercase tracking-wide transition">Remove</button>
+                                    </form>
+                                </div>
+                                
+                                <!-- Mobile Remove Button -->
+                                <form method="POST" action="{% url 'update_cart_item' item.key 'remove' %}" class="block md:hidden border-t border-gray-100 mt-4 pt-4 text-center">
                                     {% csrf_token %}
-                                    <button type="submit" class="remove-btn">Remove</button>
+                                    <button type="submit" class="font-bold text-sm text-gray-800 hover:text-red-600 uppercase tracking-wide">Remove Item</button>
                                 </form>
                             </div>
-                            <!-- Mobile Remove Button -->
-                            <form method="POST" action="{% url 'update_cart_item' item.key 'remove' %}" class="d-block d-md-none text-center mt-3 pt-3 border-top">
-                                {% csrf_token %}
-                                <button type="submit" class="remove-btn ms-0 w-100 text-center">REMOVE ITEM</button>
-                            </form>
                         </div>
-                        
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                     
-                    <div class="p-3 text-end d-none d-lg-block" style="background: #fff; border-top: 1px solid #f0f0f0; border-radius: 0 0 4px 4px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); position: sticky; bottom: 0;">
-                        <a href="{% url 'checkout' %}" class="btn-place-order d-inline-block text-decoration-none text-center" style="width: auto; padding: 16px 45px;">Place Order</a>
+                    <div class="p-4 bg-white border-t border-gray-100 hidden lg:flex justify-end sticky bottom-0 rounded-b-xl shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                        <a href="{% url 'checkout' %}" class="bg-orange-500 hover:bg-orange-600 text-gray-900 font-bold uppercase tracking-widest px-8 py-3.5 rounded-lg shadow-md transition transform hover:-translate-y-0.5">Place Order</a>
                     </div>
 
                 {% else %}
-                    <!-- Empty Cart (Animated) -->
-                    <div class="text-center py-5" data-aos="zoom-in" data-aos-delay="100" data-aos-duration="800">
-                        <span style="font-size: 4rem; opacity: 0.5;">🛒</span>
-                        <h5 class="fw-medium text-dark mt-3">Your cart is empty!</h5>
-                        <p class="text-muted small">Add items to it now.</p>
-                        <a href="{% url 'home' %}" class="btn text-white px-5 py-2 mt-3 shadow-sm" style="background: #2874f0; border-radius: 2px; font-weight: 500;">Shop Now</a>
+                    <!-- Empty Cart -->
+                    <div class="text-center py-16 px-4">
+                        <span class="text-6xl opacity-40">🛒</span>
+                        <h5 class="font-bold text-gray-900 mt-4 text-xl">Your cart is empty!</h5>
+                        <p class="text-gray-500 text-sm mt-1">Add items to it now.</p>
+                        <a href="{% url 'home' %}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-lg mt-6 shadow-md transition">Shop Now</a>
                     </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- RIGHT SIDE: PRICE DETAILS (Animated) -->
+        <!-- RIGHT SIDE: PRICE DETAILS -->
         {% if cart_items %}
-        <div class="col-lg-4" data-aos="fade-left" data-aos-delay="200" data-aos-duration="800">
-            <div class="price-box">
-                <div class="price-box-header">
+        <div class="w-full lg:w-1/3">
+            <div class="bg-white rounded-xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-200 sticky top-[100px]">
+                <div class="px-6 py-4 border-b border-gray-100 text-gray-500 font-bold uppercase tracking-wider text-sm">
                     Price Details
                 </div>
-                <div class="price-box-body">
-                    <div class="price-row">
+                <div class="p-6 space-y-4">
+                    <div class="flex justify-between text-gray-700 text-sm">
                         <span>Price ({{ cart_items|length }} items)</span>
-                        <span>₹{{ cart_total }}</span>
+                        <span class="font-bold text-gray-900">₹{{ cart_total }}</span>
                     </div>
                     
-                    <div class="price-row border-dash">
+                    <div class="flex justify-between text-gray-700 text-sm border-b border-dashed border-gray-200 pb-4">
                         <span>Delivery Charges</span>
-                        <span style="color: #388e3c;">Calculated at checkout</span>
+                        <span class="text-green-600 font-bold">Calculated at checkout</span>
                     </div>
                     
-                    <div class="total-row">
+                    <div class="flex justify-between text-lg font-extrabold text-gray-900 py-2 border-b border-dashed border-gray-200">
                         <span>Total Amount</span>
                         <span>₹{{ cart_total }}</span>
                     </div>
                     
-                    <p style="color: #388e3c; font-weight: 600; font-size: 14px; margin-bottom: 20px;">
+                    <p class="text-green-600 font-bold text-xs text-center pt-2">
                         Continue to checkout to see final savings.
                     </p>
                 </div>
             </div>
             
             <!-- Mobile Sticky Footer for Place Order -->
-            <div class="d-block d-lg-none p-3 mt-4" style="background: #fff; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-muted" style="font-size: 12px; text-decoration: line-through;">₹{{ cart_total }}</div>
-                        <div class="fw-bold" style="font-size: 18px; color: #212121;">₹{{ cart_total }}</div>
-                    </div>
-                    <a href="{% url 'checkout' %}" class="btn-place-order w-auto px-4" style="text-decoration: none;">Place Order</a>
+            <div class="lg:hidden fixed bottom-[60px] left-0 w-full bg-white shadow-[0_-4px_15px_rgba(0,0,0,0.08)] p-4 z-50 border-t border-gray-200 flex justify-between items-center">
+                <div>
+                    <div class="text-gray-400 text-[10px] line-through">₹{{ cart_total }}</div>
+                    <div class="font-extrabold text-xl text-gray-900 leading-none">₹{{ cart_total }}</div>
                 </div>
+                <a href="{% url 'checkout' %}" class="bg-orange-500 text-gray-900 font-bold uppercase tracking-wider px-6 py-3 rounded-lg shadow-sm">Place Order</a>
             </div>
-            
         </div>
         {% endif %}
 
     </div>
 </div>
-<div class="d-block d-lg-none" style="height: 80px;"></div>
-
-<!-- Upsell Logic JS -->
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let cartTotal = {{ cart_total|default:0 }}; 
-        
-        const upsellAlert = document.getElementById("upsell-alert");
-        const scratchBox = document.getElementById("scratch-box");
-        const couponCode = document.getElementById("coupon-code");
-        const amountNeeded = document.getElementById("amount-needed");
-
-        // 🌟 5% Probability Checker (Math.random() gives 0 to 0.999...)
-        // Agar value 0.05 se kam hui, to user jeetega (5% chance).
-        const isWinner = Math.random() < 0.05;
-
-        // Logic check
-        if (cartTotal >= 699) {
-            // Cart criteria met, show the scratch box
-            scratchBox.classList.remove("d-none");
-            
-            if (isWinner) {
-                // User is in the lucky 5%!
-                if (cartTotal >= 999) {
-                    couponCode.innerHTML = "🎁 CGSMART10 <br><small class='fs-6 text-muted'>(10% OFF NEXT ORDER)</small>";
-                } else {
-                    couponCode.innerHTML = "🎉 CGSMART08 <br><small class='fs-6 text-muted'>(8% OFF NEXT ORDER)</small>";
-                }
-            } else {
-                // 95% of users will see this
-                couponCode.innerHTML = "🥺 Better Luck<br><span style='font-size: 16px; font-weight: normal; color: #666;'>Try Next Time!</span>";
-                couponCode.style.color = "#dc3545"; // Red color
-            }
-
-        } else if (cartTotal > 0) {
-            // Under 699, show upsell message
-            upsellAlert.classList.remove("d-none");
-            amountNeeded.innerText = (699 - cartTotal).toFixed(2);
-        }
-    });
-
-    function revealCard() {
-        const cover = document.getElementById("scratch-cover");
-        cover.style.opacity = "0";
-        setTimeout(() => { cover.style.display = "none"; }, 600);
-    }
-</script>
 {% endblock %}

@@ -1,1147 +1,1042 @@
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<!-- 🌟 Dynamic SEO Meta Tags -->
-<title>{% block title %}CGS MART - Premium Online Store & Essentials{% endblock %}</title>
-<meta name="description" content="{% block meta_description %}Shop premium quality products, groceries, and essentials at Chachan General Store (CGS MART) in Nohar. Fast delivery and secure payments.{% endblock %}">
-<meta name="keywords" content="CGS MART, Chachan General Store, Nohar online store, buy groceries online, premium essentials, local online store">
+    <!-- 🌟 Dynamic SEO Meta Tags -->
+    <title>{% block title %}CGS MART - Premium Online Store & Essentials{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Shop premium quality products, groceries, and essentials at Chachan General Store (CGS MART) in Nohar. Fast delivery and secure payments.{% endblock %}">
+    <meta name="keywords" content="CGS MART, Chachan General Store, Nohar online store, buy groceries online, premium essentials, local online store">
 
-<!-- 📱 Open Graph / WhatsApp / Facebook Share Tags -->
-<meta property="og:title" content="{% block og_title %}CGS MART - Premium Online Store{% endblock %}">
-<meta property="og:description" content="{% block og_description %}Discover premium quality essentials in Nohar with fast delivery.{% endblock %}">
-<meta property="og:image" content="{% block og_image %}[https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg](https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg){% endblock %}">
-<meta property="og:url" content="{{ request.build_absolute_uri }}">
-<meta property="og:type" content="website">
+    <!-- 📱 Open Graph / WhatsApp / Facebook Share Tags -->
+    <meta property="og:title" content="{% block og_title %}CGS MART - Premium Online Store{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Discover premium quality essentials in Nohar with fast delivery.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:type" content="website">
 
-<!-- 🌟 FAVICON -->
-<link rel="icon" type="image/jpeg" href="[https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg](https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg)">
+    <!-- 🌟 FAVICON -->
+    <link rel="icon" type="image/jpeg" href="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
 
-<!-- 🌟 PWA & Theme Colors -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#0c0d12">
-<link rel="apple-touch-icon" href="[https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg](https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg)">
+    <!-- 🌟 PWA & Theme Colors -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0c0d12">
+    <link rel="apple-touch-icon" href="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg">
 
-<!-- Bootstrap CSS -->
-<link href="[https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css](https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css)" rel="stylesheet">
+    <!-- Bootstrap CSS (Kept for Modals/Offcanvas compatibility) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- 🌟 Modern Trend Stack: Tailwind CSS, Alpine.js, HTMX -->
-<script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-<script defer src="[https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js](https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js)"></script>
-<script src="[https://unpkg.com/htmx.org@2.0.0](https://unpkg.com/htmx.org@2.0.0)"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          'primary-luxury': '#0c0d12',
-          'accent-gold': '#D4AF37',
+    <!-- 🌟 Modern Trend Stack: Tailwind CSS, Alpine.js, HTMX -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.0"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+      window.tailwind = window.tailwind || {};
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'primary-luxury': '#0c0d12',
+              'accent-gold': '#D4AF37',
+            }
+          }
         }
       }
-    }
-  }
-</script>
+    </script>
 
-<!-- Premium Fonts -->
-<link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-<link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
-<link href="[https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@400;500;600;700;800&display=swap)" rel="stylesheet">
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<style>
-    :root {
-        --text-dark: #111827;
-        --text-muted: #64748B;
-        --primary-luxury: #0c0d12;
-        --accent-gold: #D4AF37;
-        --accent-champagne: #F3E5AB;
-        --glass-surface: rgba(255, 255, 255, 0.65);
-        --glass-border: rgba(255, 255, 255, 0.9);
-    }
+    <style>
+        :root {
+            --text-dark: #111827;
+            --text-muted: #64748B;
+            --primary-luxury: #0c0d12;
+            --accent-gold: #D4AF37;
+            --accent-champagne: #F3E5AB;
+            --glass-surface: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.9);
+        }
 
-    /* 🌟 RICH LUXURY GRADIENT BACKGROUND */
-    body {
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #e6ecf5 0%, #f0f3f9 50%, #e2e8f0 100%) !important;
-        background-attachment: fixed !important;
-        color: var(--text-dark);
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        padding-bottom: calc(70px + env(safe-area-inset-bottom)); 
-        line-height: 1.7;
-        overflow-x: hidden;
-    }
+        /* 🌟 RICH LUXURY GRADIENT BACKGROUND */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e6ecf5 0%, #f0f3f9 50%, #e2e8f0 100%) !important;
+            background-attachment: fixed !important;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: calc(70px + env(safe-area-inset-bottom)); 
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
 
-    /* 💎 GLOBAL FORCE-GLASS OVERRIDE */
-    .card, .card-body, .bg-white, .bg-light, .modal-content, .dropdown-menu, .table-responsive {
-        background: rgba(255, 255, 255, 0.65) !important;
-        backdrop-filter: blur(30px) saturate(200%) !important;
-        -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.9) !important;
-        border-radius: 20px !important;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.9) !important;
-        color: var(--text-dark) !important;
-    }
+        /* 💎 GLOBAL FORCE-GLASS OVERRIDE */
+        .card, .card-body, .modal-content, .dropdown-menu, .table-responsive {
+            background: rgba(255, 255, 255, 0.65) !important;
+            backdrop-filter: blur(30px) saturate(200%) !important;
+            -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.9) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.9) !important;
+            color: var(--text-dark) !important;
+        }
 
-    /* 🌟 CRYSTAL SKELETON SHIMMER ANIMATION */
-    .skeleton-loader {
-        background: linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.2) 75%);
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-        border-radius: 12px;
-    }
-    @keyframes shimmer {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-    }
+        /* 💎 REAL 3D CRYSTAL GLASS NAVBAR */
+        .premium-navbar {
+            background: linear-gradient(
+                135deg, 
+                rgba(20, 25, 35, 0.75) 0%, 
+                rgba(10, 14, 20, 0.85) 100%
+            ) !important;
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
+            padding: 14px 0;
+            color: white;
+            z-index: 1040;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4), 
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 
+                inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
+            transition: all 0.4s ease;
+        }
+        
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none !important;
+        }
+        
+        .brand-logo { 
+            height: 44px; 
+            width: auto; 
+            border-radius: 8px;
+            border: 1px solid var(--accent-gold);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
 
-    /* 💎 REAL 3D CRYSTAL GLASS NAVBAR */
-    .premium-navbar {
-        background: linear-gradient(
-            135deg, 
-            rgba(20, 25, 35, 0.75) 0%, 
-            rgba(10, 14, 20, 0.85) 100%
-        ) !important;
-        backdrop-filter: blur(30px) saturate(200%);
-        -webkit-backdrop-filter: blur(30px) saturate(200%);
-        padding: 14px 0;
-        color: white;
-        z-index: 1040;
-        border-top: 1px solid rgba(255, 255, 255, 0.3);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-        box-shadow: 
-            0 20px 40px rgba(0, 0, 0, 0.4), 
-            inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 
-            inset 0 -1px 0 0 rgba(0, 0, 0, 0.5);
-        transition: all 0.4s ease;
-    }
-    
-    .brand-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-decoration: none !important;
-    }
-    
-    .brand-logo { 
-        height: 44px; 
-        width: auto; 
-        border-radius: 8px;
-        border: 1px solid var(--accent-gold);
-        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
-    }
+        .brand-name {
+            font-family: 'Jost', sans-serif;
+            font-weight: 800;
+            font-size: 1.7rem;
+            letter-spacing: 2px;
+            color: #FFFFFF;
+            margin: 0;
+            line-height: 1;
+            background: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-    .brand-name {
-        font-family: 'Jost', sans-serif;
-        font-weight: 800;
-        font-size: 1.7rem;
-        letter-spacing: 2px;
-        color: #FFFFFF;
-        margin: 0;
-        line-height: 1;
-        background: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+        /* 🌟 LUXURY SEARCH BAR */
+        .header-search-form {
+            display: flex;
+            flex-grow: 1;
+            max-width: 650px;
+            margin: 0 30px;
+            border-radius: 30px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .header-search-form:focus-within {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .header-search-input {
+            border: none;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+            background: transparent;
+            color: #fff;
+        }
+        .header-search-input::placeholder { color: rgba(255, 255, 255, 0.6); }
+        .header-search-input:focus { background: transparent; box-shadow: none; }
+        
+        .voice-btn {
+            background: transparent;
+            border: none;
+            padding: 0 15px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.2s;
+        }
+        .voice-btn:hover { color: var(--accent-gold); }
 
-    /* 🌟 LUXURY SEARCH BAR */
-    .header-search-form {
-        display: flex;
-        flex-grow: 1;
-        max-width: 650px;
-        margin: 0 30px;
-        border-radius: 30px;
-        overflow: hidden;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-    }
-    .header-search-form:focus-within {
-        border-color: var(--accent-gold);
-        box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
-        background: rgba(255, 255, 255, 0.12);
-    }
-    .header-search-input {
-        border: none;
-        padding: 12px 20px;
-        font-size: 0.95rem;
-        width: 100%;
-        outline: none;
-        background: transparent;
-        color: #fff;
-    }
-    .header-search-input::placeholder { color: rgba(255, 255, 255, 0.6); }
-    .header-search-input:focus { background: transparent; box-shadow: none; }
-    
-    .voice-btn {
-        background: transparent;
-        border: none;
-        padding: 0 15px;
-        font-size: 1.2rem;
-        cursor: pointer;
-        color: #ccc;
-        transition: color 0.2s;
-    }
-    .voice-btn:hover { color: var(--accent-gold); }
+        .search-btn {
+            background: var(--accent-gold);
+            border: none;
+            padding: 0 22px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            color: #0c0d12;
+            font-weight: bold;
+        }
+        .search-btn:hover { background: #e6c55c; }
 
-    .search-btn {
-        background: var(--accent-gold);
-        border: none;
-        padding: 0 22px;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: 0.3s;
-        color: #0c0d12;
-        font-weight: bold;
-    }
-    .search-btn:hover { background: #e6c55c; }
+        /* 🌟 Crystal Live Search Dropdown */
+        #searchResultsDropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            z-index: 1050;
+            display: none;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+        .search-suggestion-item:hover {
+            background-color: rgba(212, 175, 55, 0.08);
+        }
 
-    /* 🌟 Crystal Live Search Dropdown */
-    #searchResultsDropdown {
-        position: absolute;
-        top: calc(100% + 10px);
-        left: 0;
-        width: 100%;
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.9);
-        z-index: 1050;
-        display: none;
-        max-height: 380px;
-        overflow-y: auto;
-    }
-    .search-suggestion-item:hover {
-        background-color: rgba(212, 175, 55, 0.08);
-    }
+        .nav-action-btn {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            padding: 8px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .nav-action-btn:hover { background: rgba(255, 255, 255, 0.08); color: white; border-color: rgba(212, 175, 55, 0.3); }
+        .nav-action-btn strong { font-weight: 600; font-size: 0.95rem; color: #fff; }
 
-    .nav-action-btn {
-        color: rgba(255, 255, 255, 0.85);
-        text-decoration: none;
-        padding: 8px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 10px;
-        font-size: 0.85rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.03);
-    }
-    .nav-action-btn:hover { background: rgba(255, 255, 255, 0.08); color: white; border-color: rgba(212, 175, 55, 0.3); }
-    .nav-action-btn strong { font-weight: 600; font-size: 0.95rem; color: #fff; }
+        /* Sub Navbar (Crystal Glass) */
+        .sub-navbar {
+            background-color: rgba(12, 13, 18, 0.75);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 10px 25px;
+            color: white;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 25px;
+            overflow-x: auto;
+            white-space: nowrap;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .sub-navbar::-webkit-scrollbar { display: none; }
+        .sub-navbar a { color: rgba(255,255,255,0.8); text-decoration: none; padding: 6px 12px; border-radius: 8px; transition: 0.3s; font-weight: 500; }
+        .sub-navbar a:hover { background: rgba(212, 175, 55, 0.15); color: var(--accent-gold); }
 
-    /* Sub Navbar (Crystal Glass) */
-    .sub-navbar {
-        background-color: rgba(12, 13, 18, 0.75);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        padding: 10px 25px;
-        color: white;
-        font-size: 0.9rem;
-        display: flex;
-        gap: 25px;
-        overflow-x: auto;
-        white-space: nowrap;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .sub-navbar::-webkit-scrollbar { display: none; }
-    .sub-navbar a { color: rgba(255,255,255,0.8); text-decoration: none; padding: 6px 12px; border-radius: 8px; transition: 0.3s; font-weight: 500; }
-    .sub-navbar a:hover { background: rgba(212, 175, 55, 0.15); color: var(--accent-gold); }
+        /* 📱 Mobile Header Fixes */
+        @media (max-width: 768px) {
+            .header-search-form { margin: 12px 0 0 0; width: 100%; order: 3; }
+            .mobile-header-block { flex-wrap: wrap; }
+            .nav-action-btn span { display: none; }
+            .nav-action-btn strong { font-size: 0.8rem; }
+            .sub-navbar { gap: 12px; padding: 8px 15px; }
+        }
 
-    /* 📱 Mobile Header Fixes */
-    @media (max-width: 768px) {
-        .header-search-form { margin: 12px 0 0 0; width: 100%; order: 3; }
-        .mobile-header-block { flex-wrap: wrap; }
-        .nav-action-btn span { display: none; }
-        .nav-action-btn strong { font-size: 0.8rem; }
-        .sub-navbar { gap: 12px; padding: 8px 15px; }
-    }
+        /* Offcanvas Sidebar (Crystal Glass) */
+        .offcanvas { border-right: none; box-shadow: 10px 0 40px rgba(0,0,0,0.15); background: rgba(255, 255, 255, 0.9) !important; backdrop-filter: blur(25px); }
+        .offcanvas-header { background-color: var(--primary-luxury); padding: 22px; color: white; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .mobile-menu-link { display: flex; align-items: center; padding: 16px 22px; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.04); transition: 0.3s; font-size: 1rem; }
+        .mobile-menu-link:hover { background-color: rgba(212, 175, 55, 0.08); color: var(--primary-luxury); padding-left: 28px; }
 
-    /* Offcanvas Sidebar (Crystal Glass) */
-    .offcanvas { border-right: none; box-shadow: 10px 0 40px rgba(0,0,0,0.15); background: rgba(255, 255, 255, 0.9) !important; backdrop-filter: blur(25px); }
-    .offcanvas-header { background-color: var(--primary-luxury); padding: 22px; color: white; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
-    .mobile-menu-link { display: flex; align-items: center; padding: 16px 22px; color: var(--text-dark); font-weight: 500; text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.04); transition: 0.3s; font-size: 1rem; }
-    .mobile-menu-link:hover { background-color: rgba(212, 175, 55, 0.08); color: var(--primary-luxury); padding-left: 28px; }
+        /* Mobile Bottom Nav (Crystal Glass) */
+        .mobile-bottom-nav { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
+            display: flex; justify-content: space-around; 
+            padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; 
+            z-index: 1050; 
+            border-top: 1px solid rgba(255,255,255,0.8); 
+        }
+        .nav-item-bottom { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #64748B; font-size: 0.72rem; font-weight: 500; transition: 0.3s; letter-spacing: 0.5px; text-transform: uppercase; }
+        .nav-item-bottom.active { color: var(--primary-luxury); font-weight: 700; transform: translateY(-2px); }
+        .nav-icon { font-size: 1.4rem; margin-bottom: 4px; }
 
-    /* Mobile Bottom Nav (Crystal Glass) */
-    .mobile-bottom-nav { 
-        position: fixed; bottom: 0; left: 0; right: 0; 
-        background: rgba(255, 255, 255, 0.85); 
-        backdrop-filter: blur(20px); 
-        -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 -10px 30px rgba(0,0,0,0.08); 
-        display: flex; justify-content: space-around; 
-        padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; 
-        z-index: 1050; 
-        border-top: 1px solid rgba(255,255,255,0.8); 
-    }
-    .nav-item-bottom { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #64748B; font-size: 0.72rem; font-weight: 500; transition: 0.3s; letter-spacing: 0.5px; text-transform: uppercase; }
-    .nav-item-bottom.active { color: var(--primary-luxury); font-weight: 700; transform: translateY(-2px); }
-    .nav-icon { font-size: 1.4rem; margin-bottom: 4px; }
+        @media (max-width: 991px) { body { padding-bottom: 90px; } }
 
-    @media (max-width: 991px) { body { padding-bottom: 90px; } }
+        /* 🤖 LUXURY AI & WHATSAPP WIDGETS */
+        .whatsapp-float {
+            position: fixed; right: 20px; bottom: 165px; z-index: 1060;
+            width: 56px; height: 56px; border-radius: 50%;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(18,140,126,0.35);
+            cursor: pointer; transition: transform .2s ease;
+        }
+        .whatsapp-float:hover { transform: translateY(-5px) scale(1.08); }
+        .whatsapp-float svg { width: 30px; height: 30px; fill: #fff; }
 
-    /* 🌟 LUXURY GLOSSY CRYSTAL BANNER STYLES */
-    .luxury-banner-wrapper {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        border-radius: 16px;
-        overflow: hidden;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
-    }
+        .premium-ai-avatar {
+            position: fixed; bottom: 95px; right: 20px; width: 56px; height: 56px;
+            border-radius: 50%; background: linear-gradient(135deg, #D4AF37 0%, #aa771c 100%);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.35);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 1060; border: 2px solid #FFFFFF;
+            transition: transform 0.3s ease;
+        }
+        .premium-ai-avatar:hover { transform: scale(1.08) rotate(5deg); }
+        .premium-ai-avatar svg { width: 28px; height: 28px; fill: #0c0d12; }
+        
+        .ai-chat-box {
+            position: fixed; bottom: 165px; right: 20px; width: 350px; max-width: 90vw; height: 480px;
+            background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px); border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.18); display: none; flex-direction: column;
+            z-index: 1060; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .ai-chat-header { background: var(--primary-luxury); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .ai-chat-quick-actions { padding: 12px 16px; background: rgba(248, 250, 252, 0.9); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .wa-btn { background: #25D366; color: white; text-decoration: none; padding: 10px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.3s; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25); }
+        .wa-btn:hover { background: #1EBE55; color: white; }
+        .ai-chat-messages { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg-bubble { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 0.88rem; line-height: 1.5; }
+        .msg-user { background: var(--primary-luxury); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-ai { background: rgba(241, 245, 249, 0.9); color: #0F172A; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(0,0,0,0.04); }
+        .ai-chat-input-area { padding: 14px; background: rgba(255,255,255,0.9); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 10px; }
+        .ai-chat-input-area input { flex-grow: 1; border: 1px solid #CBD5E1; border-radius: 30px; padding: 10px 18px; font-size: 0.88rem; outline: none; background: rgba(248, 250, 252, 0.8); }
+        .ai-send-btn { background: var(--primary-luxury); color: white; border: none; border-radius: 50%; width: 42px; height: 42px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .ai-send-btn:hover { background: #232F3E; }
+    </style>
+</head>
+<body>
 
-    .luxury-banner-wrapper img, 
-    .luxury-banner-wrapper video {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-        object-position: center center !important;
-        display: block;
-        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
+    <!-- 🌟 TOP ANNOUNCEMENT RIBBON -->
+    <div class="text-center py-2 px-3" style="background-color: rgba(12, 13, 18, 0.9); backdrop-filter: blur(5px); color: var(--accent-gold); font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; z-index: 1050; position: relative; border-bottom: 1px solid rgba(212,175,55,0.2);">
+        🎉 ⚡ 10 MINS - 1 HOUR LOCAL DELIVERY IN NOHAR | USE CODE: <span class="text-white">CGS MART10</span> FOR 1.5% OFF
+    </div>
 
-    .luxury-banner-wrapper:hover img,
-    .luxury-banner-wrapper:hover video {
-        transform: scale(1.02);
-    }
+    <!-- 💎 LUXURY CRYSTAL HEADER -->
+    <header class="sticky-top">
+        <div class="premium-navbar">
+            <div class="container-fluid px-3 d-flex align-items-center justify-content-between mobile-header-block">
+                
+                <!-- 1. Logo & Sidebar Toggle & Location Selector -->
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn text-white d-lg-none p-1 me-1 fs-4 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">☰</button>
+                    <a href="{% url 'home' %}" class="brand-container">
+                        <img src="https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg" alt="Logo" class="brand-logo">
+                        <span class="brand-name">CGS MART</span>
+                    </a>
 
-    .luxury-banner-wrapper::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 50%;
-        height: 100%;
-        background: linear-gradient(
-            90deg, 
-            transparent, 
-            rgba(255, 255, 255, 0.2), 
-            transparent
-        );
-        transform: skewX(-25deg);
-        pointer-events: none;
-        animation: glassReflection 5s infinite;
-        z-index: 6;
-    }
+                    <!-- 📍 Header Global Pincode / Location Selector -->
+                    <div class="d-none d-md-flex align-items-center text-white ms-3 px-2 py-1 rounded" style="background-color: rgba(255, 255, 255, 0.08); backdrop-filter: blur(5px); cursor: pointer; border: 1px solid rgba(255,255,255,0.15);" data-bs-toggle="modal" data-bs-target="#globalPincodeModal" title="Change Location">
+                        <span class="fs-6 me-1">📍</span>
+                        <div style="line-height: 1.1; font-size: 0.75rem;">
+                            <span class="text-white-50 d-block" style="font-size: 0.65rem;">Delivery in 10 Mins</span>
+                            <strong class="text-white" id="headerSelectedPincode">Nohar 335523</strong>
+                        </div>
+                    </div>
+                </div>
 
-    @keyframes glassReflection {
-        0% { left: -100%; }
-        25% { left: 150%; }
-        100% { left: 150%; }
-    }
+                <!-- 2. 🌟 Header Search Bar with Voice and Live Suggestions Dropdown -->
+                <form class="header-search-form order-3 order-lg-2 mt-2 mt-lg-0 position-relative" action="{% url 'home' %}#full-collection" method="GET" autocomplete="off">
+                    <input type="text" id="globalSearchInput" name="search" class="header-search-input" placeholder="Search Chachan General Store..." value="{{ search_query|default:'' }}" autocomplete="search-term">
+                    <button type="button" id="globalVoiceBtn" class="voice-btn" title="Search by Voice">🎤</button>
+                    <button type="submit" class="search-btn">🔍</button>
+                    
+                    <!-- 🌟 Live Search Dropdown Box -->
+                    <div id="searchResultsDropdown"></div>
+                </form>
 
-    /* 🌟 LUXURY BUTTONS */
-    .btn-primary, .btn-warning, .add-to-cart-ajax, .buy-now-btn, button[type="submit"] {
-        background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%) !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(212, 175, 55, 0.3) !important;
-        border-radius: 12px !important;
-        font-weight: 600 !important;
-        padding: 12px 24px !important;
-        box-shadow: 0 10px 20px rgba(12, 13, 18, 0.15) !important;
-        transition: all 0.3s ease !important;
-    }
+                <!-- 3. Actions (Account, Wishlist, Cart) -->
+                <div class="d-flex align-items-center gap-1 order-2 order-lg-3">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'profile' %}" class="nav-action-btn">
+                            <span>Hello, {{ user.first_name|default:user.username }}</span>
+                            <strong>Account & Lists</strong>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-action-btn">
+                            <span>Hello, sign in</span>
+                            <strong>Account & Lists</strong>
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'view_wishlist' %}" class="nav-action-btn d-none d-md-flex">
+                        <span>Returns</span>
+                        <strong>& Wishlist</strong>
+                    </a>
+                    
+                    <a href="{% url 'cart_detail' %}" class="nav-action-btn d-flex flex-row align-items-center gap-1">
+                        <span style="font-size: 1.8rem; line-height: 1; display: block !important;">🛒</span>
+                        <strong>Cart</strong>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 💎 Sub Navbar -->
+        <div class="sub-navbar shadow-sm">
+            <a href="{% url 'home' %}#full-collection">☰ All Products</a>
+            <a href="{% url 'track_order' %}">📦 Track Order</a>
+            <a href="{% url 'about' %}">About Us</a>
+            <a href="{% url 'contact' %}">Customer Service</a>
+            <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+            <strong class="ms-auto d-none d-md-block" style="color: var(--accent-gold);">⚡ Superfast Local Delivery: 10 Mins - 1 Hour</strong>
+        </div>
+    </header>
 
-    .btn-primary:hover, .btn-warning:hover, .add-to-cart-ajax:hover, .buy-now-btn:hover, button[type="submit"]:hover {
-        background: linear-gradient(135deg, #1f2430 0%, #0c0d12 100%) !important;
-        border-color: #D4AF37 !important;
-        box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3) !important;
-        transform: translateY(-2px);
-    }
+    <!-- 📍 Global Pincode Modal Popup -->
+    <div class="modal fade" id="globalPincodeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content rounded-4 border-0 shadow" style="background: rgba(255,255,255,0.9); backdrop-filter: blur(15px);">
+                <div class="modal-header text-white rounded-top-4 py-3" style="background-color: var(--primary-luxury);">
+                    <h5 class="modal-title fs-6 fw-bold">📍 Choose Your Location</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Enter your delivery pincode to check instant 10-minute to 1-hour local delivery availability in Nohar.</p>
+                    <div class="input-group mb-3">
+                        <input type="text" id="globalModalPincode" class="form-control" placeholder="Enter Pincode" maxlength="6" autocomplete="postal-code">
+                        <button class="btn fw-bold" type="button" id="saveGlobalPincodeBtn" style="background-color: var(--accent-gold); color: #0c0d12;">Apply</button>
+                    </div>
+                    <div id="globalModalResult" class="small fw-semibold text-center" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    /* 🌟 FORM INPUTS */
-    input.form-control, select.form-select, textarea.form-control {
-        background: rgba(255, 255, 255, 0.8) !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(203, 213, 225, 0.8) !important;
-        border-radius: 12px !important;
-        padding: 12px 16px !important;
-        color: #0f172a !important;
-        transition: all 0.3s ease;
-    }
-
-    input.form-control:focus, select.form-select:focus, textarea.form-control:focus {
-        background: #ffffff !important;
-        border-color: #D4AF37 !important;
-        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15) !important;
-    }
-
-    /* 🤖 LUXURY AI & WHATSAPP WIDGETS */
-    .whatsapp-float {
-        position: fixed; right: 20px; bottom: 165px; z-index: 1060;
-        width: 56px; height: 56px; border-radius: 50%;
-        background: linear-gradient(135deg, #25D366, #128C7E);
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 10px 25px rgba(18,140,126,0.35);
-        cursor: pointer; transition: transform .2s ease;
-    }
-    .whatsapp-float:hover { transform: translateY(-5px) scale(1.08); }
-    .whatsapp-float svg { width: 30px; height: 30px; fill: #fff; }
-
-    .premium-ai-avatar {
-        position: fixed; bottom: 95px; right: 20px; width: 56px; height: 56px;
-        border-radius: 50%; background: linear-gradient(135deg, #D4AF37 0%, #aa771c 100%);
-        box-shadow: 0 10px 25px rgba(212, 175, 55, 0.35);
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; z-index: 1060; border: 2px solid #FFFFFF;
-        transition: transform 0.3s ease;
-    }
-    .premium-ai-avatar:hover { transform: scale(1.08) rotate(5deg); }
-    .premium-ai-avatar svg { width: 28px; height: 28px; fill: #0c0d12; }
-    
-    .ai-chat-box {
-        position: fixed; bottom: 165px; right: 20px; width: 350px; max-width: 90vw; height: 480px;
-        background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px); border-radius: 20px;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.18); display: none; flex-direction: column;
-        z-index: 1060; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.8);
-    }
-    .ai-chat-header { background: var(--primary-luxury); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
-    .ai-chat-quick-actions { padding: 12px 16px; background: rgba(248, 250, 252, 0.9); border-bottom: 1px solid rgba(0,0,0,0.05); }
-    .wa-btn { background: #25D366; color: white; text-decoration: none; padding: 10px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.3s; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25); }
-    .wa-btn:hover { background: #1EBE55; color: white; }
-    .ai-chat-messages { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-    .msg-bubble { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 0.88rem; line-height: 1.5; }
-    .msg-user { background: var(--primary-luxury); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .msg-ai { background: rgba(241, 245, 249, 0.9); color: #0F172A; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(0,0,0,0.04); }
-    .ai-chat-input-area { padding: 14px; background: rgba(255,255,255,0.9); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 10px; }
-    .ai-chat-input-area input { flex-grow: 1; border: 1px solid #CBD5E1; border-radius: 30px; padding: 10px 18px; font-size: 0.88rem; outline: none; background: rgba(248, 250, 252, 0.8); }
-    .ai-send-btn { background: var(--primary-luxury); color: white; border: none; border-radius: 50%; width: 42px; height: 42px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-    .ai-send-btn:hover { background: #232F3E; }
-</style>
-
-<!-- 🌟 TOP ANNOUNCEMENT RIBBON -->
-<div class="text-center py-2 px-3" style="background-color: rgba(12, 13, 18, 0.9); backdrop-filter: blur(5px); color: var(--accent-gold); font-size: 0.85rem; font-weight: 600; letter-spacing: 1px; z-index: 1050; position: relative; border-bottom: 1px solid rgba(212,175,55,0.2);">
-    🎉 ⚡ 10 MINS - 1 HOUR LOCAL DELIVERY IN NOHAR | USE CODE: <span class="text-white">CGS MART10</span> FOR 1.5% OFF
-</div>
-
-<!-- 💎 LUXURY CRYSTAL HEADER -->
-<header class="sticky-top">
-    <div class="premium-navbar">
-        <div class="container-fluid px-3 d-flex align-items-center justify-content-between mobile-header-block">
-            
-            <!-- 1. Logo & Sidebar Toggle & Location Selector -->
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn text-white d-lg-none p-1 me-1 fs-4 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">☰</button>
-                <a href="{% url 'home' %}" class="brand-container">
-                    <img src="[https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg](https://res.cloudinary.com/mqge4pqj/image/upload/v1784787760/cgs_copy_ppnqnx.jpg)" alt="Logo" class="brand-logo">
-                    <span class="brand-name">CGS MART</span>
-                </a>
-
-                <!-- 📍 Header Global Pincode / Location Selector -->
-                <div class="d-none d-md-flex align-items-center text-white ms-3 px-2 py-1 rounded" style="background-color: rgba(255, 255, 255, 0.08); backdrop-filter: blur(5px); cursor: pointer; border: 1px solid rgba(255,255,255,0.15);" data-bs-toggle="modal" data-bs-target="#globalPincodeModal" title="Change Location">
-                    <span class="fs-6 me-1">📍</span>
-                    <div style="line-height: 1.1; font-size: 0.75rem;">
-                        <span class="text-white-50 d-block" style="font-size: 0.65rem;">Delivery in 10 Mins</span>
-                        <strong class="text-white" id="headerSelectedPincode">Nohar 335523</strong>
+    <!-- 🌟 Global Quick View Modal -->
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content p-4" style="background: rgba(255,255,255,0.85); backdrop-filter: blur(25px); border-radius: 24px;">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="qvTitle">Product Quick View</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row align-items-center">
+                    <div class="col-md-6 text-center">
+                        <img id="qvImage" src="" alt="Product" class="img-fluid rounded-4 shadow-sm" style="max-height: 280px; object-fit: contain;">
+                    </div>
+                    <div class="col-md-6">
+                        <h3 id="qvName" class="fw-bold mb-2"></h3>
+                        <h4 id="qvPrice" class="text-success fw-bold mb-3"></h4>
+                        <p id="qvDesc" class="text-muted small mb-4"></p>
+                        <a id="qvDetailBtn" href="#" class="btn w-100 fw-bold py-2" style="background: var(--primary-luxury); color: #fff;">View Full Details</a>
                     </div>
                 </div>
             </div>
-
-            <!-- 2. 🌟 Header Search Bar with Voice and Live Suggestions Dropdown -->
-            <form class="header-search-form order-3 order-lg-2 mt-2 mt-lg-0 position-relative" action="{% url 'home' %}#full-collection" method="GET" autocomplete="off">
-                <input type="text" id="globalSearchInput" name="search" class="header-search-input" placeholder="Search Chachan General Store..." value="{{ search_query|default:'' }}" autocomplete="search-term">
-                <button type="button" id="globalVoiceBtn" class="voice-btn" title="Search by Voice">🎤</button>
-                <button type="submit" class="search-btn">🔍</button>
-                
-                <!-- 🌟 Live Search Dropdown Box -->
-                <div id="searchResultsDropdown"></div>
-            </form>
-
-            <!-- 3. Actions (Account, Wishlist, Cart) -->
-            <div class="d-flex align-items-center gap-1 order-2 order-lg-3">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}" class="nav-action-btn">
-                        <span>Hello, {{ user.first_name|default:user.username }}</span>
-                        <strong>Account & Lists</strong>
-                    </a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="nav-action-btn">
-                        <span>Hello, sign in</span>
-                        <strong>Account & Lists</strong>
-                    </a>
-                {% endif %}
-                
-                <a href="{% url 'view_wishlist' %}" class="nav-action-btn d-none d-md-flex">
-                    <span>Returns</span>
-                    <strong>& Wishlist</strong>
-                </a>
-                
-                <a href="{% url 'cart_detail' %}" class="nav-action-btn d-flex flex-row align-items-center gap-1">
-                    <span style="font-size: 1.8rem; line-height: 1; display: block !important;">🛒</span>
-                    <strong>Cart</strong>
-                </a>
-            </div>
         </div>
     </div>
-    
-    <!-- 💎 Sub Navbar -->
-    <div class="sub-navbar shadow-sm">
-        <a href="{% url 'home' %}#full-collection">☰ All Products</a>
-        <a href="{% url 'track_order' %}">📦 Track Order</a>
-        <a href="{% url 'about' %}">About Us</a>
-        <a href="{% url 'contact' %}">Customer Service</a>
-        <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
-        <strong class="ms-auto d-none d-md-block" style="color: var(--accent-gold);">⚡ Superfast Local Delivery: 10 Mins - 1 Hour</strong>
-    </div>
-</header>
 
-<!-- 📍 Global Pincode Modal Popup -->
-<div class="modal fade" id="globalPincodeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content rounded-4 border-0 shadow" style="background: rgba(255,255,255,0.9); backdrop-filter: blur(15px);">
-            <div class="modal-header text-white rounded-top-4 py-3" style="background-color: var(--primary-luxury);">
-                <h5 class="modal-title fs-6 fw-bold">📍 Choose Your Location</h5>
-                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-                <p class="text-muted small mb-3">Enter your delivery pincode to check instant 10-minute to 1-hour local delivery availability in Nohar.</p>
-                <div class="input-group mb-3">
-                    <input type="text" id="globalModalPincode" class="form-control" placeholder="Enter Pincode" maxlength="6" autocomplete="postal-code">
-                    <button class="btn fw-bold" type="button" id="saveGlobalPincodeBtn" style="background-color: var(--accent-gold); color: #0c0d12;">Apply</button>
-                </div>
-                <div id="globalModalResult" class="small fw-semibold text-center" style="display: none;"></div>
-            </div>
+    <!-- 📱 Mobile Offcanvas Sidebar -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title fw-bold">Hello, {% if user.is_authenticated %}{{ user.first_name }}{% else %}Sign in{% endif %}</h5>
+            <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-    </div>
-</div>
-
-<!-- 🌟 Global Quick View Modal -->
-<div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content p-4" style="background: rgba(255,255,255,0.85); backdrop-filter: blur(25px); border-radius: 24px;">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold" id="qvTitle">Product Quick View</h5>
-                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body row align-items-center">
-                <div class="col-md-6 text-center">
-                    <img id="qvImage" src="" alt="Product" class="img-fluid rounded-4 shadow-sm" style="max-height: 280px; object-fit: contain;">
-                </div>
-                <div class="col-md-6">
-                    <h3 id="qvName" class="fw-bold mb-2"></h3>
-                    <h4 id="qvPrice" class="text-success fw-bold mb-3"></h4>
-                    <p id="qvDesc" class="text-muted small mb-4"></p>
-                    <a id="qvDetailBtn" href="#" class="btn w-100 fw-bold py-2" style="background: var(--primary-luxury); color: #fff;">View Full Details</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 📱 Mobile Offcanvas Sidebar -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSidebar">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title fw-bold">Hello, {% if user.is_authenticated %}{{ user.first_name }}{% else %}Sign in{% endif %}</h5>
-        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body p-0">
-        <div class="d-flex flex-column h-100">
-            <div class="flex-grow-1 mt-2">
-                <div class="p-3 bg-light border-bottom d-flex align-items-center justify-content-between" data-bs-toggle="modal" data-bs-target="#globalPincodeModal" data-bs-dismiss="offcanvas" style="cursor: pointer;">
-                    <div class="d-flex align-items-center gap-2">
-                        <span>📍</span>
-                        <span class="fw-bold small">Delivery Location: <span id="mobileSelectedPincode">Nohar 335523</span></span>
+        <div class="offcanvas-body p-0">
+            <div class="d-flex flex-column h-100">
+                <div class="flex-grow-1 mt-2">
+                    <div class="p-3 bg-light border-bottom d-flex align-items-center justify-content-between" data-bs-toggle="modal" data-bs-target="#globalPincodeModal" data-bs-dismiss="offcanvas" style="cursor: pointer;">
+                        <div class="d-flex align-items-center gap-2">
+                            <span>📍</span>
+                            <span class="fw-bold small">Delivery Location: <span id="mobileSelectedPincode">Nohar 335523</span></span>
+                        </div>
+                        <span class="badge bg-dark">Change</span>
                     </div>
-                    <span class="badge bg-dark">Change</span>
+
+                    <a href="{% url 'home' %}" class="mobile-menu-link">🏠 <span class="ms-3">Home</span></a>
+                    <a href="{% url 'track_order' %}" class="mobile-menu-link" data-bs-dismiss="offcanvas">📦 <span class="ms-3">Track Order</span></a>
+                    <a href="{% url 'home' %}#full-collection" class="mobile-menu-link" data-bs-dismiss="offcanvas">🛍️ <span class="ms-3">Shop Products</span></a>
+                    <a href="{% url 'about' %}" class="mobile-menu-link">🏢 <span class="ms-3">About Us</span></a>
+                    <a href="{% url 'contact' %}" class="mobile-menu-link">📞 <span class="ms-3">Contact Support</span></a>
+                    <a href="{% url 'privacy_policy' %}" class="mobile-menu-link">📄 <span class="ms-3">Privacy Policy</span></a>
                 </div>
-
-                <a href="{% url 'home' %}" class="mobile-menu-link">🏠 <span class="ms-3">Home</span></a>
-                <a href="{% url 'track_order' %}" class="mobile-menu-link" data-bs-dismiss="offcanvas">📦 <span class="ms-3">Track Order</span></a>
-                <a href="{% url 'home' %}#full-collection" class="mobile-menu-link" data-bs-dismiss="offcanvas">🛍️ <span class="ms-3">Shop Products</span></a>
-                <a href="{% url 'about' %}" class="mobile-menu-link">🏢 <span class="ms-3">About Us</span></a>
-                <a href="{% url 'contact' %}" class="mobile-menu-link">📞 <span class="ms-3">Contact Support</span></a>
-                <a href="{% url 'privacy_policy' %}" class="mobile-menu-link">📄 <span class="ms-3">Privacy Policy</span></a>
-            </div>
-            
-            <div class="p-4 bg-light border-top">
-                {% if user.is_authenticated %}
-                    <p class="mb-3 fw-bold text-dark fs-5">Hi, {{ user.first_name|default:user.username }}!</p>
-                    <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 fw-bold rounded-3 py-2">Log Out</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn w-100 fw-bold rounded-3 py-2 mb-3" style="background-color: var(--accent-gold); color: #0c0d12;">Login to Account</a>
-                    <a href="{% url 'register' %}" class="btn btn-outline-dark w-100 fw-bold rounded-3 py-2">Sign Up</a>
-                {% endif %}
+                
+                <div class="p-4 bg-light border-top">
+                    {% if user.is_authenticated %}
+                        <p class="mb-3 fw-bold text-dark fs-5">Hi, {{ user.first_name|default:user.username }}!</p>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger w-100 fw-bold rounded-3 py-2">Log Out</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn w-100 fw-bold rounded-3 py-2 mb-3" style="background-color: var(--accent-gold); color: #0c0d12;">Login to Account</a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-dark w-100 fw-bold rounded-3 py-2">Sign Up</a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- MAIN CONTENT -->
-<div class="container-fluid p-0 flex-grow-1">
-    {% if messages %}
-    <div class="container mt-4">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm border-0" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
+    <!-- MAIN CONTENT -->
+    <div class="container-fluid p-0 flex-grow-1">
+        {% if messages %}
+        <div class="max-w-[1200px] mx-auto mt-4 px-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm border-0" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
     </div>
-    {% endif %}
 
-    {% block content %}
-    {% endblock %}
-</div>
-
-<!-- 🛡️ TRUST SIGNALS (Footer Top) -->
-<div class="container-fluid py-5 mt-auto border-top border-bottom d-none d-md-block" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px);">
-    <div class="container" style="max-width: 1400px;">
-        <div class="row text-center g-4">
-            <div class="col-md-3">
-                <span class="fs-1 mb-3 d-block">🔒</span>
-                <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-luxury); font-size: 1.1rem;">100% Secure Payments</h6>
-                <p class="small text-muted mb-0">Your data is safe with us</p>
-            </div>
-            <div class="col-md-3">
-                <span class="fs-1 mb-3 d-block">💵</span>
-                <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-luxury); font-size: 1.1rem;">Cash on Delivery</h6>
-                <p class="small text-muted mb-0">Pay when you receive</p>
-            </div>
-            <div class="col-md-3">
-                <span class="fs-1 mb-3 d-block">⚡</span>
-                <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-luxury); font-size: 1.1rem;">10 Mins - 1 Hour Delivery</h6>
-                <p class="small text-muted mb-0">Superfast dispatch across Nohar</p>
-            </div>
-            <div class="col-md-3">
-                <span class="fs-1 mb-3 d-block">⭐</span>
-                <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-luxury); font-size: 1.1rem;">Premium Quality</h6>
-                <p class="small text-muted mb-0">Handpicked essentials</p>
+    <!-- 🛡️ TRUST SIGNALS (Footer Top) -->
+    <div class="container-fluid py-5 mt-auto border-top border-bottom d-none d-md-block" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px);">
+        <div class="container" style="max-width: 1400px;">
+            <div class="row text-center g-4">
+                <div class="col-md-3">
+                    <span class="fs-1 mb-3 d-block">🔒</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-luxury); font-size: 1.1rem;">100% Secure Payments</h6>
+                    <p class="small text-muted mb-0">Your data is safe with us</p>
+                </div>
+                <div class="col-md-3">
+                    <span class="fs-1 mb-3 d-block">💵</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-luxury); font-size: 1.1rem;">Cash on Delivery</h6>
+                    <p class="small text-muted mb-0">Pay when you receive</p>
+                </div>
+                <div class="col-md-3">
+                    <span class="fs-1 mb-3 d-block">⚡</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-luxury); font-size: 1.1rem;">10 Mins - 1 Hour Delivery</h6>
+                    <p class="small text-muted mb-0">Superfast dispatch across Nohar</p>
+                </div>
+                <div class="col-md-3">
+                    <span class="fs-1 mb-3 d-block">⭐</span>
+                    <h6 class="fw-bold" style="font-family: 'Jost', sans-serif; color: var(--primary-luxury); font-size: 1.1rem;">Premium Quality</h6>
+                    <p class="small text-muted mb-0">Handpicked essentials</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- 📄 FOOTER -->
-<footer class="text-white py-5" style="background-color: rgba(12, 13, 18, 0.95); backdrop-filter: blur(12px); margin-bottom: env(safe-area-inset-bottom); border-top: 1px solid rgba(212,175,55,0.2);">
-    <div class="container" style="max-width: 1400px; padding: 0 25px;">
-        <div class="row g-5">
-            <div class="col-lg-4">
-                <h5 class="fw-bold mb-4 text-uppercase" style="color: var(--accent-gold); font-size: 1.5rem; letter-spacing: 2px;">CGS MART.</h5>
-                <p class="text-white-50" style="line-height: 1.8;">
-                    Nohar's premium destination for quality fashion, skincare, and daily essentials. 
-                    Delivering happiness to your doorstep with trust and speed in 10 mins - 1 hour.
-                </p>
+    <!-- 📄 FOOTER -->
+    <footer class="text-white py-5" style="background-color: rgba(12, 13, 18, 0.95); backdrop-filter: blur(12px); margin-bottom: env(safe-area-inset-bottom); border-top: 1px solid rgba(212,175,55,0.2);">
+        <div class="container" style="max-width: 1400px; padding: 0 25px;">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <h5 class="fw-bold mb-4 text-uppercase" style="color: var(--accent-gold); font-size: 1.5rem; letter-spacing: 2px;">CGS MART.</h5>
+                    <p class="text-white-50" style="line-height: 1.8;">
+                        Nohar's premium destination for quality fashion, skincare, and daily essentials. 
+                        Delivering happiness to your doorstep with trust and speed in 10 mins - 1 hour.
+                    </p>
+                </div>
+                <div class="col-6 col-lg-4">
+                    <h6 class="fw-bold mb-4 text-uppercase text-white" style="letter-spacing: 1px;">Quick Links</h6>
+                    <ul class="list-unstyled" style="line-height: 2;">
+                        <li><a href="{% url 'home' %}" class="text-white-50 text-decoration-none transition hover:text-white">Home</a></li>
+                        <li><a href="{% url 'track_order' %}" class="text-white-50 text-decoration-none transition hover:text-white">Track Order</a></li>
+                        <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none transition hover:text-white">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none transition hover:text-white">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-4">
+                    <h6 class="fw-bold mb-4 text-uppercase text-white" style="letter-spacing: 1px;">Legal</h6>
+                    <ul class="list-unstyled" style="line-height: 2;">
+                        <li><a href="{% url 'privacy_policy' %}" class="text-white-50 text-decoration-none transition hover:text-white">Privacy Policy</a></li>
+                        <li><a href="{% url 'terms_conditions' %}" class="text-white-50 text-decoration-none transition hover:text-white">Terms & Conditions</a></li>
+                        <li><a href="{% url 'refund_policy' %}" class="text-white-50 text-decoration-none transition hover:text-white">Refund Policy</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-6 col-lg-4">
-                <h6 class="fw-bold mb-4 text-uppercase text-white" style="letter-spacing: 1px;">Quick Links</h6>
-                <ul class="list-unstyled" style="line-height: 2;">
-                    <li><a href="{% url 'home' %}" class="text-white-50 text-decoration-none transition">Home</a></li>
-                    <li><a href="{% url 'track_order' %}" class="text-white-50 text-decoration-none transition">Track Order</a></li>
-                    <li><a href="{% url 'about' %}" class="text-white-50 text-decoration-none transition">About Us</a></li>
-                    <li><a href="{% url 'contact' %}" class="text-white-50 text-decoration-none transition">Contact Support</a></li>
-                </ul>
-            </div>
-            <div class="col-6 col-lg-4">
-                <h6 class="fw-bold mb-4 text-uppercase text-white" style="letter-spacing: 1px;">Legal</h6>
-                <ul class="list-unstyled" style="line-height: 2;">
-                    <li><a href="{% url 'privacy_policy' %}" class="text-white-50 text-decoration-none transition">Privacy Policy</a></li>
-                    <li><a href="{% url 'terms_conditions' %}" class="text-white-50 text-decoration-none transition">Terms & Conditions</a></li>
-                    <li><a href="{% url 'refund_policy' %}" class="text-white-50 text-decoration-none transition">Refund Policy</a></li>
-                </ul>
+            <hr class="my-5 border-light opacity-25">
+            <div class="text-center text-white-50 pb-4 pb-lg-0">
+                <p class="mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">© 2026 CGS MART. All Rights Reserved.</p>
             </div>
         </div>
-        <hr class="my-5 border-light opacity-25">
-        <div class="text-center text-white-50 pb-4 pb-lg-0">
-            <p class="mb-0 text-uppercase" style="letter-spacing: 1px; font-size: 0.85rem;">© 2026 CGS MART. All Rights Reserved.</p>
-        </div>
-    </div>
-</footer>
+    </footer>
 
-<!-- 📱 APP-STYLE BOTTOM NAVIGATION -->
-<div class="mobile-bottom-nav d-lg-none">
-    <a href="{% url 'home' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-        <span class="nav-icon">🏠</span><span>Home</span>
-    </a>
-    <a href="{% url 'view_wishlist' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'view_wishlist' %}active{% endif %}">
-        <span class="nav-icon">❤️</span><span>Wishlist</span>
-    </a>
-    <a href="{% url 'cart_detail' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}">
-        <span class="nav-icon">🛒</span><span>Cart</span>
-    </a>
-    <a href="{% url 'profile' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
-        <span class="nav-icon">👤</span><span>Profile</span>
-    </a>
-</div>
-
-<!-- 🌟 FLOATING WHATSAPP BUTTON -->
-<div id="whatsappFloat" class="whatsapp-float" role="button" aria-label="Chat on WhatsApp" title="Chat with us on WhatsApp">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M20.52 3.48A11.9 11.9 0 0 0 12 0C5.373 0 .001 5.373.001 12c0 2.116.553 4.18 1.6 6.01L0 24l6.2-1.6A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12 0-3.2-1.25-6.2-3.48-8.52zM12 21.5c-1.9 0-3.7-.5-5.3-1.4l-.38-.22-3.7.96.99-3.6-.24-.38A9.5 9.5 0 1 1 21.5 12 9.5 9.5 0 0 1 12 21.5zM17.2 14.1c-.3-.15-1.8-.9-2.1-1-.3-.1-.5-.15-.7.15-.2.3-.8 1-.95 1.2-.15.2-.3.25-.6.1-.3-.15-1.2-.45-2.3-1.4-.85-.75-1.4-1.7-1.55-2-.15-.3 0-.45.1-.6.1-.1.3-.3.45-.45.15-.15.2-.25.3-.4.1-.15 0-.3-.05-.45-.05-.15-.7-1.7-.95-2.35-.25-.6-.5-.5-.7-.5-.2 0-.45 0-.7 0-.25 0-.65.1-.99.45-.35.35-1.35 1.3-1.35 3.15 0 1.85 1.4 3.65 1.6 3.9.2.25 2.8 4.3 6.8 5.95 4 .15 4.4-2.6 4.4-3 0-.4-.35-.6-.65-.75z"/>
-    </svg>
-</div>
-
-<!-- Toggle Button for AI Chat -->
-<div class="premium-ai-avatar" id="aiChatToggleBtn" title="Ask AI">
-    <svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" viewBox="0 0 24 24">
-        <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5z" clip-rule="evenodd" />
-    </svg>
-</div>
-
-<!-- Chat Window -->
-<div class="ai-chat-box" id="aiChatWindow">
-    <div class="ai-chat-header">
-        <div class="d-flex align-items-center gap-2">
-            <span class="fs-5">✨</span>
-            <span style="letter-spacing: 0.5px;">CGS MART Assistant</span>
-        </div>
-        <button type="button" class="btn-close btn-close-white shadow-none" id="closeAiChat"></button>
-    </div>
-    
-    <div class="ai-chat-quick-actions">
-        <a href="[https://wa.me/917357073316?text=Hi%20CGS%20MART%20Team,%20mujhe%20help%20chahiye](https://wa.me/917357073316?text=Hi%20CGS%20MART%20Team,%20mujhe%20help%20chahiye)!" target="_blank" class="wa-btn">
-            <span style="font-size: 1.1rem;">💬</span> Chat on WhatsApp
+    <!-- 📱 APP-STYLE BOTTOM NAVIGATION -->
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="{% url 'home' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+            <span class="nav-icon">🏠</span><span>Home</span>
+        </a>
+        <a href="{% url 'view_wishlist' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'view_wishlist' %}active{% endif %}">
+            <span class="nav-icon">❤️</span><span>Wishlist</span>
+        </a>
+        <a href="{% url 'cart_detail' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}">
+            <span class="nav-icon">🛒</span><span>Cart</span>
+        </a>
+        <a href="{% url 'profile' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+            <span class="nav-icon">👤</span><span>Profile</span>
         </a>
     </div>
-    
-    <div class="ai-chat-messages" id="aiMsgContainer">
-        <div class="msg-bubble msg-ai shadow-sm border border-light">
-            Namaste! 🙏 Main CGS MART AI hu. Aap mujhse koi bhi sawaal pooch sakte hain, ya seedha WhatsApp par message kar sakte hain!
+
+    <!-- 🌟 FLOATING WHATSAPP BUTTON -->
+    <div id="whatsappFloat" class="whatsapp-float" role="button" aria-label="Chat on WhatsApp" title="Chat with us on WhatsApp">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.52 3.48A11.9 11.9 0 0 0 12 0C5.373 0 .001 5.373.001 12c0 2.116.553 4.18 1.6 6.01L0 24l6.2-1.6A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12 0-3.2-1.25-6.2-3.48-8.52zM12 21.5c-1.9 0-3.7-.5-5.3-1.4l-.38-.22-3.7.96.99-3.6-.24-.38A9.5 9.5 0 1 1 21.5 12 9.5 9.5 0 0 1 12 21.5zM17.2 14.1c-.3-.15-1.8-.9-2.1-1-.3-.1-.5-.15-.7.15-.2.3-.8 1-.95 1.2-.15.2-.3.25-.6.1-.3-.15-1.2-.45-2.3-1.4-.85-.75-1.4-1.7-1.55-2-.15-.3 0-.45.1-.6.1-.1.3-.3.45-.45.15-.15.2-.25.3-.4.1-.15 0-.3-.05-.45-.05-.15-.7-1.7-.95-2.35-.25-.6-.5-.5-.7-.5-.2 0-.45 0-.7 0-.25 0-.65.1-.99.45-.35.35-1.35 1.3-1.35 3.15 0 1.85 1.4 3.65 1.6 3.9.2.25 2.8 4.3 6.8 5.95 4 .15 4.4-2.6 4.4-3 0-.4-.35-.6-.65-.75z"/>
+        </svg>
+    </div>
+
+    <!-- Toggle Button for AI Chat -->
+    <div class="premium-ai-avatar" id="aiChatToggleBtn" title="Ask AI">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.466 7.89l.813-2.846A.75.75 0 019 4.5zM18 1.5a.75.75 0 01.728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 010 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 01-1.456 0l-.258-1.036a2.625 2.625 0 00-1.91-1.91l-1.036-.258a.75.75 0 010-1.456l1.036-.258a2.625 2.625 0 001.91-1.91l.258-1.036A.75.75 0 0118 1.5z" clip-rule="evenodd" />
+        </svg>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="ai-chat-box" id="aiChatWindow">
+        <div class="ai-chat-header">
+            <div class="d-flex align-items-center gap-2">
+                <span class="fs-5">✨</span>
+                <span style="letter-spacing: 0.5px;">CGS MART Assistant</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white shadow-none" id="closeAiChat"></button>
+        </div>
+        
+        <div class="ai-chat-quick-actions">
+            <a href="https://wa.me/917357073316?text=Hi%20CGS%20MART%20Team,%20mujhe%20help%20chahiye!" target="_blank" class="wa-btn">
+                <span style="font-size: 1.1rem;">💬</span> Chat on WhatsApp
+            </a>
+        </div>
+        
+        <div class="ai-chat-messages" id="aiMsgContainer">
+            <div class="msg-bubble msg-ai shadow-sm border border-light">
+                Namaste! 🙏 Main CGS MART AI hu. Aap mujhse koi bhi sawaal pooch sakte hain, ya seedha WhatsApp par message kar sakte hain!
+            </div>
+        </div>
+        
+        <div class="ai-chat-input-area">
+            <span id="aiCsrfContainer" style="display:none;">{% csrf_token %}</span>
+            <input type="text" id="aiUserInput" placeholder="Type your question here..." autocomplete="off">
+            <button type="button" class="ai-send-btn shadow-sm" id="aiSendBtn">➤</button>
         </div>
     </div>
-    
-    <div class="ai-chat-input-area">
-        <span id="aiCsrfContainer" style="display:none;">{% csrf_token %}</span>
-        <input type="text" id="aiUserInput" placeholder="Type your question here..." autocomplete="off">
-        <button type="button" class="ai-send-btn shadow-sm" id="aiSendBtn">➤</button>
-    </div>
-</div>
 
-<!-- BOOTSTRAP JS (Safe CDN) -->
-<script src="[https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js](https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js)"></script>
+    <!-- BOOTSTRAP JS (Safe CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- 🌟 SAFE & BULLETPROOF JAVASCRIPT LOGIC -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+    <!-- 🌟 SAFE & BULLETPROOF JAVASCRIPT LOGIC -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
 
-        try {
-            // Sync Header Location from localStorage
-            const savedPin = localStorage.getItem("CGS_MART_user_pincode");
-            const savedCity = localStorage.getItem("CGS_MART_user_city");
-            const headerPinEl = document.getElementById("headerSelectedPincode");
-            const mobilePinEl = document.getElementById("mobileSelectedPincode");
-            
-            if(savedPin && headerPinEl) {
-                headerPinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
-            }
-            if(savedPin && mobilePinEl) {
-                mobilePinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
-            }
-
-            // Global Pincode Modal Save Logic
-            const applyBtn = document.getElementById("saveGlobalPincodeBtn");
-            const inputEl = document.getElementById("globalModalPincode");
-            const resEl = document.getElementById("globalModalResult");
-
-            if(applyBtn && inputEl) {
-                applyBtn.addEventListener("click", function() {
-                    let pin = inputEl.value.trim();
-                    if(pin.length !== 6) {
-                        resEl.style.display = "block";
-                        resEl.className = "small fw-semibold text-danger";
-                        resEl.innerText = "Enter valid 6-digit pincode.";
-                        return;
-                    }
-
-                    applyBtn.innerText = "...";
-                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
-
-                    fetch('/api/check-delivery/', {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRFToken": csrfToken,
-                            "X-Requested-With": "XMLHttpRequest"
-                        },
-                        body: JSON.stringify({ pincode: pin })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        applyBtn.innerText = "Apply";
-                        resEl.style.display = "block";
-                        if(data.available) {
-                            resEl.className = "small fw-semibold text-success";
-                            resEl.innerText = "⚡ 10 Mins delivery available!";
-                            localStorage.setItem("CGS_MART_user_pincode", pin);
-                            localStorage.setItem("CGS_MART_user_city", data.city || "Nohar");
-                            if(headerPinEl) headerPinEl.innerText = (data.city || "Nohar") + " " + pin;
-                            if(mobilePinEl) mobilePinEl.innerText = (data.city || "Nohar") + " " + pin;
-                            setTimeout(() => { location.reload(); }, 1000);
-                        } else {
-                            resEl.className = "small fw-semibold text-danger";
-                            resEl.innerText = data.message;
-                        }
-                    })
-                    .catch(err => {
-                        applyBtn.innerText = "Apply";
-                        console.error(err);
-                    });
-                });
-            }
-        } catch(e) { console.log(e); }
-
-        try {
-            // 2. WhatsApp Float Logic
-            var btn = document.getElementById('whatsappFloat');
-            if (btn) {
-                btn.addEventListener('click', function () {
-                    var phone = '917357073316'; 
-                    var text = encodeURIComponent('Hi Chachan General Store, I need help with...');
-                    var url = '[https://wa.me/](https://wa.me/)' + phone + '?text=' + text;
-                    window.open(url, '_blank');
-                });
-            }
-        } catch(e) { console.log(e); }
-
-        try {
-            // 3. AI Assistant Logic
-            const toggleBtn = document.getElementById("aiChatToggleBtn");
-            const chatWindow = document.getElementById("aiChatWindow");
-            const closeBtn = document.getElementById("closeAiChat");
-            const sendBtn = document.getElementById("aiSendBtn");
-            const userInput = document.getElementById("aiUserInput");
-            const msgContainer = document.getElementById("aiMsgContainer");
-
-            if(toggleBtn) {
-                toggleBtn.addEventListener("click", () => {
-                    chatWindow.style.display = (chatWindow.style.display === "flex") ? "none" : "flex";
-                });
-            }
-
-            if(closeBtn) {
-                closeBtn.addEventListener("click", () => { chatWindow.style.display = "none"; });
-            }
-
-            function appendMessage(text, isUser) {
-                const msgDiv = document.createElement("div");
-                msgDiv.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-ai'} shadow-sm`;
-                msgDiv.innerText = text;
-                msgContainer.appendChild(msgDiv);
-                msgContainer.scrollTop = msgContainer.scrollHeight;
-            }
-
-            function sendAiMessage() {
-                const query = userInput.value.trim();
-                if (!query) return;
-
-                appendMessage(query, true);
-                userInput.value = "";
-
-                const typingDiv = document.createElement("div");
-                typingDiv.className = "msg-bubble msg-ai shadow-sm";
-                typingDiv.innerText = "Thinking...";
-                typingDiv.id = "aiTyping";
-                msgContainer.appendChild(typingDiv);
-
-                const aiUrl = "{% url 'ai_assistant_chat' %}";
-                const csrfInput = document.querySelector('#aiCsrfContainer input[name=csrfmiddlewaretoken]');
-                const aiCsrfToken = csrfInput ? csrfInput.value : '';
-
-                fetch(aiUrl, {
-                    method: "POST",
-                    headers: { 
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": aiCsrfToken,
-                        "X-Requested-With": "XMLHttpRequest"
-                    },
-                    body: JSON.stringify({ message: query })
-                })
-                .then(async response => {
-                    if (!response.ok) {
-                        throw new Error("Server error: " + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById("aiTyping")?.remove();
-                    appendMessage(data.response || "No response received.", false);
-                })
-                .catch(error => {
-                    console.error(error);
-                    document.getElementById("aiTyping")?.remove();
-                    appendMessage("Technical error! Please check console for details.", false);
-                });
-            }
-
-            if(sendBtn) {
-                sendBtn.addEventListener("click", sendAiMessage);
-            }
-            
-            if(userInput) {
-                userInput.addEventListener("keypress", (e) => {
-                    if (e.key === "Enter") sendAiMessage();
-                });
-            }
-        } catch(e) { console.log(e); }
-
-        try {
-            // 4. GLOBAL VOICE SEARCH LOGIC
-            const voiceBtn = document.getElementById("globalVoiceBtn");
-            const searchInput = document.getElementById("globalSearchInput");
-            
-            if (voiceBtn && searchInput) {
-                const searchForm = searchInput.closest("form");
-
-                if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    const recognition = new SpeechRecognition();
-                    
-                    recognition.lang = "en-IN"; 
-                    recognition.continuous = false;
-                    recognition.interimResults = false;
-
-                    voiceBtn.addEventListener("click", function (e) {
-                        e.preventDefault();
-                        try {
-                            recognition.start();
-                            voiceBtn.innerHTML = "🔴";
-                            searchInput.placeholder = "Listening...";
-                        } catch (err) {
-                            console.log("Recognition start error:", err);
-                            alert("Microphone system is busy or blocked. Please allow mic permissions.");
-                        }
-                    });
-
-                    recognition.onresult = function (event) {
-                        let transcript = event.results[0][0].transcript.trim();
-                        searchInput.value = transcript;
-                        voiceBtn.innerHTML = "🎤";
-                        if(searchForm) searchForm.submit();
-                    };
-
-                    recognition.onerror = function (event) {
-                        console.error("Speech recognition error:", event.error);
-                        alert("Mic Error: " + event.error);
-                        voiceBtn.innerHTML = "🎤";
-                        searchInput.placeholder = "Search Chachan General Store...";
-                    };
-
-                    recognition.onend = function () {
-                        voiceBtn.innerHTML = "🎤";
-                        searchInput.placeholder = "Search Chachan General Store...";
-                    };
-                } else {
-                    voiceBtn.style.display = "none";
-                }
-            }
-        } catch(e) { console.log(e); }
-
-        try {
-            // 5. LIVE SEARCH AUTO-SUGGEST DROPDOWN LOGIC
-            const searchInput = document.getElementById("globalSearchInput");
-            const dropdownBox = document.getElementById("searchResultsDropdown");
-
-            if (searchInput && dropdownBox) {
-                let debounceTimer;
-
-                searchInput.addEventListener("input", function () {
-                    clearTimeout(debounceTimer);
-                    let query = this.value.trim();
-
-                    if (query.length < 2) {
-                        dropdownBox.style.display = "none";
-                        return;
-                    }
-
-                    debounceTimer = setTimeout(() => {
-                        fetch(`/api/search-suggestions/?q=${encodeURIComponent(query)}`, {
-                            headers: { "X-Requested-With": "XMLHttpRequest" }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.products && data.products.length > 0) {
-                                let html = "";
-                                data.products.forEach(p => {
-                                    html += `
-                                        <a href="${p.url}" class="d-flex align-items-center gap-3 p-2 text-decoration-none border-bottom text-dark search-suggestion-item">
-                                            <img src="${p.image}" alt="${p.name}" style="width: 40px; height: 40px; object-fit: contain; mix-blend-mode: multiply;">
-                                            <div class="flex-grow-1">
-                                                <div class="fw-semibold text-truncate" style="font-size: 0.9rem; max-width: 250px;">${p.name}</div>
-                                                <div class="text-success small fw-bold">₹${p.price}</div>
-                                            </div>
-                                        </a>
-                                    `;
-                                });
-                                dropdownBox.innerHTML = html;
-                                dropdownBox.style.display = "block";
-                            } else {
-                                dropdownBox.style.display = "none";
-                            }
-                        })
-                        .catch(err => console.error("Search suggestion error:", err));
-                    }, 300);
-                });
-
-                document.addEventListener("click", function (e) {
-                    if (!searchInput.contains(e.target) && !dropdownBox.contains(e.target)) {
-                        dropdownBox.style.display = "none";
-                    }
-                });
-            }
-        } catch(e) { console.log(e); }
-        
-        try {
-            // 6. Register Service Worker for PWA
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js').then(function(registration) {
-                        console.log('ServiceWorker registration successful');
-                    }, function(err) {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-                });
-            }
-
-            // 7. Browser Back/Forward Cache Login State Issue Fix
-            window.addEventListener('pageshow', function (event) {
-                if (event.persisted) {
-                    window.location.reload();
-                }
-            });
-        } catch(e) { console.log(e); }
-
-        // 🌟 8. THE BULLETPROOF CART & VARIANT LOGIC 🌟
-        try {
-            // Dynamic Price Updater
-            document.querySelectorAll('.variant-selector').forEach(select => {
-                select.addEventListener('change', function() {
-                    const productId = this.getAttribute('data-product-id');
-                    const newPrice = this.options[this.selectedIndex].getAttribute('data-price');
-                    
-                    const priceEl = document.getElementById(`price-display-${productId}`);
-                    if(priceEl) priceEl.innerText = `₹${newPrice}`;
-                    
-                    this.classList.remove('is-invalid');
-                    const errorMsg = document.getElementById(`error-msg-${productId}`);
-                    if(errorMsg) errorMsg.style.display = 'none';
-                });
-            });
-
-            // Cart Bar Updater
-            function updateCartBar(items, total) {
-                const cartBar = document.getElementById("stickyCart");
-                const cartBadge = document.getElementById("cartBadge");
-                const cartSummary = document.getElementById("cartSummary");
-
-                if (cartBar && cartBadge && cartSummary) {
-                    if (items > 0) {
-                        cartBar.style.display = "flex";
-                        cartBadge.textContent = items;
-                        cartSummary.textContent = `${items} Items | ₹${parseFloat(total).toFixed(2)}`;
-                    } else {
-                        cartBar.style.display = "none";
-                    }
-                }
-            }
-
-            function refreshCartBar() {
-                fetch("/cart-ajax/summary/") 
-                    .then((response) => response.json())
-                    .then((data) => updateCartBar(data.items, data.total))
-                    .catch((error) => console.error(error));
-            }
-
-            refreshCartBar();
-
-            // 🌟 BULLETPROOF ADD TO CART HANDLERS 🌟
-            document.querySelectorAll(".add-to-cart-form").forEach((form) => {
+            try {
+                // Sync Header Location from localStorage
+                const savedPin = localStorage.getItem("CGS_MART_user_pincode");
+                const savedCity = localStorage.getItem("CGS_MART_user_city");
+                const headerPinEl = document.getElementById("headerSelectedPincode");
+                const mobilePinEl = document.getElementById("mobileSelectedPincode");
                 
-                if (form.dataset.bound) return;
-                form.dataset.bound = "true";
+                if(savedPin && headerPinEl) {
+                    headerPinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
+                }
+                if(savedPin && mobilePinEl) {
+                    mobilePinEl.innerText = (savedCity || "Nohar") + " " + savedPin;
+                }
 
-                form.addEventListener("submit", (e) => { e.preventDefault(); });
+                // Global Pincode Modal Save Logic
+                const applyBtn = document.getElementById("saveGlobalPincodeBtn");
+                const inputEl = document.getElementById("globalModalPincode");
+                const resEl = document.getElementById("globalModalResult");
 
-                const addBtn = form.querySelector(".add-to-cart-ajax");
-                const buyBtn = form.querySelector(".buy-now-btn");
-
-                function handleCartAction(e, btn, isBuyNow) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation(); 
-
-                    if (btn.disabled) return; 
-                    
-                    const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
-                    const productId = form.getAttribute("data-product-id");
-
-                    let variantId = null;
-                    const variantSelect = form.querySelector('select[name="variant_id"]');
-                    if (variantSelect) {
-                        if (!variantSelect.value) {
-                            variantSelect.classList.add('is-invalid');
-                            const errorMsg = document.getElementById(`error-msg-${productId}`);
-                            if(errorMsg) errorMsg.style.display = 'block';
-                            variantSelect.focus();
+                if(applyBtn && inputEl) {
+                    applyBtn.addEventListener("click", function() {
+                        let pin = inputEl.value.trim();
+                        if(pin.length !== 6) {
+                            resEl.style.display = "block";
+                            resEl.className = "small fw-semibold text-danger";
+                            resEl.innerText = "Enter valid 6-digit pincode.";
                             return;
                         }
-                        variantId = variantSelect.value;
-                    }
 
-                    let itemQty = 1;
-                    const qtyInput = form.querySelector('input[name="quantity"]');
-                    if (qtyInput && qtyInput.value) {
-                        itemQty = parseInt(qtyInput.value) || 1;
-                    }
+                        applyBtn.innerText = "...";
+                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
 
-                    btn.disabled = true;
-                    const originalText = btn.innerHTML;
-                    btn.innerHTML = "⏳";
+                        fetch('/api/check-delivery/', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRFToken": csrfToken,
+                                "X-Requested-With": "XMLHttpRequest"
+                            },
+                            body: JSON.stringify({ pincode: pin })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            applyBtn.innerText = "Apply";
+                            resEl.style.display = "block";
+                            if(data.available) {
+                                resEl.className = "small fw-semibold text-success";
+                                resEl.innerText = "⚡ 10 Mins delivery available!";
+                                localStorage.setItem("CGS_MART_user_pincode", pin);
+                                localStorage.setItem("CGS_MART_user_city", data.city || "Nohar");
+                                if(headerPinEl) headerPinEl.innerText = (data.city || "Nohar") + " " + pin;
+                                if(mobilePinEl) mobilePinEl.innerText = (data.city || "Nohar") + " " + pin;
+                                setTimeout(() => { location.reload(); }, 1000);
+                            } else {
+                                resEl.className = "small fw-semibold text-danger";
+                                resEl.innerText = data.message;
+                            }
+                        })
+                        .catch(err => {
+                            applyBtn.innerText = "Apply";
+                            console.error(err);
+                        });
+                    });
+                }
+            } catch(e) { console.log(e); }
 
-                    const exactAjaxUrl = "/cart-ajax/add/" + productId + "/";
-                    const payload = { quantity: itemQty };
-                    if(variantId) payload.variant_id = variantId;
+            try {
+                // 2. WhatsApp Float Logic
+                var btn = document.getElementById('whatsappFloat');
+                if (btn) {
+                    btn.addEventListener('click', function () {
+                        var phone = '917357073316'; 
+                        var text = encodeURIComponent('Hi Chachan General Store, I need help with...');
+                        var url = 'https://wa.me/' + phone + '?text=' + text;
+                        window.open(url, '_blank');
+                    });
+                }
+            } catch(e) { console.log(e); }
 
-                    fetch(exactAjaxUrl, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRFToken": csrfToken,
-                            "X-Requested-With": "XMLHttpRequest"
-                        },
-                        body: JSON.stringify(payload)
-                    })
-                    .then(async (response) => {
-                        if (!response.ok) throw new Error("Server Error");
-                        return response.json();
-                    })
-                    .then((data) => {
-                        if(isBuyNow) {
-                            window.location.href = "/checkout/";
-                        } else {
-                            updateCartBar(data.items, data.total);
-                            btn.innerHTML = "✔";
-                            btn.style.background = "#2ECC71";
-                            btn.style.color = "#FFFFFF";
-                            btn.style.borderColor = "#27AE60";
-                            setTimeout(() => {
-                                btn.innerHTML = originalText;
-                                btn.style.background = ""; 
-                                btn.style.color = "";
-                                btn.style.borderColor = "";
-                                btn.disabled = false;
-                            }, 1500);
-                        }
-                    })
-                    .catch((error) => {
-                        btn.innerHTML = "❌ Error";
-                        setTimeout(() => { 
-                            btn.innerHTML = originalText; 
-                            btn.disabled = false;
-                        }, 1500);
+            try {
+                // 3. AI Assistant Logic
+                const toggleBtn = document.getElementById("aiChatToggleBtn");
+                const chatWindow = document.getElementById("aiChatWindow");
+                const closeBtn = document.getElementById("closeAiChat");
+                const sendBtn = document.getElementById("aiSendBtn");
+                const userInput = document.getElementById("aiUserInput");
+                const msgContainer = document.getElementById("aiMsgContainer");
+
+                if(toggleBtn) {
+                    toggleBtn.addEventListener("click", () => {
+                        chatWindow.style.display = (chatWindow.style.display === "flex") ? "none" : "flex";
                     });
                 }
 
-                if(addBtn) addBtn.addEventListener("click", (e) => handleCartAction(e, addBtn, false));
-                if(buyBtn) buyBtn.addEventListener("click", (e) => handleCartAction(e, buyBtn, true));
-            });
-        } catch(e) { console.log(e); }
+                if(closeBtn) {
+                    closeBtn.addEventListener("click", () => { chatWindow.style.display = "none"; });
+                }
 
-    });
-</script>
+                function appendMessage(text, isUser) {
+                    const msgDiv = document.createElement("div");
+                    msgDiv.className = `msg-bubble ${isUser ? 'msg-user' : 'msg-ai'} shadow-sm`;
+                    msgDiv.innerText = text;
+                    msgContainer.appendChild(msgDiv);
+                    msgContainer.scrollTop = msgContainer.scrollHeight;
+                }
+
+                function sendAiMessage() {
+                    const query = userInput.value.trim();
+                    if (!query) return;
+
+                    appendMessage(query, true);
+                    userInput.value = "";
+
+                    const typingDiv = document.createElement("div");
+                    typingDiv.className = "msg-bubble msg-ai shadow-sm";
+                    typingDiv.innerText = "Thinking...";
+                    typingDiv.id = "aiTyping";
+                    msgContainer.appendChild(typingDiv);
+
+                    const aiUrl = "{% url 'ai_assistant_chat' %}";
+                    const csrfInput = document.querySelector('#aiCsrfContainer input[name=csrfmiddlewaretoken]');
+                    const aiCsrfToken = csrfInput ? csrfInput.value : '';
+
+                    fetch(aiUrl, {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": aiCsrfToken,
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        body: JSON.stringify({ message: query })
+                    })
+                    .then(async response => {
+                        if (!response.ok) {
+                            throw new Error("Server error: " + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById("aiTyping")?.remove();
+                        appendMessage(data.response || "No response received.", false);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        document.getElementById("aiTyping")?.remove();
+                        appendMessage("Technical error! Please check console for details.", false);
+                    });
+                }
+
+                if(sendBtn) {
+                    sendBtn.addEventListener("click", sendAiMessage);
+                }
+                
+                if(userInput) {
+                    userInput.addEventListener("keypress", (e) => {
+                        if (e.key === "Enter") sendAiMessage();
+                    });
+                }
+            } catch(e) { console.log(e); }
+
+            try {
+                // 4. GLOBAL VOICE SEARCH LOGIC
+                const voiceBtn = document.getElementById("globalVoiceBtn");
+                const searchInput = document.getElementById("globalSearchInput");
+                
+                if (voiceBtn && searchInput) {
+                    const searchForm = searchInput.closest("form");
+
+                    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+                        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                        const recognition = new SpeechRecognition();
+                        
+                        recognition.lang = "en-IN"; 
+                        recognition.continuous = false;
+                        recognition.interimResults = false;
+
+                        voiceBtn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            try {
+                                recognition.start();
+                                voiceBtn.innerHTML = "🔴";
+                                searchInput.placeholder = "Listening...";
+                            } catch (err) {
+                                console.log("Recognition start error:", err);
+                                alert("Microphone system is busy or blocked. Please allow mic permissions.");
+                            }
+                        });
+
+                        recognition.onresult = function (event) {
+                            let transcript = event.results[0][0].transcript.trim();
+                            searchInput.value = transcript;
+                            voiceBtn.innerHTML = "🎤";
+                            if(searchForm) searchForm.submit();
+                        };
+
+                        recognition.onerror = function (event) {
+                            console.error("Speech recognition error:", event.error);
+                            alert("Mic Error: " + event.error);
+                            voiceBtn.innerHTML = "🎤";
+                            searchInput.placeholder = "Search Chachan General Store...";
+                        };
+
+                        recognition.onend = function () {
+                            voiceBtn.innerHTML = "🎤";
+                            searchInput.placeholder = "Search Chachan General Store...";
+                        };
+                    } else {
+                        voiceBtn.style.display = "none";
+                    }
+                }
+            } catch(e) { console.log(e); }
+
+            try {
+                // 5. LIVE SEARCH AUTO-SUGGEST DROPDOWN LOGIC
+                const searchInput = document.getElementById("globalSearchInput");
+                const dropdownBox = document.getElementById("searchResultsDropdown");
+
+                if (searchInput && dropdownBox) {
+                    let debounceTimer;
+
+                    searchInput.addEventListener("input", function () {
+                        clearTimeout(debounceTimer);
+                        let query = this.value.trim();
+
+                        if (query.length < 2) {
+                            dropdownBox.style.display = "none";
+                            return;
+                        }
+
+                        debounceTimer = setTimeout(() => {
+                            fetch(`/api/search-suggestions/?q=${encodeURIComponent(query)}`, {
+                                headers: { "X-Requested-With": "XMLHttpRequest" }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.products && data.products.length > 0) {
+                                    let html = "";
+                                    data.products.forEach(p => {
+                                        html += `
+                                            <a href="${p.url}" class="d-flex align-items-center gap-3 p-2 text-decoration-none border-bottom text-dark search-suggestion-item">
+                                                <img src="${p.image}" alt="${p.name}" style="width: 40px; height: 40px; object-fit: contain; mix-blend-mode: multiply;">
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-semibold text-truncate" style="font-size: 0.9rem; max-width: 250px;">${p.name}</div>
+                                                    <div class="text-success small fw-bold">₹${p.price}</div>
+                                                </div>
+                                            </a>
+                                        `;
+                                    });
+                                    dropdownBox.innerHTML = html;
+                                    dropdownBox.style.display = "block";
+                                } else {
+                                    dropdownBox.style.display = "none";
+                                }
+                            })
+                            .catch(err => console.error("Search suggestion error:", err));
+                        }, 300);
+                    });
+
+                    document.addEventListener("click", function (e) {
+                        if (!searchInput.contains(e.target) && !dropdownBox.contains(e.target)) {
+                            dropdownBox.style.display = "none";
+                        }
+                    });
+                }
+            } catch(e) { console.log(e); }
+            
+            try {
+                // 6. Register Service Worker for PWA
+                if ('serviceWorker' in navigator) {
+                    window.addEventListener('load', function() {
+                        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                            console.log('ServiceWorker registration successful');
+                        }, function(err) {
+                            console.log('ServiceWorker registration failed: ', err);
+                        });
+                    });
+                }
+
+                // 7. Browser Back/Forward Cache Login State Issue Fix
+                window.addEventListener('pageshow', function (event) {
+                    if (event.persisted) {
+                        window.location.reload();
+                    }
+                });
+            } catch(e) { console.log(e); }
+
+            // 🌟 8. THE BULLETPROOF CART & VARIANT LOGIC 🌟
+            try {
+                function updateCartBar(items, total) {
+                    const cartBar = document.getElementById("stickyCart");
+                    const cartBadge = document.getElementById("cartBadge");
+                    const cartSummary = document.getElementById("cartSummary");
+
+                    if (cartBar && cartBadge && cartSummary) {
+                        if (items > 0) {
+                            cartBar.style.display = "flex";
+                            cartBadge.textContent = items;
+                            cartSummary.textContent = `${items} Items | ₹${parseFloat(total).toFixed(2)}`;
+                        } else {
+                            cartBar.style.display = "none";
+                        }
+                    }
+                }
+
+                function refreshCartBar() {
+                    fetch("/cart-ajax/summary/") 
+                        .then((response) => response.json())
+                        .then((data) => updateCartBar(data.items, data.total))
+                        .catch((error) => console.error(error));
+                }
+
+                refreshCartBar();
+
+                document.querySelectorAll(".add-to-cart-form").forEach((form) => {
+                    if (form.dataset.bound) return;
+                    form.dataset.bound = "true";
+
+                    form.addEventListener("submit", (e) => { e.preventDefault(); });
+
+                    const addBtn = form.querySelector(".add-to-cart-ajax");
+                    const buyBtn = form.querySelector(".buy-now-btn");
+
+                    function handleCartAction(e, btn, isBuyNow) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation(); 
+
+                        if (btn.disabled) return; 
+                        
+                        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+                        const productId = form.getAttribute("data-product-id");
+
+                        let variantId = null;
+                        const variantSelect = form.querySelector('select[name="variant_id"]');
+                        if (variantSelect) {
+                            if (!variantSelect.value) {
+                                variantSelect.classList.add('is-invalid');
+                                const errorMsg = document.getElementById(`error-msg-${productId}`);
+                                if(errorMsg) errorMsg.style.display = 'block';
+                                variantSelect.focus();
+                                return;
+                            }
+                            variantId = variantSelect.value;
+                        }
+
+                        let itemQty = 1;
+                        const qtyInput = form.querySelector('input[name="quantity"]');
+                        if (qtyInput && qtyInput.value) {
+                            itemQty = parseInt(qtyInput.value) || 1;
+                        }
+
+                        btn.disabled = true;
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = "⏳";
+
+                        const exactAjaxUrl = "/cart-ajax/add/" + productId + "/";
+                        const payload = { quantity: itemQty };
+                        if(variantId) payload.variant_id = variantId;
+
+                        fetch(exactAjaxUrl, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRFToken": csrfToken,
+                                "X-Requested-With": "XMLHttpRequest"
+                            },
+                            body: JSON.stringify(payload)
+                        })
+                        .then(async (response) => {
+                            if (!response.ok) throw new Error("Server Error");
+                            return response.json();
+                        })
+                        .then((data) => {
+                            if(isBuyNow) {
+                                window.location.href = "/checkout/";
+                            } else {
+                                updateCartBar(data.items, data.total);
+                                // Alpine Custom Event Fire karna zaroori hai naye setup ke liye
+                                window.dispatchEvent(new CustomEvent('cart-updated', { detail: data }));
+                                
+                                btn.innerHTML = "✔";
+                                btn.style.background = "#2ECC71";
+                                btn.style.color = "#FFFFFF";
+                                btn.style.borderColor = "#27AE60";
+                                setTimeout(() => {
+                                    btn.innerHTML = originalText;
+                                    btn.style.background = ""; 
+                                    btn.style.color = "";
+                                    btn.style.borderColor = "";
+                                    btn.disabled = false;
+                                }, 1500);
+                            }
+                        })
+                        .catch((error) => {
+                            btn.innerHTML = "❌ Error";
+                            setTimeout(() => { 
+                                btn.innerHTML = originalText; 
+                                btn.disabled = false;
+                            }, 1500);
+                        });
+                    }
+
+                    if(addBtn) addBtn.addEventListener("click", (e) => handleCartAction(e, addBtn, false));
+                    if(buyBtn) buyBtn.addEventListener("click", (e) => handleCartAction(e, buyBtn, true));
+                });
+            } catch(e) { console.log(e); }
+
+        });
+    </script>
+</body>
+</html>

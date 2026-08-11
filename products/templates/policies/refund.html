@@ -1,15 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container my-5 bg-white p-5 rounded-3 shadow-sm" style="max-width: 900px;">
-    <h2 class="fw-bold mb-4" style="font-family: 'Jost', sans-serif;">Return & Refund Policy</h2>
-    <hr>
-    <h5>1. Return Eligibility</h5>
-    <p>We accept returns within 7 days of delivery for items that are damaged, defective, or incorrect. Items must be unused, in their original packaging, and with all tags intact.</p>
-    
-    <h5>2. Refund Process</h5>
-    <p>Once your return is received and inspected, we will notify you. Approved refunds will be credited back to your original method of payment or added to your Store Wallet Balance within 5-7 business days.</p>
-    
-    <h5>3. Non-Returnable Items</h5>
-    <p>Certain hygienic essentials and perishable goods cannot be returned for safety reasons.</p>
+<div class="max-w-[900px] mx-auto px-4 py-12 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.06)] p-8 md:p-12">
+        <h2 class="font-['Jost'] text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">Return & Refund Policy</h2>
+        
+        <hr class="border-slate-200 mb-8">
+        
+        <div class="space-y-8 text-slate-600 leading-relaxed">
+            <section>
+                <h5 class="font-bold text-gray-900 text-xl mb-3 font-['Jost']">1. Return Eligibility</h5>
+                <p>We accept returns within 7 days of delivery for items that are damaged, defective, or incorrect. Items must be unused, in their original packaging, and with all tags intact.</p>
+            </section>
+            
+            <section>
+                <h5 class="font-bold text-gray-900 text-xl mb-3 font-['Jost']">2. Refund Process</h5>
+                <p>Once your return is received and inspected, we will notify you. Approved refunds will be credited back to your original method of payment or added to your Store Wallet Balance within 5-7 business days.</p>
+            </section>
+            
+            <section>
+                <h5 class="font-bold text-gray-900 text-xl mb-3 font-['Jost']">3. Non-Returnable Items</h5>
+                <p>Certain hygienic essentials and perishable goods cannot be returned for safety reasons.</p>
+            </section>
+        </div>
+    </div>
 </div>
 {% endblock %}

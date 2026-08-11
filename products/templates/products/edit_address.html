@@ -1,41 +1,52 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 border p-4 bg-white shadow-sm">
-            <h5 class="fw-bold mb-4">Edit Address</h5>
-            <form method="POST">
-                {% csrf_token %}
-                <label class="small fw-bold text-muted">Full Name</label>
-                <input type="text" name="name" class="form-control mb-3" value="{{ address.name }}" required>
-                
-                <label class="small fw-bold text-muted">Mobile</label>
-                <input type="text" name="mobile" class="form-control mb-3" value="{{ address.mobile_number }}" required>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="small fw-bold text-muted">Pincode</label>
-                        <input type="text" name="pincode" class="form-control mb-3" value="{{ address.pincode }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="small fw-bold text-muted">City</label>
-                        <input type="text" name="city" class="form-control mb-3" value="{{ address.city }}" required>
-                    </div>
+<div class="min-h-[70vh] flex items-center justify-center py-10 px-4 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white rounded-[1.5rem] shadow-[0_15px_40px_rgba(0,0,0,0.08)] p-8 md:p-10 w-full max-w-[600px]">
+        <h5 class="font-['Jost'] text-gray-900 text-2xl font-bold mb-6 text-center">Edit Address</h5>
+        
+        <form method="POST" class="space-y-5">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Full Name</label>
+                <input type="text" name="name" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ address.name }}" required>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Mobile Number</label>
+                <input type="text" name="mobile" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ address.mobile_number }}" required>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Pincode</label>
+                    <input type="text" name="pincode" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ address.pincode }}" required>
                 </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">City</label>
+                    <input type="text" name="city" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ address.city }}" required>
+                </div>
+            </div>
 
-                <label class="small fw-bold text-muted">Full Address</label>
-                <textarea name="full_address" class="form-control mb-3" rows="3" required>{{ address.full_address }}</textarea>
-                
-                <label class="small fw-bold text-muted">State</label>
-                <select name="state" class="form-control mb-4" required>
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Full Address</label>
+                <textarea name="full_address" rows="3" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" required>{{ address.full_address }}</textarea>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">State</label>
+                <select name="state" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" required>
                     <option value="Rajasthan" {% if address.state == 'Rajasthan' %}selected{% endif %}>Rajasthan</option>
                     <option value="Haryana" {% if address.state == 'Haryana' %}selected{% endif %}>Haryana</option>
                     <option value="Delhi" {% if address.state == 'Delhi' %}selected{% endif %}>Delhi</option>
                 </select>
-
-                <button type="submit" class="btn btn-primary w-100" style="background: #2874f0;">UPDATE ADDRESS</button>
-            </form>
-        </div>
+            </div>
+            
+            <div class="pt-4">
+                <button type="submit" class="w-full bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] font-bold uppercase tracking-widest py-4 rounded-xl shadow-[0_10px_20px_rgba(12,13,18,0.15)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-[#D4AF37]/30">
+                    UPDATE ADDRESS
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>POS Billing & Barcode Scanner - CGSMART ERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        .pos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+    </style>
+</head>
+<body class="bg-slate-50 font-['Inter'] text-slate-800 h-screen overflow-hidden flex">
+
+    <!-- 🏢 SIDEBAR (Same as Dashboard) -->
+    <div class="w-[260px] bg-slate-900 text-white flex-shrink-0 h-screen py-6 shadow-2xl z-[100]">
+        <div class="text-center font-['Jost'] text-[22px] font-extrabold text-[#D4AF37] tracking-[2px] mb-8 pb-5 border-b border-white/10">CGSMART ERP</div>
+        <div class="flex flex-col">
+            <a href="{% url 'erp_dashboard' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition">📊 Dashboard</a>
+            <a href="{% url 'erp_products' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition">🛍️ Product Master</a>
+            <a href="{% url 'erp_ledger' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white transition">📒 Customer Ledger</a>
+            <a href="{% url 'erp_pos' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-white bg-white/10 border-l-4 border-[#D4AF37] transition">🧾 Billing & POS</a>
+            <a href="{% url 'home' %}" target="_blank" class="block px-6 mt-8 text-sky-400 text-sm font-bold">🌐 Go to Live Store</a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 flex flex-col p-4 h-screen">
+        
+        <!-- TOP BAR -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 mb-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <h4 class="font-extrabold text-xl text-slate-900 m-0">Fast POS</h4>
+                <button id="posMicBtn" class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow flex items-center gap-2 transition">
+                    🎙️ <span id="micText">Voice Add</span>
+                </button>
+            </div>
+            
+            <div class="flex gap-3">
+                <input type="text" id="barcodeScanInput" class="w-[300px] border-2 border-blue-500 rounded-xl px-4 py-2 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-200 placeholder-slate-400 shadow-inner" placeholder="📷 Scan Barcode / Type SKU..." autofocus>
+                <input type="text" id="posSearch" class="w-[200px] border border-slate-300 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" placeholder="Search item...">
+            </div>
+        </div>
+
+        <!-- POS LAYOUT -->
+        <div class="flex gap-4 flex-1 overflow-hidden">
+            
+            <!-- LEFT: PRODUCT CATALOG -->
+            <div class="w-7/12 flex flex-col bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-4">
+                <h6 class="font-bold text-slate-400 text-xs uppercase tracking-wider mb-3">Tap Item to Add</h6>
+                <div class="pos-grid overflow-y-auto custom-scrollbar flex-1 pr-2" id="productCatalog">
+                    {% for product in products %}
+                    <div class="product-tile bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-400 rounded-xl p-3 text-center cursor-pointer transition shadow-sm" data-name="{{ product.name|lower }}" data-barcode="{{ product.sku|default:product.id }}" onclick="addToCart('{{ product.name|escapejs }}', {{ product.price }})">
+                        <div class="font-bold text-slate-800 text-xs mb-1 line-clamp-2 leading-tight">{{ product.name }}</div>
+                        <div class="text-emerald-600 font-extrabold text-sm mb-1">₹{{ product.price }}</div>
+                        <div class="text-slate-400 text-[9px] uppercase tracking-wider">SKU: {{ product.sku|default:product.id }}</div>
+                    </div>
+                    {% empty %}
+                    <div class="col-span-full text-center text-slate-400 py-10 font-medium">No products in inventory.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- RIGHT: CURRENT CART & BILLING -->
+            <div class="w-5/12 flex flex-col bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden p-0">
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <h5 class="font-bold text-slate-900">Current Bill</h5>
+                    <button class="text-xs font-bold text-red-500 hover:bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg transition" onclick="clearCart()">Clear</button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-0">
+                    <table class="w-full text-left">
+                        <thead class="bg-white sticky top-0 border-b border-slate-100 shadow-sm z-10">
+                            <tr class="text-[10px] text-slate-400 uppercase tracking-widest">
+                                <th class="p-3 font-bold">Item</th>
+                                <th class="p-3 font-bold text-center">Qty</th>
+                                <th class="p-3 font-bold text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartTableBody" class="divide-y divide-slate-50">
+                            <tr><td colspan="3" class="text-center text-slate-400 py-8 text-sm">Cart is empty</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- BILL TOTALS & CHECKOUT -->
+                <div class="p-5 bg-slate-50 border-t border-slate-200 mt-auto">
+                    <div class="flex justify-between text-sm text-slate-500 font-medium mb-2">
+                        <span>Subtotal:</span> <span id="subTotal" class="font-bold text-slate-800">₹0.00</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-slate-500 font-medium mb-3 pb-3 border-b border-slate-200">
+                        <span>GST (Included):</span> <span id="gstTotal" class="font-bold text-slate-800">₹0.00</span>
+                    </div>
+                    <div class="flex justify-between text-2xl font-black text-slate-900 mb-5">
+                        <span>Total:</span> <span id="grandTotal" class="text-emerald-600">₹0.00</span>
+                    </div>
+                    <div class="flex gap-3">
+                        <button class="flex-1 bg-white border-2 border-slate-800 text-slate-800 hover:bg-slate-100 font-bold py-3.5 rounded-xl shadow-sm transition" onclick="checkout()">🖨️ Print</button>
+                        <button class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-md transition" onclick="checkout()">✅ Pay</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- POS JAVASCRIPT: BARCODE SCANNER + VOICE COMMAND -->
+    <script>
+        let cart = [];
+
+        function addToCart(name, price) {
+            let existing = cart.find(item => item.name === name);
+            if (existing) { existing.qty += 1; } 
+            else { cart.push({ name: name, price: price, qty: 1 }); }
+            renderCart();
+        }
+
+        function renderCart() {
+            let tbody = document.getElementById('cartTableBody');
+            let subTotalEl = document.getElementById('subTotal');
+            let grandTotalEl = document.getElementById('grandTotal');
+            
+            if (cart.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="text-center text-slate-400 py-8 text-sm font-medium">Cart is empty</td></tr>`;
+                subTotalEl.innerText = '₹0.00';
+                grandTotalEl.innerText = '₹0.00';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                let itemTotal = item.price * item.qty;
+                total += itemTotal;
+                html += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3">
+                            <div class="font-bold text-slate-800 text-xs">${item.name}</div>
+                            <div class="text-slate-400 text-[10px]">₹${item.price} x ${item.qty}</div>
+                        </td>
+                        <td class="p-3 text-center">
+                            <div class="flex items-center justify-center bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm inline-flex">
+                                <button class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold border-r border-slate-200" onclick="changeQty(${index}, -1)">-</button>
+                                <span class="px-3 py-1 text-xs font-bold w-8 text-center">${item.qty}</span>
+                                <button class="px-2 py-1 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold border-l border-slate-200" onclick="changeQty(${index}, 1)">+</button>
+                            </div>
+                        </td>
+                        <td class="p-3 text-right font-extrabold text-slate-900 text-sm">₹${itemTotal.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+            subTotalEl.innerText = '₹' + total.toFixed(2);
+            grandTotalEl.innerText = '₹' + total.toFixed(2);
+        }
+
+        function changeQty(index, change) {
+            cart[index].qty += change;
+            if (cart[index].qty <= 0) cart.splice(index, 1);
+            renderCart();
+        }
+
+        function clearCart() { cart = []; renderCart(); }
+
+        function checkout() {
+            if (cart.length === 0) { alert("Cart khali hai!"); return; }
+            alert("Sale successfully completed!"); clearCart();
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const barcodeInput = document.getElementById("barcodeScanInput");
+            setInterval(() => {
+                if (document.activeElement !== barcodeInput && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                    barcodeInput.focus();
+                }
+            }, 1000);
+
+            barcodeInput.addEventListener("keypress", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    let code = barcodeInput.value.trim().toLowerCase();
+                    if (!code) return;
+                    let tiles = document.querySelectorAll('.product-tile');
+                    let found = false;
+                    tiles.forEach(tile => {
+                        if (tile.getAttribute('data-barcode').toLowerCase() === code || tile.getAttribute('data-name').includes(code)) {
+                            tile.click(); found = true;
+                        }
+                    });
+                    if (!found) alert("❌ Product nahi mila: " + code);
+                    barcodeInput.value = "";
+                }
+            });
+
+            const posSearch = document.getElementById("posSearch");
+            if(posSearch) {
+                posSearch.addEventListener("input", function() {
+                    let filter = this.value.toLowerCase();
+                    document.querySelectorAll('.product-tile').forEach(tile => {
+                        tile.style.display = tile.getAttribute('data-name').includes(filter) ? "block" : "none";
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

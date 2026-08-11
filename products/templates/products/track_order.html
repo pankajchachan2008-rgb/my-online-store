@@ -4,89 +4,95 @@
 {% block title %}Track Your Order - CGSMART{% endblock %}
 
 {% block content %}
-<div class="container py-5" style="max-width: 800px;">
-    <div class="text-center mb-5" data-aos="fade-down">
-        <h2 class="fw-bold" style="font-family: 'Jost', sans-serif;">📦 Track Your Order Status</h2>
-        <p class="text-muted">Enter your Order ID and Mobile Number for live updates.</p>
+<div class="max-w-[800px] mx-auto px-4 py-12 font-['Inter']">
+    <div class="text-center mb-10">
+        <h2 class="font-['Jost'] text-3xl font-extrabold text-gray-900 mb-2">📦 Track Your Order Status</h2>
+        <p class="text-gray-500">Enter your Order ID and Mobile Number for live updates.</p>
     </div>
 
     <!-- Search Form -->
-    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5 bg-white" data-aos="fade-up">
-        <form method="GET" action="{% url 'track_order' %}" class="row g-3">
-            <div class="col-md-5">
-                <label class="form-label small fw-bold text-muted">Order ID</label>
-                <input type="text" name="order_id" class="form-control" placeholder="e.g. 12 or #INV-2026-12" value="{{ request.GET.order_id|default:'' }}">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.06)] p-6 md:p-8 mb-10">
+        <form method="GET" action="{% url 'track_order' %}" class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="w-full md:w-5/12">
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Order ID</label>
+                <input type="text" name="order_id" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" placeholder="e.g. 12 or #INV-2026-12" value="{{ request.GET.order_id|default:'' }}">
             </div>
-            <div class="col-md-5">
-                <label class="form-label small fw-bold text-muted">Mobile Number</label>
-                <input type="text" name="mobile" class="form-control" placeholder="Registered Mobile Number" value="{{ request.GET.mobile|default:'' }}">
+            <div class="w-full md:w-5/12">
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Mobile Number</label>
+                <input type="text" name="mobile" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" placeholder="Registered Mobile" value="{{ request.GET.mobile|default:'' }}">
             </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-dark w-100 fw-bold py-2">Track</button>
+            <div class="w-full md:w-2/12">
+                <button type="submit" class="w-full bg-[#0c0d12] hover:bg-gray-800 text-[#D4AF37] font-bold uppercase tracking-widest py-3.5 rounded-xl shadow-md transition">Track</button>
             </div>
         </form>
     </div>
 
     {% if searched %}
         {% if order %}
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white" data-aos="fade-up">
-                <div class="d-flex justify-content-between align-items-center flex-wrap border-bottom pb-3 mb-4">
+            <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-8">
+                <div class="flex justify-between items-center flex-wrap border-b border-gray-100 pb-5 mb-6 gap-4">
                     <div>
-                        <h5 class="fw-bold mb-1">Order #{{ order.id }}</h5>
-                        <span class="text-muted small">Placed on: {{ order.created_at|date:"M d, Y - H:i" }}</span>
+                        <h5 class="font-bold text-xl text-gray-900 mb-1">Order #{{ order.id }}</h5>
+                        <span class="text-gray-500 text-sm">Placed on: {{ order.created_at|date:"M d, Y - H:i" }}</span>
                     </div>
                     <div>
-                        <span class="badge bg-{% if order.status == 'Completed' %}success{% elif order.status == 'Cancelled' %}danger{% else %}warning text-dark{% endif %} px-3 py-2 fs-6">
+                        <span class="px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wider shadow-sm 
+                            {% if order.status == 'Completed' %}bg-green-100 text-green-700 border border-green-200
+                            {% elif order.status == 'Cancelled' %}bg-red-100 text-red-700 border border-red-200
+                            {% else %}bg-yellow-100 text-yellow-800 border border-yellow-300{% endif %}">
                             {{ order.status }}
                         </span>
                     </div>
                 </div>
 
-                <!-- Customer & Delivery Info -->
-                <div class="row g-3 mb-4 bg-light p-3 rounded-3">
-                    <div class="col-md-6">
-                        <small class="text-muted d-block">Customer Name</small>
-                        <strong>{{ order.customer_name }}</strong>
+                <!-- Customer Info -->
+                <div class="bg-slate-50 border border-slate-100 rounded-2xl p-5 mb-8 flex flex-col md:flex-row gap-6">
+                    <div class="flex-1">
+                        <small class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Customer Name</small>
+                        <strong class="text-gray-900 text-base">{{ order.customer_name }}</strong>
                     </div>
-                    <div class="col-md-6">
-                        <small class="text-muted d-block">Delivery Address</small>
-                        <strong>{{ order.address }}</strong>
+                    <div class="flex-1">
+                        <small class="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Delivery Address</small>
+                        <strong class="text-gray-900 text-base leading-snug">{{ order.address }}</strong>
                     </div>
                 </div>
 
                 <!-- Live Timeline Status -->
-                <h6 class="fw-bold mb-3">📍 Delivery Timeline</h6>
-                <ul class="list-unstyled timeline-steps">
-                    <li class="mb-3 d-flex align-items-center gap-3">
-                        <span class="badge rounded-pill bg-success p-2">✓</span>
-                        <div>
-                            <strong>Order Placed</strong>
-                            <div class="small text-muted">Your order has been successfully received.</div>
+                <h6 class="font-bold text-gray-900 mb-6 font-['Jost'] text-lg">📍 Delivery Timeline</h6>
+                <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
+                    
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-green-500 text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">✓</div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-100 bg-white shadow-sm">
+                            <div class="font-bold text-gray-900 mb-1">Order Placed</div>
+                            <div class="text-xs text-gray-500">Your order has been successfully received.</div>
                         </div>
-                    </li>
-                    <li class="mb-3 d-flex align-items-center gap-3">
-                        <span class="badge rounded-pill {% if order.status != 'Pending' %}bg-success{% else %}bg-secondary{% endif %} p-2">✓</span>
-                        <div>
-                            <strong>Packed at Nohar Hub</strong>
-                            <div class="small text-muted">Items are verified and securely packed.</div>
-                        </div>
-                    </li>
-                    <li class="mb-3 d-flex align-items-center gap-3">
-                        <span class="badge rounded-pill {% if order.status == 'Completed' or order.status == 'Dispatched' %}bg-success{% else %}bg-secondary{% endif %} p-2">⚡</span>
-                        <div>
-                            <strong>Out for Delivery (10 Mins - 1 Hour)</strong>
-                            <div class="small text-muted">Our local delivery executive is on the way to your address!</div>
-                        </div>
-                    </li>
-                </ul>
+                    </div>
 
-                <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
-                    <span class="fw-bold">Total Amount:</span>
-                    <span class="fs-4 fw-bold text-success">₹{{ order.total_amount }}</span>
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white {% if order.status != 'Pending' %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-400{% endif %} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">✓</div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-100 bg-white shadow-sm">
+                            <div class="font-bold {% if order.status != 'Pending' %}text-gray-900{% else %}text-gray-400{% endif %} mb-1">Packed at Nohar Hub</div>
+                            <div class="text-xs text-gray-500">Items are verified and securely packed.</div>
+                        </div>
+                    </div>
+
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white {% if order.status == 'Completed' or order.status == 'Dispatched' %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-400{% endif %} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">⚡</div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-100 bg-white shadow-sm">
+                            <div class="font-bold {% if order.status == 'Completed' or order.status == 'Dispatched' %}text-gray-900{% else %}text-gray-400{% endif %} mb-1">Out for Delivery</div>
+                            <div class="text-xs text-gray-500">Our local delivery executive is on the way!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 pt-6 border-t border-gray-100 flex justify-between items-center">
+                    <span class="font-bold text-gray-500 uppercase tracking-widest text-sm">Total Amount</span>
+                    <span class="text-3xl font-extrabold text-green-600">₹{{ order.total_amount }}</span>
                 </div>
             </div>
         {% else %}
-            <div class="alert alert-warning text-center p-4 rounded-4" data-aos="fade-up">
+            <div class="bg-red-50 border border-red-200 text-red-700 text-center p-6 rounded-2xl font-medium shadow-sm">
                 ❌ No order found with the given Order ID and Mobile Number. Please check and try again.
             </div>
         {% endif %}

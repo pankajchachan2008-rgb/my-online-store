@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Delivery Partner - CGSMART</title>
+    
+    <!-- Tailwind CSS & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Jost:wght@600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        jost: ['Jost', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 pb-20 antialiased selection:bg-[#D4AF37] selection:text-white">
+
+    <!-- 🌟 STICKY HEADER -->
+    <div class="sticky top-0 z-50 bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-white px-5 py-4 shadow-md border-b border-[#D4AF37]/30 rounded-b-3xl">
+        <div class="flex justify-between items-center max-w-[600px] mx-auto">
+            <div>
+                <h5 class="m-0 font-bold text-lg font-jost text-[#D4AF37] tracking-wide">🛵 Hello, {{ delivery_boy.name }}</h5>
+                <p class="text-[11px] text-slate-300 font-medium tracking-wider uppercase mt-0.5">CGSMART Delivery Partner</p>
+            </div>
+            <a href="{% url 'logout' %}" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold py-2 px-4 rounded-xl transition shadow-sm">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- 🌟 MAIN CONTAINER -->
+    <div class="max-w-[600px] mx-auto px-4 pt-6">
+        
+        <!-- Messages/Alerts -->
+        {% if messages %}
+            <div class="mb-5 space-y-3">
+            {% for message in messages %}
+                <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-bold shadow-sm flex items-center gap-2">
+                    <span>✅</span> {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Pending Deliveries Header -->
+        <h6 class="font-extrabold text-slate-500 uppercase tracking-widest text-xs mb-4 flex items-center gap-2">
+            <span>📦</span> PENDING DELIVERIES ({{ pending_orders.count }})
+        </h6>
+        
+        <!-- 🌟 PENDING ORDERS LOOP -->
+        <div class="space-y-5">
+            {% for order in pending_orders %}
+            <div class="bg-white rounded-2xl shadow-[0_5px_15px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden relative transition-transform hover:-translate-y-1">
+                <!-- Left Accent Line -->
+                <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-500"></div>
+                
+                <div class="p-5 pl-6">
+                    
+                    <!-- Order ID & Amount -->
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider">#ORD-{{ order.id }}</span>
+                        <span class="font-extrabold text-xl text-rose-600">₹{{ order.total_amount }}</span>
+                    </div>
+                    
+                    <!-- Customer Details -->
+                    <h3 class="font-bold text-slate-900 text-lg leading-tight">{{ order.customer_name }}</h3>
+                    <p class="text-slate-500 text-sm mt-1.5 mb-5 flex items-start gap-1.5 leading-snug">
+                        <span class="mt-0.5 text-xs">📍</span> 
+                        <span>{{ order.address|default:"Address not provided" }}</span>
+                    </p>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3 mb-6">
+                        <a href="tel:{{ order.mobile_number }}" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-center py-2.5 rounded-xl text-sm font-bold shadow-sm transition flex items-center justify-center gap-2">
+                            <span>📞</span> Call
+                        </a>
+                        <a href="https://maps.google.com/?q={{ order.address }}" target="_blank" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-center py-2.5 rounded-xl text-sm font-bold shadow-sm transition flex items-center justify-center gap-2">
+                            <span>🗺️</span> Map
+                        </a>
+                    </div>
+
+                    <!-- 🌟 DYNAMIC PAYMENT QR CODE SECTION -->
+                    <div class="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-4 text-center mb-6">
+                        <p class="text-[11px] font-extrabold text-slate-500 uppercase tracking-widest mb-3">📲 Scan to Pay via UPI</p>
+                        <!-- Ensure CGSMART's actual UPI is maintained -->
+                        <div class="bg-white p-2 rounded-xl shadow-sm inline-block border border-slate-200">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=8432070300@pnb&pn=CGSMART&tr=ORD{{ order.id }}&am={{ order.total_amount }}&cu=INR" alt="UPI QR Code" class="w-[140px] h-[140px] object-contain">
+                        </div>
+                        <h5 class="text-emerald-600 font-black text-2xl mt-3 tracking-tight">₹{{ order.total_amount }}</h5>
+                    </div>
+
+                    <!-- 🌟 OTP & PAYMENT COLLECTION FORM -->
+                    <form method="POST" action="{% url 'delivery_boy_dashboard' %}" class="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                        
+                        <div class="mb-4">
+                            <label class="block text-[10px] font-extrabold text-slate-600 mb-2 uppercase tracking-widest">🔑 Delivery OTP (4 Digits)</label>
+                            <input type="text" name="delivery_otp" class="w-full bg-white border border-slate-300 rounded-xl py-3 text-center text-2xl font-black tracking-[10px] focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition placeholder-slate-300" placeholder="----" maxlength="4" required autocomplete="off">
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="block text-[10px] font-extrabold text-slate-600 mb-2 uppercase tracking-widest">💰 Payment Collection</label>
+                            <select name="payment_status" class="w-full bg-white border border-slate-300 rounded-xl py-3 px-4 text-sm font-bold text-slate-700 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none transition appearance-none" required>
+                                <option value="Paid_QR">📱 Online QR (Pending Admin Verification)</option>
+                                <option value="Paid_Cash">💵 Cash Received</option>
+                                <option value="Pending">⏳ Payment Pending / Later</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full bg-[#0c0d12] hover:bg-slate-800 text-[#D4AF37] font-bold uppercase tracking-widest py-3.5 rounded-xl shadow-[0_5px_15px_rgba(12,13,18,0.2)] transition active:scale-[0.98]">
+                            ✅ Complete Delivery
+                        </button>
+                    </form>
+
+                    <!-- 🌟 RESEND OTP BUTTON -->
+                    <div class="text-center">
+                        <a href="{% url 'resend_delivery_otp' order.id %}" class="inline-block text-[11px] font-bold text-slate-500 hover:text-slate-800 uppercase tracking-wide py-2 px-4 rounded-lg hover:bg-slate-100 transition">
+                            🔄 Resend OTP (WhatsApp & Email)
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            {% empty %}
+            <!-- Empty State -->
+            <div class="bg-white rounded-2xl border border-slate-200 text-center py-16 px-6 shadow-sm">
+                <div class="text-6xl mb-4 opacity-80">🎉</div>
+                <h3 class="text-lg font-bold text-slate-900 mb-1">All Clear!</h3>
+                <p class="text-slate-500 text-sm font-medium">Koi pending orders nahi hain. Relax karein.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <hr class="border-slate-200 my-8">
+
+        <!-- 🌟 RECENTLY DELIVERED SECTION -->
+        <h6 class="font-extrabold text-slate-500 uppercase tracking-widest text-xs mb-4 flex items-center gap-2">
+            <span>✅</span> RECENTLY DELIVERED
+        </h6>
+        
+        <div class="space-y-3">
+            {% for order in completed_orders %}
+            <div class="bg-white/80 border border-emerald-100 rounded-xl p-4 flex items-center justify-between border-l-4 border-l-emerald-500 shadow-sm">
+                <div>
+                    <div class="font-bold text-emerald-600 text-xs mb-1 tracking-wide">#ORD-{{ order.id }}</div>
+                    <div class="text-xs text-slate-600 font-bold">{{ order.customer_name }}</div>
+                </div>
+                <div class="text-right">
+                    <div class="font-extrabold text-slate-900 text-sm mb-1">₹{{ order.total_amount }}</div>
+                    <div class="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                        {{ order.payment_status|default:"Paid" }}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-6 bg-slate-100/50 rounded-xl border border-slate-200 border-dashed">
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Aaj koi order deliver nahi kiya.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</body>
+</html>

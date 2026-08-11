@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center py-12 px-4 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-8 md:p-12 w-full max-w-[450px]">
+        <div class="text-center mb-8">
+            <h2 class="font-['Jost'] text-3xl font-extrabold text-[#0c0d12] mb-2">Create an Account</h2>
+            <p class="text-gray-500 text-sm">Join CGS MART for a premium experience.</p>
+        </div>
+
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            <!-- Django Form Fields rendered with Tailwind utilities inside the block -->
+            <div class="[&>p>label]:block [&>p>label]:text-xs [&>p>label]:font-bold [&>p>label]:text-gray-500 [&>p>label]:uppercase [&>p>label]:tracking-wide [&>p>label]:mb-2 [&>p>input]:w-full [&>p>input]:bg-white [&>p>input]:border [&>p>input]:border-gray-300 [&>p>input]:rounded-xl [&>p>input]:px-4 [&>p>input]:py-3.5 [&>p>input]:text-sm [&>p>input]:focus:ring-2 [&>p>input]:focus:ring-[#D4AF37] [&>p>input]:outline-none [&>p>input]:transition">
+                {{ form.as_p }}
+            </div>
+            
+            <button type="submit" class="w-full bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] font-bold uppercase tracking-widest py-4 rounded-xl shadow-[0_10px_20px_rgba(12,13,18,0.15)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-[#D4AF37]/30 mt-2">
+                Sign Up
+            </button>
+        </form>
+        
+        <p class="mt-6 text-center text-sm text-gray-500 font-medium">
+            Pehle se account hai? <a href="{% url 'login' %}" class="text-[#0c0d12] font-bold hover:text-[#D4AF37] transition">Login karein</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -2,171 +2,56 @@
 {% load static %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-    /* 🌟 PREMIUM LOGIN BACKGROUND */
-    body { font-family: 'Jost', sans-serif; background-color: #F8FAFC; }
-    
-    .login-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 80vh;
-        padding: 40px 20px;
-    }
-
-    /* 🌟 ELEGANT CARD WITH ROUNDED CORNERS & SOFT SHADOW */
-    .login-card {
-        background: #FFFFFF;
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0, 83, 156, 0.08);
-        display: flex;
-        max-width: 900px;
-        width: 100%;
-        overflow: hidden;
-        border: 1px solid #E2E8F0;
-    }
-
-    /* 🌟 NAYA: SIDE PANEL (Trust & Branding) */
-    .login-side-panel {
-        background: linear-gradient(135deg, #00539C 0%, #003A70 100%);
-        color: #FFFFFF;
-        width: 45%;
-        padding: 50px 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
-
-    .login-side-title {
-        font-weight: 700;
-        font-size: 2.2rem;
-        line-height: 1.2;
-        margin-bottom: 20px;
-    }
-
-    .trust-feature {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 15px;
-        font-weight: 500;
-        font-size: 0.95rem;
-        opacity: 0.9;
-    }
-
-    /* 🌟 FORM SECTION */
-    .login-form-section {
-        width: 55%;
-        padding: 50px;
-        background: #FFFFFF;
-    }
-
-    .auth-title {
-        font-weight: 700;
-        font-size: 1.8rem;
-        color: #0F172A;
-        margin-bottom: 5px;
-    }
-
-    .auth-subtitle {
-        color: #64748B;
-        font-size: 0.9rem;
-        margin-bottom: 30px;
-    }
-
-    /* Django Form Styling Override */
-    .login-form-section form p { margin-bottom: 18px; text-align: left; }
-    .login-form-section form label { font-weight: 600; color: #334155; margin-bottom: 6px; display: block; font-size: 0.9rem; }
-    .login-form-section form input {
-        width: 100%;
-        border: 1px solid #CBD5E1;
-        border-radius: 10px;
-        padding: 12px 15px;
-        outline: none;
-        font-family: inherit;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        background: #F8FAFC;
-    }
-    .login-form-section form input:focus {
-        border-color: #00539C;
-        background: #FFFFFF;
-        box-shadow: 0 0 0 3px rgba(0, 83, 156, 0.1);
-    }
-    .login-form-section .helptext { font-size: 0.75rem; color: #64748B; margin-top: 4px; display: block; }
-    .login-form-section ul.errorlist { color: #DC2626; font-size: 0.8rem; list-style: none; padding-left: 0; margin-bottom: 10px; }
-
-    /* 🌟 PREMIUM BUTTON */
-    .btn-auth {
-        background: #00539C;
-        color: #FFFFFF;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border-radius: 10px;
-        border: none;
-        padding: 14px;
-        transition: 0.3s ease;
-        width: 100%;
-        margin-top: 10px;
-        font-size: 1rem;
-    }
-    .btn-auth:hover { 
-        background: #003A70; 
-        transform: translateY(-2px); 
-        box-shadow: 0 6px 15px rgba(0, 83, 156, 0.2); 
-    }
-    
-    .auth-link { color: #00539C; font-weight: 600; text-decoration: none; transition: 0.2s; }
-    .auth-link:hover { color: #D4AF37; }
-
-    /* MOBILE RESPONSIVENESS */
-    @media (max-width: 768px) {
-        .login-card { flex-direction: column; }
-        .login-side-panel { display: none; } /* Hide side panel on mobile */
-        .login-form-section { width: 100%; padding: 40px 25px; }
-    }
-</style>
-
-<div class="login-wrapper">
-    <div class="login-card">
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex flex-col md:flex-row w-full max-w-[900px] overflow-hidden">
         
-        <!-- 🌟 NAYA: PREMIUM SIDE PANEL -->
-        <div class="login-side-panel d-none d-lg-flex">
-            <div>
-                <h2 class="login-side-title">Welcome to<br>CGSMART.</h2>
-                <p style="font-size: 1.05rem; opacity: 0.8; margin-bottom: 40px;">Log in to access your premium shopping experience and exclusive offers.</p>
+        <!-- 🌟 PREMIUM SIDE PANEL -->
+        <div class="hidden md:flex flex-col justify-between w-5/12 bg-gradient-to-br from-[#0c0d12] to-[#1f2430] p-10 text-white relative overflow-hidden">
+            <!-- Decorative Background Element -->
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-[#D4AF37] opacity-10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10">
+                <h2 class="font-['Playfair_Display'] font-bold text-4xl leading-tight mb-4 tracking-wide text-[#D4AF37]">Welcome to<br>CGSMART.</h2>
+                <p class="text-slate-300 text-sm font-medium mb-10 leading-relaxed">Log in to access your premium shopping experience and exclusive offers.</p>
                 
-                <div class="trust-feature"><span>🔒</span> 100% Secure Login</div>
-                <div class="trust-feature"><span>🚚</span> Fast Local Delivery</div>
-                <div class="trust-feature"><span>💎</span> Quality Assured Products</div>
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 font-medium text-sm text-slate-200"><span class="text-[#D4AF37] text-lg">🔒</span> 100% Secure Login</div>
+                    <div class="flex items-center gap-3 font-medium text-sm text-slate-200"><span class="text-[#D4AF37] text-lg">⚡</span> Fast Local Delivery</div>
+                    <div class="flex items-center gap-3 font-medium text-sm text-slate-200"><span class="text-[#D4AF37] text-lg">💎</span> Quality Assured Products</div>
+                </div>
             </div>
-            <div>
-                <span style="font-size: 0.8rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 2px;">Chachan General Store, Nohar</span>
+            <div class="relative z-10">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-[2px]">Chachan General Store, Nohar</span>
             </div>
         </div>
 
         <!-- 🌟 FORM SECTION -->
-        <div class="login-form-section">
-            <h3 class="auth-title">Sign In</h3>
-            <p class="auth-subtitle">Enter your details to securely access your account.</p>
+        <div class="w-full md:w-7/12 p-8 md:p-12 flex flex-col justify-center">
+            <div class="mb-8 text-center md:text-left">
+                <h3 class="font-['Jost'] text-3xl font-extrabold text-gray-900 mb-2">Sign In</h3>
+                <p class="text-gray-500 text-sm font-medium">Enter your details to securely access your account.</p>
+            </div>
             
-            <form method="post">
+            <form method="post" class="space-y-5">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn-auth">Secure Login</button>
+                <!-- Auto-styling Django Form fields -->
+                <div class="[&>p]:mb-4 [&>p>label]:block [&>p>label]:text-[11px] [&>p>label]:font-bold [&>p>label]:text-gray-500 [&>p>label]:uppercase [&>p>label]:tracking-wider [&>p>label]:mb-2 [&>p>input]:w-full [&>p>input]:bg-slate-50 [&>p>input]:border [&>p>input]:border-slate-200 [&>p>input]:rounded-xl [&>p>input]:px-4 [&>p>input]:py-3.5 [&>p>input]:text-sm [&>p>input]:font-medium [&>p>input]:text-slate-900 [&>p>input]:focus:ring-2 [&>p>input]:focus:ring-[#D4AF37] [&>p>input]:focus:bg-white [&>p>input]:outline-none [&>p>input]:transition [&>ul.errorlist]:text-red-500 [&>ul.errorlist]:text-xs [&>ul.errorlist]:font-bold [&>ul.errorlist]:mb-3">
+                    {{ form.as_p }}
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] font-bold uppercase tracking-widest py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition duration-300 border border-[#D4AF37]/30 mt-2">
+                    Secure Login
+                </button>
                 
                 <!-- FORGOT PASSWORD LINK -->
-                <div class="mt-3 text-center">
-                    <a href="{% url 'forgot_password' %}" class="auth-link" style="font-size: 0.9rem;">Forgot Password / Username?</a>
+                <div class="mt-4 text-center">
+                    <a href="{% url 'forgot_password' %}" class="text-sm font-bold text-gray-600 hover:text-[#0c0d12] transition">Forgot Password / Username?</a>
                 </div>
             </form>
             
-            <div class="mt-4 pt-4 text-center" style="border-top: 1px solid #E2E8F0;">
-                <p class="mb-1 text-muted">Don't have an account?</p>
-                <a href="{% url 'register' %}" class="auth-link">Create Account</a>
+            <div class="mt-8 pt-6 text-center border-t border-slate-100">
+                <p class="text-sm text-gray-500 font-medium inline">Don't have an account?</p>
+                <a href="{% url 'register' %}" class="text-[#0c0d12] font-bold hover:text-[#D4AF37] ml-1 transition">Create Account</a>
             </div>
         </div>
 

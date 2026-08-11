@@ -4,274 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CGSMART ERP - Ultimate Business Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Jost:wght@700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F1F5F9;
-            color: #0F172A;
-            margin: 0;
-            overflow-x: hidden;
-        }
-        
-        /* ==========================================
-           🌟 Premium Sidebar (Compact & Scrollable)
-           ========================================== */
-        .sidebar {
-            width: 260px;
-            background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
-            color: #fff;
-            position: fixed;
-            height: 100vh;
-            left: 0;
-            top: 0;
-            padding-top: 20px;
-            padding-bottom: 20px;
-            overflow-y: auto;  /* Vertical scroll enable */
-            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-        
-        /* 🎨 Custom Scrollbar Design for Sidebar */
-        .sidebar::-webkit-scrollbar { width: 5px; }
-        .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        .sidebar::-webkit-scrollbar-track { background: transparent; }
-
-        .sidebar-brand {
-            font-size: 22px;
-            font-weight: 800;
-            text-align: center;
-            color: #D4AF37; /* Corporate Gold */
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;   /* Padding reduced for compact look */
-            font-size: 14.5px;    /* Font size slightly reduced */
-            color: #94A3B8;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.2s, color 0.2s;
-        }
-        
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            border-left: 4px solid #D4AF37;
-        }
-        
-        /* 🌟 Main Content */
-        .main-content {
-            margin-left: 260px;
-            padding: 30px 40px;
-        }
-        
-        /* Top Navbar & Voice Search */
-        .top-navbar {
-            background: #fff;
-            border-radius: 12px;
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            margin-bottom: 30px;
-        }
-        .voice-search-box {
-            display: flex;
-            align-items: center;
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 50px;
-            padding: 5px 15px;
-            width: 400px;
-        }
-        .voice-search-box input {
-            border: none;
-            background: transparent;
-            outline: none;
-            width: 100%;
-            padding: 8px;
-            font-weight: 500;
-        }
-        .mic-btn {
-            background: #2563EB;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .mic-btn.listening {
-            background: #EF4444;
-            animation: pulse 1s infinite alternate;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            100% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-        }
-
-        /* Analytics Cards */
-        .stat-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            border: 1px solid #E2E8F0;
-            position: relative;
-            overflow: hidden;
-        }
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 4px;
-            height: 100%;
-            background: #2563EB;
-        }
-        .stat-card.sales::after { background: #10B981; }
-        .stat-card.pending::after { background: #F59E0B; }
-        
-        .stat-title { font-size: 0.85rem; color: #64748B; font-weight: 600; text-transform: uppercase; }
-        .stat-value { font-size: 2rem; font-weight: 800; color: #0F172A; margin-top: 5px; }
-
-        /* Custom Table */
-        .erp-table {
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            border: 1px solid #E2E8F0;
-        }
-        .erp-table thead { background: #F8FAFC; }
-        .erp-table th { font-weight: 600; color: #475569; padding: 15px 20px; font-size: 0.85rem; text-transform: uppercase; }
-        .erp-table td { padding: 15px 20px; vertical-align: middle; font-size: 0.95rem; border-bottom: 1px solid #F1F5F9; }
-        
-        @media print {
-            .sidebar, .no-print, .top-navbar { display: none !important; }
-            .main-content { margin-left: 0 !important; padding: 0 !important; }
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        @media print { .no-print { display: none !important; } .main-content { margin-left: 0 !important; padding: 0 !important; } }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 font-['Inter'] text-slate-800 antialiased overflow-x-hidden">
 
-    <!-- 🏢 SIDEBAR -->
-    <div class="sidebar no-print">
-        <div class="sidebar-brand">
+    <!-- 🏢 PREMIUM SIDEBAR -->
+    <div class="no-print w-[260px] bg-gradient-to-b from-slate-900 to-slate-800 text-white fixed h-screen left-0 top-0 py-6 overflow-y-auto shadow-2xl z-[100] custom-scrollbar">
+        <div class="text-center font-['Jost'] text-[22px] font-extrabold text-[#D4AF37] tracking-[2px] mb-8 pb-5 border-b border-white/10">
             CGSMART ERP
         </div>
-        <div class="sidebar-menu">
+        <div class="flex flex-col">
+            <a href="{% url 'erp_dashboard' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-white bg-white/10 border-l-4 border-[#D4AF37] transition">📊 Dashboard & Orders</a>
+            <a href="{% url 'erp_pos' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white hover:border-l-4 hover:border-[#D4AF37] transition border-l-4 border-transparent">🧾 Billing & POS</a>
+            <a href="{% url 'erp_products' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white hover:border-l-4 hover:border-[#D4AF37] transition border-l-4 border-transparent">🛍️ Product Master</a>
             
-            <!-- Core Features -->
-            <a href="{% url 'erp_dashboard' %}" class="active">📊 Dashboard & Orders</a>
-            <a href="{% url 'erp_pos' %}">🧾 Billing & POS</a>
-            <a href="{% url 'erp_products' %}">🛍️ Product Master</a>
+            <div class="mt-4 mb-2 px-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Khata & Ledgers</div>
+            <a href="{% url 'erp_ledger' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white hover:border-l-4 hover:border-[#D4AF37] transition border-l-4 border-transparent">📒 Customer Khata</a>
+            <a href="{% url 'erp_supplier_ledger' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white hover:border-l-4 hover:border-[#D4AF37] transition border-l-4 border-transparent">🏢 Supplier Khata</a>
+            <a href="{% url 'erp_expenses' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white hover:border-l-4 hover:border-[#D4AF37] transition border-l-4 border-transparent">📉 Expense Tracker</a>
             
-            <!-- Khatas & Ledgers -->
-            <a href="{% url 'erp_ledger' %}">📒 Customer Khata</a>
-            <a href="{% url 'erp_supplier_ledger' %}">🏢 Supplier Khata</a>
-            <a href="{% url 'erp_expenses' %}">📉 Expense Tracker</a>
+            <div class="mt-4 mb-2 px-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Reports & Settings</div>
+            <a href="{% url 'erp_gst_report' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white hover:border-l-4 hover:border-[#D4AF37] transition border-l-4 border-transparent">📊 GST Tax Report</a>
+            <a href="{% url 'erp_settings' %}" class="flex items-center px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-white hover:border-l-4 hover:border-[#D4AF37] transition border-l-4 border-transparent">⚙️ Store Settings</a>
             
-            <!-- Reports & Settings -->
-            <a href="{% url 'erp_gst_report' %}">📊 GST Tax Report</a>
-            <a href="{% url 'erp_settings' %}">⚙️ Store Settings</a>
-            
-            <!-- Bottom Actions -->
-            <a href="{% url 'home' %}" target="_blank" class="text-info mt-5" style="color: #38BDF8;">🌐 Go to Live Store</a>
-            <a href="{% url 'logout' %}" class="text-danger mt-2">🚪 Logout</a>
-
-            <a href="{% url 'export_ca_report' %}" class="btn btn-success fw-bold px-4 py-2 shadow-sm">
-                📥 Export Complete CA Report (Excel/CSV)
-            </a>
+            <div class="mt-8 px-6 space-y-3">
+                <a href="{% url 'home' %}" target="_blank" class="block text-sky-400 text-sm font-bold hover:text-sky-300">🌐 Go to Live Store</a>
+                <a href="{% url 'logout' %}" class="block text-red-400 text-sm font-bold hover:text-red-300">🚪 Logout</a>
+                <a href="{% url 'export_ca_report' %}" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white text-center text-xs font-bold py-3 rounded-xl shadow-md transition mt-4">📥 Export CA Report</a>
+            </div>
         </div>
     </div>
 
     <!-- 🌟 MAIN CONTENT -->
-    <div class="main-content">
+    <div class="main-content ml-[260px] p-8">
         
         <!-- TOP NAVBAR & VOICE COMMAND -->
-        <div class="top-navbar no-print">
-            <h4 class="m-0 fw-bold">Overview</h4>
+        <div class="no-print bg-white rounded-2xl p-5 flex justify-between items-center shadow-[0_4px_15px_rgba(0,0,0,0.02)] border border-slate-200 mb-8">
+            <h4 class="m-0 font-extrabold text-xl text-slate-900 font-['Jost']">Overview</h4>
             
-            <div class="voice-search-box">
-                <input type="text" id="voiceSearchInput" placeholder="Bol kar search ya entry karein (e.g. Parle G)">
-                <button class="mic-btn" id="micBtn" title="Click to Speak">🎙️</button>
+            <div class="flex items-center bg-slate-50 border border-slate-200 rounded-full px-2 py-1.5 w-[400px] focus-within:ring-2 focus-within:ring-blue-500 transition">
+                <input type="text" id="voiceSearchInput" placeholder="Bol kar search ya entry karein (e.g. Parle G)" class="bg-transparent border-none outline-none w-full px-3 text-sm font-medium text-slate-700 placeholder-slate-400">
+                <button id="micBtn" class="bg-blue-600 hover:bg-blue-700 text-white w-9 h-9 rounded-full flex items-center justify-center transition shadow-sm" title="Click to Speak">🎙️</button>
             </div>
             
-            <div class="d-flex align-items-center gap-3">
-                <span class="fw-bold">{{ user.first_name }} (Admin)</span>
-                <img src="https://ui-avatars.com/api/?name=Admin&background=0F172A&color=fff" class="rounded-circle" width="40" height="40">
+            <div class="flex items-center gap-3">
+                <span class="font-bold text-sm text-slate-700">{{ user.first_name }} (Admin)</span>
+                <img src="https://ui-avatars.com/api/?name=Admin&background=0F172A&color=fff" class="rounded-full shadow-sm" width="40" height="40">
             </div>
         </div>
 
         <!-- STATS CARDS -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-title">Total Orders</div>
-                    <div class="stat-value">{{ total_orders }}</div>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-[0_4px_15px_rgba(0,0,0,0.02)] border border-slate-200 relative overflow-hidden border-r-4 border-r-blue-600">
+                <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1">Total Orders</div>
+                <div class="text-3xl font-extrabold text-slate-900">{{ total_orders }}</div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card sales">
-                    <div class="stat-title">Total Sales (Completed)</div>
-                    <div class="stat-value">₹{{ total_sales|floatformat:2 }}</div>
-                </div>
+            <div class="bg-white rounded-2xl p-6 shadow-[0_4px_15px_rgba(0,0,0,0.02)] border border-slate-200 relative overflow-hidden border-r-4 border-r-emerald-500">
+                <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1">Total Sales (Completed)</div>
+                <div class="text-3xl font-extrabold text-slate-900">₹{{ total_sales|floatformat:2 }}</div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card pending">
-                    <div class="stat-title">Pending Orders</div>
-                    <div class="stat-value">{{ pending_orders }}</div>
-                </div>
+            <div class="bg-white rounded-2xl p-6 shadow-[0_4px_15px_rgba(0,0,0,0.02)] border border-slate-200 relative overflow-hidden border-r-4 border-r-amber-500">
+                <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1">Pending Orders</div>
+                <div class="text-3xl font-extrabold text-slate-900">{{ pending_orders }}</div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-title">Total Customers</div>
-                    <div class="stat-value">{{ total_customers }}</div>
-                </div>
+            <div class="bg-white rounded-2xl p-6 shadow-[0_4px_15px_rgba(0,0,0,0.02)] border border-slate-200 relative overflow-hidden border-r-4 border-r-purple-600">
+                <div class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1">Total Customers</div>
+                <div class="text-3xl font-extrabold text-slate-900">{{ total_customers }}</div>
             </div>
         </div>
 
         <!-- ⚠️ LOW STOCK INVENTORY ALERTS -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold m-0 text-danger">⚠️ Low Stock Inventory Alerts</h5>
-                <span class="badge bg-danger rounded-pill px-3 py-2">{{ low_stock_products.count }} Items Low</span>
+        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 mb-8">
+            <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-100">
+                <h5 class="font-bold text-red-500 flex items-center gap-2"><span>⚠️</span> Low Stock Alerts</h5>
+                <span class="bg-red-100 text-red-700 text-xs font-bold px-3 py-1.5 rounded-full">{{ low_stock_products.count }} Items Low</span>
             </div>
             
             {% if low_stock_products %}
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Product Name</th>
-                                <th>Category</th>
-                                <th>Current Stock</th>
-                                <th>Price</th>
-                                <th>Action</th>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                                <th class="p-3 font-bold rounded-l-lg">Product Name</th>
+                                <th class="p-3 font-bold">Category</th>
+                                <th class="p-3 font-bold">Current Stock</th>
+                                <th class="p-3 font-bold">Price</th>
+                                <th class="p-3 font-bold rounded-r-lg">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-slate-100">
                             {% for prod in low_stock_products %}
-                            <tr>
-                                <td class="fw-semibold">{{ prod.name }}</td>
-                                <td>{{ prod.category.name|default:"General" }}</td>
-                                <td><span class="badge bg-danger px-2 py-1">{{ prod.stock }} left</span></td>
-                                <td>₹{{ prod.price }}</td>
-                                <td>
-                                    <a href="{% url 'erp_products' %}" class="btn btn-sm btn-outline-dark fw-bold rounded-pill">Update Stock</a>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-slate-800 text-sm">{{ prod.name }}</td>
+                                <td class="p-3 text-sm text-slate-600">{{ prod.category.name|default:"General" }}</td>
+                                <td class="p-3"><span class="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded">{{ prod.stock }} left</span></td>
+                                <td class="p-3 font-bold text-slate-800 text-sm">₹{{ prod.price }}</td>
+                                <td class="p-3">
+                                    <a href="{% url 'erp_products' %}" class="text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-300 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">Update</a>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -279,51 +115,54 @@
                     </table>
                 </div>
             {% else %}
-                <p class="text-success small mb-0 fw-semibold">✅ Great! All products have sufficient stock levels.</p>
+                <p class="text-emerald-600 text-sm font-bold bg-emerald-50 p-4 rounded-xl border border-emerald-100">✅ Great! All products have sufficient stock levels.</p>
             {% endif %}
         </div>
 
         <!-- RECENT ORDERS TABLE -->
-        <h5 class="fw-bold mb-3">Recent Orders Action Center</h5>
-        <div class="erp-table">
-            <table class="table table-borderless m-0">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Date</th>
-                        <th>Customer</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in recent_orders %}
-                    <tr>
-                        <td class="fw-bold text-primary">#ORD-{{ order.id }}</td>
-                        <td class="text-muted">{{ order.created_at|date:"d M Y" }}</td>
-                        <td class="fw-bold">{{ order.customer_name }}</td>
-                        <td class="fw-bold text-success">₹{{ order.total_amount }}</td>
-                        <td>
-                            {% if order.status == 'Pending' %} <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">Pending</span>
-                            {% elif order.status == 'Completed' %} <span class="badge bg-success px-3 py-2 rounded-pill">Completed</span>
-                            {% elif order.status == 'Cancelled' %} <span class="badge bg-danger px-3 py-2 rounded-pill">Cancelled</span>
-                            {% else %} <span class="badge bg-info text-dark px-3 py-2 rounded-pill">{{ order.status }}</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <!-- 🌟 LINKED TO UPDATE ORDER VIEW -->
-                            <a href="{% url 'erp_update_order' order.id %}" class="btn btn-sm btn-dark fw-bold px-3 rounded-pill">Update</a>
-                            <a href="{% url 'download_invoice' order.id %}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill ms-1">🖨️ Print</a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">No orders found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <h5 class="font-bold text-xl text-slate-900 mb-4 font-['Jost']">Recent Orders Action Center</h5>
+        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                            <th class="p-4 font-bold">Order ID</th>
+                            <th class="p-4 font-bold">Date</th>
+                            <th class="p-4 font-bold">Customer</th>
+                            <th class="p-4 font-bold">Amount</th>
+                            <th class="p-4 font-bold">Status</th>
+                            <th class="p-4 font-bold text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for order in recent_orders %}
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-4 font-extrabold text-blue-600 text-sm">#ORD-{{ order.id }}</td>
+                            <td class="p-4 text-sm text-slate-500 font-medium">{{ order.created_at|date:"d M Y" }}</td>
+                            <td class="p-4 font-bold text-slate-800 text-sm">{{ order.customer_name }}</td>
+                            <td class="p-4 font-extrabold text-emerald-600 text-sm">₹{{ order.total_amount }}</td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm
+                                    {% if order.status == 'Pending' %}bg-amber-100 text-amber-800
+                                    {% elif order.status == 'Completed' %}bg-emerald-100 text-emerald-800
+                                    {% elif order.status == 'Cancelled' %}bg-red-100 text-red-800
+                                    {% else %}bg-sky-100 text-sky-800{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td class="p-4 text-right flex justify-end gap-2">
+                                <a href="{% url 'erp_update_order' order.id %}" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition">Update</a>
+                                <a href="{% url 'download_invoice' order.id %}" target="_blank" class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold px-4 py-2 rounded-lg shadow-sm transition">🖨️ Print</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-8 text-slate-400 font-medium">No orders found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
@@ -345,7 +184,8 @@
             });
 
             recognition.onstart = function() {
-                micBtn.classList.add('listening');
+                micBtn.classList.add('bg-red-500');
+                micBtn.classList.remove('bg-blue-600');
                 searchInput.placeholder = "Sun raha hoon... Boliye!";
             };
 
@@ -358,15 +198,16 @@
             };
 
             recognition.onspeechend = function() {
-                micBtn.classList.remove('listening');
+                micBtn.classList.remove('bg-red-500');
+                micBtn.classList.add('bg-blue-600');
                 searchInput.placeholder = "Bol kar search ya entry karein";
                 recognition.stop();
             };
 
             recognition.onerror = function(event) {
-                micBtn.classList.remove('listening');
+                micBtn.classList.remove('bg-red-500');
+                micBtn.classList.add('bg-blue-600');
                 searchInput.placeholder = "Error! Dubara koshish karein";
-                console.error("Speech Recognition Error:", event.error);
             };
         } else {
             micBtn.style.display = 'none';

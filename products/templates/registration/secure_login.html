@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center py-12 px-4 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.06)] p-8 md:p-12 w-full max-w-[450px]">
+        <div class="text-center mb-8">
+            <h3 class="font-['Jost'] text-2xl font-extrabold text-gray-900 mb-2">Secure Login</h3>
+            <p class="text-gray-500 text-sm font-medium">OTP dwara securely login karein.</p>
+        </div>
+        
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">Email Address</label>
+                <input type="email" name="email" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-[#D4AF37] focus:bg-white outline-none transition" required placeholder="admin@example.com">
+            </div>
+            <button type="submit" class="w-full bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] font-bold uppercase tracking-widest py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition duration-300 border border-[#D4AF37]/30">
+                Send OTP
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

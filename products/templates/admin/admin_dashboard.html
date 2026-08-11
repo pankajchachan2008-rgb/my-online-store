@@ -1,0 +1,157 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<!-- Inject Tailwind for Custom Admin Views -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<div class="p-4 md:p-8 font-['Jost'] bg-slate-50 min-h-screen -ml-4 -mr-4 -mt-4">
+    <h1 class="text-3xl font-extrabold text-slate-900 mb-8 tracking-wide">📊 Executive Sales Dashboard</h1>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 rounded-2xl shadow-xl hover:-translate-y-1 transition duration-300">
+            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Total Sales</h3>
+            <p class="text-4xl font-extrabold text-[#D4AF37]">₹ {{ sales_total }}</p>
+        </div>
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 rounded-2xl shadow-xl hover:-translate-y-1 transition duration-300">
+            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Total Orders</h3>
+            <p class="text-4xl font-extrabold text-[#D4AF37]">{{ order_count }}</p>
+        </div>
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 rounded-2xl shadow-xl hover:-translate-y-1 transition duration-300">
+            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Active Coupons</h3>
+            <p class="text-4xl font-extrabold text-[#D4AF37]">{{ coupon_usage }}</p>
+        </div>
+    </div>
+
+    <!-- 🌟 ADMIN PENDING PAYMENTS SECTION -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-10">
+        <div class="bg-slate-900 text-white px-6 py-4 font-bold text-lg flex items-center gap-3 border-l-4 border-[#D4AF37]">
+            <span>🔔</span> Pending QR Payments (Awaiting Verification)
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 text-slate-500 uppercase text-xs tracking-wider border-b border-slate-200">
+                        <th class="px-6 py-4 font-bold">Order ID</th>
+                        <th class="px-6 py-4 font-bold">Customer Details</th>
+                        <th class="px-6 py-4 font-bold">Amount</th>
+                        <th class="px-6 py-4 font-bold">Status</th>
+                        <th class="px-6 py-4 font-bold">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for order in pending_payment_orders %}
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-6 py-5 font-extrabold text-blue-600">#ORD-{{ order.id }}</td>
+                        <td class="px-6 py-5">
+                            <strong class="block text-slate-900 text-base">{{ order.customer_name }}</strong>
+                            <span class="text-sm text-slate-500 font-medium">📞 {{ order.mobile_number }}</span>
+                        </td>
+                        <td class="px-6 py-5 font-extrabold text-emerald-500 text-lg">₹{{ order.total_amount }}</td>
+                        <td class="px-6 py-5">
+                            <span class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full text-xs font-bold tracking-wide">⏳ Awaiting Verification</span>
+                        </td>
+                        <td class="px-6 py-5">
+                            <form action="{% url 'admin_confirm_payment' order.id %}" method="POST" class="m-0">
+                                {% csrf_token %}
+                                <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-2">
+                                    ✅ Confirm & Credit
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-12 text-slate-500 font-bold text-lg">
+                            🎉 No pending QR payments to verify right now. Relax!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Charts & Top Products Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Monthly Sales Chart -->
+        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-xl font-bold text-slate-900 mb-6 tracking-wide">📈 Monthly Sales Trend</h2>
+            <div class="relative w-full h-[300px]">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Selling Products -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-xl font-bold text-slate-900 mb-6 tracking-wide">🔥 Top Selling Products</h2>
+            <ul class="space-y-4">
+              {% for product in top_products %}
+                <li class="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm hover:shadow transition">
+                    <span class="font-bold text-slate-800 text-sm">{{ product.product_name }}</span>
+                    <span class="bg-[#D4AF37] text-slate-900 px-3 py-1 rounded-full text-xs font-extrabold whitespace-nowrap">Sold: {{ product.sold }}</span>
+                </li>
+              {% empty %}
+                <li class="text-center text-slate-500 font-medium py-4">No sales data available yet.</li>
+              {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  const salesData = {
+    labels: [{% for item in monthly_sales %}"{{ item.month|date:'M Y' }}",{% endfor %}],
+    datasets: [{
+      label: 'Revenue (₹)',
+      data: [{% for item in monthly_sales %}{{ item.total }},{% endfor %}],
+      backgroundColor: 'rgba(212, 175, 55, 0.15)', // Premium Gold transparent background
+      borderColor: '#D4AF37', // Premium Gold solid border
+      borderWidth: 3,
+      fill: true,
+      tension: 0.4, // Smooth curve
+      pointBackgroundColor: '#0F172A', // Deep Blue points
+      pointBorderColor: '#D4AF37',
+      pointBorderWidth: 2,
+      pointRadius: 5,
+      pointHoverRadius: 7
+    }]
+  };
+  new Chart(ctx, {
+    type: 'line',
+    data: salesData,
+    options: { 
+        responsive: true, 
+        maintainAspectRatio: false,
+        plugins: { 
+            legend: { 
+                position: 'top',
+                labels: { font: { size: 13, family: 'Jost', weight: 'bold' }, color: '#0F172A' }
+            },
+            tooltip: {
+                backgroundColor: '#0F172A',
+                titleFont: { size: 14, family: 'Jost' },
+                bodyFont: { size: 14, weight: 'bold' },
+                padding: 12,
+                cornerRadius: 8,
+                displayColors: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: '#F1F5F9' },
+                ticks: { color: '#64748B', font: { family: 'Jost', weight: '600' } }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { color: '#64748B', font: { family: 'Jost', weight: '600' } }
+            }
+        }
+    }
+  });
+</script>
+{% endblock %}

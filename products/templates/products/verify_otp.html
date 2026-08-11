@@ -1,26 +1,29 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h3 class="text-center">Account Verification</h3>
-            <p class="text-center">Ek 6-digit ka OTP <b>{{ email }}</b> par bheja gaya hai.</p>
-            
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
+<div class="min-h-[70vh] flex items-center justify-center py-12 px-4 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-8 md:p-12 w-full max-w-[450px]">
+        
+        <h3 class="font-['Jost'] text-2xl font-extrabold text-gray-900 mb-3 text-center">Account Verification</h3>
+        <p class="text-gray-500 text-sm text-center mb-8">Ek 6-digit ka OTP <b class="text-gray-900">{{ email }}</b> par bheja gaya hai.</p>
+        
+        {% if messages %}
+            <div class="space-y-3 mb-6">
+            {% for message in messages %}
+                <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl text-sm font-medium text-center">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
 
-            <form method="POST">
-                {% csrf_token %}
-                <div class="form-group mb-3">
-                    <label>Enter OTP</label>
-                    <input type="text" name="otp" class="form-control" placeholder="Enter 6-digit OTP" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Verify OTP</button>
-            </form>
-        </div>
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2 text-center">Enter OTP</label>
+                <input type="text" name="otp" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-4 text-center text-2xl tracking-[10px] font-bold focus:ring-2 focus:ring-[#D4AF37] focus:border-[#D4AF37] outline-none transition" placeholder="------" required maxlength="6">
+            </div>
+            <button type="submit" class="w-full bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] font-bold uppercase tracking-widest py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-[#D4AF37]/30">
+                Verify OTP
+            </button>
+        </form>
     </div>
 </div>
 {% endblock %}

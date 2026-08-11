@@ -1,0 +1,59 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Inject Tailwind for Custom Admin Views -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<div class="min-h-screen bg-slate-50 p-4 -ml-4 -mr-4 -mt-4 flex flex-col items-center justify-center font-['Jost']">
+    
+    <div class="bg-white rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.06)] border border-slate-100 max-w-2xl w-full p-8 md:p-12">
+        <div class="text-center mb-8">
+            <span class="text-5xl block mb-4">📊</span>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-wide">Bulk Import Products</h2>
+            <p class="text-slate-500 font-medium mt-2 text-sm leading-relaxed">Upload your product sheet (Excel/CSV). The system will automatically format spellings, assign brands/groups, and prevent duplicates.</p>
+        </div>
+        
+        <form action="" method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+                <label for="excel_file" class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Select .xlsx or .csv File</label>
+                <input type="file" name="excel_file" id="excel_file" accept=".xlsx, .xls, .csv" required 
+                       class="block w-full text-sm text-slate-500 
+                              file:mr-4 file:py-3 file:px-6 
+                              file:rounded-xl file:border-0 
+                              file:text-xs file:font-bold file:uppercase file:tracking-wide
+                              file:bg-[#0F172A] file:text-[#D4AF37] 
+                              hover:file:bg-slate-800 hover:file:cursor-pointer
+                              border border-slate-300 rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-[#D4AF37] cursor-pointer transition shadow-sm">
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                <button type="submit" class="flex-1 bg-gradient-to-r from-[#D4AF37] to-[#b8952b] hover:from-[#c29f31] hover:to-[#a38324] text-slate-900 font-extrabold uppercase tracking-widest py-3.5 rounded-xl shadow-lg transition hover:-translate-y-0.5">
+                    Upload & Process
+                </button>
+                <a href="javascript:history.back()" class="flex-1 bg-white border-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-bold uppercase tracking-widest py-3.5 rounded-xl text-center transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
+        
+        <div class="mt-10 pt-8 border-t border-slate-100">
+            <h4 class="font-bold text-slate-900 mb-3 flex items-center gap-2"><span>📌</span> Excel Format Guidelines</h4>
+            <p class="text-sm text-slate-500 mb-4">Aapki Excel file mein yeh strict column headers (pehle row mein) hone zaroori hain:</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-slate-600 font-medium">
+                <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100"><strong class="text-slate-900">name</strong> (Product name)</div>
+                <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100"><strong class="text-slate-900">brand</strong> (Brand name)</div>
+                <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100"><strong class="text-slate-900">category</strong> (Department)</div>
+                <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100"><strong class="text-slate-900">price</strong> (Selling price)</div>
+                <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100"><strong class="text-slate-900">mrp</strong> (Original MRP)</div>
+                <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100"><strong class="text-slate-900">stock</strong> (Quantity)</div>
+                <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100 col-span-full"><strong class="text-slate-900">image_url</strong> (Direct image link)</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

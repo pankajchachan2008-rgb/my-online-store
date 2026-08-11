@@ -4,201 +4,68 @@
 {% block title %}Contact Us | CGSMART - Nohar{% endblock %}
 
 {% block content %}
-<style>
-    .contact-hero {
-        background: linear-gradient(135deg, rgba(12, 13, 18, 0.95) 0%, rgba(31, 36, 48, 0.98) 100%);
-        height: 420px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        margin-bottom: 70px;
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-        border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-    }
-    .contact-hero h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: 3.8rem;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        color: var(--accent-gold, #D4AF37);
-    }
-    .contact-hero p {
-        font-size: 1.2rem;
-        color: #E2E8F0;
-    }
-
-    /* 🌟 CRYSTAL GLASS INFO CARDS */
-    .contact-info-card {
-        background: rgba(255, 255, 255, 0.65) !important;
-        backdrop-filter: blur(25px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.9) !important;
-        border-radius: 20px;
-        padding: 50px 25px;
-        text-align: center;
-        transition: all 0.4s ease;
-        height: 100%;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9) !important;
-    }
-    .contact-info-card:hover {
-        transform: translateY(-12px);
-        box-shadow: 0 30px 60px rgba(0,0,0,0.12), 0 0 25px rgba(212,175,55,0.15) !important;
-        border-color: rgba(212,175,55,0.5) !important;
-    }
-    .card-icon {
-        font-size: 3rem;
-        margin-bottom: 20px;
-        display: block;
-        color: var(--accent-gold, #D4AF37);
-    }
-    .card-title {
-        font-family: 'Jost', sans-serif;
-        font-weight: 700;
-        color: var(--primary-luxury, #0c0d12);
-        margin-bottom: 12px;
-    }
-    .contact-info-card p a {
-        color: #475569;
-        text-decoration: none;
-        font-weight: 500;
-    }
-    .contact-info-card p a:hover {
-        color: var(--accent-gold, #D4AF37);
-    }
-
-    /* 🌟 CRYSTAL GLASS CONTACT FORM BOX */
-    .contact-form-box {
-        background: rgba(255, 255, 255, 0.7) !important;
-        backdrop-filter: blur(30px) saturate(200%) !important;
-        -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.95) !important;
-        padding: 60px;
-        border-radius: 25px;
-        box-shadow: 0 25px 50px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9) !important;
-    }
-    .form-control-custom {
-        border: 1px solid rgba(203, 213, 225, 0.8) !important;
-        border-radius: 14px;
-        padding: 16px;
-        background: rgba(255, 255, 255, 0.8) !important;
-        backdrop-filter: blur(10px);
-        transition: 0.3s;
-        color: #0f172a !important;
-    }
-    .form-control-custom:focus {
-        border-color: var(--accent-gold, #D4AF37);
-        background: #FFFFFF !important;
-        box-shadow: 0 0 0 4px rgba(212,175,55,0.2) !important;
-    }
-    .btn-submit {
-        background: linear-gradient(135deg, #0c0d12 0%, #1f2430 100%);
-        color: white;
-        padding: 16px 45px;
-        border-radius: 14px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        border: 1px solid rgba(212,175,55,0.3);
-        box-shadow: 0 10px 20px rgba(12,13,18,0.15);
-        transition: 0.3s;
-    }
-    .btn-submit:hover {
-        background: linear-gradient(135deg, #1f2430 0%, #0c0d12 100%);
-        border-color: var(--accent-gold);
-        transform: translateY(-2px);
-        box-shadow: 0 15px 30px rgba(212,175,55,0.3);
-        color: #fff;
-    }
-
-    /* 🌟 MAP EMBED */
-    .map-box {
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-        border: 1px solid rgba(255,255,255,0.8);
-    }
-</style>
-
 <!-- Hero Section -->
-<div class="contact-hero">
-    <div class="text-center" data-aos="zoom-in" data-aos-duration="1000">
-        <h1>Contact Us</h1>
-        <p class="lead">Humari team aapki sewa mein tatpar hai</p>
+<div class="h-[420px] bg-gradient-to-br from-[#0c0d12]/95 to-[#1f2430]/98 flex items-center justify-center text-white mb-16 rounded-b-[1.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] border-b border-[#D4AF37]/30">
+    <div class="text-center px-4">
+        <h1 class="font-['Playfair_Display'] text-4xl md:text-6xl font-bold tracking-[3px] text-[#D4AF37] uppercase mb-3">Contact Us</h1>
+        <p class="text-slate-200 text-lg md:text-xl font-light">Humari team aapki sewa mein tatpar hai</p>
     </div>
 </div>
 
-<div class="container mb-5">
+<div class="max-w-[1200px] mx-auto px-4 mb-20 font-['Inter']">
     <!-- Info Cards -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-            <div class="contact-info-card">
-                <span class="card-icon" aria-label="Phone">📞</span>
-                <h4 class="card-title">Call Support</h4>
-                <p><a href="tel:+917357073316">+91 73570 73316</a></p>
-            </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <div class="bg-white/65 backdrop-blur-xl border border-white/90 rounded-2xl p-10 text-center shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:-translate-y-3 hover:border-[#D4AF37]/50 hover:shadow-[0_30px_60px_rgba(0,0,0,0.12),0_0_25px_rgba(212,175,55,0.15)] transition duration-400">
+            <span class="text-5xl block text-[#D4AF37] mb-5">📞</span>
+            <h4 class="font-['Jost'] font-bold text-gray-900 text-xl mb-3">Call Support</h4>
+            <p><a href="tel:+917357073316" class="text-slate-600 hover:text-[#D4AF37] font-medium transition">Wait, please update info</a></p>
         </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-            <div class="contact-info-card">
-                <span class="card-icon" aria-label="Location">📍</span>
-                <h4 class="card-title">Visit Us</h4>
-                <p>Chachan General Store, Nohar, Rajasthan</p>
-            </div>
+        <div class="bg-white/65 backdrop-blur-xl border border-white/90 rounded-2xl p-10 text-center shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:-translate-y-3 hover:border-[#D4AF37]/50 hover:shadow-[0_30px_60px_rgba(0,0,0,0.12),0_0_25px_rgba(212,175,55,0.15)] transition duration-400">
+            <span class="text-5xl block text-[#D4AF37] mb-5">📍</span>
+            <h4 class="font-['Jost'] font-bold text-gray-900 text-xl mb-3">Visit Us</h4>
+            <p class="text-slate-600 font-medium">Chachan General Store, Nohar, Rajasthan</p>
         </div>
-        <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-            <div class="contact-info-card">
-                <span class="card-icon" aria-label="Email">📧</span>
-                <h4 class="card-title">Email Us</h4>
-                <p><a href="mailto:support@cgsmart.in">support@cgsmart.in</a></p>
-            </div>
+        <div class="bg-white/65 backdrop-blur-xl border border-white/90 rounded-2xl p-10 text-center shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:-translate-y-3 hover:border-[#D4AF37]/50 hover:shadow-[0_30px_60px_rgba(0,0,0,0.12),0_0_25px_rgba(212,175,55,0.15)] transition duration-400">
+            <span class="text-5xl block text-[#D4AF37] mb-5">📧</span>
+            <h4 class="font-['Jost'] font-bold text-gray-900 text-xl mb-3">Email Us</h4>
+            <p><a href="mailto:support@cgsmart.in" class="text-slate-600 hover:text-[#D4AF37] font-medium transition">support@cgsmart.in</a></p>
         </div>
     </div>
 
     {% if messages %}
-        <div class="row justify-content-center mb-3" data-aos="fade-in">
-            <div class="col-lg-8">
-                {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %} rounded-4 text-center shadow-sm" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
+        <div class="max-w-2xl mx-auto mb-8 space-y-4">
+            {% for message in messages %}
+                <div class="bg-blue-50 text-blue-800 p-4 rounded-xl text-center shadow-sm font-medium border border-blue-200">
+                    {{ message }}
+                </div>
+            {% endfor %}
         </div>
     {% endif %}
 
     <!-- Contact Form -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-8" data-aos="fade-up" data-aos-delay="150">
-            <div class="contact-form-box">
-                <h2 class="section-heading mb-4 text-center" style="font-family: 'Jost', sans-serif; color: var(--primary-luxury, #0c0d12);">Send Us A Message</h2>
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <input type="text" name="name" class="form-control form-control-custom" placeholder="Full Name" required>
-                        </div>
-                        <div class="col-md-6">
-                            <input type="email" name="email" class="form-control form-control-custom" placeholder="Email Address" required>
-                        </div>
-                        <div class="col-12">
-                            <input type="text" name="subject" class="form-control form-control-custom" placeholder="Subject" required>
-                        </div>
-                        <div class="col-12">
-                            <textarea name="message" class="form-control form-control-custom" rows="5" placeholder="How can we help you?" required></textarea>
-                        </div>
-                        <div class="col-12 text-center mt-4">
-                            <button type="submit" class="btn-submit">Send Message</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+    <div class="max-w-3xl mx-auto mb-16">
+        <div class="bg-white/70 backdrop-blur-2xl border border-white/95 p-8 md:p-12 rounded-[2rem] shadow-[0_25px_50px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.9)]">
+            <h2 class="font-['Jost'] text-gray-900 text-3xl font-bold mb-8 text-center">Send Us A Message</h2>
+            <form method="POST" class="space-y-5">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <input type="text" name="name" class="w-full bg-white/80 backdrop-blur-md border border-slate-300/80 rounded-xl px-4 py-3.5 text-gray-900 focus:bg-white focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/20 outline-none transition" placeholder="Full Name" required autocomplete="name">
+                    <input type="email" name="email" class="w-full bg-white/80 backdrop-blur-md border border-slate-300/80 rounded-xl px-4 py-3.5 text-gray-900 focus:bg-white focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/20 outline-none transition" placeholder="Email Address" required autocomplete="email">
+                </div>
+                <input type="text" name="subject" class="w-full bg-white/80 backdrop-blur-md border border-slate-300/80 rounded-xl px-4 py-3.5 text-gray-900 focus:bg-white focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/20 outline-none transition" placeholder="Subject" required autocomplete="off">
+                <textarea name="message" rows="5" class="w-full bg-white/80 backdrop-blur-md border border-slate-300/80 rounded-xl px-4 py-3.5 text-gray-900 focus:bg-white focus:border-[#D4AF37] focus:ring-4 focus:ring-[#D4AF37]/20 outline-none transition" placeholder="How can we help you?" required autocomplete="off"></textarea>
+                
+                <div class="text-center pt-4">
+                    <button type="submit" class="bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-white border border-[#D4AF37]/30 font-bold uppercase tracking-widest px-10 py-4 rounded-xl shadow-[0_10px_20px_rgba(12,13,18,0.15)] hover:from-[#1f2430] hover:to-[#0c0d12] hover:border-[#D4AF37] hover:shadow-[0_15px_30px_rgba(212,175,55,0.3)] hover:-translate-y-1 transition duration-300">
+                        Send Message
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- Google Map Embed -->
-    <div class="map-box mb-5" data-aos="zoom-in" data-aos-delay="200">
+    <div class="rounded-2xl overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.08)] border border-white/80">
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3560.123456789!2d74.7700!3d29.1830!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39123456789abcdef%3A0x123456789abcdef!2sNohar%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1691234567890" 
                 width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy" title="CGSMART store location map"></iframe>
     </div>

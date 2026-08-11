@@ -14,14 +14,10 @@ if not SECRET_KEY:
     )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Allowed hosts and trusted corporate endpoints
-ALLOWED_HOSTS = [
-    'cgsmart.in', 
-    'www.cgsmart.in', 
-    'my-online-store-ggbj.onrender.com'
-]
+ALLOWED_HOSTS = ['*']
 
 # CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
@@ -125,19 +121,23 @@ STORAGES = {
 }
 
 # =====================================================================
-#                 SECURITY HARDENING & CSP SETTINGS
+#                  SECURITY HARDENING & CSP SETTINGS
 # =====================================================================
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+# Smart SSL Settings: Local pe HTTP, Live pe HTTPS
+SECURE_SSL_REDIRECT = not DEBUG
 
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'

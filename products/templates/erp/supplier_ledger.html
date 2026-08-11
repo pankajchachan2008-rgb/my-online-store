@@ -3,181 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <title>Supplier Khata - CGSMART ERP</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F1F5F9; color: #0F172A; }
-        .sidebar { width: 260px; background: #0F172A; color: #fff; position: fixed; height: 100vh; left: 0; top: 0; padding-top: 20px; }
-        .sidebar a { display: block; padding: 15px 25px; color: #94A3B8; text-decoration: none; font-weight: 500; }
-        .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.05); color: #fff; border-left: 4px solid #D4AF37; }
-        .main-content { margin-left: 260px; padding: 30px 40px; }
-        
-        .balance-card { border-radius: 8px; padding: 15px; border-left: 4px solid; }
-        .bc-payable { background: #FEF2F2; border-color: #EF4444; color: #991B1B; }
-        .bc-paid { background: #F0FDF4; border-color: #22C55E; color: #166534; }
-        .bc-net { background: #EFF6FF; border-color: #3B82F6; color: #1E40AF; }
-
-        @media print {
-            .sidebar, .no-print { display: none !important; }
-            .main-content { margin-left: 0 !important; padding: 0 !important; }
-            .balance-card { border: 1px solid #000; background: transparent !important; color: #000 !important; }
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>@media print { .no-print { display: none !important; } .main-content { margin-left: 0 !important; padding: 0 !important; } }</style>
 </head>
-<body>
+<body class="bg-slate-50 font-['Inter'] text-slate-800 antialiased h-screen overflow-hidden flex">
 
     <!-- SIDEBAR -->
-    <div class="sidebar no-print">
-        <h4 class="text-center text-warning fw-bold mb-4" style="letter-spacing: 2px;">CGSMART ERP</h4>
-        <a href="{% url 'erp_dashboard' %}">📊 Dashboard</a>
-        <a href="{% url 'erp_products' %}">🛍️ Product Master</a>
-        <a href="{% url 'erp_pos' %}">🧾 Billing & POS</a>
-        <a href="{% url 'erp_ledger' %}">📒 Customer Ledger</a>
-        <a href="{% url 'erp_expenses' %}">📉 Expense Tracker</a>
-        <a href="{% url 'erp_supplier_ledger' %}" class="active">🏢 Supplier Khata</a>
-        <a href="{% url 'home' %}" target="_blank" class="text-info mt-5">🌐 Go to Live Store</a>
+    <div class="no-print w-[260px] bg-slate-900 text-white flex-shrink-0 h-screen py-6 shadow-2xl z-[100] overflow-y-auto">
+        <h4 class="text-center text-[#D4AF37] font-extrabold tracking-widest text-xl mb-8 border-b border-white/10 pb-5">CGSMART ERP</h4>
+        <nav class="flex flex-col">
+            <a href="{% url 'erp_dashboard' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📊 Dashboard</a>
+            <a href="{% url 'erp_products' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">🛍️ Product Master</a>
+            <a href="{% url 'erp_pos' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">🧾 Billing & POS</a>
+            <a href="{% url 'erp_expenses' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📉 Expense Tracker</a>
+            <a href="{% url 'erp_supplier_ledger' %}" class="px-6 py-3.5 text-sm font-medium text-white bg-white/10 border-l-4 border-[#D4AF37] transition">🏢 Supplier Khata</a>
+        </nav>
     </div>
 
     <!-- MAIN CONTENT -->
-    <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
-            <h3 class="fw-bold">Supplier & Wholesaler Khata</h3>
-            <button onclick="window.print()" class="btn btn-dark fw-bold px-4">🖨️ Print Ledger</button>
+    <div class="main-content flex-1 p-6 h-screen overflow-y-auto">
+        
+        <div class="no-print flex justify-between items-center mb-6 bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+            <h3 class="font-extrabold text-xl text-slate-900 m-0">Supplier & Wholesaler Khata</h3>
+            <button onclick="window.print()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition flex items-center gap-2">🖨️ Print Ledger</button>
         </div>
 
         {% if messages %}
+            <div class="mb-4 space-y-2 no-print">
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show fw-bold no-print" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+                <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-bold shadow-sm">{{ message }}</div>
             {% endfor %}
+            </div>
         {% endif %}
 
-        <div class="row g-4">
-            <!-- Supplier List -->
-            <div class="col-md-4 no-print">
-                <div class="card border-0 shadow-sm rounded-4 p-3 mb-3">
-                    <h5 class="fw-bold mb-3 d-flex justify-content-between align-items-center">
-                        Select Supplier
-                        <a href="/admin/products/supplier/add/" target="_blank" class="btn btn-sm btn-outline-primary">+ Add New</a>
-                    </h5>
-                    <div class="list-group list-group-flush" style="max-height: 70vh; overflow-y: auto;">
+        <div class="flex flex-col xl:flex-row gap-6">
+            <!-- LEFT: Supplier List -->
+            <div class="no-print w-full xl:w-1/3">
+                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-col h-[calc(100vh-160px)]">
+                    <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
+                        <h5 class="font-bold text-slate-800">Select Supplier</h5>
+                        <a href="/admin/products/supplier/add/" target="_blank" class="text-xs font-bold bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition">+ Add New</a>
+                    </div>
+                    <div class="overflow-y-auto pr-2 space-y-2 flex-1">
                         {% for supp in suppliers %}
-                        <a href="?supplier_id={{ supp.id }}" class="list-group-item list-group-item-action {% if selected_supplier.id == supp.id %}active{% endif %} rounded mb-1">
-                            <div class="fw-bold">{{ supp.name }}</div>
-                            <small class="{% if selected_supplier.id == supp.id %}text-light{% else %}text-muted{% endif %}">{{ supp.company_name|default:"Individual" }}</small>
+                        <a href="?supplier_id={{ supp.id }}" class="block p-3 rounded-xl border {% if selected_supplier.id == supp.id %}bg-blue-50 border-blue-300 shadow-sm{% else %}bg-white border-slate-100 hover:border-slate-300 hover:bg-slate-50{% endif %} transition">
+                            <div class="font-bold text-sm {% if selected_supplier.id == supp.id %}text-blue-900{% else %}text-slate-800{% endif %}">{{ supp.name }}</div>
+                            <div class="text-[11px] font-medium mt-1 {% if selected_supplier.id == supp.id %}text-blue-600{% else %}text-slate-500{% endif %}">{{ supp.company_name|default:"Individual" }}</div>
                         </a>
                         {% empty %}
-                        <div class="text-muted text-center py-3">Koi Supplier nahi mila. Naya add karein.</div>
+                        <div class="text-center py-6 text-slate-400 text-sm font-medium">Koi Supplier nahi mila. Naya add karein.</div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
 
-            <!-- Ledger Details -->
-            <div class="col-md-8">
-                <div class="card border-0 shadow-sm rounded-4 p-4">
+            <!-- RIGHT: Ledger Details -->
+            <div class="w-full xl:w-2/3">
+                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 flex flex-col h-auto xl:h-[calc(100vh-160px)]">
                     {% if selected_supplier %}
-                        <div class="border-bottom pb-3 mb-4">
-                            <h4 class="fw-bold m-0">{{ selected_supplier.name }} <span class="text-muted fs-6">({{ selected_supplier.company_name }})</span></h4>
-                            <p class="text-muted small m-0">📞 {{ selected_supplier.mobile_number|default:"N/A" }} | 📍 {{ selected_supplier.address|default:"N/A" }}</p>
+                        <div class="border-b border-slate-100 pb-4 mb-5">
+                            <h4 class="font-extrabold text-2xl text-slate-900 mb-1">{{ selected_supplier.name }} <span class="text-slate-400 font-medium text-lg">({{ selected_supplier.company_name }})</span></h4>
+                            <div class="text-xs text-slate-500 font-medium flex items-center gap-3">
+                                <span>📞 {{ selected_supplier.mobile_number|default:"N/A" }}</span>
+                                <span>📍 {{ selected_supplier.address|default:"N/A" }}</span>
+                            </div>
                         </div>
 
                         <!-- Balances -->
-                        <div class="row mb-4">
-                            <div class="col-md-4 mb-2">
-                                <div class="balance-card bc-payable">
-                                    <small class="fw-bold text-uppercase d-block mb-1">Total Maal Liya (Credit)</small>
-                                    <h5 class="fw-bold m-0">₹{{ total_credit }}</h5>
-                                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-red-50 border border-red-200 rounded-xl p-4 border-l-4 border-l-red-500">
+                                <span class="text-[10px] font-bold text-red-600 uppercase tracking-widest block mb-1">Total Maal Liya (Credit)</span>
+                                <h5 class="text-2xl font-black text-red-800">₹{{ total_credit }}</h5>
                             </div>
-                            <div class="col-md-4 mb-2">
-                                <div class="balance-card bc-paid">
-                                    <small class="fw-bold text-uppercase d-block mb-1">Total Payment Diya (Debit)</small>
-                                    <h5 class="fw-bold m-0">₹{{ total_debit }}</h5>
-                                </div>
+                            <div class="bg-green-50 border border-green-200 rounded-xl p-4 border-l-4 border-l-green-500">
+                                <span class="text-[10px] font-bold text-green-600 uppercase tracking-widest block mb-1">Total Payment Diya (Debit)</span>
+                                <h5 class="text-2xl font-black text-green-800">₹{{ total_debit }}</h5>
                             </div>
-                            <div class="col-md-4 mb-2">
-                                <div class="balance-card bc-net">
-                                    <small class="fw-bold text-uppercase d-block mb-1">Net Balance (Dena Baaki)</small>
-                                    <h5 class="fw-bold m-0">₹{{ net_balance }}</h5>
-                                </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 border-l-4 border-l-blue-500">
+                                <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest block mb-1">Net Balance (Dena Baaki)</span>
+                                <h5 class="text-2xl font-black text-blue-800">₹{{ net_balance }}</h5>
                             </div>
                         </div>
 
                         <!-- Add Transaction Form -->
-                        <div class="bg-light p-3 rounded-3 mb-4 border no-print">
-                            <form method="POST" action="{% url 'erp_supplier_ledger' %}" class="row g-2 align-items-end">
+                        <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl mb-6 no-print">
+                            <form method="POST" action="{% url 'erp_supplier_ledger' %}" class="flex flex-wrap gap-4 items-end">
                                 {% csrf_token %}
                                 <input type="hidden" name="supplier_id" value="{{ selected_supplier.id }}">
                                 
-                                <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-muted mb-1">Type</label>
-                                    <select name="transaction_type" class="form-select form-select-sm fw-bold" required>
+                                <div class="flex-1 min-w-[150px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Type</label>
+                                    <select name="transaction_type" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" required>
                                         <option value="CREDIT">📦 Maal Aaya (Credit)</option>
                                         <option value="DEBIT">💸 Payment Diya (Debit)</option>
                                     </select>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="form-label small fw-bold text-muted mb-1">Amount (₹)</label>
-                                    <input type="number" step="0.01" name="amount" class="form-control form-control-sm fw-bold" required>
+                                <div class="flex-1 min-w-[120px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Amount (₹)</label>
+                                    <input type="number" step="0.01" name="amount" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" required>
                                 </div>
-                                <div class="col-md-4">
-                                    <label class="form-label small fw-bold text-muted mb-1">Bill No. / Description</label>
-                                    <input type="text" name="description" class="form-control form-control-sm" placeholder="e.g. Bill #502" required>
+                                <div class="flex-[2] min-w-[200px]">
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Bill No. / Description</label>
+                                    <input type="text" name="description" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Bill #502" required>
                                 </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">Save</button>
+                                <div class="w-full md:w-auto">
+                                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-2 rounded-lg shadow-md transition">Save</button>
                                 </div>
                             </form>
                         </div>
 
                         <!-- Transactions Table -->
-                        <h6 class="fw-bold mb-3">Transaction History</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Description</th>
-                                        <th>Type</th>
-                                        <th class="text-end">Amount</th>
+                        <h6 class="font-bold text-slate-700 text-sm uppercase tracking-wider mb-3">Transaction History</h6>
+                        <div class="overflow-y-auto border border-slate-200 rounded-xl flex-1">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 shadow-sm">
+                                    <tr class="text-[11px] text-slate-500 uppercase tracking-wider">
+                                        <th class="p-3 font-bold">Date</th>
+                                        <th class="p-3 font-bold">Description</th>
+                                        <th class="p-3 font-bold">Type</th>
+                                        <th class="p-3 font-bold text-right">Amount</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="divide-y divide-slate-100">
                                     {% for entry in ledger_entries %}
-                                    <tr>
-                                        <td class="small">{{ entry.created_at|date:"d M Y, h:i A" }}</td>
-                                        <td>{{ entry.description }}</td>
-                                        <td>
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-3 text-xs text-slate-500 font-medium">{{ entry.created_at|date:"d M Y, h:i A" }}</td>
+                                        <td class="p-3 text-sm text-slate-800 font-medium">{{ entry.description }}</td>
+                                        <td class="p-3">
                                             {% if entry.transaction_type == 'CREDIT' %}
-                                                <span class="badge bg-danger">Maal Aaya</span>
+                                                <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Maal Aaya</span>
                                             {% else %}
-                                                <span class="badge bg-success">Payment Diya</span>
+                                                <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded uppercase">Payment Diya</span>
                                             {% endif %}
                                         </td>
-                                        <td class="text-end fw-bold {% if entry.transaction_type == 'CREDIT' %}text-danger{% else %}text-success{% endif %}">
+                                        <td class="p-3 text-right font-extrabold text-sm {% if entry.transaction_type == 'CREDIT' %}text-red-600{% else %}text-green-600{% endif %}">
                                             ₹{{ entry.amount }}
                                         </td>
                                     </tr>
                                     {% empty %}
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4 text-muted">No transactions found for this supplier.</td>
-                                    </tr>
+                                    <tr><td colspan="4" class="text-center py-8 text-slate-400 font-medium">No transactions found for this supplier.</td></tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
                     {% else %}
-                        <div class="text-center py-5 text-muted">
-                            <h5>Left side se kisi supplier ko select karein ya naya add karein.</h5>
+                        <div class="flex-1 flex items-center justify-center flex-col text-center opacity-50">
+                            <span class="text-6xl mb-4">🏢</span>
+                            <h5 class="text-slate-500 font-bold">Select a supplier from the list to view khata.</h5>
                         </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-
 </body>
 </html>

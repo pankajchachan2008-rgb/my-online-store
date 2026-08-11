@@ -2,288 +2,255 @@
 {% load static %}
 
 {% block content %}
-<style>
-    body { background-color: #f1f3f6; }
-    
-    .profile-card { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); padding: 15px; margin-bottom: 15px; }
-    
-    .sidebar-menu { background: #fff; border-radius: 4px; box-shadow: 0 2px 4px 0 rgba(0,0,0,.08); overflow: hidden; }
-    .sidebar-menu .nav-link { color: #878787; padding: 15px 25px; font-weight: 500; border-bottom: 1px solid #f0f0f0; border-radius: 0; text-transform: uppercase; font-size: 0.9rem; cursor: pointer; }
-    .sidebar-menu .nav-link:hover { color: #2874f0; background-color: #f9f9f9; }
-    .sidebar-menu .nav-link.active { color: #2874f0; background-color: #e5edfa; border-left: 4px solid #2874f0; font-weight: 600; }
-    
-    .user-info-header { display: flex; align-items: center; gap: 15px; }
-    
-    .user-avatar { width: 50px; height: 50px; background: #2874f0; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; overflow: hidden; }
-    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-    .order-box { border: 1px solid #e0e0e0; border-radius: 4px; transition: box-shadow 0.2s; }
-    .order-box:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .order-header { background-color: #f5f7fa; padding: 12px 15px; border-bottom: 1px solid #e0e0e0; }
-    
-    .tracking-box { background-color: #e5f3fb; border: 1px dashed #2874f0; border-radius: 4px; padding: 12px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
-
-    .address-tag { background: #f0f0f0; color: #878787; font-size: 0.7rem; padding: 3px 8px; border-radius: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    /* 🌟 NAYA: ORDER TRACKING TIMELINE CSS */
-    .tracking-wrapper { padding: 25px 15px; margin-bottom: 15px; background: #fff; border-radius: 4px; border: 1px solid #f0f0f0; }
-    .track-line { display: flex; justify-content: space-between; position: relative; }
-    .track-line::before { content: ''; position: absolute; top: 15px; left: 10%; right: 10%; height: 4px; background-color: #E2E8F0; z-index: 1; }
-    .track-progress { position: absolute; top: 15px; left: 10%; height: 4px; background-color: #2ECC71; z-index: 2; transition: width 0.5s ease; }
-    .track-step { position: relative; z-index: 3; text-align: center; width: 25%; }
-    .track-icon { width: 34px; height: 34px; background-color: #E2E8F0; color: #94A3B8; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; font-size: 14px; font-weight: bold; box-shadow: 0 0 0 4px white; transition: all 0.3s ease; }
-    .track-text { font-size: 0.85rem; font-weight: 600; color: #64748B; }
-    
-    /* Active & Cancelled States */
-    .step-active .track-icon { background-color: #2ECC71; color: white; box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.2); }
-    .step-active .track-text { color: #0F172A; }
-    .step-cancelled .track-icon { background-color: #E74C3C; color: white; box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.2); }
-    .track-line.cancelled::before { background-color: #FADBD8; }
-</style>
-
-<div class="container my-4" style="max-width: 1200px;">
-    <div class="row">
+<div class="max-w-[1200px] mx-auto px-4 py-8 font-['Inter']" x-data="{ activeTab: 'profile' }">
+    <div class="flex flex-col lg:flex-row gap-6">
         
         <!-- SIDEBAR -->
-        <div class="col-lg-3 mb-4">
-            <div class="profile-card">
-                <div class="user-info-header mb-3">
-                    <div class="user-avatar">
+        <div class="w-full lg:w-1/4 space-y-6">
+            <!-- Profile Card -->
+            <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] rounded-full flex items-center justify-center text-xl font-bold font-['Jost'] shadow-md overflow-hidden border-2 border-[#D4AF37]">
                         {% if profile.profile_photo %}
-                            <img src="{{ profile.profile_photo.url }}" alt="Profile Photo">
+                            <img src="{{ profile.profile_photo.url }}" alt="Profile" class="w-full h-full object-cover">
                         {% else %}
                             {{ user.first_name|first|default:user.username|first }}
                         {% endif %}
                     </div>
                     <div>
-                        <span style="font-size: 0.8rem; color: #878787;">Hello,</span><br>
-                        <strong style="font-size: 1.1rem; color: #111;">{{ user.first_name }} {{ user.last_name }}</strong>
+                        <span class="text-xs text-gray-500 font-medium">Hello,</span><br>
+                        <strong class="text-lg text-gray-900">{{ user.first_name }} {{ user.last_name }}</strong>
                     </div>
                 </div>
                 
-                <div class="px-2">
-                    <div class="d-flex justify-content-between small text-muted mb-1" style="font-size: 0.75rem;">
+                <div class="mt-4">
+                    <div class="flex justify-between text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">
                         <span>Profile Completion</span>
-                        <span class="fw-bold text-success">{{ profile.get_profile_completion_percentage }}%</span>
+                        <span class="text-green-600">{{ profile.get_profile_completion_percentage }}%</span>
                     </div>
-                    <div class="progress rounded-0" style="height: 6px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ profile.get_profile_completion_percentage }}%;"></div>
+                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                        <div class="bg-green-500 h-1.5 rounded-full" style="width: {{ profile.get_profile_completion_percentage }}%;"></div>
                     </div>
                 </div>
             </div>
             
-            <div class="sidebar-menu nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <button class="nav-link active text-start" data-bs-toggle="pill" data-bs-target="#tab-profile" type="button">👤 Profile Information</button>
-                <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-orders" type="button">📦 My Orders</button>
-                <button class="nav-link text-start" data-bs-toggle="pill" data-bs-target="#tab-addresses" type="button">📍 Manage Addresses</button>
-                <a href="{% url 'password_change' %}" class="nav-link text-start">🔐 Change Password</a>
-                <a href="{% url 'logout' %}" class="nav-link text-start text-danger">🚪 Logout</a>
+            <!-- Navigation Menu -->
+            <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
+                <button @click="activeTab = 'profile'" :class="activeTab === 'profile' ? 'bg-blue-50 text-[#0c0d12] border-l-4 border-[#0c0d12] font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'" class="px-6 py-4 text-left text-sm uppercase tracking-wider transition duration-200">
+                    👤 Profile Information
+                </button>
+                <button @click="activeTab = 'orders'" :class="activeTab === 'orders' ? 'bg-blue-50 text-[#0c0d12] border-l-4 border-[#0c0d12] font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'" class="px-6 py-4 text-left text-sm uppercase tracking-wider transition duration-200 border-t border-gray-100">
+                    📦 My Orders
+                </button>
+                <button @click="activeTab = 'addresses'" :class="activeTab === 'addresses' ? 'bg-blue-50 text-[#0c0d12] border-l-4 border-[#0c0d12] font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'" class="px-6 py-4 text-left text-sm uppercase tracking-wider transition duration-200 border-t border-gray-100">
+                    📍 Manage Addresses
+                </button>
+                <a href="{% url 'password_change' %}" class="px-6 py-4 text-left text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900 uppercase tracking-wider transition duration-200 border-t border-gray-100">
+                    🔐 Change Password
+                </a>
+                <a href="{% url 'logout' %}" class="px-6 py-4 text-left text-sm text-red-500 hover:bg-red-50 hover:text-red-700 font-bold uppercase tracking-wider transition duration-200 border-t border-gray-100">
+                    🚪 Logout
+                </a>
             </div>
         </div>
 
         <!-- MAIN CONTENT AREA -->
-        <div class="col-lg-9">
-            <div class="profile-card p-4 tab-content" id="v-pills-tabContent" style="min-height: 500px;">
+        <div class="w-full lg:w-3/4">
+            <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] p-6 md:p-8 min-h-[500px]">
                 
                 <!-- 👤 PROFILE TAB -->
-                <div class="tab-pane fade show active" id="tab-profile">
+                <div x-show="activeTab === 'profile'" x-transition.opacity.duration.400ms>
                     
                     <!-- Wallet Alert -->
-                    <div class="alert alert-info d-flex justify-content-between align-items-center rounded-0 border-0 shadow-sm mb-3 p-3" style="background-color: #e5edfa; border-left: 4px solid #2874f0 !important;">
+                    <div class="bg-blue-50/80 border border-blue-100 rounded-xl p-5 mb-6 flex justify-between items-center shadow-sm">
                         <div>
-                            <h6 class="fw-bold mb-0 text-dark" style="font-size: 15px;">🛍️ My Store Wallet Balance</h6>
-                            <small class="text-muted">Use this balance for instant checkouts</small>
+                            <h6 class="font-bold text-gray-900 mb-1">🛍️ My Store Wallet Balance</h6>
+                            <p class="text-xs text-gray-500 font-medium">Use this balance for instant checkouts</p>
                         </div>
-                        <h4 class="fw-bold mb-0" style="color: #2874f0;">₹{{ profile.wallet_balance }}</h4>
+                        <h4 class="text-2xl font-extrabold text-[#0c0d12]">₹{{ profile.wallet_balance }}</h4>
                     </div>
 
-                    <!-- Wallet Passbook -->
-                    <div class="mb-5">
-                        <a class="btn btn-sm btn-outline-primary rounded-0 fw-bold mb-2" data-bs-toggle="collapse" href="#collapsePassbook" role="button" aria-expanded="false" aria-controls="collapsePassbook">
+                    <!-- Wallet Passbook (Alpine Collapse) -->
+                    <div class="mb-10" x-data="{ openPassbook: false }">
+                        <button @click="openPassbook = !openPassbook" class="text-sm font-bold text-[#0c0d12] bg-white border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition shadow-sm mb-3">
                             📖 View Wallet Passbook
-                        </a>
-                        <div class="collapse" id="collapsePassbook">
-                            <div class="card card-body rounded-0 border p-0 shadow-sm bg-white">
-                                <div class="bg-light p-2 border-bottom">
-                                    <h6 class="fw-bold mb-0 ms-2 text-dark" style="font-size: 14px; text-transform: uppercase;">Recent Transactions</h6>
-                                </div>
-                                <div class="p-3" style="max-height: 250px; overflow-y: auto;">
-                                    {% for txn in transactions %}
-                                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                                            <div>
-                                                <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ txn.description }}</span><br>
-                                                <span class="text-muted" style="font-size: 0.75rem;">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
-                                            </div>
-                                            <div>
-                                                {% if txn.transaction_type == 'CREDIT' %}
-                                                    <span class="fw-bold text-success">+ ₹{{ txn.amount }}</span>
-                                                {% else %}
-                                                    <span class="fw-bold text-danger">- ₹{{ txn.amount }}</span>
-                                                {% endif %}
-                                            </div>
+                        </button>
+                        <div x-show="openPassbook" x-collapse class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                                <h6 class="font-bold text-xs text-gray-500 uppercase tracking-wider m-0">Recent Transactions</h6>
+                            </div>
+                            <div class="p-4 max-h-[250px] overflow-y-auto space-y-4">
+                                {% for txn in transactions %}
+                                    <div class="flex justify-between items-center border-b border-gray-100 pb-3 last:border-0 last:pb-0">
+                                        <div>
+                                            <span class="font-bold text-gray-900 text-sm">{{ txn.description }}</span><br>
+                                            <span class="text-xs text-gray-400">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
                                         </div>
-                                    {% empty %}
-                                        <div class="text-center py-3">
-                                            <span class="text-muted small">No transactions yet.</span>
+                                        <div>
+                                            {% if txn.transaction_type == 'CREDIT' %}
+                                                <span class="font-bold text-green-600">+ ₹{{ txn.amount }}</span>
+                                            {% else %}
+                                                <span class="font-bold text-red-500">- ₹{{ txn.amount }}</span>
+                                            {% endif %}
                                         </div>
-                                    {% endfor %}
-                                </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="text-center py-4 text-gray-400 text-sm font-medium">No transactions yet.</div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
 
-                    <!-- Profile Edit Form -->
-                    <h5 class="fw-bold mb-4 pb-2 border-bottom">Profile Information</h5>
+                    <h5 class="font-bold text-xl text-gray-900 mb-6 border-b border-gray-100 pb-3 font-['Jost']">Profile Information</h5>
                     
-                    <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
+                    <form method="POST" action="{% url 'profile' %}" enctype="multipart/form-data" class="space-y-5">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="update_profile">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">First Name</label>
-                                <input type="text" name="first_name" class="form-control rounded-0" value="{{ user.first_name }}" required>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">First Name</label>
+                                <input type="text" name="first_name" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ user.first_name }}" required>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">Last Name</label>
-                                <input type="text" name="last_name" class="form-control rounded-0" value="{{ user.last_name }}">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Last Name</label>
+                                <input type="text" name="last_name" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ user.last_name }}">
                             </div>
-                        </div>
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">Email Address</label>
-                                <input type="email" name="email" class="form-control rounded-0" value="{{ user.email }}" required>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Email Address</label>
+                                <input type="email" name="email" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ user.email }}" required>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold">Mobile Number</label>
-                                <input type="text" name="mobile_number" class="form-control rounded-0" value="{{ profile.mobile_number|default:'' }}">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Mobile Number</label>
+                                <input type="text" name="mobile_number" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ profile.mobile_number|default:'' }}">
                             </div>
                         </div>
                         
-                        <div class="mb-4">
-                            <label class="form-label text-muted small fw-bold">Update Profile Photo</label>
-                            <input type="file" name="profile_photo" class="form-control rounded-0" accept="image/*">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Update Profile Photo</label>
+                            <input type="file" name="profile_photo" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#0c0d12] file:text-[#D4AF37] hover:file:bg-gray-800 border border-gray-300 rounded-xl p-2 bg-white outline-none cursor-pointer transition" accept="image/*">
                         </div>
 
-                        <button type="submit" class="btn btn-primary px-4 py-2 fw-medium rounded-0" style="background: #2874f0; border:none;">SAVE CHANGES</button>
+                        <button type="submit" class="bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] font-bold uppercase tracking-widest px-8 py-3.5 rounded-xl shadow-[0_10px_20px_rgba(12,13,18,0.15)] hover:shadow-xl hover:-translate-y-0.5 transition duration-300 border border-[#D4AF37]/30 mt-4">
+                            SAVE CHANGES
+                        </button>
                     </form>
                 </div>
 
                 <!-- 📦 ORDERS TAB -->
-                <div class="tab-pane fade" id="tab-orders">
-                    <h5 class="fw-bold mb-4 pb-2 border-bottom">My Orders</h5>
+                <div x-show="activeTab === 'orders'" x-cloak x-transition.opacity.duration.400ms>
+                    <h5 class="font-bold text-xl text-gray-900 mb-6 border-b border-gray-100 pb-3 font-['Jost']">My Orders</h5>
                     
                     {% for order in orders %}
-                    <div class="order-box mb-4">
-                        <div class="order-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden mb-6 shadow-sm hover:shadow-md transition duration-300">
+                        <!-- Order Header -->
+                        <div class="bg-gray-50/80 border-b border-gray-200 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
                             <div>
-                                <span class="text-muted small">ORDER PLACED</span><br>
-                                <strong style="font-size: 0.9rem;">{{ order.created_at|date:"d M Y" }}</strong>
+                                <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">ORDER PLACED</span><br>
+                                <strong class="text-gray-900 text-sm">{{ order.created_at|date:"d M Y" }}</strong>
                             </div>
                             <div>
-                                <span class="text-muted small">TOTAL</span><br>
-                                <strong style="font-size: 0.9rem;">₹{{ order.total_amount }}</strong>
+                                <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">TOTAL</span><br>
+                                <strong class="text-gray-900 text-sm">₹{{ order.total_amount }}</strong>
                             </div>
-                            <div class="text-end">
-                                <span class="text-muted small">ORDER ID</span><br>
-                                <!-- 🌟 UPDATED UNIQUE CORPORATE ORDER ID -->
-                                <strong style="font-size: 0.9rem; color: #2874f0;">#{{ order.order_id }}</strong>
+                            <div class="text-right">
+                                <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">ORDER ID</span><br>
+                                <strong class="text-[#0c0d12] text-sm">#{{ order.order_id }}</strong>
                             </div>
                         </div>
                         
-                        <div class="p-4">
-                            <!-- 🌟 LIVE TRACKING TIMELINE BAR -->
-                            <div class="tracking-wrapper">
-                                <div class="track-line {% if order.status == 'Cancelled' %}cancelled{% endif %}">
+                        <div class="p-6">
+                            <!-- 🌟 LIVE TRACKING TIMELINE -->
+                            <div class="py-6 mb-4 relative">
+                                <!-- Background Line -->
+                                <div class="absolute top-1/2 left-[10%] right-[10%] h-1 bg-gray-200 -translate-y-1/2 rounded-full z-0"></div>
+                                
+                                {% if order.status != 'Cancelled' %}
+                                    <!-- Progress Line -->
+                                    <div class="absolute top-1/2 left-[10%] h-1 bg-green-500 -translate-y-1/2 rounded-full z-10 transition-all duration-500" 
+                                        style="width: {% if order.status == 'Pending' %}0%{% elif order.status == 'Processing' %}33%{% elif order.status == 'Out for Delivery' %}66%{% elif order.status == 'Completed' %}100%{% endif %};">
+                                    </div>
                                     
-                                    {% if order.status != 'Cancelled' %}
-                                        <!-- Dynamic Progress Indicator -->
-                                        {% if order.status == 'Pending' %}
-                                            <div class="track-progress" style="width: 0%;"></div>
-                                        {% elif order.status == 'Processing' %}
-                                            <div class="track-progress" style="width: 33%;"></div>
-                                        {% elif order.status == 'Out for Delivery' %}
-                                            <div class="track-progress" style="width: 66%;"></div>
-                                        {% elif order.status == 'Completed' %}
-                                            <div class="track-progress" style="width: 100%;"></div>
-                                        {% endif %}
-                                        
-                                        <!-- Checkpoints -->
-                                        <div class="track-step step-active">
-                                            <div class="track-icon">✓</div>
-                                            <div class="track-text">Placed</div>
+                                    <div class="relative z-20 flex justify-between">
+                                        <!-- Step 1 -->
+                                        <div class="text-center w-1/4">
+                                            <div class="w-8 h-8 mx-auto bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold ring-4 ring-green-100 mb-2">✓</div>
+                                            <div class="text-xs font-bold text-gray-900">Placed</div>
                                         </div>
-                                        <div class="track-step {% if order.status in 'Processing,Out for Delivery,Completed' %}step-active{% endif %}">
-                                            <div class="track-icon">📦</div>
-                                            <div class="track-text">Processing</div>
+                                        <!-- Step 2 -->
+                                        <div class="text-center w-1/4">
+                                            <div class="w-8 h-8 mx-auto {% if order.status in 'Processing,Out for Delivery,Completed' %}bg-green-500 text-white ring-green-100{% else %}bg-gray-200 text-gray-400 ring-white{% endif %} rounded-full flex items-center justify-center text-sm font-bold ring-4 mb-2 transition-colors">📦</div>
+                                            <div class="text-xs font-bold {% if order.status in 'Processing,Out for Delivery,Completed' %}text-gray-900{% else %}text-gray-400{% endif %}">Processing</div>
                                         </div>
-                                        <div class="track-step {% if order.status in 'Out for Delivery,Completed' %}step-active{% endif %}">
-                                            <div class="track-icon">🚚</div>
-                                            <div class="track-text">Shipped</div>
+                                        <!-- Step 3 -->
+                                        <div class="text-center w-1/4">
+                                            <div class="w-8 h-8 mx-auto {% if order.status in 'Out for Delivery,Completed' %}bg-green-500 text-white ring-green-100{% else %}bg-gray-200 text-gray-400 ring-white{% endif %} rounded-full flex items-center justify-center text-sm font-bold ring-4 mb-2 transition-colors">🚚</div>
+                                            <div class="text-xs font-bold {% if order.status in 'Out for Delivery,Completed' %}text-gray-900{% else %}text-gray-400{% endif %}">Shipped</div>
                                         </div>
-                                        <div class="track-step {% if order.status == 'Completed' %}step-active{% endif %}">
-                                            <div class="track-icon">🏠</div>
-                                            <div class="track-text">Delivered</div>
+                                        <!-- Step 4 -->
+                                        <div class="text-center w-1/4">
+                                            <div class="w-8 h-8 mx-auto {% if order.status == 'Completed' %}bg-green-500 text-white ring-green-100{% else %}bg-gray-200 text-gray-400 ring-white{% endif %} rounded-full flex items-center justify-center text-sm font-bold ring-4 mb-2 transition-colors">🏠</div>
+                                            <div class="text-xs font-bold {% if order.status == 'Completed' %}text-gray-900{% else %}text-gray-400{% endif %}">Delivered</div>
                                         </div>
-                                    {% else %}
-                                        <!-- Cancelled State -->
-                                        <div class="track-step step-cancelled" style="width: 100%;">
-                                            <div class="track-icon">❌</div>
-                                            <div class="track-text text-danger">Order Cancelled</div>
+                                    </div>
+                                {% else %}
+                                    <div class="absolute top-1/2 left-[10%] right-[10%] h-1 bg-red-200 -translate-y-1/2 rounded-full z-10"></div>
+                                    <div class="relative z-20 flex justify-center">
+                                        <div class="text-center w-full">
+                                            <div class="w-8 h-8 mx-auto bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold ring-4 ring-red-100 mb-2">❌</div>
+                                            <div class="text-xs font-bold text-red-600">Order Cancelled</div>
                                         </div>
-                                    {% endif %}
-                                </div>
+                                    </div>
+                                {% endif %}
                             </div>
-                            <!-- END OF TIMELINE BAR -->
 
-                            <!-- Order Action Buttons -->
-                            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom flex-wrap gap-2">
+                            <!-- Actions -->
+                            <div class="flex flex-wrap justify-between items-center mb-5 pb-4 border-b border-gray-100 gap-3">
                                 <div>
                                     {% if order.status == 'Completed' %}
-                                        <h6 class="fw-bold text-success m-0">🟢 Delivered Successfully</h6>
+                                        <h6 class="font-extrabold text-green-600 m-0">🟢 Delivered Successfully</h6>
                                     {% elif order.status == 'Cancelled' %}
-                                        <h6 class="fw-bold text-danger m-0">🔴 Cancelled</h6>
+                                        <h6 class="font-extrabold text-red-500 m-0">🔴 Cancelled</h6>
                                     {% else %}
-                                        <h6 class="fw-bold text-warning m-0">🟡 {{ order.status }}</h6>
+                                        <h6 class="font-extrabold text-yellow-500 m-0">🟡 {{ order.status }}</h6>
                                     {% endif %}
                                 </div>
                                 
-                                <div class="d-flex gap-2">
+                                <div class="flex gap-2">
                                     {% if order.status != 'Cancelled' %}
-                                        <!-- 🧾 DOWNLOAD INVOICE BUTTON -->
-                                        <a href="{% url 'download_invoice' order.id %}" class="btn btn-outline-dark btn-sm rounded-0 fw-bold">🧾 Download Bill</a>
+                                        <a href="{% url 'download_invoice' order.id %}" target="_blank" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">🧾 Download Bill</a>
                                     {% endif %}
                                     
                                     {% if order.status == 'Pending' %}
                                     <form action="{% url 'cancel_order' order.id %}" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to cancel?');">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-0">Cancel Order</button>
+                                        <button type="submit" class="bg-white border border-red-200 text-red-500 hover:bg-red-50 font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">Cancel Order</button>
                                     </form>
                                     {% endif %}
                                 </div>
                             </div>
 
-                            <!-- Order Items -->
-                            <div class="bg-light p-3 rounded border">
+                            <!-- Items -->
+                            <div class="bg-slate-50 border border-gray-100 p-4 rounded-xl">
                                 {% for item in order.items.all %}
-                                <div class="d-flex justify-content-between mb-2 pb-2 {% if not forloop.last %}border-bottom{% endif %}">
-                                    <span style="font-size: 0.9rem;"><strong>{{ item.quantity }} x</strong> {{ item.product_name }}</span>
-                                    <span class="fw-medium text-dark" style="font-size: 0.9rem;">₹{{ item.price }}</span>
+                                <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-200 last:border-0 last:mb-0 last:pb-0">
+                                    <span class="text-sm text-gray-700"><strong class="text-gray-900">{{ item.quantity }} x</strong> {{ item.product_name }}</span>
+                                    <span class="font-bold text-gray-900 text-sm">₹{{ item.price }}</span>
                                 </div>
                                 {% empty %}
-                                    <span class="text-muted">No items in this order.</span>
+                                    <span class="text-gray-400 text-sm">No items in this order.</span>
                                 {% endfor %}
                             </div>
 
-                            <!-- Courier Details (If Shipped) -->
+                            <!-- Courier Details -->
                             {% if order.tracking_id %}
-                            <div class="tracking-box mt-3 flex-wrap gap-2">
+                            <div class="mt-5 bg-blue-50 border border-blue-200 rounded-xl p-4 flex flex-wrap justify-between items-center gap-4">
                                 <div>
-                                    <span class="text-muted small fw-bold" style="text-transform: uppercase;">🚚 Delivery Partner: {{ order.courier_name|default:"Courier" }}</span><br>
-                                    <span class="text-dark fw-bold" style="font-size: 15px;">Tracking ID: {{ order.tracking_id }}</span>
+                                    <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">🚚 Delivery Partner: {{ order.courier_name|default:"Courier" }}</span><br>
+                                    <span class="text-gray-900 font-bold text-base">Tracking ID: {{ order.tracking_id }}</span>
                                 </div>
                                 {% if order.tracking_url %}
                                 <div>
-                                    <a href="{{ order.tracking_url }}" target="_blank" class="btn btn-primary btn-sm px-4 fw-bold rounded-0" style="background-color: #2874f0; border:none;">TRACK LIVE</a>
+                                    <a href="{{ order.tracking_url }}" target="_blank" class="bg-[#0c0d12] hover:bg-gray-800 text-[#D4AF37] font-bold text-xs px-5 py-2.5 rounded-lg shadow-md transition uppercase tracking-wide">Track Live</a>
                                 </div>
                                 {% endif %}
                             </div>
@@ -292,113 +259,100 @@
                         </div>
                     </div>
                     {% empty %}
-                        <div class="text-center py-5">
-                            <h2 class="text-muted">📦</h2>
-                            <h5 class="text-muted mt-2">No orders found</h5>
-                            <a href="{% url 'home' %}" class="btn btn-primary mt-3 px-4 rounded-0" style="background: #2874f0; border:none;">Shop Now</a>
+                        <div class="text-center py-16">
+                            <h2 class="text-6xl opacity-30">📦</h2>
+                            <h5 class="text-gray-500 font-bold mt-4">No orders found</h5>
+                            <a href="{% url 'home' %}" class="inline-block mt-4 bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] font-bold px-6 py-2 rounded-xl shadow-lg">Shop Now</a>
                         </div>
                     {% endfor %}
                 </div>
 
                 <!-- 📍 ADDRESSES TAB -->
-                <div class="tab-pane fade" id="tab-addresses">
-                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-                        <h5 class="fw-bold mb-0">Manage Addresses</h5>
-                        <button class="btn btn-outline-primary btn-sm rounded-0 fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#addAddressForm">
-                            + ADD A NEW ADDRESS
+                <div x-show="activeTab === 'addresses'" x-cloak x-transition.opacity.duration.400ms x-data="{ openAddAddress: false }">
+                    <div class="flex justify-between items-center mb-6 border-b border-gray-100 pb-3">
+                        <h5 class="font-bold text-xl text-gray-900 m-0 font-['Jost']">Manage Addresses</h5>
+                        <button @click="openAddAddress = !openAddAddress" class="bg-white border border-gray-300 hover:bg-gray-50 text-[#0c0d12] font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition uppercase tracking-wide">
+                            + Add New Address
                         </button>
                     </div>
 
-                    <div class="collapse mb-4" id="addAddressForm">
-                        <div class="card card-body bg-light rounded-0" style="border: 1px solid #e0e0e0;">
-                            <h6 class="fw-bold mb-3 text-primary">ADD A NEW ADDRESS</h6>
-                            <form method="POST" action="{% url 'profile' %}">
+                    <div x-show="openAddAddress" x-collapse class="mb-6">
+                        <div class="bg-slate-50 border border-gray-200 rounded-2xl p-6 shadow-inner">
+                            <h6 class="font-bold text-xs text-gray-500 uppercase tracking-wider mb-4">ADD A NEW ADDRESS</h6>
+                            <form method="POST" action="{% url 'profile' %}" class="space-y-4">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="add_address">
                                 
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <input type="text" name="name" class="form-control rounded-0" placeholder="Full Name" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" name="mobile" class="form-control rounded-0" placeholder="10-digit mobile number" required>
-                                    </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" name="name" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" placeholder="Full Name" required>
+                                    <input type="text" name="mobile" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" placeholder="10-digit mobile number" required>
                                 </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <input type="text" name="pincode" class="form-control rounded-0" placeholder="Pincode" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" name="locality" class="form-control rounded-0" placeholder="Locality / Area" required>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <textarea name="full_address" class="form-control rounded-0" rows="3" placeholder="Address (House No, Building, Street)" required></textarea>
-                                </div>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <input type="text" name="city" class="form-control rounded-0" placeholder="City/District/Town" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <select name="state" class="form-control rounded-0" required>
-                                            <option value="" disabled selected>--Select State--</option>
-                                            <option value="Rajasthan">Rajasthan</option>
-                                            <option value="Haryana">Haryana</option>
-                                            <option value="Delhi">Delhi</option>
-                                            <option value="Punjab">Punjab</option>
-                                            <option value="Gujarat">Gujarat</option>
-                                            <option value="Maharashtra">Maharashtra</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="text-muted small fw-bold d-block mb-2">Address Type</label>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="address_type" value="Home" checked>
-                                        <label class="form-check-label">Home (All day delivery)</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="address_type" value="Office">
-                                        <label class="form-check-label">Office (Delivery between 10 AM - 5 PM)</label>
-                                    </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" name="pincode" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" placeholder="Pincode" required>
+                                    <input type="text" name="locality" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" placeholder="Locality / Area" required>
                                 </div>
                                 <div>
-                                    <button type="submit" class="btn btn-primary px-4 fw-medium rounded-0" style="background: #2874f0; border:none;">SAVE</button>
-                                    <button type="button" class="btn btn-link text-muted ms-2" data-bs-toggle="collapse" data-bs-target="#addAddressForm">CANCEL</button>
+                                    <textarea name="full_address" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" rows="3" placeholder="Address (House No, Building, Street)" required></textarea>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" name="city" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" placeholder="City/District/Town" required>
+                                    <select name="state" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none" required>
+                                        <option value="" disabled selected>--Select State--</option>
+                                        <option value="Rajasthan">Rajasthan</option>
+                                        <option value="Haryana">Haryana</option>
+                                        <option value="Delhi">Delhi</option>
+                                        <option value="Punjab">Punjab</option>
+                                        <option value="Gujarat">Gujarat</option>
+                                        <option value="Maharashtra">Maharashtra</option>
+                                    </select>
+                                </div>
+                                <div class="py-2">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Address Type</label>
+                                    <div class="flex gap-6">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="address_type" value="Home" checked class="w-4 h-4 text-blue-900 focus:ring-blue-900">
+                                            <span class="text-sm font-medium text-gray-700">Home</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="address_type" value="Office" class="w-4 h-4 text-blue-900 focus:ring-blue-900">
+                                            <span class="text-sm font-medium text-gray-700">Office</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="flex gap-3 pt-2">
+                                    <button type="submit" class="bg-[#0c0d12] hover:bg-gray-800 text-[#D4AF37] font-bold uppercase tracking-widest px-8 py-3 rounded-xl shadow-md transition">SAVE</button>
+                                    <button type="button" @click="openAddAddress = false" class="text-gray-500 hover:text-gray-900 font-bold px-4 py-3 uppercase text-sm">CANCEL</button>
                                 </div>
                             </form>
                         </div>
                     </div>
 
-                    {% for addr in addresses %}
-                    <div class="border rounded-0 p-3 mb-3 position-relative bg-white" style="border-color: #e0e0e0 !important;">
-                        <span class="address-tag mb-2 d-inline-block">{{ addr.address_type }}</span>
-                        
-                        <div class="dropdown position-absolute top-0 end-0 mt-3 me-3">
-                            <button class="btn btn-sm text-muted" type="button" data-bs-toggle="dropdown" style="font-size: 1.2rem; line-height: 1;">⋮</button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                <li><a class="dropdown-item small" href="{% url 'edit_address' addr.id %}">Edit</a></li>
-                                <li>
-                                    <form method="POST" action="{% url 'delete_address' addr.id %}" onsubmit="return confirm('Delete this address?');">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger small border-0 bg-transparent w-100 text-start">Delete</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+                    <div class="space-y-4">
+                        {% for addr in addresses %}
+                        <div class="bg-white border border-gray-200 rounded-2xl p-5 relative shadow-sm hover:shadow-md transition">
+                            <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide inline-block mb-3">{{ addr.address_type }}</span>
+                            
+                            <div class="absolute top-4 right-4 flex gap-3">
+                                <a href="{% url 'edit_address' addr.id %}" class="text-blue-600 hover:text-blue-800 text-xs font-bold uppercase tracking-wide">Edit</a>
+                                <form method="POST" action="{% url 'delete_address' addr.id %}" class="m-0" onsubmit="return confirm('Delete this address?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-wide">Delete</button>
+                                </form>
+                            </div>
 
-                        <p class="mb-1 text-dark" style="font-size: 1rem;"><span class="fw-bold">{{ addr.name }}</span> <span class="ms-3 fw-bold">{{ addr.mobile_number }}</span></p>
-                        <p class="text-muted mb-0" style="font-size: 0.9rem;">
-                            {{ addr.full_address }}, {{ addr.locality }}, <br>
-                            {{ addr.city }}, {{ addr.state }} - <span class="fw-bold text-dark">{{ addr.pincode }}</span>
-                        </p>
+                            <p class="text-gray-900 text-base mb-1"><strong class="font-bold">{{ addr.name }}</strong> <span class="ml-3 font-bold text-gray-500">{{ addr.mobile_number }}</span></p>
+                            <p class="text-sm text-gray-500 leading-relaxed mb-0">
+                                {{ addr.full_address }}, {{ addr.locality }}, <br>
+                                {{ addr.city }}, {{ addr.state }} - <span class="font-bold text-gray-900">{{ addr.pincode }}</span>
+                            </p>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-10">
+                            <span class="text-6xl opacity-30">📍</span>
+                            <p class="text-gray-500 font-bold mt-4">No saved addresses found.</p>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% empty %}
-                    <div class="text-center py-4">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3082/3082383.png" alt="No Address" style="width: 60px; opacity: 0.3;" class="mb-3">
-                        <p class="text-muted">No saved addresses found.</p>
-                    </div>
-                    {% endfor %}
                 </div>
                 
             </div>

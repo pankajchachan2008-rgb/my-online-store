@@ -1,18 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container my-5 bg-white p-5 rounded-3 shadow-sm" style="max-width: 900px;">
-    <h2 class="fw-bold mb-4" style="font-family: 'Jost', sans-serif;">Privacy Policy</h2>
-    <p class="text-muted">Last updated: July 2026</p>
-    <hr>
-    <h5>1. Information We Collect</h5>
-    <p>At Chachan General Store (CGSmart), we collect personal information such as your name, delivery address, email, and mobile number exclusively to process your orders and provide a seamless shopping experience.</p>
-    
-    <h5>2. How We Use Your Information</h5>
-    <p>Your data is used strictly for order fulfillment, local delivery coordination, and critical account updates. We ensure complete data safety and do not sell your personal information to third parties.</p>
-    
-    <h5>3. Security</h5>
-    <p>We implement industry-standard security measures to protect your personal data during checkout and registration.</p>
-    
-    <p class="mt-4">For any privacy-related concerns, please contact us at <strong>support@cgsmart.in</strong>.</p>
+<div class="max-w-[900px] mx-auto px-4 py-12 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.06)] p-8 md:p-12">
+        <h2 class="font-['Jost'] text-3xl md:text-4xl font-extrabold text-gray-900 mb-2">Privacy Policy</h2>
+        <p class="text-slate-500 font-medium text-sm mb-6">Last updated: July 2026</p>
+        
+        <hr class="border-slate-200 mb-8">
+        
+        <div class="space-y-8 text-slate-600 leading-relaxed">
+            <section>
+                <h5 class="font-bold text-gray-900 text-xl mb-3 font-['Jost']">1. Information We Collect</h5>
+                <p>At Chachan General Store (CGSmart), we collect personal information such as your name, delivery address, email, and mobile number exclusively to process your orders and provide a seamless shopping experience.</p>
+            </section>
+            
+            <section>
+                <h5 class="font-bold text-gray-900 text-xl mb-3 font-['Jost']">2. How We Use Your Information</h5>
+                <p>Your data is used strictly for order fulfillment, local delivery coordination, and critical account updates. We ensure complete data safety and do not sell your personal information to third parties.</p>
+            </section>
+            
+            <section>
+                <h5 class="font-bold text-gray-900 text-xl mb-3 font-['Jost']">3. Security</h5>
+                <p>We implement industry-standard security measures to protect your personal data during checkout and registration.</p>
+            </section>
+        </div>
+        
+        <div class="mt-10 p-5 bg-blue-50/50 border border-blue-100 rounded-xl">
+            <p class="m-0 text-slate-700">For any privacy-related concerns, please contact us at <a href="mailto:support@cgsmart.in" class="font-bold text-blue-700 hover:text-blue-800 transition">support@cgsmart.in</a>.</p>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Verify OTP | CGSMART{% endblock %}
+
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center py-12 px-4 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-8 md:p-12 w-full max-w-[500px]">
+        <div class="text-center mb-8">
+            <h2 class="font-['Jost'] text-2xl font-extrabold text-gray-900 mb-2">Check Your Email ✉️</h2>
+            <p class="text-gray-500 text-sm font-medium">Aapke email <strong class="text-gray-900">{{ email }}</strong> par 6-digit OTP bheja gaya hai.</p>
+        </div>
+        
+        {% if messages %}
+            <div class="space-y-3 mb-6">
+            {% for message in messages %}
+                <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-xl text-sm font-medium text-center">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            <div class="text-center">
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Enter 6-Digit OTP</label>
+                <input type="text" name="otp" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-4 text-center text-3xl tracking-[12px] font-black text-slate-900 focus:ring-2 focus:ring-[#D4AF37] focus:bg-white outline-none transition placeholder-slate-300" placeholder="------" required maxlength="6" pattern="\d{6}">
+            </div>
+            
+            <button type="submit" class="w-full bg-[#D4AF37] hover:bg-[#c29f31] text-[#0c0d12] font-black uppercase tracking-widest py-4 rounded-xl shadow-lg hover:-translate-y-0.5 transition duration-300">
+                VERIFY & PROCEED
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

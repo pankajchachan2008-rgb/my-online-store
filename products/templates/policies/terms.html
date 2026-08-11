@@ -1,15 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container my-5 bg-white p-5 rounded-3 shadow-sm" style="max-width: 900px;">
-    <h2 class="fw-bold mb-4" style="font-family: 'Jost', sans-serif;">Terms & Conditions</h2>
-    <hr>
-    <h5>1. General Conditions</h5>
-    <p>By using the CGSmart website, you agree to be bound by these terms. Chachan General Store reserves the right to modify these terms at any time.</p>
-    
-    <h5>2. Products and Pricing</h5>
-    <p>All product prices are listed in INR (₹). We strive to ensure accurate pricing; however, errors may occur. We reserve the right to cancel orders arising from pricing errors.</p>
-    
-    <h5>3. Delivery</h5>
-    <p>We aim to process and deliver orders promptly. Delivery times may vary based on your location and external factors beyond our control.</p>
+<div class="max-w-[900px] mx-auto px-4 py-12 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.06)] p-8 md:p-12">
+        <h2 class="font-['Jost'] text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">Terms & Conditions</h2>
+        
+        <hr class="border-slate-200 mb-8">
+        
+        <div class="space-y-8 text-slate-600 leading-relaxed">
+            <section>
+                <h5 class="font-bold text-gray-900 text-xl mb-3 font-['Jost']">1. General Conditions</h5>
+                <p>By using the CGSmart website, you agree to be bound by these terms. Chachan General Store reserves the right to modify these terms at any time.</p>
+            </section>
+            
+            <section>
+                <h5 class="font-bold text-gray-900 text-xl mb-3 font-['Jost']">2. Products and Pricing</h5>
+                <p>All product prices are listed in INR (₹). We strive to ensure accurate pricing; however, errors may occur. We reserve the right to cancel orders arising from pricing errors.</p>
+            </section>
+            
+            <section>
+                <h5 class="font-bold text-gray-900 text-xl mb-3 font-['Jost']">3. Delivery</h5>
+                <p>We aim to process and deliver orders promptly. Delivery times may vary based on your location and external factors beyond our control.</p>
+            </section>
+        </div>
+    </div>
 </div>
 {% endblock %}

@@ -1,342 +1,144 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
-
-<style>
-    .checkout-box { 
-        background: #fff; 
-        border-radius: 12px; 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
-        border: 1px solid #E2E8F0;
-        margin-bottom: 20px; 
-        overflow: hidden;
-    }
-    
-    .checkout-header { 
-        background: #FFFFFF; 
-        color: var(--text-dark, #0F172A); 
-        padding: 16px 24px; 
-        font-family: 'Jost', sans-serif;
-        font-size: 16px; 
-        font-weight: 700; 
-        letter-spacing: 1px;
-        display: flex; 
-        align-items: center; 
-        border-bottom: 1px solid #E2E8F0;
-    }
-    .checkout-header .step-num { 
-        background: var(--primary-blue, #002D62); 
-        color: #FFFFFF; 
-        width: 28px; height: 28px; 
-        display: inline-flex; justify-content: center; align-items: center; 
-        border-radius: 6px; font-size: 13px; margin-right: 15px; font-weight: 700;
-        box-shadow: 0 2px 5px rgba(0,45,98,0.3);
-    }
-    
-    .checkout-header-inactive { 
-        background: #F8FAFC; 
-        color: #64748B; 
-        padding: 16px 24px; 
-        font-family: 'Jost', sans-serif;
-        font-size: 15px; 
-        font-weight: 600; 
-        display: flex; align-items: center; 
-    }
-    .checkout-header-inactive .step-num { 
-        background: #E2E8F0; color: #94A3B8; 
-        width: 28px; height: 28px; display: inline-flex; justify-content: center; align-items: center; border-radius: 6px; font-size: 13px; margin-right: 15px; 
-    }
-    
-    .checkout-body { padding: 24px; }
-    
-    .form-control-custom { 
-        border: 1px solid #CBD5E1; 
-        border-radius: 8px; 
-        padding: 12px 16px; 
-        font-size: 14px; outline: none; transition: 0.3s; width: 100%; box-shadow: none; 
-    }
-    .form-control-custom:focus { border-color: var(--primary-blue, #002D62); box-shadow: 0 0 0 3px rgba(0,45,98,0.1); }
-    
-    .price-box { background: #fff; border-radius: 12px; border: 1px solid #E2E8F0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: sticky; top: 100px; }
-    .price-box-header { padding: 18px 24px; border-bottom: 1px solid #E2E8F0; color: var(--primary-blue, #002D62); font-family: 'Jost', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 1px; text-transform: uppercase; }
-    .price-box-body { padding: 0 24px; }
-    .price-row { display: flex; justify-content: space-between; padding: 18px 0; font-size: 14px; color: #334155; }
-    .border-dash { border-bottom: 1px dashed #CBD5E1; }
-    .total-row { display: flex; justify-content: space-between; padding: 20px 0; font-weight: 800; font-size: 18px; color: #0F172A; border-top: 1px dashed #CBD5E1; border-bottom: 1px dashed #CBD5E1; margin-bottom: 15px;}
-    
-    .btn-place-order { 
-        background: var(--primary-blue, #002D62); 
-        color: #fff; 
-        border-radius: 8px; 
-        font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-        padding: 16px 30px; border: none; width: 100%; transition: 0.3s; 
-    }
-    .btn-place-order:hover { background: var(--accent-gold, #D4AF37); color: var(--primary-blue, #002D62); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(212,175,55,0.3); }
-    
-    .savings-text { color: #059669; font-weight: 700; font-size: 13px; margin-bottom: 20px; background: #ECFDF5; padding: 12px; border-radius: 8px; text-align: center; border: 1px dashed #A7F3D0; letter-spacing: 0.5px; }
-
-    /* Custom Radio Address Selection */
-    .form-check.border { border-width: 2px !important; border-color: #F1F5F9 !important; transition: all 0.3s; }
-    .form-check.border:hover { border-color: #CBD5E1 !important; }
-    .form-check.border:has(input:checked) { border-color: var(--accent-gold, #D4AF37) !important; background-color: #FAFAFA !important; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-    .form-check-input:checked { background-color: var(--primary-blue, #002D62); border-color: var(--primary-blue, #002D62); }
-
-    /* 🌟 FIXED: Mobile Sticky Footer Alignment */
-    .mobile-checkout-footer {
-        background: #fff; 
-        box-shadow: 0 -10px 20px rgba(0,0,0,0.05); 
-        position: fixed; 
-        bottom: calc(65px + env(safe-area-inset-bottom, 0px)); 
-        left: 0; 
-        width: 100%; 
-        z-index: 1040;
-        border-top: 1px solid #E2E8F0;
-    }
-</style>
-
-<div class="container mt-4 mb-5" style="max-width: 1200px;">
-    <form method="POST" action="{% url 'checkout' %}">
+<div class="max-w-[1200px] mx-auto px-4 py-8 mb-20" x-data="{ total: {{ final_total }}, discount: 0, promo: '', walletBal: {{ profile.wallet_balance|default:0 }}, useWallet: false }">
+    <form method="POST" action="{% url 'checkout' %}" class="flex flex-col lg:flex-row gap-6">
         {% csrf_token %}
-        <div class="row align-items-start g-4">
+        
+        <!-- Left Side: Steps -->
+        <div class="w-full lg:w-2/3 space-y-5">
             
-            <div class="col-lg-8">
-                <div class="checkout-box">
-                    <div class="checkout-header-inactive">
-                        <span class="step-num">1</span> LOGIN 
-                        <span class="ms-3 text-dark fw-bold">
-                            {% if user.is_authenticated %}{{ user.first_name|default:user.username }}{% else %}Guest User{% endif %}
-                        </span>
-                        <span class="ms-auto" style="color: #059669; font-size: 16px;">✔</span>
-                    </div>
+            <!-- Step 1 -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="bg-gray-50 px-6 py-4 flex items-center font-['Jost'] font-bold text-gray-600">
+                    <span class="bg-gray-200 text-gray-500 w-7 h-7 flex items-center justify-center rounded-lg text-sm mr-4">1</span> LOGIN 
+                    <span class="ml-4 text-gray-900">{% if user.is_authenticated %}{{ user.first_name }}{% else %}Guest{% endif %}</span>
+                    <span class="ml-auto text-green-600">✔</span>
                 </div>
+            </div>
 
-                <div class="checkout-box">
-                    <div class="checkout-header"><span class="step-num">2</span> DELIVERY ADDRESS</div>
-                    <div class="checkout-body" style="background: #F8FAFC;">
-                        {% if saved_addresses %}
+            <!-- Step 2: Address -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden" x-data="{ addressType: '{% if saved_addresses %}saved{% else %}new{% endif %}' }">
+                <div class="bg-white px-6 py-4 flex items-center font-['Jost'] font-bold text-gray-900 border-b border-gray-100">
+                    <span class="bg-blue-900 text-white w-7 h-7 flex items-center justify-center rounded-lg text-sm mr-4 shadow-md">2</span> DELIVERY ADDRESS
+                </div>
+                <div class="p-6 bg-slate-50">
+                    {% if saved_addresses %}
+                        <div class="space-y-3">
                             {% for addr in saved_addresses %}
-                            <div class="form-check border p-4 mb-3 bg-white rounded-3" style="cursor: pointer;">
-                                <input class="form-check-input mt-2 shadow-none" type="radio" name="address_id" id="addr_{{ addr.id }}" value="{{ addr.id }}" {% if forloop.first %}checked{% endif %} required>
-                                <label class="form-check-label w-100 ms-2" for="addr_{{ addr.id }}" style="cursor: pointer;">
-                                    <span class="badge mb-2 px-2 py-1 rounded-2 text-uppercase" style="font-size: 10px; background: #E2E8F0; color: #475569; letter-spacing: 0.5px;">{{ addr.address_type }}</span><br>
-                                    <strong class="text-dark" style="font-size: 16px;">{{ addr.name }}</strong> <span class="fw-bold ms-3 text-muted">{{ addr.mobile_number }}</span>
-                                    <p class="mb-0 text-muted small mt-2" style="line-height: 1.6;">
-                                        {{ addr.full_address }}, {{ addr.locality }}, <br>
-                                        {{ addr.city }}, {{ addr.state }} - <strong class="text-dark">{{ addr.pincode }}</strong>
-                                    </p>
-                                </label>
-                            </div>
+                            <label class="block bg-white border-2 border-transparent hover:border-gray-300 has-[:checked]:border-[#D4AF37] has-[:checked]:bg-yellow-50/30 p-4 rounded-xl cursor-pointer transition shadow-sm">
+                                <div class="flex items-start">
+                                    <input type="radio" name="address_id" value="{{ addr.id }}" @change="addressType = 'saved'" class="mt-1 text-blue-900 focus:ring-blue-900" {% if forloop.first %}checked{% endif %}>
+                                    <div class="ml-3">
+                                        <span class="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">{{ addr.address_type }}</span>
+                                        <div class="mt-2 text-gray-900 font-semibold text-base">{{ addr.name }} <span class="ml-2 text-gray-500 font-bold">{{ addr.mobile_number }}</span></div>
+                                        <p class="text-sm text-gray-500 mt-1 leading-relaxed">{{ addr.full_address }}, {{ addr.locality }}, <br>{{ addr.city }}, {{ addr.state }} - <strong class="text-gray-900">{{ addr.pincode }}</strong></p>
+                                    </div>
+                                </div>
+                            </label>
                             {% endfor %}
-                            <div class="form-check border p-3 bg-white rounded-3">
-                                <input class="form-check-input mt-1 shadow-none" type="radio" name="address_id" id="new_addr" value="">
-                                <label class="form-check-label ms-2 fw-bold" for="new_addr" style="cursor: pointer; color: var(--primary-blue, #002D62);">
-                                    + Add a New Address
-                                </label>
-                            </div>
-                        {% else %}
-                            <div class="alert alert-info py-3 small mb-3 border-0 bg-white shadow-sm text-dark rounded-3" style="border-left: 4px solid var(--primary-blue, #002D62) !important;">
-                                You don't have any saved addresses. Please enter your delivery details below.
-                            </div>
-                        {% endif %}
-
-                        <div id="manual_address_form" class="mt-4 {% if saved_addresses %}d-none{% endif %} p-4 bg-white border shadow-sm rounded-3">
-                            <h6 class="fw-bold text-dark mb-4" style="font-size: 13px; letter-spacing: 1px;">ADD DELIVERY DETAILS</h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="text-muted small fw-medium mb-1">Full Name</label>
-                                    <input type="text" name="name" class="form-control-custom bg-white" {% if not saved_addresses %}required{% endif %} placeholder="Enter your full name">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="text-muted small fw-medium mb-1">Mobile Number</label>
-                                    <input type="text" name="mobile_number" class="form-control-custom bg-white" {% if not saved_addresses %}required{% endif %} placeholder="10-digit mobile number">
-                                </div>
-                                <div class="col-12 mt-3">
-                                    <label class="text-muted small fw-medium mb-1">Complete Address</label>
-                                    <textarea name="address" class="form-control-custom bg-white" rows="3" {% if not saved_addresses %}required{% endif %} placeholder="House No, Building Name, Street, Area, City, State, Pincode"></textarea>
-                                </div>
-                                {% if not user.is_authenticated %}
-                                <div class="col-12 mt-3">
-                                    <label class="text-muted small fw-medium mb-1">Email Address (For Order Updates & OTP)</label>
-                                    <input type="email" name="email" class="form-control-custom bg-white" placeholder="Enter your email address">
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="checkout-box">
-                    <div class="checkout-header-inactive">
-                        <span class="step-num">3</span> ORDER SUMMARY 
-                        <span class="ms-3 text-dark fw-bold">₹<span class="display-final-total">{{ final_total }}</span></span>
-                    </div>
-                </div>
-
-                <div class="checkout-box">
-                    <div class="checkout-body p-4 bg-white">
-                        <label class="fw-bold mb-2 small text-muted">HAVE A PROMO CODE?</label>
-                        <div class="input-group shadow-sm rounded-3 overflow-hidden border">
-                            <input type="text" id="promo_code_input" class="form-control border-0 bg-white p-3 shadow-none" placeholder="Enter code here" style="text-transform: uppercase; font-size: 14px; font-weight: 600;">
-                            <button class="btn px-4 border-0 text-white fw-bold" type="button" onclick="applyPromoCode()" style="background: var(--primary-blue, #002D62); letter-spacing: 1px;">APPLY</button>
-                        </div>
-                        <div id="promo_message" class="small mt-2 fw-medium"></div>
-                        <input type="hidden" name="promo_code" id="applied_promo_code" value="">
-                    </div>
-                </div>
-                
-                {% if user.is_authenticated and profile.wallet_balance > 0 %}
-                <div class="checkout-box border-2" style="background-color: #FAFAFA; border-color: var(--accent-gold, #D4AF37) !important;">
-                    <div class="checkout-body p-4">
-                        <div class="form-check d-flex align-items-center">
-                            <input class="form-check-input me-3 shadow-none" type="checkbox" name="use_wallet" id="use_wallet" style="width: 22px; height: 22px; cursor: pointer;" onchange="calculateFinalTotal()">
-                            <label class="form-check-label fw-bold w-100" for="use_wallet" style="font-size: 15px; cursor: pointer; color: var(--primary-blue, #002D62);">
-                                Use Store Wallet Balance <span class="text-success ms-1">(Available: ₹<span id="wallet_available">{{ profile.wallet_balance }}</span>)</span>
+                            
+                            <label class="block bg-white border border-gray-200 p-4 rounded-xl cursor-pointer hover:bg-gray-50">
+                                <input type="radio" name="address_id" value="" @change="addressType = 'new'" class="text-blue-900 focus:ring-blue-900">
+                                <span class="ml-2 font-bold text-blue-900">+ Add a New Address</span>
                             </label>
                         </div>
-                    </div>
-                </div>
-                {% endif %}
+                    {% endif %}
 
-                <div class="checkout-box">
-                    <div class="checkout-header"><span class="step-num">4</span> PAYMENT OPTIONS</div>
-                    <div class="checkout-body border-top bg-white p-4">
-                        <div class="form-check d-flex align-items-center mb-3">
-                            <input class="form-check-input me-3 shadow-none" type="radio" name="payment_mode" value="whatsapp" id="cod" checked style="width: 20px; height: 20px;">
-                            <label class="form-check-label fw-bold text-dark d-flex align-items-center" for="cod" style="font-size: 15px;">
-                                <span style="color: #25D366; font-size: 1.3rem; margin-right: 8px;">💬</span> Pay via WhatsApp & Cash on Delivery
-                            </label>
-                        </div>
-                        <p class="text-muted small ms-4 ps-4 mb-4" style="line-height: 1.6;">Clicking confirm will generate your secure order invoice and send your delivery verification OTP via WhatsApp and Email.</p>
-                        
-                        <div class="text-end mt-4 d-none d-lg-block">
-                            <button type="submit" class="btn-place-order d-inline-flex align-items-center justify-content-center gap-2" style="width: auto;">
-                                CONFIRM ORDER <span style="font-size: 1.1rem;">➔</span>
-                            </button>
+                    <!-- Manual Address Form -->
+                    <div x-show="addressType === 'new'" x-collapse class="mt-4 bg-white p-5 border border-gray-200 rounded-xl shadow-sm">
+                        <h6 class="font-bold text-xs text-gray-900 tracking-wider mb-4">NEW DELIVERY DETAILS</h6>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs font-semibold text-gray-500 mb-1 block">Full Name</label>
+                                <input type="text" name="name" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 focus:border-blue-900 outline-none" :required="addressType === 'new'">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-gray-500 mb-1 block">Mobile Number</label>
+                                <input type="text" name="mobile_number" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 outline-none" :required="addressType === 'new'">
+                            </div>
+                            <div class="col-span-full">
+                                <label class="text-xs font-semibold text-gray-500 mb-1 block">Complete Address</label>
+                                <textarea name="address" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 outline-none" :required="addressType === 'new'"></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="price-box">
-                    <div class="price-box-header">PRICE DETAILS</div>
-                    <div class="price-box-body">
-                        <div class="price-row">
-                            <span>Price (MRP)</span>
-                            <span class="fw-bold">₹{{ total_mrp|default:cart_total }}</span>
-                        </div>
-                        {% if total_savings > 0 %}
-                        <div class="price-row" style="color: #059669;">
-                            <span>Discount</span>
-                            <span class="fw-bold">− ₹{{ total_savings }}</span>
-                        </div>
-                        {% endif %}
-                        
-                        <div class="price-row" id="coupon_row" style="color: #059669; display: none;">
-                            <span>Coupon Applied</span>
-                            <span class="fw-bold">− ₹<span id="display_coupon_discount">0</span></span>
-                        </div>
-
-                        <div class="price-row border-dash">
-                            <span>Delivery Charges</span>
-                            {% if delivery_fee == 0 %}
-                                <span style="color: #059669;" class="fw-bold">FREE</span>
-                            {% else %}
-                                <span class="fw-bold">₹{{ delivery_fee }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="total-row">
-                            <span>Total Payable</span>
-                            <span style="color: var(--primary-blue, #002D62);">₹<span class="display-final-total">{{ final_total }}</span></span>
-                        </div>
-                        {% if total_savings > 0 %}
-                        <p class="savings-text">🎉 You will save ₹{{ total_savings }} on this order!</p>
-                        {% endif %}
-                    </div>
+            <!-- Promo Code (Alpine logic) -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6" x-data="{ code: '', msg: '', type: '' }">
+                <label class="font-bold text-xs text-gray-500 tracking-wider mb-2 block">HAVE A PROMO CODE?</label>
+                <div class="flex border border-gray-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-900">
+                    <input type="text" x-model="code" class="flex-1 px-4 py-3 text-sm font-bold uppercase outline-none" placeholder="ENTER CODE">
+                    <button type="button" @click="fetch(`/check-coupon-ajax/?code=${code}&cart_total={{ final_total }}`).then(r=>r.json()).then(d => { if(d.status==='found'){ msg = '✅ ' + d.message; type = 'success'; discount = parseFloat(d.discount_amount); promo = code; } else { msg = '❌ ' + d.message; type = 'error'; discount = 0; promo = ''; } })" class="bg-blue-900 text-white font-bold px-6 text-sm tracking-wide hover:bg-blue-800 transition">APPLY</button>
                 </div>
-                
-                <!-- 🌟 FIXED: Mobile Sticky Footer Clash -->
-                <div class="d-block d-lg-none p-3 mobile-checkout-footer">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted fw-bold text-uppercase" style="font-size: 11px; letter-spacing: 0.5px;">Total Payable</div>
-                            <div class="fw-bold" style="font-size: 20px; color: var(--primary-blue, #002D62);">₹<span class="display-final-total">{{ final_total }}</span></div>
-                        </div>
-                        <button type="submit" class="btn-place-order w-auto px-4 shadow-sm">CONFIRM ORDER</button>
-                    </div>
+                <div x-text="msg" :class="type === 'success' ? 'text-green-600' : 'text-red-600'" class="text-sm font-bold mt-2"></div>
+                <input type="hidden" name="promo_code" :value="promo">
+            </div>
+
+            <!-- Wallet -->
+            {% if user.is_authenticated and profile.wallet_balance > 0 %}
+            <div class="bg-yellow-50/50 rounded-2xl border-2 border-[#D4AF37] p-6 shadow-sm flex items-center">
+                <input type="checkbox" x-model="useWallet" name="use_wallet" class="w-5 h-5 text-blue-900 focus:ring-blue-900 rounded cursor-pointer">
+                <label class="ml-3 font-bold text-gray-900 cursor-pointer">Use Store Wallet Balance <span class="text-green-600 ml-1">(Available: ₹{{ profile.wallet_balance }})</span></label>
+            </div>
+            {% endif %}
+            
+            <!-- Step 4: Payment -->
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="bg-white px-6 py-4 flex items-center font-['Jost'] font-bold text-gray-900 border-b border-gray-100">
+                    <span class="bg-blue-900 text-white w-7 h-7 flex items-center justify-center rounded-lg text-sm mr-4 shadow-md">3</span> PAYMENT OPTIONS
+                </div>
+                <div class="p-6">
+                    <label class="flex items-center cursor-pointer mb-2">
+                        <input type="radio" name="payment_mode" value="whatsapp" checked class="w-5 h-5 text-green-500 focus:ring-green-500">
+                        <span class="ml-3 font-bold text-gray-900 flex items-center"><span class="text-2xl mr-2 text-[#25D366]">💬</span> Pay via WhatsApp & COD</span>
+                    </label>
+                    <p class="text-xs text-gray-500 ml-8 pl-1 leading-relaxed">Securely generate your invoice and verify delivery via WhatsApp.</p>
                 </div>
             </div>
         </div>
+
+        <!-- Right Side: Price Details -->
+        <div class="w-full lg:w-1/3">
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm sticky top-32">
+                <div class="p-5 border-b border-gray-100 font-['Jost'] font-bold text-blue-900 tracking-wide text-sm">PRICE DETAILS</div>
+                <div class="p-5 space-y-4 text-sm text-gray-600">
+                    <div class="flex justify-between">
+                        <span>Price (MRP)</span>
+                        <span class="font-bold text-gray-900">₹{{ total_mrp|default:cart_total }}</span>
+                    </div>
+                    {% if total_savings > 0 %}
+                    <div class="flex justify-between text-green-600">
+                        <span>Discount</span>
+                        <span class="font-bold">− ₹{{ total_savings }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="flex justify-between text-green-600" x-show="discount > 0" x-cloak>
+                        <span>Coupon Applied</span>
+                        <span class="font-bold">− ₹<span x-text="discount"></span></span>
+                    </div>
+
+                    <div class="flex justify-between border-b border-dashed border-gray-300 pb-4">
+                        <span>Delivery</span>
+                        <span class="font-bold text-green-600">FREE</span>
+                    </div>
+
+                    <!-- Alpine Total Calculation -->
+                    <div class="flex justify-between text-lg font-extrabold text-gray-900 pt-2">
+                        <span>Total Payable</span>
+                        <span class="text-blue-900">₹<span x-text="Math.max(0, total - discount - (useWallet ? walletBal : 0)).toFixed(2)"></span></span>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full mt-6 bg-blue-900 text-white font-bold tracking-widest uppercase py-4 rounded-xl shadow-[0_10px_20px_rgba(0,45,98,0.2)] hover:bg-[#D4AF37] hover:text-blue-900 hover:-translate-y-1 transition duration-300 flex items-center justify-center gap-2">
+                CONFIRM ORDER <span>➔</span>
+            </button>
+        </div>
     </form>
 </div>
-<div class="d-block d-lg-none" style="height: 120px;"></div>
-
-<!-- JS Logic -->
-<script>
-    let couponDiscountAmount = 0;
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const addressRadios = document.querySelectorAll('input[name="address_id"]');
-        const manualForm = document.getElementById("manual_address_form");
-        if (manualForm) {
-            const manualInputs = manualForm.querySelectorAll('input, textarea');
-            addressRadios.forEach((elem) => {
-                elem.addEventListener("change", function(event) {
-                    if (event.target.value === "") {
-                        manualForm.classList.remove("d-none");
-                        manualInputs.forEach(input => input.setAttribute('required', 'required'));
-                    } else {
-                        manualForm.classList.add("d-none");
-                        manualInputs.forEach(input => input.removeAttribute('required'));
-                    }
-                });
-            });
-        }
-    });
-
-    function applyPromoCode() {
-        const code = document.getElementById('promo_code_input').value.trim();
-        const msgDiv = document.getElementById('promo_message');
-        const cartTotal = parseFloat("{{ final_total }}");
-
-        if (!code) { msgDiv.innerHTML = '<span class="text-danger">Please enter a code.</span>'; return; }
-        msgDiv.innerHTML = '<span class="text-info fw-bold">Checking...</span>';
-
-        fetch(`/check-coupon-ajax/?code=${code}&cart_total=${cartTotal}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'found') {
-                    msgDiv.innerHTML = `<span class="text-success fw-bold">✅ ${data.message} (Saved ₹${data.discount_amount})</span>`;
-                    document.getElementById('applied_promo_code').value = code;
-                    couponDiscountAmount = parseFloat(data.discount_amount);
-                    document.getElementById('coupon_row').style.display = 'flex';
-                    document.getElementById('display_coupon_discount').innerText = couponDiscountAmount.toFixed(2);
-                    calculateFinalTotal(); 
-                } else {
-                    msgDiv.innerHTML = `<span class="text-danger fw-bold">❌ ${data.message}</span>`;
-                    document.getElementById('applied_promo_code').value = '';
-                    couponDiscountAmount = 0;
-                    document.getElementById('coupon_row').style.display = 'none';
-                    calculateFinalTotal();
-                }
-            })
-            .catch(error => { msgDiv.innerHTML = '<span class="text-danger fw-bold">Something went wrong!</span>'; });
-    }
-
-    function calculateFinalTotal() {
-        const originalTotal = parseFloat("{{ final_total }}");
-        let newTotal = originalTotal - couponDiscountAmount;
-        if (newTotal < 0) newTotal = 0;
-
-        const walletBalance = parseFloat("{{ profile.wallet_balance|default:0 }}");
-        const useWalletCheckbox = document.getElementById("use_wallet");
-        let displayTotalElements = document.querySelectorAll(".display-final-total");
-
-        if (useWalletCheckbox && useWalletCheckbox.checked) {
-            if (walletBalance >= newTotal) { newTotal = 0; } 
-            else { newTotal = newTotal - walletBalance; }
-        }
-        displayTotalElements.forEach(el => { el.innerText = newTotal.toFixed(2); });
-    }
-</script>
 {% endblock %}

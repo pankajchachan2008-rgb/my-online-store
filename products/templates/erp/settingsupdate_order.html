@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Order #{{ order.id }} - CGSMART ERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-['Inter'] text-slate-800 antialiased min-h-screen flex items-center justify-center p-4">
+    
+    <div class="bg-white border border-slate-200 shadow-[0_15px_40px_rgba(0,0,0,0.06)] rounded-[2rem] p-8 md:p-10 w-full max-w-[700px]">
+        
+        <div class="text-center mb-8 border-b border-slate-100 pb-6">
+            <span class="text-4xl mb-3 block">📦</span>
+            <h4 class="font-extrabold text-2xl text-slate-900 mb-2">Manage Order #{{ order.id }}</h4>
+            <p class="text-slate-500 text-sm">Customer: <strong class="text-slate-900">{{ order.customer_name }}</strong> &nbsp;|&nbsp; Total: <strong class="text-emerald-600 text-lg">₹{{ order.total_amount }}</strong></p>
+        </div>
+        
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- STATUS UPDATE -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8">
+                <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-widest mb-3">Update Order Status</label>
+                <select name="status" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm cursor-pointer transition">
+                    <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>⏳ Pending</option>
+                    <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>📦 Processing (Packing)</option>
+                    <option value="Dispatched" {% if order.status == 'Dispatched' %}selected{% endif %}>🚚 Dispatched / Out for Delivery</option>
+                    <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>✅ Completed (Delivered)</option>
+                    <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>❌ Cancelled</option>
+                </select>
+            </div>
+
+            <!-- OPTION A: LOCAL DELIVERY -->
+            <div class="bg-blue-50/50 border-2 border-blue-200 rounded-2xl p-6 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
+                <label class="block text-xs font-extrabold text-blue-700 uppercase tracking-widest mb-3">🛵 Option A: Assign Local Delivery Boy (Staff)</label>
+                <select name="delivery_boy" class="w-full bg-white border border-blue-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer transition">
+                    <option value="">-- No Local Delivery Boy Assigned --</option>
+                    {% for boy in delivery_boys %}
+                        <option value="{{ boy.id }}" {% if order.delivery_boy and order.delivery_boy.id == boy.id %}selected{% endif %}>
+                            {{ boy.name }} ({{ boy.mobile_number }})
+                        </option>
+                    {% endfor %}
+                </select>
+                <small class="text-slate-500 block mt-2 font-medium">Agar Nohar city mein apna staff bhej rahe hain toh ise select karein.</small>
+            </div>
+
+            <div class="text-center font-extrabold text-slate-400 text-xs uppercase tracking-widest my-2">OR (Ya fir)</div>
+
+            <!-- OPTION B: EXTERNAL COURIER -->
+            <div class="bg-cyan-50/50 border-2 border-cyan-200 rounded-2xl p-6 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-cyan-500"></div>
+                <label class="block text-xs font-extrabold text-cyan-700 uppercase tracking-widest mb-5">📦 Option B: External Courier (Bahar Ke Orders)</label>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Courier / Partner Name</label>
+                        <input type="text" name="courier_name" class="w-full bg-white border border-cyan-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-cyan-500 outline-none transition" value="{{ order.courier_name|default:'' }}" placeholder="e.g. DTDC, Blue Dart">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Tracking ID / Waybill No.</label>
+                        <input type="text" name="tracking_id" class="w-full bg-white border border-cyan-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-cyan-500 outline-none transition" value="{{ order.tracking_id|default:'' }}" placeholder="e.g. TRK123456789">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Tracking Live URL (Optional)</label>
+                        <input type="url" name="tracking_url" class="w-full bg-white border border-cyan-200 rounded-xl px-4 py-2.5 text-sm text-blue-600 focus:ring-2 focus:ring-cyan-500 outline-none transition" value="{{ order.tracking_url|default:'' }}" placeholder="https://www.courierwebsite.com/track/...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-6 mt-6 border-t border-slate-100">
+                <a href="{% url 'erp_dashboard' %}" class="text-slate-500 hover:text-slate-900 font-bold uppercase tracking-widest px-6 py-3 text-sm transition">Back</a>
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-bold uppercase tracking-widest px-8 py-3.5 rounded-xl shadow-md transition">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

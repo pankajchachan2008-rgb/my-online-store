@@ -2,86 +2,37 @@
 {% load static %}
 
 {% block content %}
-<style>
-    .success-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 80vh;
-    }
-    .success-card {
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-        padding: 60px;
-        max-width: 600px;
-        width: 100%;
-        text-align: center;
-        border: 1px solid #E2E8F0;
-    }
-    .success-icon {
-        font-size: 5rem;
-        margin-bottom: 20px;
-    }
-    .btn-brand-primary {
-        background-color: var(--primary-blue, #002D62);
-        color: #fff;
-        font-weight: 600;
-        padding: 12px 30px;
-        border-radius: 8px;
-        transition: 0.3s;
-    }
-    .btn-brand-primary:hover {
-        background-color: var(--accent-gold, #D4AF37);
-        color: var(--primary-blue, #002D62);
-    }
-    .btn-brand-outline {
-        border: 2px solid var(--primary-blue, #002D62);
-        color: var(--primary-blue, #002D62);
-        font-weight: 600;
-        padding: 12px 30px;
-        border-radius: 8px;
-        transition: 0.3s;
-    }
-    .btn-brand-outline:hover {
-        background-color: var(--primary-blue, #002D62);
-        color: #fff;
-    }
-</style>
-
-<div class="container success-container">
-    <div class="success-card" data-aos="zoom-in" data-aos-duration="800">
-        <div class="success-icon">🎉</div>
-        <h1 class="fw-bold mb-3" style="color: var(--primary-blue, #002D62);">Order Placed!</h1>
-        <p class="text-muted fs-5 mb-4">Thank you, <strong class="text-dark">{{ order.customer_name }}</strong>. Aapka order confirm ho gaya hai.</p>
+<div class="min-h-[80vh] flex items-center justify-center p-4">
+    <div class="bg-white border border-gray-200 rounded-[1.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-10 max-w-[600px] w-full text-center">
+        <div class="text-[5rem] mb-6">🎉</div>
+        <h1 class="font-extrabold text-4xl text-[#002D62] mb-3">Order Placed!</h1>
+        <p class="text-gray-500 text-lg mb-8">Thank you, <strong class="text-gray-900">{{ order.customer_name }}</strong>. Aapka order confirm ho gaya hai.</p>
         
-        <div class="row g-3 justify-content-center my-4 text-start" data-aos="fade-up" data-aos-delay="200">
-            <div class="col-sm-10 bg-light rounded p-3 border">
-                <div class="d-flex justify-content-between mb-2">
-                    <span class="text-muted">Order ID:</span>
-                    <span class="fw-bold text-dark">#{{ order.id }}</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="text-muted">Total Amount:</span>
-                    <span class="fw-bold text-success">₹{{ order.total_amount }}</span>
-                </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 text-left max-w-[400px] mx-auto mb-8">
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-gray-500 font-medium">Order ID:</span>
+                <span class="font-bold text-gray-900">#{{ order.id }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-500 font-medium">Total Amount:</span>
+                <span class="font-extrabold text-green-600 text-lg">₹{{ order.total_amount }}</span>
             </div>
         </div>
 
         <!-- WhatsApp Automation Button -->
         {% if whatsapp_url %}
-        <div class="my-4" data-aos="fade-up" data-aos-delay="300">
-            <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-brand-primary btn-lg px-4">
-                💬 Send Order to WhatsApp
+        <div class="mb-6">
+            <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-[#002D62] hover:bg-[#D4AF37] hover:text-[#002D62] text-white font-bold px-8 py-3.5 rounded-xl transition duration-300 shadow-md">
+                <span>💬</span> Send Order to WhatsApp
             </a>
         </div>
         {% endif %}
 
-        <p class="text-secondary small mb-4">Hum jald hi aapke diye gaye number par delivery ke liye contact karenge.</p>
+        <p class="text-gray-400 text-sm mb-8">Hum jald hi aapke diye gaye number par delivery ke liye contact karenge.</p>
         
-        <div class="d-flex gap-3 justify-content-center mt-3" data-aos="fade-up" data-aos-delay="400">
-            <a href="{% url 'home' %}" class="btn btn-brand-outline px-4">Back to Shop</a>
-            <a href="{% url 'download_invoice' order.id %}" class="btn btn-brand-primary px-4" target="_blank" rel="noopener noreferrer">
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'home' %}" class="border-2 border-[#002D62] text-[#002D62] hover:bg-[#002D62] hover:text-white font-bold px-8 py-3 rounded-xl transition duration-300">Back to Shop</a>
+            <a href="{% url 'download_invoice' order.id %}" target="_blank" rel="noopener noreferrer" class="bg-[#002D62] hover:bg-blue-800 text-white font-bold px-8 py-3 rounded-xl shadow-md transition duration-300">
                 📥 Download Invoice
             </a>
         </div>
