@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<!-- 🌟 1. ALPINE.JS DYNAMIC CAROUSEL (Glass Style) -->
+<!-- 🌟 1. ALPINE.JS DYNAMIC CAROUSEL (Crystal Clear & Sharp) -->
 {% if banners %}
 <div x-data="{ activeSlide: 0, slides: {{ banners|length }}, init() { setInterval(() => this.activeSlide = (this.activeSlide + 1) % this.slides, 5000) } }" class="relative w-full h-[350px] md:h-[45vh] mb-8 rounded-2xl overflow-hidden shadow-2xl">
     
@@ -10,15 +10,16 @@
         {% for banner in banners %}
         <div x-show="activeSlide === {{ forloop.counter0 }}" x-transition.opacity.duration.700ms class="absolute inset-0">
             <a href="{% if banner.category %}{% url 'home' %}?category={{ banner.category.id }}{% else %}#full-collection{% endif %}" class="block w-full h-full relative group">
-                <!-- Glass Overlay -->
-                <div class="absolute inset-0 bg-white/5 backdrop-blur-sm border border-white/20 z-10 group-hover:bg-white/10 transition duration-500"></div>
+                
+                <!-- Soft Gradient overlay for text readability, keeping image sharp -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10 pointer-events-none"></div>
                 
                 {% if banner.animated_file %}
-                    <video autoplay loop muted playsinline class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition duration-700">
+                    <video autoplay loop muted playsinline class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                         <source src="{{ banner.animated_file.url }}" type="video/mp4">
                     </video>
                 {% elif banner.image %}
-                    <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition duration-700">
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title|default:'Store Banner' }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                 {% endif %}
                 
                 {% if banner.title %}
@@ -56,12 +57,10 @@
     <div class="flex flex-col lg:flex-row gap-8">
         
         <!-- 🌟 LEFT SIDEBAR (FILTERS) -->
-        <!-- Added Alpine class to toggle visibility on mobile -->
         <aside :class="filtersOpen ? 'block mb-6' : 'hidden'" class="lg:block w-full lg:w-1/4 xl:w-1/5">
             <div class="bg-white/45 backdrop-blur-xl border border-white/60 p-6 rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.05)] lg:sticky lg:top-32">
                 <h5 class="font-bold text-lg text-gray-900 mb-6 uppercase tracking-wider">Filters</h5>
                 
-                <!-- ⚠️ ADDED ID="filterForm" SO PAGINATION CAN USE THIS FORM -->
                 <form id="filterForm" method="GET" action="{% url 'home' %}#full-collection" class="space-y-6">
                     {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
                     <input type="hidden" name="page" id="pageInput" value="{{ products.number|default:1 }}">
@@ -186,7 +185,7 @@
                 {% endfor %}
             </div>
 
-            <!-- 🌟 NEW: SMART PAGINATION (Preserves Filters) -->
+            <!-- 🌟 SMART PAGINATION (Preserves Filters) -->
             {% if products.has_other_pages %}
             <div class="flex flex-wrap justify-center items-center gap-2 mt-8">
                 {% if products.has_previous %}
