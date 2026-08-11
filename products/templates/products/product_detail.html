@@ -3,22 +3,62 @@
 {% load cloudinary_filters %}
 
 {% block content %}
-<div class="max-w-[1200px] mx-auto px-4 py-10" x-data="{ zoom: false, x: 0, y: 0, variantId: '', price: '{{ product.price }}' }">
+<!-- 🌟 Unified Alpine State for Gallery, Zoom, Cart & Lightbox -->
+<div class="max-w-[1200px] mx-auto px-4 py-10" 
+     x-data="{ 
+        zoom: false, 
+        x: 0, 
+        y: 0, 
+        variantId: '', 
+        price: '{{ product.price }}',
+        mainImage: '{% if product.image %}{{ product.image.url }}{% endif %}',
+        lightbox: false,
+        qty: 1,
+        loading: false
+     }">
+    
     <div class="flex flex-col lg:flex-row gap-10">
         
-        <!-- 📸 Product Image Gallery (Alpine Image Zoom) -->
+        <!-- 📸 Product Image Gallery & Lightbox -->
         <div class="w-full lg:w-5/12">
             <div class="bg-white/65 backdrop-blur-2xl border border-white/90 p-4 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.06)]">
                 {% if product.image %}
-                    <div class="relative h-[450px] rounded-2xl bg-white/40 border border-white/70 overflow-hidden cursor-crosshair flex items-center justify-center" 
+                    <!-- Main Image (Hover Zoom & Click Lightbox) -->
+                    <div class="relative h-[450px] rounded-2xl bg-white/40 border border-white/70 overflow-hidden cursor-crosshair flex items-center justify-center group" 
+                         @click="lightbox = true"
                          @mousemove="zoom = true; x = ($event.offsetX / $el.offsetWidth) * 100; y = ($event.offsetY / $el.offsetHeight) * 100" 
                          @mouseleave="zoom = false">
                         
-                        <img src="{{ product.image.url|optimize_img }}" alt="{{ product.name }}" 
+                        <img :src="mainImage" alt="{{ product.name }}" 
                              class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-200" 
                              :style="zoom ? `transform-origin: ${x}% ${y}%; transform: scale(2.5);` : 'transform: scale(1);'">
+                             
+                        <!-- Click hint overlay -->
+                        <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center pointer-events-none">
+                            <span class="bg-white/80 backdrop-blur text-gray-900 font-bold px-4 py-2 rounded-full text-xs shadow-lg transform translate-y-4 group-hover:translate-y-0 transition">
+                                🔍 Click to view Full Screen
+                            </span>
+                        </div>
                     </div>
-                    <div class="text-center mt-3 text-slate-500 text-xs font-medium">🔍 Hover to zoom</div>
+
+                    <!-- 🌟 Thumbnail Gallery (Swipeable) -->
+                    <div class="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+                        <!-- Primary Image Thumbnail -->
+                        <div @click="mainImage = '{% if product.image %}{{ product.image.url }}{% endif %}'" 
+                             :class="mainImage === '{% if product.image %}{{ product.image.url }}{% endif %}' ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]/40 shadow-md' : 'border-gray-200 hover:border-[#D4AF37]'"
+                             class="w-20 h-20 flex-shrink-0 border-2 rounded-xl overflow-hidden cursor-pointer transition p-1 bg-white">
+                            <img src="{% if product.image %}{{ product.image.url }}{% endif %}" class="w-full h-full object-contain mix-blend-multiply">
+                        </div>
+                        
+                        <!-- Additional Gallery Images -->
+                        {% for gal_img in product.gallery_images.all %}
+                        <div @click="mainImage = '{{ gal_img.image.url }}'" 
+                             :class="mainImage === '{{ gal_img.image.url }}' ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]/40 shadow-md' : 'border-gray-200 hover:border-[#D4AF37]'"
+                             class="w-20 h-20 flex-shrink-0 border-2 rounded-xl overflow-hidden cursor-pointer transition p-1 bg-white">
+                            <img src="{{ gal_img.image.url }}" class="w-full h-full object-contain mix-blend-multiply">
+                        </div>
+                        {% endfor %}
+                    </div>
                 {% else %}
                     <div class="h-[450px] bg-slate-100 rounded-2xl flex items-center justify-center">No Image</div>
                 {% endif %}
@@ -51,13 +91,12 @@
 
             <hr class="border-gray-200 my-8">
 
-            <!-- 🛒 Add to Cart Form (Alpine.js) -->
-            <div class="bg-white/75 backdrop-blur-2xl border border-white/90 p-6 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)]"
-                 x-data="{ qty: 1, loading: false }">
+            <!-- 🛒 Options & Add to Cart Form -->
+            <div class="bg-white/75 backdrop-blur-2xl border border-white/90 p-6 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
                 
                 {% if product.variants.exists %}
                     <h5 class="font-bold text-gray-900 mb-3">Select Variety:</h5>
-                    <select x-model="variantId" @change="price = $event.target.options[$event.target.selectedIndex].dataset.price" class="w-full bg-white/80 border-2 border-gray-200 rounded-xl px-4 py-3 mb-6 focus:ring-4 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] outline-none transition">
+                    <select x-model="variantId" @change="price = $event.target.options[$event.target.selectedIndex].dataset.price" class="w-full bg-white/80 border-2 border-gray-200 rounded-xl px-4 py-3 mb-6 focus:ring-4 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] outline-none transition cursor-pointer">
                         <option value="" disabled selected>-- Choose Size/Weight --</option>
                         {% for variant in product.variants.all %}
                             <option value="{{ variant.id }}" data-price="{{ variant.price }}" {% if variant.stock == 0 %}disabled{% endif %}>
@@ -78,11 +117,12 @@
 
                 <div class="flex items-center gap-4 mb-6">
                     <label class="font-semibold text-gray-500 text-sm">Quantity:</label>
-                    <input type="number" x-model="qty" min="1" max="10" class="w-24 bg-white/80 border border-gray-300 rounded-xl px-4 py-2 text-center font-bold focus:outline-none focus:border-gray-900">
+                    <input type="number" x-model="qty" min="1" max="10" class="w-24 bg-white/80 border border-gray-300 rounded-xl px-4 py-2 text-center font-bold focus:outline-none focus:border-[#D4AF37]">
                 </div>
 
                 <!-- 🌟 Modern AJAX Action Buttons -->
                 <div class="flex flex-wrap gap-3">
+                    <!-- ADD TO CART BUTTON -->
                     <button @click="loading = true; fetch('{% url 'add_to_cart' product.id %}', { method: 'POST', headers: {'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value}, body: JSON.stringify({quantity: qty, variant_id: variantId}) }).then(r=>r.json()).then(d=>{ loading=false; window.dispatchEvent(new CustomEvent('cart-updated', {detail: d})); })" 
                             :disabled="loading" 
                             class="flex-1 bg-gradient-to-br from-gray-900 to-slate-800 text-white font-bold uppercase tracking-wide py-4 rounded-xl shadow-lg border border-[#D4AF37]/30 hover:-translate-y-1 transition duration-300">
@@ -90,10 +130,23 @@
                         <span x-show="loading">⏳ Processing...</span>
                     </button>
                     
-                    <button @click="window.location.href='{% url 'checkout' %}'" class="flex-1 bg-orange-500 text-gray-900 font-bold uppercase tracking-wide py-4 rounded-xl shadow-lg border border-orange-600 hover:bg-orange-400 hover:-translate-y-1 transition duration-300">
+                    <!-- 🛠️ FIXED BUY NOW BUTTON (Adds to cart silently, then redirects) -->
+                    <button @click="
+                                loading = true; 
+                                fetch('{% url 'add_to_cart' product.id %}', { 
+                                    method: 'POST', 
+                                    headers: {'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value}, 
+                                    body: JSON.stringify({quantity: qty, variant_id: variantId}) 
+                                }).then(() => { 
+                                    window.location.href='{% url 'checkout' %}'; 
+                                })
+                            " 
+                            :disabled="loading"
+                            class="flex-1 bg-orange-500 text-gray-900 font-bold uppercase tracking-wide py-4 rounded-xl shadow-lg border border-orange-600 hover:bg-orange-400 hover:-translate-y-1 transition duration-300">
                         ⚡ Buy Now
                     </button>
                     
+                    <!-- WISHLIST BUTTON -->
                     <a href="{% url 'add_to_wishlist' product.id %}" class="w-14 flex items-center justify-center bg-white border border-rose-200 text-rose-500 rounded-xl shadow-sm hover:bg-rose-50 hover:scale-105 transition text-xl">❤️</a>
                 </div>
             </div>
@@ -109,5 +162,21 @@
             </div>
         </div>
     </div>
+
+    <!-- 🔍 FULL SCREEN LIGHTBOX POPUP (Alpine.js Modal) -->
+    <div x-show="lightbox" style="display: none;" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+        
+        <!-- Close Button -->
+        <button @click="lightbox = false" class="absolute top-6 right-6 text-white bg-white/20 hover:bg-rose-500 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold backdrop-blur-md transition z-50">
+            ✕
+        </button>
+        
+        <!-- Large Image -->
+        <div class="relative w-full h-full flex items-center justify-center" @click.self="lightbox = false">
+            <img :src="mainImage" class="max-w-full max-h-[90vh] object-contain shadow-2xl rounded-xl">
+        </div>
+        
+    </div>
+
 </div>
 {% endblock %}

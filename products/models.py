@@ -417,3 +417,44 @@ class DeliveryBoy(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.mobile_number}"
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='gallery_images')
+    image = models.ImageField(
+        upload_to='products/gallery/', 
+        storage=MediaCloudinaryStorage(),
+        help_text="Upload additional HD photos for the product"
+    )
+
+    def save(self, *args, **kwargs):
+        # Isme bhi HD aur Square fix apply kar diya hai
+        if self.image and not self.image.name.endswith('_hd.jpg'):
+            try:
+                img = Image.open(self.image)
+                if img.mode in ('RGBA', 'P'):
+                    img = img.convert('RGB')
+                
+                output_size = (800, 800)
+                width, height = img.size
+                min_dim = min(width, height)
+                
+                left = (width - min_dim) / 2
+                top = (height - min_dim) / 2
+                right = (width + min_dim) / 2
+                bottom = (height + min_dim) / 2
+                
+                img = img.crop((left, top, right, bottom))
+                img = img.resize(output_size, Image.Resampling.LANCZOS)
+                
+                output = BytesIO()
+                img.save(output, format='JPEG', quality=95, optimize=True)
+                output.seek(0)
+                
+                original_name = self.image.name.rsplit('.', 1)[0]
+                self.image = File(output, name=f"{original_name}_hd.jpg")
+            except Exception as e:
+                pass
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Gallery Image for {self.product.name}"

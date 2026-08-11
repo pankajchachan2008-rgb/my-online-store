@@ -21,7 +21,7 @@ from .models import DeliveryBoy
 
 from .models import (
     Category, Brand, Product, Coupon, Order, OrderItem,
-    CustomerProfile, Banner, ProductVariant, Review, StoreSetting
+    CustomerProfile, Banner, ProductVariant, Review, StoreSetting, ProductImage,
 )
 
 # -----------------------------
@@ -92,7 +92,6 @@ class BrandAdmin(admin.ModelAdmin):
 
 admin.site.register(CustomerProfile)
 admin.site.register(Banner)
-admin.site.register(ProductVariant)
 admin.site.register(Expense)
 admin.site.register(Supplier)
 admin.site.register(SupplierLedger)
@@ -110,11 +109,17 @@ class DeliveryBoyAdmin(admin.ModelAdmin):
 
 
 # -----------------------------
-# Product Variant Inline
+# Product Variant & Image Gallery Inlines
 # -----------------------------
 class ProductVariantInline(admin.TabularInline):
     model = ProductVariant
     extra = 1
+    show_change_link = True
+
+# 🌟 NAYA: Multiple Photos upload karne ke liye inline block
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 3 # Ek baar mein 3 extra photo upload karne ki jagah dega
     show_change_link = True
 
 
@@ -134,7 +139,8 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ('category', 'brand', 'price', 'last_moment_discount') 
     
     readonly_fields = ('sku',)
-    inlines = [ProductVariantInline]
+    # 🌟 YAHAN ProductImageInline ko add kar diya gaya hai
+    inlines = [ProductVariantInline, ProductImageInline]
     list_per_page = 20
 
     def product_image(self, obj):
@@ -147,7 +153,7 @@ class ProductAdmin(admin.ModelAdmin):
         return "No Image"
     product_image.short_description = 'Image'
 
-    # 🌟 NAYA: Admin mein Excel Import ka Custom URL jorna
+    # Admin mein Excel Import ka Custom URL jorna
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -155,7 +161,7 @@ class ProductAdmin(admin.ModelAdmin):
         ]
         return custom_urls + urls
 
-    # 🌟 NAYA: Excel processing view jo spellings theek karega aur auto-create karega
+    # Excel processing view jo spellings theek karega aur auto-create karega
     def excel_import_view(self, request):
         if request.method == 'POST' and request.FILES.get('excel_file'):
             excel_file = request.FILES['excel_file']
