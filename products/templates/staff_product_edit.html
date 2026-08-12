@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Product - Staff Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-['Inter'] text-slate-800 antialiased py-12 px-4 flex items-center justify-center min-h-screen">
+    
+    <div class="bg-white border border-slate-200 shadow-lg rounded-3xl p-8 w-full max-w-xl">
+        <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+            <h3 class="font-black text-xl text-slate-900">Update Product Details</h3>
+            <a href="{% url 'staff_product_list' %}" class="text-sm font-bold text-slate-500 hover:text-slate-900">&larr; Back to List</a>
+        </div>
+
+        {% if messages %}
+            <div class="space-y-2 mb-6">
+                {% for message in messages %}
+                    <div class="p-4 rounded-xl text-sm font-bold bg-red-100 text-red-700 border border-red-200">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">Product Name</label>
+                <input type="text" name="name" value="{{ product.name }}" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">Group / Category</label>
+                    <input type="text" value="{{ product.category.name|default:'General' }}" disabled class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-500 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">Brand Name</label>
+                    <input type="text" value="{{ product.brand.name|default:'N/A' }}" disabled class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-500 cursor-not-allowed">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">MRP (₹)</label>
+                    <input type="number" step="0.01" name="mrp" value="{{ product.mrp|default:'' }}" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">Selling Rate (₹)</label>
+                    <input type="number" step="0.01" name="price" value="{{ product.price }}" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm font-extrabold text-emerald-600 outline-none focus:ring-2 focus:ring-emerald-500" required>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">Stock Qty</label>
+                    <input type="number" name="stock" value="{{ product.stock }}" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-blue-600 outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1">Product Photo</label>
+                {% if product.image %}
+                    <div class="mb-2 flex items-center gap-3">
+                        <img src="{{ product.image.url }}" class="w-12 h-12 object-contain border rounded-lg bg-white">
+                        <span class="text-xs text-slate-500">Current Photo</span>
+                    </div>
+                {% endif %}
+                <input type="file" name="image" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 border border-slate-300 rounded-xl p-2 bg-slate-50 cursor-pointer" accept="image/*">
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold uppercase tracking-widest py-3.5 rounded-xl shadow-md transition">Update Product</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

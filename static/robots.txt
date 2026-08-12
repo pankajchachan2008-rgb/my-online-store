@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /staff/
+
+Sitemap: https://cgsmart.in/sitemap.xml

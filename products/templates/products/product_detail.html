@@ -2,19 +2,33 @@
 {% load static %}
 {% load cloudinary_filters %}
 
+<!-- 🌟 STEP 2: DYNAMIC SEO & META TAGS ADDED HERE 🌟 -->
+{% block title %}
+    {{ product.name }} - Buy Online at Best Price | Chachan General Store Nohar
+{% endblock %}
+
+{% block extra_meta %}
+    <meta name="description" content="Buy {{ product.name }} at ₹{{ product.price }} from Chachan General Store in Nohar. Best quality guaranteed with fast local delivery.">
+    <meta property="og:title" content="{{ product.name }} - CGS Mart Nohar">
+    <meta property="og:description" content="Get {{ product.name }} delivered in Nohar. Best prices available.">
+    {% if product.image %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}">
+    {% endif %}
+{% endblock %}
+
 {% block content %}
 <!-- 🌟 Unified Alpine State for Gallery, Zoom, Cart & Lightbox -->
 <div class="max-w-[1200px] mx-auto px-4 py-10" 
      x-data="{ 
-        zoom: false, 
-        x: 0, 
-        y: 0, 
-        variantId: '', 
-        price: '{{ product.price }}',
-        mainImage: '{% if product.image %}{{ product.image.url }}{% endif %}',
-        lightbox: false,
-        qty: 1,
-        loading: false
+         zoom: false, 
+         x: 0, 
+         y: 0, 
+         variantId: '', 
+         price: '{{ product.price }}',
+         mainImage: '{% if product.image %}{{ product.image.url }}{% endif %}',
+         lightbox: false,
+         qty: 1,
+         loading: false
      }">
     
     <div class="flex flex-col lg:flex-row gap-10">

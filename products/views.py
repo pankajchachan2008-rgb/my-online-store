@@ -27,7 +27,7 @@ from django.template.loader import get_template
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, permission_required
 
 # REST Framework Imports
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -110,7 +110,6 @@ def product_list(request):
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
-    # 🌟 SAFE SMART SEARCH (Typo / Spelling Mistake Handler)
     if search_query:
         exact_matches = products.filter(
             Q(name__icontains=search_query) | Q(category__name__icontains=search_query) |
@@ -235,7 +234,6 @@ def cart_detail(request):
     cart_total = 0
     cart_modified = False
     
-    # 🚀 N+1 FIX: Fetch all products in ONE query
     product_ids = [int(str(pid).split('_')[0]) for pid in cart.keys()]
     products_map = Product.objects.in_bulk(product_ids)
     
@@ -279,7 +277,6 @@ def checkout_page(request):
         profile, _ = CustomerProfile.objects.get_or_create(user=request.user)
         wallet_balance = profile.wallet_balance
     
-    # 🚀 N+1 FIX: Fetch all products in ONE query
     product_ids = [int(str(pid).split('_')[0]) for pid in cart.keys()]
     products_map = Product.objects.in_bulk(product_ids)
     
@@ -430,7 +427,7 @@ def check_coupon_ajax(request):
     return JsonResponse({'status': 'found', 'discount_percentage': coupon.discount_percentage, 'discount_amount': discount_amount, 'message': f'Coupon {code} applied successfully!'})
 
 # ==========================================
-# 🔐 3. AUTHENTICATION & PROFILE VIEWS
+# 🔐 3. AUTHENTICATION & OTP LOGIN VIEWS
 # ==========================================
 def register_page(request):
     if request.method == 'POST':
@@ -458,12 +455,52 @@ def verify_otp(request):
         except OTPVerification.DoesNotExist: messages.error(request, 'Galat OTP!')
     return render(request, 'products/verify_otp.html', {'email': user.email})
 
+# Passwordless OTP Login Views
+def login_request_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        try:
+            user = User.objects.get(email__iexact=email)
+            otp = str(random.randint(100000, 999999))
+            request.session['login_otp'] = otp
+            request.session['login_email'] = email
+            
+            send_mail_subject = 'CGSmart Login OTP'
+            send_mail_msg = f'Aapka 6-digit login OTP yeh hai: {otp}. Yeh kuch hi samay ke liye valid hai.'
+            send_brevo_api_email(send_mail_subject, send_mail_msg, email)
+            
+            messages.success(request, f"Aapke email {email} par 6-digit OTP bheja gaya hai.")
+            return redirect('verify_otp_login')
+        except User.DoesNotExist:
+            messages.error(request, "Is email se koi account registered nahi hai!")
+            return redirect('login_request')
+    return render(request, 'registration/login_request.html')
+
+def verify_otp_login_view(request):
+    email = request.session.get('login_email')
+    if not email:
+        return redirect('login_request')
+        
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        saved_otp = request.session.get('login_otp')
+        
+        if entered_otp and entered_otp == saved_otp:
+            user = User.objects.get(email__iexact=email)
+            login(request, user)
+            del request.session['login_otp']
+            del request.session['login_email']
+            messages.success(request, "Successfully logged in!")
+            return redirect('home')
+        else:
+            messages.error(request, "Galat OTP hai! Kripya dobara check karein.")
+            
+    return render(request, 'registration/verify_otp.html', {'email': email})
+
 def forgot_password(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         user = User.objects.filter(email__iexact=email).first()
-        
-        # 🛡️ SECURITY FIX: Prevent Account Enumeration
         success_msg = "Agar aapka account is email se bana hai, toh OTP bhej diya gaya hai."
         
         if user:
@@ -503,7 +540,7 @@ def set_new_password(request):
             return redirect('login')
     return render(request, 'registration/set_new_password.html')
 
-@never_cache   
+@never_cache    
 @login_required(login_url='/login/')
 def profile_page(request):
     if request.user.is_staff or request.user.is_superuser: return redirect('home')
@@ -640,7 +677,6 @@ def contact_page(request):
 
 @login_required(login_url='/login/')
 def download_invoice(request, order_id):
-    # 🛡️ SECURITY FIX: IDOR Prevention
     if request.user.is_staff or request.user.is_superuser:
         order = get_object_or_404(Order, id=order_id)
     else:
@@ -709,7 +745,7 @@ def search_suggestions(api_request):
     return JsonResponse({'products': results})
 
 @csrf_exempt
-@ratelimit(key='ip', rate='5/m', block=True) # 🛡️ SECURITY FIX: Prevent API Abuse
+@ratelimit(key='ip', rate='5/m', block=True)
 def ai_assistant_chat(request):
     if request.method == 'POST':
         try:
@@ -873,15 +909,12 @@ def erp_dashboard(request):
 
 @staff_member_required(login_url='/login/')
 def admin_confirm_payment(request, order_id):
-    """ Admin verify karega ki QR payment aa gaya hai aur Ledger me Credit add karega """
     if request.method == "POST":
         order = get_object_or_404(Order, id=order_id)
-        
         if order.payment_status == "Pending Admin Approval":
             order.payment_status = "Paid & Confirmed"
             order.save()
             
-            # 🌟 MASTER STROKE: Auto Ledger Update 🌟
             CustomerLedger.objects.create(
                 customer_name=order.customer_name,
                 mobile_number=order.mobile_number,
@@ -889,11 +922,9 @@ def admin_confirm_payment(request, order_id):
                 amount=order.total_amount,
                 description=f"Admin Verified Online QR Payment for Order #{order.id}"
             )
-            
             messages.success(request, f"✅ Payment for Order #{order.id} Verified! Ledger Update ho gaya.")
         else:
             messages.error(request, "This order is not pending for approval.")
-            
     return redirect('erp_dashboard')
 
 @staff_member_required(login_url='/login/')
@@ -1122,7 +1153,6 @@ def delivery_boy_dashboard(request):
             
         order.status = 'Completed'
         
-        # 🌟 NEW LOGIC FOR DYNAMIC QR SELECTION 🌟
         if payment_collected == 'Paid_QR':
             order.payment_status = 'Pending Admin Approval'
             wa_payment_text = "Online QR (Pending Admin Verification)"
@@ -1154,18 +1184,12 @@ def terminate_all_sessions_view(request):
     messages.success(request, "🛡️ Security Alert: All active sessions have been successfully terminated!")
     return redirect('admin:index')
 
-import json
-from django.http import JsonResponse
-
 def check_delivery_api(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             pincode = data.get("pincode", "").strip()
-            
-            # Nohar and surrounding local service pincodes list
             valid_pincodes = ["335523", "335524", "335501"] 
-            
             if pincode in valid_pincodes:
                 return JsonResponse({"available": True, "city": "Nohar", "message": "⚡ 10-Min delivery available!"})
             else:
@@ -1173,3 +1197,113 @@ def check_delivery_api(request):
         except Exception as e:
             return JsonResponse({"available": False, "message": "Invalid request."})
     return JsonResponse({"available": False, "message": "Method not allowed."})
+
+# ==========================================
+# 👷 11. SECURED STAFF OPERATOR & CLEANUP VIEWS
+# ==========================================
+def is_staff_user(user):
+    return user.is_authenticated and (user.is_staff or user.is_superuser)
+
+@permission_required('store.change_product', raise_exception=True)
+def staff_product_update_list(request):
+    products = Product.objects.all().order_by('name')
+    search_query = request.GET.get('search', '')
+    if search_query:
+        products = products.filter(name__icontains=search_query)
+
+    context = {
+        'products': products,
+        'search_query': search_query,
+    }
+    return render(request, 'erp/staff_product_list.html', context)
+
+@permission_required('store.change_product', raise_exception=True)
+def staff_product_edit(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', product.name)
+            price = float(request.POST.get('price', product.price))
+            mrp = float(request.POST.get('mrp', product.mrp or 0))
+            stock = int(request.POST.get('stock', product.stock))
+
+            # 🛡️ VALIDATION: Rate MRP se zyada nahi ho sakta
+            if mrp > 0 and price > mrp:
+                messages.error(request, "Security Error: Selling rate MRP se zyada nahi ho sakta!")
+                return redirect('staff_product_edit', product_id=product.id)
+
+            product.name = name
+            product.price = price
+            product.mrp = mrp
+            product.stock = stock
+            
+            if 'image' in request.FILES:
+                product.image = request.FILES['image']
+            
+            # 🛡️ AUDIT LOG: Track karein ki kisne update kiya
+            product.last_updated_by = request.user
+            product.save()
+
+            messages.success(request, f"'{product.name}' successfully update ho gaya hai!")
+            return redirect('staff_product_list')
+
+        except ValueError:
+            messages.error(request, "Invalid input! Kripya numbers sahi format mein bharein.")
+            return redirect('staff_product_edit', product_id=product.id)
+
+    return render(request, 'erp/staff_product_edit.html', {'product': product})
+
+@permission_required('store.change_product', raise_exception=True)
+def smart_cleanup_dashboard(request):
+    products_without_photo = Product.objects.filter(image='') | Product.objects.filter(image__isnull=True)
+    duplicates = Product.objects.values('name', 'mrp').annotate(name_count=Count('id')).filter(name_count__gt=1)
+    duplicate_products = []
+    for dup in duplicates:
+        items = Product.objects.filter(name=dup['name'], mrp=dup['mrp'])
+        duplicate_products.extend(list(items))
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'auto_brand':
+            products_no_brand = Product.objects.filter(brand__isnull=True)
+            brands = Brand.objects.all()
+            updated_count = 0
+            
+            for product in products_no_brand:
+                name_prefix = product.name[:5].strip().lower()
+                for brand in brands:
+                    if brand.name.lower() in name_prefix or name_prefix in brand.name.lower():
+                        product.brand = brand
+                        product.save()
+                        updated_count += 1
+                        break
+                        
+            messages.success(request, f"Successfully {updated_count} products ke brands auto-assign kar diye gaye hain!")
+            return redirect('smart_cleanup')
+
+    context = {
+        'products_without_photo': products_without_photo,
+        'duplicate_products': duplicate_products,
+        'no_photo_count': products_without_photo.count(),
+        'duplicate_count': len(duplicate_products),
+    }
+    return render(request, 'erp/smart_cleanup.html', context)
+
+@permission_required('store.change_product', raise_exception=True)
+def run_auto_assign_brands(request):
+    products = Product.objects.filter(brand__isnull=True)
+    brands = Brand.objects.all()
+    
+    updated_count = 0
+    for product in products:
+        name_prefix = product.name[:5].strip().lower()
+        for brand in brands:
+            if brand.name.lower() in name_prefix or name_prefix in brand.name.lower():
+                product.brand = brand
+                product.save()
+                updated_count += 1
+                break
+                
+    messages.success(request, f"Total {updated_count} products ke brands auto-assign ho gaye hain!")
+    return redirect('smart_cleanup') # ya staff_product_list par bhej sakte hain

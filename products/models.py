@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.core.validators import MinValueValidator, MaxValueValidator
 from cloudinary_storage.storage import VideoMediaCloudinaryStorage, MediaCloudinaryStorage
 import uuid
+from django.urls import reverse
 
 # 🌟 Image Processing ke liye required libraries
 from PIL import Image
@@ -46,6 +47,10 @@ class Product(models.Model):
     
     color = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., Black, White, Red, Blue")
     size = models.CharField(max_length=50, blank=True, null=True, help_text="General Size e.g., S, M, L, XL (Filter ke liye)")
+    
+    # 🌟 Naye Audit Fields (Staff panel ke liye track karne ke liye ki kisne update kiya)
+    last_updated_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='updated_products')
+    updated_at = models.DateTimeField(auto_now=True)
 
     image = models.ImageField(
         upload_to='products/', 
@@ -67,19 +72,15 @@ class Product(models.Model):
 
     # 🌟 AUTOMATIC HD IMAGE RESIZER & SQUARE CROPPER
     def save(self, *args, **kwargs):
-        # Image process sirf tab karein jab nayi image aayi ho (performance optimize karne ke liye)
         if self.image and not self.image.name.endswith('_hd.jpg'):
             try:
                 img = Image.open(self.image)
                 
-                # Agar PNG transparent hai toh RGB mein convert karein
                 if img.mode in ('RGBA', 'P'):
                     img = img.convert('RGB')
                 
-                # Target Fixed Size: 800x800 pixels (High Definition Square)
                 output_size = (800, 800)
                 
-                # Center Crop to Square (Taaki photo kete nahi aur barabar fit ho)
                 width, height = img.size
                 min_dim = min(width, height)
                 
@@ -91,12 +92,10 @@ class Product(models.Model):
                 img = img.crop((left, top, right, bottom))
                 img = img.resize(output_size, Image.Resampling.LANCZOS)
                 
-                # Save processed image to memory buffer
                 output = BytesIO()
                 img.save(output, format='JPEG', quality=95, optimize=True)
                 output.seek(0)
                 
-                # Naya file name set karein taaki loop na bane
                 original_name = self.image.name.rsplit('.', 1)[0]
                 new_image_name = f"{original_name}_hd.jpg"
                 
@@ -108,6 +107,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+def get_absolute_url(self):
+        return reverse('product_detail', args=[str(self.id)])
 
 class ProductVariant(models.Model):
     product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
@@ -143,9 +145,9 @@ class Order(models.Model):
     
     delivery_otp = models.CharField(max_length=6, blank=True, null=True)
     payment_status = models.CharField(
-        max_length=20, 
+        max_length=50, # 👈 Yahan 20 ki jagah 50 kar diya hai
         default='Pending', 
-        choices=[('Pending', 'Pending'), ('Paid', 'Paid')]
+        choices=[('Pending', 'Pending'), ('Paid', 'Paid'), ('Pending Admin Approval', 'Pending Admin Approval'), ('Paid & Confirmed', 'Paid & Confirmed')]
     )
     payment_mode = models.CharField(max_length=50, default='Cash on Delivery (COD)')
     last_otp_sent_at = models.DateTimeField(blank=True, null=True)
@@ -166,7 +168,6 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        # 🌟 Guaranteed Unique Order ID / Invoice Series Generation
         if not self.order_id:
             while True:
                 generated_id = f"CG-{str(uuid.uuid4().int)[:6].upper()}"
@@ -427,7 +428,6 @@ class ProductImage(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        # Isme bhi HD aur Square fix apply kar diya hai
         if self.image and not self.image.name.endswith('_hd.jpg'):
             try:
                 img = Image.open(self.image)

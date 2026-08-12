@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Data Entry - CGSMART ERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 font-['Inter'] text-slate-800 antialiased p-6">
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900">Data Entry Operator Panel</h2>
+                <p class="text-slate-500 text-sm mt-1">Yahan se aap products ke Rates, MRP, Stock aur Photos update kar sakte hain.</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="{% url 'smart_cleanup' %}" class="bg-blue-50 text-blue-600 border border-blue-200 font-bold px-4 py-2 rounded-xl text-sm hover:bg-blue-100 transition">Smart Cleanup & Tools</a>
+                <a href="{% url 'logout' %}" class="bg-red-50 text-red-600 border border-red-200 font-bold px-4 py-2 rounded-xl text-sm hover:bg-red-100 transition">Logout</a>
+            </div>
+        </div>
+
+        {% if messages %}
+            <div class="space-y-2 mb-6">
+                {% for message in messages %}
+                    <div class="p-4 rounded-xl text-sm font-bold {% if message.tags == 'error' %}bg-red-100 text-red-700 border border-red-200{% else %}bg-emerald-100 text-emerald-700 border border-emerald-200{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Search Box -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6">
+            <form method="GET" class="flex gap-3">
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Product ka naam search karein..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="bg-slate-900 text-white font-bold px-6 py-2.5 rounded-xl text-sm hover:bg-slate-800 transition">Search</button>
+            </form>
+        </div>
+
+        <!-- Products Table -->
+        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500">
+                    <tr>
+                        <th class="p-4">Photo</th>
+                        <th class="p-4">Product Name</th>
+                        <th class="p-4">Group / Category</th>
+                        <th class="p-4">Brand</th>
+                        <th class="p-4">MRP (₹)</th>
+                        <th class="p-4">Rate (₹)</th>
+                        <th class="p-4">Stock</th>
+                        <th class="p-4">Last Updated By</th>
+                        <th class="p-4 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for product in products %}
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="w-10 h-10 object-contain rounded-lg border bg-white">
+                            {% else %}
+                                <span class="text-xs text-slate-400">No Image</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 font-bold text-slate-900 text-sm">{{ product.name }}</td>
+                        <td class="p-4 text-sm text-slate-600">{{ product.category.name|default:"General" }}</td>
+                        <td class="p-4 text-sm text-slate-600">{{ product.brand.name|default:"N/A" }}</td>
+                        <td class="p-4 text-sm text-slate-500 font-medium">₹{{ product.mrp|default:"0" }}</td>
+                        <td class="p-4 text-sm font-extrabold text-emerald-600">₹{{ product.price }}</td>
+                        <td class="p-4 text-sm font-bold text-blue-600">{{ product.stock }}</td>
+                        <td class="p-4 text-xs text-slate-500">
+                            {% if product.last_updated_by %}
+                                <span class="font-bold text-slate-700">{{ product.last_updated_by.username }}</span><br>
+                                <span class="text-[10px]">{{ product.updated_at|date:"d M Y, H:i" }}</span>
+                            {% else %}
+                                <span class="italic text-slate-400">System</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 text-center">
+                            <a href="{% url 'staff_product_edit' product.id %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">Edit</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-10 text-slate-400 font-medium">Koi product nahi mila.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>

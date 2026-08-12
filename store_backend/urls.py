@@ -10,7 +10,6 @@ from django.views.generic import TemplateView
 
 # App Imports
 from products import views
-from products.views import search_suggestions, check_delivery, terminate_all_sessions_view
 from products.sitemaps import ProductSitemap, StaticViewSitemap
 
 # 🌟 Specific View Imports for cleaner path definitions
@@ -24,6 +23,7 @@ from products.views import (
     download_invoice, export_products_csv, import_products_csv,
     product_detail, update_cart_item, cancel_order, 
     delete_address, edit_address, privacy_policy, terms_conditions, refund_policy,
+    search_suggestions, check_delivery, terminate_all_sessions_view
 )
 
 def ping(request):
@@ -49,7 +49,9 @@ urlpatterns = [
     path('product/<int:product_id>/', product_detail, name='product_detail'),
     path('api/search-suggestions/', search_suggestions, name='search_suggestions'),
     path('api/check-delivery/', check_delivery, name='check_delivery'),
-    path('api/check-delivery/', views.check_delivery_api, name='check_delivery_api'),
+    path('api/check-delivery-api/', views.check_delivery_api, name='check_delivery_api'),
+    path('staff/products/', views.staff_product_update_list, name='staff_product_list'),
+    path('staff/products/edit/<int:product_id>/', views.staff_product_edit, name='staff_product_edit'),
 
     # ==========================================
     # 🛒 CART & CHECKOUT
@@ -58,7 +60,7 @@ urlpatterns = [
     path('cart/', cart_detail, name='cart_detail'),
     path('cart/update/<str:item_key>/<str:action>/', update_cart_item, name='update_cart_item'),
     
-    # 🛠️ FIX 1: Changed <int:product_id> to <str:cart_key> to fix variant deletion bug!
+    # 🛠️ FIX: Using cart_key to fix variant deletion bug
     path('cart-ajax/remove/<str:cart_key>/', views.remove_from_cart_ajax, name='remove_from_cart_ajax'),
     
     path('cart-ajax/summary/', views.cart_summary_ajax, name='cart_summary_ajax'),
@@ -81,6 +83,13 @@ urlpatterns = [
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('reset-verify-otp/', views.reset_verify_otp, name='reset_verify_otp'),
     path('set-new-password/', views.set_new_password, name='set_new_password'),
+    path('accounts/login/', views.login_request_view, name='login_request'),
+    
+    # 🌟 Fixed OTP Login View Name
+    path('accounts/verify-otp-login/', views.verify_otp_login_view, name='verify_otp_login'),
+    
+    path('staff/smart-cleanup/', views.smart_cleanup_dashboard, name='smart_cleanup'),
+    path('staff/auto-assign-brands/', views.run_auto_assign_brands, name='auto_assign_brands'),
     
     path('profile/', profile_page, name='profile'),
     path('profile/delete/', delete_account, name='delete_account'),

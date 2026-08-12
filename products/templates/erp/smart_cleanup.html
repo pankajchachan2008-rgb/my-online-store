@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Database Cleanup - CGSMART ERP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 font-['Inter'] text-slate-800 p-6">
+    <div class="max-w-6xl mx-auto">
+        
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <div>
+                <h2 class="text-2xl font-black text-slate-900">Smart Database Cleanup & Auto-Organizer</h2>
+                <p class="text-slate-500 text-sm mt-1">Without photo products, duplicates, aur auto-brand mapping manage karein.</p>
+            </div>
+            <a href="{% url 'staff_product_list' %}" class="bg-slate-100 text-slate-700 font-bold px-4 py-2 rounded-xl text-sm hover:bg-slate-200 transition">&larr; Back to Panel</a>
+        </div>
+
+        {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                    <div class="p-4 rounded-xl text-sm font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Quick Actions Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <h4 class="font-bold text-slate-900 text-lg mb-1">Missing Photos</h4>
+                    <p class="text-slate-500 text-sm">Jin products ki image nahi hai: <strong class="text-red-500 text-base">{{ no_photo_count }}</strong></p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <h4 class="font-bold text-slate-900 text-lg mb-1">Duplicate Products</h4>
+                    <p class="text-slate-500 text-sm">Same name & MRP wale items: <strong class="text-amber-500 text-base">{{ duplicate_count }}</strong></p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <h4 class="font-bold text-slate-900 text-lg mb-1">Auto-Brand Matcher</h4>
+                    <p class="text-slate-500 text-sm mb-4">Naam ke shuru ke letters se brand shift karein.</p>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="auto_brand">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-sm transition">Run Auto-Brand Assign</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Without Photo Products Table -->
+        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden mb-8">
+            <div class="p-6 border-b border-slate-200 bg-slate-50">
+                <h3 class="font-black text-lg text-slate-900">Products Without Photos ({{ no_photo_count }})</h3>
+            </div>
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-100/60 border-b border-slate-200 text-xs uppercase text-slate-500">
+                    <tr>
+                        <th class="p-4">Product Name</th>
+                        <th class="p-4">Category</th>
+                        <th class="p-4">Rate (₹)</th>
+                        <th class="p-4 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for p in products_without_photo %}
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-4 font-bold text-sm text-slate-900">{{ p.name }}</td>
+                        <td class="p-4 text-sm text-slate-600">{{ p.category.name|default:"General" }}</td>
+                        <td class="p-4 text-sm font-extrabold text-emerald-600">₹{{ p.price }}</td>
+                        <td class="p-4 text-center">
+                            <a href="{% url 'staff_product_edit' p.id %}" class="bg-slate-900 text-white font-bold text-xs px-3 py-1.5 rounded-lg">Upload Photo</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center py-8 text-slate-400 font-medium">Sabhi products ki photos uploaded hain! Great!</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>
