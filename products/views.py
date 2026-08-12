@@ -543,7 +543,6 @@ def set_new_password(request):
 @never_cache    
 @login_required(login_url='/login/')
 def profile_page(request):
-    if request.user.is_staff or request.user.is_superuser: return redirect('home')
     profile, _ = CustomerProfile.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
@@ -1204,7 +1203,7 @@ def check_delivery_api(request):
 def is_staff_user(user):
     return user.is_authenticated and (user.is_staff or user.is_superuser)
 
-@permission_required('store.change_product', raise_exception=True)
+@permission_required('products.change_product', raise_exception=True)
 def staff_product_update_list(request):
     products = Product.objects.all().order_by('name')
     search_query = request.GET.get('search', '')
@@ -1217,7 +1216,7 @@ def staff_product_update_list(request):
     }
     return render(request, 'erp/staff_product_list.html', context)
 
-@permission_required('store.change_product', raise_exception=True)
+@permission_required('products.change_product', raise_exception=True)
 def staff_product_edit(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
@@ -1254,7 +1253,7 @@ def staff_product_edit(request, product_id):
 
     return render(request, 'erp/staff_product_edit.html', {'product': product})
 
-@permission_required('store.change_product', raise_exception=True)
+@permission_required('products.change_product', raise_exception=True)
 def smart_cleanup_dashboard(request):
     products_without_photo = Product.objects.filter(image='') | Product.objects.filter(image__isnull=True)
     duplicates = Product.objects.values('name', 'mrp').annotate(name_count=Count('id')).filter(name_count__gt=1)
@@ -1290,7 +1289,7 @@ def smart_cleanup_dashboard(request):
     }
     return render(request, 'erp/smart_cleanup.html', context)
 
-@permission_required('store.change_product', raise_exception=True)
+@permission_required('products.change_product', raise_exception=True)
 def run_auto_assign_brands(request):
     products = Product.objects.filter(brand__isnull=True)
     brands = Brand.objects.all()
