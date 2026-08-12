@@ -9,6 +9,7 @@ from barcode.writer import ImageWriter
 from io import BytesIO
 import base64
 import difflib
+from django.urls import reverse
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout, login
