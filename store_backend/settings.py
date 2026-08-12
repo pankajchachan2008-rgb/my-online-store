@@ -206,3 +206,6 @@ LOGGING = {
         },
     },
 }
+
+# 🌟 ERP Bulk Update ke liye Form Field Limit badhana (Default 1000 hota hai)
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
