@@ -80,7 +80,8 @@
                             {% endif %}
                         </td>
                         <td class="p-4 text-center">
-                            <a href="{% url 'staff_product_edit' product.id %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">Edit</a>
+                            <!-- 🌟 NAYA LINK: Isme search_query judi hui hai -->
+                            <a href="{% url 'staff_product_edit' product.id %}{% if search_query %}?search={{ search_query }}{% endif %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">Edit</a>
                         </td>
                     </tr>
                     {% empty %}

@@ -2,89 +2,112 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Smart Database Cleanup - CGSMART ERP</title>
+    <title>Smart Cleanup - ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-slate-50 font-['Inter'] text-slate-800 p-6">
-    <div class="max-w-6xl mx-auto">
+<body class="bg-slate-50 text-slate-800 p-6 font-sans">
+    <!-- Alpine.js x-data se Tab System Control hoga -->
+    <div class="max-w-7xl mx-auto" x-data="{ activeTab: 'missing' }">
         
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex justify-between items-center mb-6 bg-white p-6 rounded-xl shadow-sm border">
             <div>
-                <h2 class="text-2xl font-black text-slate-900">Smart Database Cleanup & Auto-Organizer</h2>
-                <p class="text-slate-500 text-sm mt-1">Without photo products, duplicates, aur auto-brand mapping manage karein.</p>
+                <h2 class="text-2xl font-black">Smart Database Cleanup</h2>
+                <p class="text-slate-500 text-sm">Without photo products, duplicates, aur auto-brand manage karein.</p>
             </div>
-            <a href="{% url 'staff_product_list' %}" class="bg-slate-100 text-slate-700 font-bold px-4 py-2 rounded-xl text-sm hover:bg-slate-200 transition">&larr; Back to Panel</a>
+            <a href="{% url 'staff_product_list' %}" class="bg-slate-100 text-slate-600 border font-bold px-4 py-2 rounded-lg text-sm hover:bg-slate-200">&larr; Back to Panel</a>
         </div>
 
         {% if messages %}
-            <div class="mb-6 space-y-2">
-                {% for message in messages %}
-                    <div class="p-4 rounded-xl text-sm font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
+            {% for message in messages %}
+                <div class="mb-6 p-4 rounded-lg text-sm font-bold bg-green-100 text-green-700">{{ message }}</div>
+            {% endfor %}
         {% endif %}
 
-        <!-- Quick Actions Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                <div>
-                    <h4 class="font-bold text-slate-900 text-lg mb-1">Missing Photos</h4>
-                    <p class="text-slate-500 text-sm">Jin products ki image nahi hai: <strong class="text-red-500 text-base">{{ no_photo_count }}</strong></p>
-                </div>
+        <!-- 🌟 UPAR KE 3 CLICKABLE COLUMNS (TABS) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            
+            <!-- Tab 1: Missing Photos -->
+            <div @click="activeTab = 'missing'" 
+                 :class="activeTab === 'missing' ? 'border-blue-500 ring-2 ring-blue-100 bg-blue-50/50' : 'border-slate-200 hover:border-blue-300 bg-white'" 
+                 class="p-5 rounded-xl border cursor-pointer transition">
+                <h3 class="font-bold text-slate-800">Missing Photos</h3>
+                <p class="text-sm text-slate-500 mt-1">Jin products ki image nahi hai: <span class="font-black text-red-500">{{ no_photo_count }}</span></p>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                <div>
-                    <h4 class="font-bold text-slate-900 text-lg mb-1">Duplicate Products</h4>
-                    <p class="text-slate-500 text-sm">Same name & MRP wale items: <strong class="text-amber-500 text-base">{{ duplicate_count }}</strong></p>
-                </div>
+            <!-- Tab 2: Duplicates -->
+            <div @click="activeTab = 'duplicates'" 
+                 :class="activeTab === 'duplicates' ? 'border-amber-500 ring-2 ring-amber-100 bg-amber-50/50' : 'border-slate-200 hover:border-amber-300 bg-white'" 
+                 class="p-5 rounded-xl border cursor-pointer transition">
+                <h3 class="font-bold text-slate-800">Duplicate Products</h3>
+                <p class="text-sm text-slate-500 mt-1">Same name & MRP wale items: <span class="font-black text-amber-500">{{ duplicate_count }}</span></p>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                <div>
-                    <h4 class="font-bold text-slate-900 text-lg mb-1">Auto-Brand Matcher</h4>
-                    <p class="text-slate-500 text-sm mb-4">Naam ke shuru ke letters se brand shift karein.</p>
-                </div>
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="auto_brand">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-sm transition">Run Auto-Brand Assign</button>
-                </form>
+            <!-- Tab 3: Auto Brand -->
+            <div @click="activeTab = 'brand'" 
+                 :class="activeTab === 'brand' ? 'border-emerald-500 ring-2 ring-emerald-100 bg-emerald-50/50' : 'border-slate-200 hover:border-emerald-300 bg-white'" 
+                 class="p-5 rounded-xl border cursor-pointer transition">
+                <h3 class="font-bold text-slate-800">Auto-Brand Matcher</h3>
+                <p class="text-sm text-slate-500 mt-1">Naam ke shuru ke letters se brand shift karein.</p>
             </div>
         </div>
 
-        <!-- Without Photo Products Table -->
-        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden mb-8">
-            <div class="p-6 border-b border-slate-200 bg-slate-50">
-                <h3 class="font-black text-lg text-slate-900">Products Without Photos ({{ no_photo_count }})</h3>
-            </div>
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-100/60 border-b border-slate-200 text-xs uppercase text-slate-500">
-                    <tr>
-                        <th class="p-4">Product Name</th>
-                        <th class="p-4">Category</th>
-                        <th class="p-4">Rate (₹)</th>
-                        <th class="p-4 text-center">Action</th>
-                    </tr>
+        <!-- 🌟 TAB 1 CONTENT: MISSING PHOTOS -->
+        <div x-show="activeTab === 'missing'" class="bg-white border rounded-xl shadow-sm p-4">
+            <h3 class="font-bold text-lg mb-4 pb-2 border-b">Products Without Photos ({{ no_photo_count }})</h3>
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+                    <tr><th class="p-3">Product Name</th><th class="p-3">Category</th><th class="p-3">Rate (₹)</th><th class="p-3">Action</th></tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y">
                     {% for p in products_without_photo %}
                     <tr class="hover:bg-slate-50">
-                        <td class="p-4 font-bold text-sm text-slate-900">{{ p.name }}</td>
-                        <td class="p-4 text-sm text-slate-600">{{ p.category.name|default:"General" }}</td>
-                        <td class="p-4 text-sm font-extrabold text-emerald-600">₹{{ p.price }}</td>
-                        <td class="p-4 text-center">
-                            <a href="{% url 'staff_product_edit' p.id %}" class="bg-slate-900 text-white font-bold text-xs px-3 py-1.5 rounded-lg">Upload Photo</a>
-                        </td>
+                        <td class="p-3 font-bold">{{ p.name }}</td>
+                        <td class="p-3 text-slate-500">{{ p.category.name|default:"General" }}</td>
+                        <td class="p-3 font-bold text-emerald-600">₹{{ p.price }}</td>
+                        <td class="p-3"><a href="{% url 'staff_product_edit' p.id %}" class="bg-slate-900 text-white px-3 py-1.5 rounded text-xs font-bold">Upload Photo</a></td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="4" class="text-center py-8 text-slate-400 font-medium">Sabhi products ki photos uploaded hain! Great!</td></tr>
+                    <tr><td colspan="4" class="p-4 text-center text-slate-400">Sabhi products ki photo upload ho chuki hai! 🎉</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
+        <!-- 🌟 TAB 2 CONTENT: DUPLICATES -->
+        <div x-show="activeTab === 'duplicates'" style="display: none;" class="bg-white border rounded-xl shadow-sm p-4">
+            <h3 class="font-bold text-lg mb-4 pb-2 border-b">Duplicate Products Alert</h3>
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
+                    <tr><th class="p-3">ID</th><th class="p-3">Product Name</th><th class="p-3">Rate (₹)</th><th class="p-3">Action</th></tr>
+                </thead>
+                <tbody class="divide-y">
+                    {% for d in duplicate_products %}
+                    <tr class="hover:bg-amber-50">
+                        <td class="p-3 font-mono text-xs text-slate-500">#{{ d.id }}</td>
+                        <td class="p-3 font-bold">{{ d.name }}</td>
+                        <td class="p-3 font-bold text-emerald-600">₹{{ d.price }}</td>
+                        <td class="p-3"><a href="{% url 'staff_product_edit' d.id %}" class="bg-amber-500 text-white px-3 py-1.5 rounded text-xs font-bold">Review / Edit</a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="p-4 text-center text-slate-400">Koi duplicate product nahi mila. Ekdum saaf database! ✨</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 🌟 TAB 3 CONTENT: AUTO BRAND MATCHER -->
+        <div x-show="activeTab === 'brand'" style="display: none;" class="bg-white border rounded-xl shadow-sm p-6 text-center">
+            <span class="text-5xl mb-4 block">🤖</span>
+            <h3 class="font-bold text-xl mb-2">Run AI Brand Organizer</h3>
+            <p class="text-slate-500 mb-6 max-w-md mx-auto">Yeh tool un products ko scan karega jinka brand set nahi hai, aur unke naam ke pehle shabd se matching brand automatic assign kar dega.</p>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="auto_brand">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition">
+                    Run Auto-Brand Assign
+                </button>
+            </form>
         </div>
 
     </div>

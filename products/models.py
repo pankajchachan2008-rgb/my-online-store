@@ -70,7 +70,14 @@ class Product(models.Model):
             return int(((self.mrp - self.price) / self.mrp) * 100)
         return 0
 
-    # 🌟 AUTOMATIC HD IMAGE RESIZER & SQUARE CROPPER
+    def __str__(self):
+        return self.name
+
+    # 👇 Sitemap aur URLs ke liye zaroori function (Ab sahi position par hai)
+    def get_absolute_url(self):
+        return reverse('product_detail', args=[str(self.id)])
+
+    # 🌟 AUTOMATIC FAST HD IMAGE RESIZER (502 Timeout Fix)
     def save(self, *args, **kwargs):
         if self.image and not self.image.name.endswith('_hd.jpg'):
             try:
@@ -79,7 +86,8 @@ class Product(models.Model):
                 if img.mode in ('RGBA', 'P'):
                     img = img.convert('RGB')
                 
-                output_size = (800, 800)
+                # Size aur Quality thodi kam ki hai taaki upload instantly ho
+                output_size = (600, 600)
                 
                 width, height = img.size
                 min_dim = min(width, height)
@@ -93,7 +101,7 @@ class Product(models.Model):
                 img = img.resize(output_size, Image.Resampling.LANCZOS)
                 
                 output = BytesIO()
-                img.save(output, format='JPEG', quality=95, optimize=True)
+                img.save(output, format='JPEG', quality=85, optimize=True)
                 output.seek(0)
                 
                 original_name = self.image.name.rsplit('.', 1)[0]
@@ -105,11 +113,6 @@ class Product(models.Model):
 
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.name
-
-def get_absolute_url(self):
-        return reverse('product_detail', args=[str(self.id)])
 
 class ProductVariant(models.Model):
     product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
@@ -145,7 +148,7 @@ class Order(models.Model):
     
     delivery_otp = models.CharField(max_length=6, blank=True, null=True)
     payment_status = models.CharField(
-        max_length=50, # 👈 Yahan 20 ki jagah 50 kar diya hai
+        max_length=50,
         default='Pending', 
         choices=[('Pending', 'Pending'), ('Paid', 'Paid'), ('Pending Admin Approval', 'Pending Admin Approval'), ('Paid & Confirmed', 'Paid & Confirmed')]
     )
@@ -427,6 +430,7 @@ class ProductImage(models.Model):
         help_text="Upload additional HD photos for the product"
     )
 
+    # 🌟 FAST HD IMAGE RESIZER
     def save(self, *args, **kwargs):
         if self.image and not self.image.name.endswith('_hd.jpg'):
             try:
@@ -434,7 +438,7 @@ class ProductImage(models.Model):
                 if img.mode in ('RGBA', 'P'):
                     img = img.convert('RGB')
                 
-                output_size = (800, 800)
+                output_size = (600, 600)
                 width, height = img.size
                 min_dim = min(width, height)
                 
@@ -447,7 +451,7 @@ class ProductImage(models.Model):
                 img = img.resize(output_size, Image.Resampling.LANCZOS)
                 
                 output = BytesIO()
-                img.save(output, format='JPEG', quality=95, optimize=True)
+                img.save(output, format='JPEG', quality=85, optimize=True)
                 output.seek(0)
                 
                 original_name = self.image.name.rsplit('.', 1)[0]

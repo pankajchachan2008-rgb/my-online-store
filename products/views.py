@@ -28,6 +28,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.utils.http import urlencode
 
 # REST Framework Imports
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -1220,17 +1221,25 @@ def staff_product_update_list(request):
 def staff_product_edit(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
+    # URL se search query capture karna
+    search_query = request.GET.get('search', '')
+    
     if request.method == 'POST':
         try:
             name = request.POST.get('name', product.name)
             price = float(request.POST.get('price', product.price))
             mrp = float(request.POST.get('mrp', product.mrp or 0))
             stock = int(request.POST.get('stock', product.stock))
+            
+            # POST request (Form save hone) par bhi search dhundhna
+            post_search_query = request.POST.get('search', '')
 
-            # 🛡️ VALIDATION: Rate MRP se zyada nahi ho sakta
             if mrp > 0 and price > mrp:
                 messages.error(request, "Security Error: Selling rate MRP se zyada nahi ho sakta!")
-                return redirect('staff_product_edit', product_id=product.id)
+                redirect_url = reverse('staff_product_edit', args=[product.id])
+                if post_search_query:
+                    redirect_url += f"?search={post_search_query}"
+                return redirect(redirect_url)
 
             product.name = name
             product.price = price
@@ -1240,18 +1249,26 @@ def staff_product_edit(request, product_id):
             if 'image' in request.FILES:
                 product.image = request.FILES['image']
             
-            # 🛡️ AUDIT LOG: Track karein ki kisne update kiya
             product.last_updated_by = request.user
             product.save()
 
             messages.success(request, f"'{product.name}' successfully update ho gaya hai!")
-            return redirect('staff_product_list')
+            
+            # 🌟 Redirect wapas 'staff_product_list' par, lekin URL mein search keyword jod kar
+            base_url = reverse('staff_product_list')
+            if post_search_query:
+                query_string = urlencode({'search': post_search_query})
+                return redirect(f"{base_url}?{query_string}")
+            return redirect(base_url)
 
         except ValueError:
             messages.error(request, "Invalid input! Kripya numbers sahi format mein bharein.")
             return redirect('staff_product_edit', product_id=product.id)
 
-    return render(request, 'erp/staff_product_edit.html', {'product': product})
+    return render(request, 'erp/staff_product_edit.html', {
+        'product': product,
+        'search_query': search_query # Template mein pass karna
+    })
 
 @permission_required('products.change_product', raise_exception=True)
 def smart_cleanup_dashboard(request):
