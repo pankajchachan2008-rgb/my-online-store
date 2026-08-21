@@ -774,8 +774,12 @@ def ai_assistant_chat(request):
 
             url = "https://api.groq.com/openai/v1/chat/completions"
             headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-            payload = {"model": "llama3-8b-8192", "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_message}], "temperature": 0.3, "max_tokens": 150}            
+            
+            payload = {"model": "openai/gpt-oss-120b", "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_message}], "temperature": 0.3, "max_tokens": 150}            
+            
+            # 👇 (मैंने यहाँ लाइन को अलग कर दिया है) 👇
             response = requests.post(url, json=payload, headers=headers, timeout=10)
+            
             if response.status_code == 200:
                 return JsonResponse({'response': response.json()['choices'][0]['message']['content']})
             return JsonResponse({'response': "Maafi chahunga, abhi system thoda busy hai. Kripya humein WhatsApp par message karein!"})
