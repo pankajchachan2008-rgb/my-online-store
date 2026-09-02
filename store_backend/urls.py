@@ -12,6 +12,8 @@ from django.views.generic import TemplateView
 from products import views
 from products.sitemaps import ProductSitemap, StaticViewSitemap
 
+from django.http import HttpResponse
+
 from django_otp.admin import OTPAdminSite
 admin.site.__class__ = OTPAdminSite
 
@@ -47,6 +49,8 @@ urlpatterns = [
 
     # URLs की लिस्ट में कहीं भी डाल दें
     path('test-celery/', views.test_celery_view, name='test_celery'),
+
+    path('keep-alive-ping/', lambda request: HttpResponse("CGS MART is Awake!"), name='ping')
 
     # ==========================================
     # 🏠 HOMEPAGE & CATALOG
