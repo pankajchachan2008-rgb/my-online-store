@@ -50,7 +50,7 @@ urlpatterns = [
     # URLs की लिस्ट में कहीं भी डाल दें
     path('test-celery/', views.test_celery_view, name='test_celery'),
 
-    path('keep-alive-ping/', lambda request: HttpResponse("CGS MART is Awake!"), name='ping')
+    path('keep-alive-ping/', lambda request: HttpResponse("CGS MART is Awake!"), name='ping'),
 
     # ==========================================
     # 🏠 HOMEPAGE & CATALOG
