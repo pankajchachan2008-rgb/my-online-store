@@ -20,7 +20,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
         'cgsmart.in', 
         'www.cgsmart.in', 
-        'my-online-store-ggbj.onrender.com', # Yahan apna Render wala exact domain zaroor check kar lein
+        'my-online-store-ggbj.onrender.com', 
 ]
 
 # CSRF Trusted Origins
@@ -43,16 +43,21 @@ INSTALLED_APPS = [
     'rest_framework',
     'products',
     'django.contrib.sitemaps',
+    # 👇 Phase 2: Django Admin 2FA Security (OTP) 👇
+    'django_otp',
+    'django_otp.plugins.otp_totp',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'store_backend.middleware.BlockBadBotsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # 👈 Yeh zaroori tha (Add kar diya gaya hai)
+    'whitenoise.middleware.WhiteNoiseMiddleware',  
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 👇 Phase 2: OTP Middleware (hamesha Authentication ke theek neeche) 👇
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -86,7 +91,9 @@ DATABASES = {
 
 if 'DATABASE_URL' in os.environ:
     DATABASES['default'] = dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
+        default=os.environ.get('DATABASE_URL'),
+        # 👇 Phase 1: Database Connection Pooling (10 mins) 👇
+        conn_max_age=600 
     )
 
 # Password validation
