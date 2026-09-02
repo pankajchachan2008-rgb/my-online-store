@@ -45,6 +45,9 @@ urlpatterns = [
     path('ping/', ping, name='ping'),
     path('secret-cgs-main/security/terminate-sessions/', terminate_all_sessions_view, name='terminate_sessions'),
 
+    # URLs की लिस्ट में कहीं भी डाल दें
+    path('test-celery/', views.test_celery_view, name='test_celery'),
+
     # ==========================================
     # 🏠 HOMEPAGE & CATALOG
     # ==========================================

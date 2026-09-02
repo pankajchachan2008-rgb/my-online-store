@@ -31,6 +31,9 @@ from django.contrib.sessions.models import Session
 from django.contrib.auth.decorators import user_passes_test, permission_required
 from django.utils.http import urlencode
 
+from .tasks import test_background_task
+from django.http import HttpResponse
+
 # REST Framework Imports
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
@@ -1327,3 +1330,9 @@ def run_auto_assign_brands(request):
                 
     messages.success(request, f"Total {updated_count} products ke brands auto-assign ho gaye hain!")
     return redirect('smart_cleanup') # ya staff_product_list par bhej sakte hain
+
+def test_celery_view(request):
+    # असली जादू यहाँ है: .delay() लगाने से यह काम बैकग्राउंड में चला जाता है
+    test_background_task.delay("Pankaj Chachan")
+    
+    return HttpResponse("<h1>जादू देखिए! ✨</h1> <p>पेज तुरंत लोड हो गया, लेकिन 10 सेकंड वाला काम बैकग्राउंड में चल रहा है!</p>")
