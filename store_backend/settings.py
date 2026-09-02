@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # 👇 Phase 2: Django Admin 2FA Security (OTP) 👇
     'django_otp',
     'django_otp.plugins.otp_totp',
+    'django.contrib.postgres',
 ]
 
 MIDDLEWARE = [

@@ -34,6 +34,9 @@ from django.utils.http import urlencode
 from .tasks import test_background_task
 from django.http import HttpResponse
 
+from django.contrib.postgres.search import TrigramSimilarity
+from django.db import connection
+
 # REST Framework Imports
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
@@ -116,6 +119,7 @@ def product_list(request):
     max_price = request.GET.get('max_price')
 
     if search_query:
+        # 1. पहले नॉर्मल सर्च ट्राई करें (Exact match)
         exact_matches = products.filter(
             Q(name__icontains=search_query) | Q(category__name__icontains=search_query) |
             Q(brand__name__icontains=search_query) | Q(description__icontains=search_query)
@@ -124,10 +128,20 @@ def product_list(request):
         if exact_matches.exists():
             products = exact_matches
         else:
-            all_product_names = Product.objects.values_list('name', flat=True)
-            closest_matches = difflib.get_close_matches(search_query, all_product_names, n=4, cutoff=0.4)
-            if closest_matches:
-                products = products.filter(name__in=closest_matches)
+            # 🌟 2. प्रो-लेवल ट्रिक: अगर स्पेलिंग गलत है, तो चेक करें कि डेटाबेस कौन सा है
+            if connection.vendor == 'postgresql':
+                # Render/Aiven Live Server: Typo-Tolerant AI-like Search
+                products = products.annotate(
+                    similarity=TrigramSimilarity('name', search_query)
+                ).filter(similarity__gt=0.15).order_by('-similarity')
+            else:
+                # Local PC (SQLite): पुराना difflib फालबैक
+                all_product_names = Product.objects.values_list('name', flat=True)
+                closest_matches = difflib.get_close_matches(search_query, all_product_names, n=4, cutoff=0.4)
+                if closest_matches:
+                    products = products.filter(name__in=closest_matches)
+                else:
+                    products = products.none()
 
     active_category = active_brand = None
     if category_id:
@@ -185,25 +199,6 @@ def product_list(request):
         'querystring': querystring,
     }
     return render(request, 'products/product_list.html', context)
-
-def product_detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    reviews = product.reviews.all().order_by('-created_at')
-    similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4] if product.category else Product.objects.none()
-
-    if request.method == 'POST':
-        if not request.user.is_authenticated: return redirect('login')
-        rating = request.POST.get('rating')
-        comment = request.POST.get('comment')
-        review_image = request.FILES.get('review_image')
-
-        if rating: 
-            Review.objects.create(product=product, user=request.user, rating=int(rating), comment=comment, image=review_image)
-            messages.success(request, "✅ Aapka review submit ho gaya!")
-        return redirect('product_detail', product_id=product.id)
-    
-    avg_rating = round(sum(r.rating for r in reviews)/reviews.count(), 1) if reviews else 0
-    return render(request, 'products/product_detail.html', {'product': product, 'reviews': reviews, 'similar_products': similar_products, 'avg_rating': avg_rating, 'review_count': reviews.count()})
 
 # ==========================================
 # 🛒 2. CART & CHECKOUT VIEWS
