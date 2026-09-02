@@ -216,3 +216,14 @@ LOGGING = {
 
 # 🌟 ERP Bulk Update ke liye Form Field Limit badhana (Default 1000 hota hai)
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
+# =====================================================================
+#                 CELERY & REDIS SETTINGS
+# =====================================================================
+# Render से REDIS_URL लेगा, अगर लोकल कंप्यूटर पर हैं तो डिफ़ॉल्ट लोकल URL यूज़ करेगा
+CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Kolkata'
