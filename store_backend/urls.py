@@ -12,6 +12,9 @@ from django.views.generic import TemplateView
 from products import views
 from products.sitemaps import ProductSitemap, StaticViewSitemap
 
+from django_otp.admin import OTPAdminSite
+admin.site.__class__ = OTPAdminSite
+
 # 🌟 Specific View Imports for cleaner path definitions
 from products.views import (
     product_list, add_to_cart, cart_detail, checkout_page,
