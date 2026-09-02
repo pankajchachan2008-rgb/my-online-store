@@ -218,11 +218,23 @@ LOGGING = {
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 # =====================================================================
-#                 CELERY & REDIS SETTINGS
+#                 CELERY & REDIS SETTINGS (WITH AIVEN SSL FIX)
 # =====================================================================
-# Render से REDIS_URL लेगा, अगर लोकल कंप्यूटर पर हैं तो डिफ़ॉल्ट लोकल URL यूज़ करेगा
-CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+import os
+
+# 1. Render से URL लें
+RAW_REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+
+# 2. Aiven के 'rediss://' (SSL) वाले URL की बीमारी का इलाज
+if RAW_REDIS_URL.startswith('rediss://') and 'ssl_cert_reqs' not in RAW_REDIS_URL:
+    CELERY_REDIS_URL = f"{RAW_REDIS_URL}?ssl_cert_reqs=CERT_NONE"
+else:
+    CELERY_REDIS_URL = RAW_REDIS_URL
+
+# 3. अब इस फिक्स किए हुए URL को Celery में डाल दें
+CELERY_BROKER_URL = CELERY_REDIS_URL
+CELERY_RESULT_BACKEND = CELERY_REDIS_URL
+
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
