@@ -11,8 +11,14 @@
         <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 text-left max-w-[400px] mx-auto mb-8">
             <div class="flex justify-between items-center mb-3">
                 <span class="text-gray-500 font-medium">Order ID:</span>
-                <span class="font-bold text-gray-900">#{{ order.id }}</span>
+                <span class="font-bold text-gray-900">#{{ order.id }} {% if order.order_id %}({{ order.order_id }}){% endif %}</span>
             </div>
+            {% if order.delivery_otp %}
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-gray-500 font-medium">Delivery OTP:</span>
+                <span class="font-extrabold text-[#002D62] tracking-widest bg-yellow-100 px-3 py-0.5 rounded-lg border border-yellow-300">{{ order.delivery_otp }}</span>
+            </div>
+            {% endif %}
             <div class="flex justify-between items-center">
                 <span class="text-gray-500 font-medium">Total Amount:</span>
                 <span class="font-extrabold text-green-600 text-lg">₹{{ order.total_amount }}</span>

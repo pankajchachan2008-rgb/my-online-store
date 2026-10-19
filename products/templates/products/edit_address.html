@@ -22,8 +22,8 @@
                     <input type="text" name="pincode" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ address.pincode }}" required>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">City</label>
-                    <input type="text" name="city" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ address.city }}" required>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Locality / Area</label>
+                    <input type="text" name="locality" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ address.locality }}" required>
                 </div>
             </div>
 
@@ -32,13 +32,36 @@
                 <textarea name="full_address" rows="3" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" required>{{ address.full_address }}</textarea>
             </div>
             
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">City</label>
+                    <input type="text" name="city" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" value="{{ address.city }}" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">State</label>
+                    <select name="state" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" required>
+                        <option value="Rajasthan" {% if address.state == 'Rajasthan' %}selected{% endif %}>Rajasthan</option>
+                        <option value="Haryana" {% if address.state == 'Haryana' %}selected{% endif %}>Haryana</option>
+                        <option value="Delhi" {% if address.state == 'Delhi' %}selected{% endif %}>Delhi</option>
+                        <option value="Punjab" {% if address.state == 'Punjab' %}selected{% endif %}>Punjab</option>
+                        <option value="Gujarat" {% if address.state == 'Gujarat' %}selected{% endif %}>Gujarat</option>
+                        <option value="Maharashtra" {% if address.state == 'Maharashtra' %}selected{% endif %}>Maharashtra</option>
+                    </select>
+                </div>
+            </div>
+
             <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">State</label>
-                <select name="state" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" required>
-                    <option value="Rajasthan" {% if address.state == 'Rajasthan' %}selected{% endif %}>Rajasthan</option>
-                    <option value="Haryana" {% if address.state == 'Haryana' %}selected{% endif %}>Haryana</option>
-                    <option value="Delhi" {% if address.state == 'Delhi' %}selected{% endif %}>Delhi</option>
-                </select>
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Address Type</label>
+                <div class="flex gap-6">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="address_type" value="Home" {% if address.address_type == 'Home' %}checked{% endif %} class="w-4 h-4 text-blue-900 focus:ring-blue-900">
+                        <span class="text-sm font-medium text-gray-700">Home</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="radio" name="address_type" value="Office" {% if address.address_type == 'Office' %}checked{% endif %} class="w-4 h-4 text-blue-900 focus:ring-blue-900">
+                        <span class="text-sm font-medium text-gray-700">Office</span>
+                    </label>
+                </div>
             </div>
             
             <div class="pt-4">

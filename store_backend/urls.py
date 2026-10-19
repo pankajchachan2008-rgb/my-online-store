@@ -4,15 +4,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from django.contrib.auth import views as auth_views
-from django.http import HttpResponse  
+from django.http import HttpResponse
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 
 # App Imports
 from products import views
 from products.sitemaps import ProductSitemap, StaticViewSitemap
-
-from django.http import HttpResponse
 
 from django_otp.admin import OTPAdminSite
 admin.site.__class__ = OTPAdminSite
@@ -26,13 +24,15 @@ from products.views import (
     remove_from_wishlist, trigger_import,
     get_pending_orders_api, update_order_status_api, sync_products_from_erp_api,
     download_invoice, export_products_csv, import_products_csv,
-    product_detail, update_cart_item, cancel_order, 
+    product_detail, update_cart_item, cancel_order,
     delete_address, edit_address, privacy_policy, terms_conditions, refund_policy,
     search_suggestions, check_delivery, terminate_all_sessions_view
 )
 
+
 def ping(request):
     return HttpResponse("OK", status=200)
+
 
 sitemaps = {
     'products': ProductSitemap,
@@ -45,12 +45,9 @@ urlpatterns = [
     # ==========================================
     path('secret-cgs-main/', admin.site.urls),
     path('ping/', ping, name='ping'),
+    path('keep-alive-ping/', lambda request: HttpResponse("CGS MART is Awake!"), name='keep_alive_ping'),
     path('secret-cgs-main/security/terminate-sessions/', terminate_all_sessions_view, name='terminate_sessions'),
-
-    # URLs की लिस्ट में कहीं भी डाल दें
     path('test-celery/', views.test_celery_view, name='test_celery'),
-
-    path('keep-alive-ping/', lambda request: HttpResponse("CGS MART is Awake!"), name='ping'),
 
     # ==========================================
     # 🏠 HOMEPAGE & CATALOG
@@ -69,13 +66,12 @@ urlpatterns = [
     path('add-to-cart/<int:product_id>/', add_to_cart, name='add_to_cart'),
     path('cart/', cart_detail, name='cart_detail'),
     path('cart/update/<str:item_key>/<str:action>/', update_cart_item, name='update_cart_item'),
-    
-    # 🛠️ FIX: Using cart_key to fix variant deletion bug
+
+    # 🛠️ AJAX Cart Endpoints
     path('cart-ajax/remove/<str:cart_key>/', views.remove_from_cart_ajax, name='remove_from_cart_ajax'),
-    
     path('cart-ajax/summary/', views.cart_summary_ajax, name='cart_summary_ajax'),
     path('cart-ajax/add/<int:product_id>/', views.add_to_cart_ajax, name='add_to_cart_ajax'),
-    
+
     path('checkout/', checkout_page, name='checkout'),
     path('check-coupon-ajax/', check_coupon_ajax, name='check_coupon_ajax'),
 
@@ -83,8 +79,8 @@ urlpatterns = [
     # 👤 AUTHENTICATION & PROFILE
     # ==========================================
     path('login/', auth_views.LoginView.as_view(
-        template_name='registration/login.html', 
-        next_page='profile', 
+        template_name='registration/login.html',
+        next_page='profile',
         redirect_authenticated_user=True
     ), name='login'),
     path('logout/', custom_logout, name='logout'),
@@ -94,20 +90,18 @@ urlpatterns = [
     path('reset-verify-otp/', views.reset_verify_otp, name='reset_verify_otp'),
     path('set-new-password/', views.set_new_password, name='set_new_password'),
     path('accounts/login/', views.login_request_view, name='login_request'),
-    
-    # 🌟 Fixed OTP Login View Name
     path('accounts/verify-otp-login/', views.verify_otp_login_view, name='verify_otp_login'),
-    
+
     path('staff/smart-cleanup/', views.smart_cleanup_dashboard, name='smart_cleanup'),
     path('staff/auto-assign-brands/', views.run_auto_assign_brands, name='auto_assign_brands'),
-    
+
     path('profile/', profile_page, name='profile'),
     path('profile/delete/', delete_account, name='delete_account'),
     path('profile/change-password/', auth_views.PasswordChangeView.as_view(
-        template_name='registration/password_change.html', 
+        template_name='registration/password_change.html',
         success_url='/profile/'
     ), name='password_change'),
-    
+
     path('delete-address/<int:address_id>/', delete_address, name='delete_address'),
     path('edit-address/<int:address_id>/', edit_address, name='edit_address'),
 
@@ -134,7 +128,7 @@ urlpatterns = [
     path('privacy-policy/', privacy_policy, name='privacy_policy'),
     path('terms-conditions/', terms_conditions, name='terms_conditions'),
     path('refund-policy/', refund_policy, name='refund_policy'),
-    
+
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('robots.txt', TemplateView.as_view(template_name="robots.txt", content_type="text/plain")),
     path('manifest.json', TemplateView.as_view(template_name="manifest.json", content_type="application/json")),
@@ -163,12 +157,14 @@ urlpatterns = [
     path('cgs-erp/products/add/', views.erp_add_product, name='erp_add_product'),
     path('cgs-erp/pos/', views.erp_pos_billing, name='erp_pos'),
     path('cgs-erp/ledger/', views.erp_customer_ledger, name='erp_ledger'),
+    path('cgs-erp/ledger/', views.erp_customer_ledger, name='erp_customer_ledger'),
     path('cgs-erp/settings/', views.erp_store_settings, name='erp_settings'),
+    path('cgs-erp/settings/', views.erp_store_settings, name='erp_store_settings'),
     path('cgs-erp/expenses/', views.erp_expenses, name='erp_expenses'),
     path('cgs-erp/supplier-ledger/', views.erp_supplier_ledger, name='erp_supplier_ledger'),
     path('cgs-erp/gst-report/', views.erp_gst_report, name='erp_gst_report'),
     path('cgs-erp/export-ca-report/', views.export_ca_accounting_report, name='export_ca_report'),
-    
+
     path('cgs-erp/order/update/<int:order_id>/', views.erp_update_order, name='erp_update_order'),
     path('erp/api/barcode-lookup/', views.erp_barcode_lookup, name='erp_barcode_lookup'),
     path('erp/ledger/whatsapp/<str:mobile>/', views.send_customer_khata_whatsapp, name='send_customer_khata_whatsapp'),

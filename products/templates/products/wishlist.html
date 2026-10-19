@@ -25,12 +25,17 @@
 
             <div class="flex-grow flex flex-col text-center">
                 <h5 class="text-sm text-gray-900 font-bold leading-snug line-clamp-2 mb-2">{{ item.product.name }}</h5>
-                <p class="font-extrabold text-lg text-green-600 mb-4">₹{{ item.product.price }}</p>
+                <p class="font-extrabold text-lg text-green-600 mb-4">
+                    ₹{% if item.product.variants.exists %}{{ item.product.variants.first.price }}{% else %}{{ item.product.price }}{% endif %}
+                </p>
                 
                 <div class="mt-auto space-y-2">
                     <!-- Add to Cart Form -->
                     <form method="POST" action="{% url 'add_to_cart' item.product.id %}" class="m-0">
                         {% csrf_token %}
+                        {% if item.product.variants.exists %}
+                            <input type="hidden" name="variant_id" value="{{ item.product.variants.first.id }}">
+                        {% endif %}
                         <button type="submit" class="w-full bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-white font-bold uppercase tracking-wide py-2.5 rounded-xl text-xs hover:-translate-y-0.5 shadow-md transition border border-[#D4AF37]/30">Add to Cart</button>
                     </form>
                     

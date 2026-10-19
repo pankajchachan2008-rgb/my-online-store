@@ -2,13 +2,16 @@
 {% load static %}
 
 {% block content %}
+<!-- Hidden CSRF token for AJAX Add to Cart / Buy Now calls -->
+{% csrf_token %}
+
 <!-- 🌟 1. ALPINE.JS DYNAMIC CAROUSEL -->
 {% if banners %}
-<div x-data="{ activeSlide: 0, slides: {{ banners|length }}, init() { setInterval(() => this.activeSlide = (this.activeSlide + 1) % this.slides, 5000) } }" class="relative w-full h-[350px] md:h-[45vh] mb-8 rounded-2xl overflow-hidden shadow-2xl">
+<div x-data="{ activeSlide: 0, slides: {{ banners|length }}, init() { if (this.slides > 1) { setInterval(() => this.activeSlide = (this.activeSlide + 1) % this.slides, 5000) } } }" class="relative w-full h-[350px] md:h-[45vh] mb-8 rounded-2xl overflow-hidden shadow-2xl">
     <div class="relative w-full h-full">
         {% for banner in banners %}
         <div x-show="activeSlide === {{ forloop.counter0 }}" x-transition.opacity.duration.700ms class="absolute inset-0">
-            <a href="{% if banner.category %}{% url 'home' %}?category={{ banner.category.id }}{% else %}#full-collection{% endif %}" class="block w-full h-full relative group">
+            <a href="{% if banner.category %}{% url 'home' %}?category={{ banner.category.id }}#full-collection{% else %}#full-collection{% endif %}" class="block w-full h-full relative group">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10 pointer-events-none"></div>
                 {% if banner.animated_file %}
                     <video autoplay loop muted playsinline class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
@@ -48,7 +51,7 @@
         <aside :class="filtersOpen ? 'block mb-6' : 'hidden'" class="lg:block w-full lg:w-1/4 xl:w-1/5">
             <div class="bg-white/45 backdrop-blur-xl border border-white/60 p-6 rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.05)] lg:sticky lg:top-32">
                 <h5 class="font-bold text-lg text-gray-900 mb-6 uppercase tracking-wider">Filters</h5>
-                <form id="filterForm" method="GET" action="{% url 'home' %}#full-collection" class="space-y-6">
+                <form id="filterForm" method="GET" action="{% url 'home' %}#full-collection" onsubmit="if(!window._keepPage){document.getElementById('pageInput').value=1;}" class="space-y-6">
                     {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
                     <input type="hidden" name="page" id="pageInput" value="{{ products.number|default:1 }}">
                     <div>
@@ -97,7 +100,47 @@
 
             <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-8">
                 {% for product in products %}
-                <div class="relative flex flex-col bg-white/40 backdrop-blur-2xl border border-white/70 rounded-2xl p-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:bg-white/75 hover:border-[#D4AF37]/50 hover:shadow-[0_25px_50px_rgba(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-400">
+                <div class="relative flex flex-col bg-white/40 backdrop-blur-2xl border border-white/70 rounded-2xl p-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:bg-white/75 hover:border-[#D4AF37]/50 hover:shadow-[0_25px_50px_rgba(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-400"
+                     x-data="{
+                         hasVariants: {% if product.variants.exists %}true{% else %}false{% endif %},
+                         variant: '{% if product.variants.exists %}{{ product.variants.first.id }}{% endif %}',
+                         displayPrice: '{% if product.variants.exists %}{{ product.variants.first.price }}{% else %}{{ product.price }}{% endif %}',
+                         qty: 1,
+                         loading: false,
+                         async submitCart(buyNow = false) {
+                             if (this.hasVariants && !this.variant) {
+                                 alert('Kripya pehle Size select karein!');
+                                 return;
+                             }
+                             this.loading = true;
+                             try {
+                                 const res = await fetch('{% url 'add_to_cart' product.id %}', {
+                                     method: 'POST',
+                                     credentials: 'same-origin',
+                                     headers: {
+                                         'Content-Type': 'application/json',
+                                         'X-Requested-With': 'XMLHttpRequest',
+                                         'X-CSRFToken': '{{ csrf_token }}'
+                                     },
+                                     body: JSON.stringify({
+                                         quantity: this.qty,
+                                         variant_id: this.variant || null
+                                     })
+                                 });
+                                 const d = await res.json();
+                                 this.loading = false;
+                                 window.dispatchEvent(new CustomEvent('cart-updated', {
+                                     detail: { items: d.items || 1, total: d.total || this.displayPrice }
+                                 }));
+                                 if (buyNow) {
+                                     window.location.href = '{% url 'checkout' %}';
+                                 }
+                             } catch (e) {
+                                 this.loading = false;
+                                 console.error('Cart error:', e);
+                             }
+                         }
+                     }">
                     
                     {% if product.stock and product.stock < 5 %}
                         <span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">Only {{ product.stock }} left</span>
@@ -115,57 +158,34 @@
                         {% endif %}
                     </a>
 
-                    <!-- FIXED ADD TO CART & BUY NOW FORM -->
-                    <div x-data="{ variant: '', qty: 1, loading: false }">
+                    <!-- FIXED ADD TO CART & BUY NOW CONTROLS -->
+                    <div>
                         {% if product.variants.exists %}
-                            <select x-model="variant" class="w-full bg-white/70 border border-gray-200 rounded-lg text-xs py-1.5 px-2 mb-2 focus:ring-[#D4AF37] outline-none">
-                                <option value="" disabled selected>Select Size</option>
-                                {% for variant in product.variants.all %}
-                                    <option value="{{ variant.id }}">{{ variant.size_name }} (₹{{ variant.price }})</option>
+                            <select x-model="variant" @change="displayPrice = $event.target.options[$event.target.selectedIndex].dataset.price" class="w-full bg-white/70 border border-gray-200 rounded-lg text-xs py-1.5 px-2 mb-2 focus:ring-[#D4AF37] outline-none cursor-pointer">
+                                {% for v in product.variants.all %}
+                                    <option value="{{ v.id }}" data-price="{{ v.price }}" {% if v.stock == 0 %}disabled{% endif %}>{{ v.size_name }} (₹{{ v.price }})</option>
                                 {% endfor %}
                             </select>
+                        {% else %}
+                            <div class="text-center w-full bg-white/50 text-gray-500 text-[11px] font-medium py-1 rounded-md mb-3">
+                                1 Unit
+                            </div>
                         {% endif %}
-
-                        <div class="text-center w-full bg-white/50 text-gray-500 text-[11px] font-medium py-1 rounded-md mb-3">
-                            {% if not product.variants.exists %}1 Unit{% else %}Select Variant{% endif %}
-                        </div>
                         
                         <div class="flex gap-2">
                             <!-- ADD TO CART BUTTON -->
                             <button type="button" 
-                                @click="
-                                    loading = true;
-                                    fetch('{% url 'add_to_cart' product.id %}', {
-                                        method: 'POST',
-                                        headers: {'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value},
-                                        body: JSON.stringify({quantity: qty, variant_id: variant})
-                                    })
-                                    .then(r => r.json())
-                                    .then(d => {
-                                        loading = false;
-                                        window.dispatchEvent(new CustomEvent('cart-updated', {detail: {items: d.items || 1, total: d.total || {{ product.price }}}}));
-                                    })
-                                    .catch(() => {
-                                        loading = false;
-                                        window.dispatchEvent(new CustomEvent('cart-updated', {detail: {items: 1, total: {{ product.price }}}}));
-                                    })
-                                "
+                                @click="submitCart(false)"
                                 :disabled="loading" 
                                 class="flex-1 bg-white/60 border border-blue-600/40 text-blue-700 font-bold text-xs py-2 rounded-lg hover:bg-blue-50 transition backdrop-blur-sm">
                                 <span x-show="!loading">Add</span>
                                 <span x-show="loading">⏳</span>
                             </button>
 
-                            <!-- BUY NOW BUTTON (Directly Adds and Goes to Checkout) -->
+                            <!-- BUY NOW BUTTON -->
                             <button type="button" 
-                                @click="
-                                    fetch('{% url 'add_to_cart' product.id %}', {
-                                        method: 'POST',
-                                        headers: {'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value},
-                                        body: JSON.stringify({quantity: qty, variant_id: variant})
-                                    }).then(() => { window.location.href = '{% url 'checkout' %}'; })
-                                    .catch(() => { window.location.href = '{% url 'checkout' %}'; })
-                                "
+                                @click="submitCart(true)"
+                                :disabled="loading"
                                 class="flex-1 bg-orange-400 text-gray-900 font-bold text-xs py-2 rounded-lg hover:bg-orange-500 transition shadow-sm">
                                 ⚡ Buy
                             </button>
@@ -174,7 +194,7 @@
 
                     <a href="{% url 'product_detail' product.id %}" class="block mt-3">
                         <div class="flex items-baseline gap-2 mb-1 flex-wrap">
-                            <span class="text-lg font-extrabold text-gray-900">₹{{ product.price }}</span>
+                            <span class="text-lg font-extrabold text-gray-900" x-text="'₹' + displayPrice">₹{{ product.price }}</span>
                             {% if product.mrp and product.mrp > product.price %}
                                 <span class="text-xs text-gray-500 line-through">₹{{ product.mrp }}</span>
                                 <span class="text-[11px] font-bold text-green-600">{{ product.discount_percentage }}% off</span>
@@ -197,15 +217,16 @@
             {% if products.has_other_pages %}
             <div class="flex justify-center items-center gap-3 my-8">
                 {% if products.has_previous %}
-                <button onclick="goToPage({{ products.previous_page_number }})" class="bg-white/80 border border-gray-200 text-gray-800 hover:bg-[#D4AF37] hover:text-white font-bold px-5 py-2.5 rounded-xl transition text-sm">&larr; Previous</button>
+                <button type="button" onclick="goToPage({{ products.previous_page_number }})" class="bg-white/80 border border-gray-200 text-gray-800 hover:bg-[#D4AF37] hover:text-white font-bold px-5 py-2.5 rounded-xl transition text-sm">&larr; Previous</button>
                 {% endif %}
                 <span class="bg-white/60 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 border border-gray-200">Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
                 {% if products.has_next %}
-                <button onclick="goToPage({{ products.next_page_number }})" class="bg-white/80 border border-gray-200 text-gray-800 hover:bg-[#D4AF37] hover:text-white font-bold px-5 py-2.5 rounded-xl transition text-sm">Next &rarr;</button>
+                <button type="button" onclick="goToPage({{ products.next_page_number }})" class="bg-white/80 border border-gray-200 text-gray-800 hover:bg-[#D4AF37] hover:text-white font-bold px-5 py-2.5 rounded-xl transition text-sm">Next &rarr;</button>
                 {% endif %}
             </div>
             <script>
                 function goToPage(pageNumber) {
+                    window._keepPage = true;
                     const form = document.getElementById('filterForm');
                     document.getElementById('pageInput').value = pageNumber;
                     form.submit();
@@ -248,8 +269,26 @@
     </div>
 </div>
 
-<!-- 🌟 FIXED STICKY CART BAR -->
-<div x-data="{ items: 0, total: 0, show: false }" @cart-updated.window="items = $event.detail.items; total = $event.detail.total; show = true" x-show="show" x-transition class="fixed bottom-[80px] lg:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-[350px] bg-slate-900/95 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl z-50 flex justify-between items-center text-white">
+<!-- 🌟 FIXED STICKY CART BAR (Auto-syncs on load & on Add to Cart) -->
+<div x-data="{
+         items: 0,
+         total: 0,
+         show: false,
+         init() {
+             fetch('{% url 'cart_summary_ajax' %}')
+                 .then(r => r.json())
+                 .then(d => {
+                     if (d.items && d.items > 0) {
+                         this.items = d.items;
+                         this.total = Number(d.total).toFixed(2);
+                         this.show = true;
+                     }
+                 }).catch(() => {});
+         }
+     }"
+     @cart-updated.window="items = $event.detail.items; total = Number($event.detail.total).toFixed(2); show = items > 0"
+     x-show="show" x-cloak x-transition
+     class="fixed bottom-[80px] lg:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-[350px] bg-slate-900/95 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl z-50 flex justify-between items-center text-white">
     <div class="flex items-center gap-3">
         <div class="relative text-2xl">🛒 <span x-text="items" class="absolute -top-2 -right-2 bg-orange-500 text-gray-900 text-[10px] font-extrabold w-5 h-5 flex items-center justify-center rounded-full"></span></div>
         <div class="font-semibold text-sm"><span x-text="items"></span> Items added <br><span class="text-orange-400">₹<span x-text="total"></span></span></div>

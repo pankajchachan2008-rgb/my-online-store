@@ -230,15 +230,34 @@ def product_detail(request, product_id):
 # ==========================================
 # 🛒 2. CART & CHECKOUT VIEWS
 # ==========================================
+@csrf_exempt
 @require_POST
 def add_to_cart(request, product_id):
+    """Handles both AJAX JSON requests (from product_detail.html) and standard HTML Form POSTs."""
     product = get_object_or_404(Product, id=product_id)
-    variant_id = request.POST.get('variant_id')
     cart = request.session.get('cart', {})
+    is_json = 'application/json' in (request.content_type or '')
+
+    if is_json:
+        try:
+            data = json.loads(request.body.decode('utf-8') or '{}')
+        except (json.JSONDecodeError, ValueError, TypeError):
+            data = {}
+        variant_id = data.get('variant_id') or None
+        try:
+            qty = max(1, int(data.get('quantity', 1)))
+        except (ValueError, TypeError):
+            qty = 1
+    else:
+        variant_id = request.POST.get('variant_id') or None
+        try:
+            qty = max(1, int(request.POST.get('quantity', 1)))
+        except (ValueError, TypeError):
+            qty = 1
 
     if variant_id:
         variant = get_object_or_404(ProductVariant, id=variant_id, product=product)
-        cart_key = f"{product_id}_{variant_id}"
+        cart_key = f"{product_id}_{variant.id}"
         item_name = f"{product.name} ({variant.size_name})"
         item_price = float(variant.price)
     else:
@@ -246,17 +265,24 @@ def add_to_cart(request, product_id):
         item_name = product.name
         item_price = float(product.price)
 
-    if cart_key in cart:
-        cart[cart_key]['quantity'] += 1
+    if cart_key in cart and isinstance(cart[cart_key], dict):
+        cart[cart_key]['quantity'] = int(cart[cart_key].get('quantity', 0)) + qty
+        cart[cart_key]['price'] = item_price
+        cart[cart_key]['name'] = item_name
     else:
-        cart[cart_key] = {'name': item_name, 'price': item_price, 'quantity': 1}
+        cart[cart_key] = {'name': item_name, 'price': item_price, 'quantity': qty}
 
     request.session['cart'] = cart
+    request.session.modified = True
+
+    if is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return cart_summary_ajax(request)
+
     if request.POST.get('buy_now'):
         return redirect('checkout')
 
-    messages.success(request, f"{item_name} cart mein add hua!")
-    return redirect('home')
+    messages.success(request, f"🛒 {item_name} cart mein add hua!")
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
 
 
 def cart_detail(request):
@@ -492,6 +518,8 @@ def checkout_page(request):
             send_brevo_api_email(f"Order Confirmation & Delivery OTP - Order #{order.id}", email_html, customer_email)
 
         request.session['cart'] = {}
+        request.session['last_order_id'] = order.id
+        request.session.modified = True
         return render(request, 'products/order_success.html', {'order': order, 'whatsapp_url': whatsapp_url})
 
     saved_addresses = Address.objects.filter(user=request.user) if request.user.is_authenticated else []
@@ -890,14 +918,21 @@ def contact_page(request):
     return render(request, 'products/contact.html')
 
 
-@login_required(login_url='/login/')
 def download_invoice(request, order_id):
-    if request.user.is_staff or request.user.is_superuser:
+    if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+        order = get_object_or_404(Order, id=order_id)
+    elif request.user.is_authenticated:
+        order = get_object_or_404(Order, id=order_id, user=request.user)
+    elif request.session.get('last_order_id') == int(order_id):
         order = get_object_or_404(Order, id=order_id)
     else:
-        order = get_object_or_404(Order, id=order_id, user=request.user)
+        return redirect('login')
 
-    items = OrderItem.objects.filter(order=order)
+    items = list(OrderItem.objects.filter(order=order))
+    for item in items:
+        base_name = item.product_name.split(' (')[0].strip()
+        prod_obj = Product.objects.filter(name__iexact=base_name).first()
+        item.hsn_code = getattr(prod_obj, 'hsn_code', None) or '-'
     store = StoreSetting.objects.first()
     bill_no = f"#INV-2026-{order.id}"
 
@@ -986,10 +1021,16 @@ def delete_address(request, address_id):
 def edit_address(request, address_id):
     address = get_object_or_404(Address, id=address_id, user=request.user)
     if request.method == 'POST':
-        address.name = request.POST.get('name')
-        address.mobile_number = request.POST.get('mobile')
-        address.full_address = request.POST.get('full_address')
+        address.name = request.POST.get('name', address.name)
+        address.mobile_number = request.POST.get('mobile', address.mobile_number)
+        address.pincode = request.POST.get('pincode', address.pincode)
+        address.locality = request.POST.get('locality', address.locality)
+        address.city = request.POST.get('city', address.city)
+        address.state = request.POST.get('state', address.state)
+        address.address_type = request.POST.get('address_type', address.address_type)
+        address.full_address = request.POST.get('full_address', address.full_address)
         address.save()
+        messages.success(request, "✅ Address successfully update ho gaya!")
         return redirect('profile')
     return render(request, 'products/edit_address.html', {'address': address})
 
@@ -1065,6 +1106,7 @@ def ai_assistant_chat(request):
 # ==========================================
 # 🚚 7. DELIVERY & TRACKING
 # ==========================================
+@csrf_exempt
 @ratelimit(key='ip', rate='15/m', block=True)
 def check_delivery(request):
     if request.method == "POST":
@@ -1107,13 +1149,13 @@ def track_order_page(request):
                 .strip()
             )
             if clean_id.isdigit():
-                query &= Q(id=int(clean_id))
+                query &= (Q(id=int(clean_id)) | Q(order_id__iexact=clean_id))
             else:
-                query &= Q(id=-1)
+                query &= Q(order_id__iexact=clean_id)
         if mobile:
-            query &= Q(mobile_number=mobile)
+            query &= Q(mobile_number__icontains=mobile[-10:])
         if order_id or mobile:
-            order = Order.objects.filter(query).first()
+            order = Order.objects.filter(query).order_by('-created_at').first()
     return render(request, 'products/track_order.html', {'order': order, 'searched': searched})
 
 
@@ -1205,9 +1247,14 @@ def export_products_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="Bulk_Update.csv"'
     writer = csv.writer(response)
-    writer.writerow(['ID', 'Name', 'Category_ID', 'Category_Name', 'Price'])
-    for p in Product.objects.all():
-        writer.writerow([p.id, p.name, p.category.id if p.category else '', p.category.name if p.category else '', p.price])
+    writer.writerow(['ID', 'SKU', 'Name', 'Category_ID', 'Category_Name', 'MRP', 'Price', 'Stock'])
+    for p in Product.objects.all().order_by('id'):
+        writer.writerow([
+            p.id, p.sku or '', p.name,
+            p.category.id if p.category else '',
+            p.category.name if p.category else '',
+            p.mrp or '', p.price, p.stock
+        ])
     return response
 
 
@@ -1216,15 +1263,53 @@ def import_products_csv(request):
     if not request.user.is_superuser:
         return redirect('home')
     if request.method == 'POST' and request.FILES.get('csv_file'):
-        reader = csv.DictReader(request.FILES['csv_file'].read().decode('utf-8').splitlines())
+        reader = csv.DictReader(request.FILES['csv_file'].read().decode('utf-8-sig').splitlines())
+        updated = 0
         for row in reader:
-            if row.get('SKU'):
-                Product.objects.update_or_create(
-                    sku=row.get('SKU'),
-                    defaults={'name': row.get('Product_Name', 'Unknown'), 'price': row.get('Price') or 0}
+            p_id = (row.get('ID') or '').strip()
+            sku = (row.get('SKU') or '').strip()
+            name = (row.get('Name') or row.get('Product_Name') or '').strip()
+            price_val = row.get('Price')
+            mrp_val = row.get('MRP')
+            stock_val = row.get('Stock')
+
+            product = None
+            if p_id.isdigit():
+                product = Product.objects.filter(id=int(p_id)).first()
+            elif sku:
+                product = Product.objects.filter(sku=sku).first()
+
+            if product:
+                if name:
+                    product.name = name
+                if price_val not in (None, ''):
+                    try:
+                        product.price = float(price_val)
+                    except ValueError:
+                        pass
+                if mrp_val not in (None, ''):
+                    try:
+                        product.mrp = float(mrp_val)
+                    except ValueError:
+                        pass
+                if stock_val not in (None, ''):
+                    try:
+                        product.stock = int(float(stock_val))
+                    except ValueError:
+                        pass
+                product.save()
+                updated += 1
+            elif sku and name:
+                Product.objects.create(
+                    sku=sku,
+                    name=name,
+                    price=float(price_val) if price_val else 0,
+                    mrp=float(mrp_val) if mrp_val else None,
+                    stock=int(float(stock_val)) if stock_val else 0
                 )
-        messages.success(request, "✅ Import Complete!")
-        return redirect('home')
+                updated += 1
+        messages.success(request, f"✅ Import Complete! {updated} products updated.")
+        return redirect('import_products')
     return render(request, 'products/import_csv.html')
 
 
@@ -1460,7 +1545,7 @@ def erp_supplier_ledger(request):
             description=request.POST.get('description')
         )
         messages.success(request, f"✅ {supplier_obj.name} ke khate mein entry add ho gayi!")
-        return redirect(f"/erp/supplier-ledger/?supplier_id={supplier_obj.id}")
+        return redirect(f"{reverse('erp_supplier_ledger')}?supplier_id={supplier_obj.id}")
 
     if suppliers.exists():
         selected_supplier = get_object_or_404(Supplier, id=selected_supplier_id) if selected_supplier_id else suppliers.first()
@@ -1638,6 +1723,7 @@ def terminate_all_sessions_view(request):
     return redirect('admin:index')
 
 
+@csrf_exempt
 @ratelimit(key='ip', rate='15/m', block=True)
 def check_delivery_api(request):
     """Unified delivery check endpoint (checks DB first, then fallback pincodes)."""

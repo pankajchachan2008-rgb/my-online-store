@@ -187,7 +187,7 @@
                 <div class="info-text">
                     <strong>Invoice No:</strong> {{ bill_no }}<br>
                     <strong>Date:</strong> {{ order.created_at|date:"d M Y, h:i A" }}<br>
-                    <strong>Payment Mode:</strong> Online / COD<br>
+                    <strong>Payment Mode:</strong> {{ order.payment_mode|default:"Online / COD" }}<br>
                     <strong>Status:</strong> <span style="font-weight:bold;">{{ order.status }}</span>
                 </div>
             </td>
@@ -212,11 +212,11 @@
             <tr class="{% cycle '' 'alt-row' %}">
                 <td class="center-align">{{ forloop.counter }}</td>
                 <td><strong>{{ item.product_name }}</strong></td>
-                <td class="center-align">{{ item.product.hsn_code|default:"-" }}</td>
+                <td class="center-align">{{ item.hsn_code|default:item.product.hsn_code|default:"-" }}</td>
                 <td class="center-align">{{ item.quantity }}</td>
                 <td class="right-align">₹ {{ item.price }}</td>
                 <td class="center-align">18%</td>
-                <td class="right-align">₹ {% widthratio item.price 1 item.quantity %}</td>
+                <td class="right-align">₹ {{ item.total_price|floatformat:2 }}</td>
             </tr>
             {% empty %}
             <tr>

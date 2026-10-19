@@ -15,7 +15,7 @@
         <form method="GET" action="{% url 'track_order' %}" class="flex flex-col md:flex-row gap-4 items-end">
             <div class="w-full md:w-5/12">
                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Order ID</label>
-                <input type="text" name="order_id" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" placeholder="e.g. 12 or #INV-2026-12" value="{{ request.GET.order_id|default:'' }}">
+                <input type="text" name="order_id" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition" placeholder="e.g. 12, CG-123456 or #INV-2026-12" value="{{ request.GET.order_id|default:'' }}">
             </div>
             <div class="w-full md:w-5/12">
                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Mobile Number</label>
@@ -32,7 +32,7 @@
             <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-8">
                 <div class="flex justify-between items-center flex-wrap border-b border-gray-100 pb-5 mb-6 gap-4">
                     <div>
-                        <h5 class="font-bold text-xl text-gray-900 mb-1">Order #{{ order.id }}</h5>
+                        <h5 class="font-bold text-xl text-gray-900 mb-1">Order #{{ order.id }} {% if order.order_id %}<span class="text-sm text-gray-500">({{ order.order_id }})</span>{% endif %}</h5>
                         <span class="text-gray-500 text-sm">Placed on: {{ order.created_at|date:"M d, Y - H:i" }}</span>
                     </div>
                     <div>
@@ -59,6 +59,11 @@
 
                 <!-- Live Timeline Status -->
                 <h6 class="font-bold text-gray-900 mb-6 font-['Jost'] text-lg">📍 Delivery Timeline</h6>
+                {% if order.status == 'Cancelled' %}
+                <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center font-bold">
+                    ❌ This order was cancelled.
+                </div>
+                {% else %}
                 <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
                     
                     <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
@@ -70,21 +75,30 @@
                     </div>
 
                     <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white {% if order.status != 'Pending' %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-400{% endif %} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">✓</div>
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white {% if order.status in 'Processing,Out for Delivery,Dispatched,Completed' %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-400{% endif %} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">📦</div>
                         <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-100 bg-white shadow-sm">
-                            <div class="font-bold {% if order.status != 'Pending' %}text-gray-900{% else %}text-gray-400{% endif %} mb-1">Packed at Nohar Hub</div>
+                            <div class="font-bold {% if order.status in 'Processing,Out for Delivery,Dispatched,Completed' %}text-gray-900{% else %}text-gray-400{% endif %} mb-1">Packed at Nohar Hub</div>
                             <div class="text-xs text-gray-500">Items are verified and securely packed.</div>
                         </div>
                     </div>
 
                     <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white {% if order.status == 'Completed' or order.status == 'Dispatched' %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-400{% endif %} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">⚡</div>
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white {% if order.status in 'Out for Delivery,Dispatched,Completed' %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-400{% endif %} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">⚡</div>
                         <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-100 bg-white shadow-sm">
-                            <div class="font-bold {% if order.status == 'Completed' or order.status == 'Dispatched' %}text-gray-900{% else %}text-gray-400{% endif %} mb-1">Out for Delivery</div>
+                            <div class="font-bold {% if order.status in 'Out for Delivery,Dispatched,Completed' %}text-gray-900{% else %}text-gray-400{% endif %} mb-1">Out for Delivery</div>
                             <div class="text-xs text-gray-500">Our local delivery executive is on the way!</div>
                         </div>
                     </div>
+
+                    <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white {% if order.status == 'Completed' %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-400{% endif %} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">🏠</div>
+                        <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-100 bg-white shadow-sm">
+                            <div class="font-bold {% if order.status == 'Completed' %}text-gray-900{% else %}text-gray-400{% endif %} mb-1">Delivered</div>
+                            <div class="text-xs text-gray-500">Order delivered via OTP verification.</div>
+                        </div>
+                    </div>
                 </div>
+                {% endif %}
 
                 <div class="mt-10 pt-6 border-t border-gray-100 flex justify-between items-center">
                     <span class="font-bold text-gray-500 uppercase tracking-widest text-sm">Total Amount</span>

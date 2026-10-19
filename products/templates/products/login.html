@@ -3,24 +3,38 @@
 <div class="min-h-[70vh] flex items-center justify-center py-12 px-4 font-['Inter']">
     <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-8 md:p-12 w-full max-w-[450px]">
         <div class="text-center mb-8">
-            <h2 class="font-['Jost'] text-3xl font-extrabold text-[#0c0d12] mb-2">Create an Account</h2>
-            <p class="text-gray-500 text-sm">Join CGS MART for a premium experience.</p>
+            <h2 class="font-['Jost'] text-3xl font-extrabold text-[#0c0d12] mb-2">Welcome Back</h2>
+            <p class="text-gray-500 text-sm">Login to your CGS MART account</p>
         </div>
+
+        {% if messages %}
+            <div class="mb-5 space-y-2">
+                {% for message in messages %}
+                    <div class="p-3 rounded-xl text-sm font-semibold text-center {% if message.tags == 'error' %}bg-red-50 text-red-600 border border-red-200{% else %}bg-green-50 text-green-700 border border-green-200{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <form method="post" class="space-y-5">
             {% csrf_token %}
-            <!-- Django Form Fields rendered with Tailwind utilities inside the block -->
             <div class="[&>p>label]:block [&>p>label]:text-xs [&>p>label]:font-bold [&>p>label]:text-gray-500 [&>p>label]:uppercase [&>p>label]:tracking-wide [&>p>label]:mb-2 [&>p>input]:w-full [&>p>input]:bg-white [&>p>input]:border [&>p>input]:border-gray-300 [&>p>input]:rounded-xl [&>p>input]:px-4 [&>p>input]:py-3.5 [&>p>input]:text-sm [&>p>input]:focus:ring-2 [&>p>input]:focus:ring-[#D4AF37] [&>p>input]:outline-none [&>p>input]:transition">
                 {{ form.as_p }}
             </div>
+
+            <div class="flex justify-between items-center text-xs font-semibold">
+                <a href="{% url 'login_request' %}" class="text-blue-700 hover:underline">🔑 Login with Email OTP</a>
+                <a href="{% url 'forgot_password' %}" class="text-gray-500 hover:text-gray-900">Forgot Password?</a>
+            </div>
             
             <button type="submit" class="w-full bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] font-bold uppercase tracking-widest py-4 rounded-xl shadow-[0_10px_20px_rgba(12,13,18,0.15)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-[#D4AF37]/30 mt-2">
-                Sign Up
+                Login
             </button>
         </form>
         
         <p class="mt-6 text-center text-sm text-gray-500 font-medium">
-            Pehle se account hai? <a href="{% url 'login' %}" class="text-[#0c0d12] font-bold hover:text-[#D4AF37] transition">Login karein</a>
+            Naya account banana hai? <a href="{% url 'register' %}" class="text-[#0c0d12] font-bold hover:text-[#D4AF37] transition">Sign Up karein</a>
         </p>
     </div>
 </div>

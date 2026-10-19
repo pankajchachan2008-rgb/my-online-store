@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="max-w-[1200px] mx-auto px-4 py-8 font-['Inter']" x-data="{ activeTab: 'profile' }">
+<div class="max-w-[1200px] mx-auto px-4 py-8 font-['Inter']" x-data="{ activeTab: window.location.hash ? window.location.hash.substring(1) : 'profile' }">
     <div class="flex flex-col lg:flex-row gap-6">
         
         <!-- SIDEBAR -->
@@ -19,7 +19,7 @@
                     </div>
                     <div>
                         <span class="text-xs text-gray-500 font-medium">Hello,</span><br>
-                        <strong class="text-lg text-gray-900">{{ user.first_name }} {{ user.last_name }}</strong>
+                        <strong class="text-lg text-gray-900">{{ user.first_name|default:user.username }} {{ user.last_name }}</strong>
                     </div>
                 </div>
                 
@@ -36,17 +36,17 @@
             
             <!-- Navigation Menu -->
             <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
-                <button @click="activeTab = 'profile'" :class="activeTab === 'profile' ? 'bg-blue-50 text-[#0c0d12] border-l-4 border-[#0c0d12] font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'" class="px-6 py-4 text-left text-sm uppercase tracking-wider transition duration-200">
+                <button @click="activeTab = 'profile'; window.location.hash = 'profile'" :class="activeTab === 'profile' ? 'bg-blue-50 text-[#0c0d12] border-l-4 border-[#0c0d12] font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'" class="px-6 py-4 text-left text-sm uppercase tracking-wider transition duration-200">
                     👤 Profile Information
                 </button>
-                <button @click="activeTab = 'orders'" :class="activeTab === 'orders' ? 'bg-blue-50 text-[#0c0d12] border-l-4 border-[#0c0d12] font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'" class="px-6 py-4 text-left text-sm uppercase tracking-wider transition duration-200 border-t border-gray-100">
+                <button @click="activeTab = 'orders'; window.location.hash = 'orders'" :class="activeTab === 'orders' ? 'bg-blue-50 text-[#0c0d12] border-l-4 border-[#0c0d12] font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'" class="px-6 py-4 text-left text-sm uppercase tracking-wider transition duration-200 border-t border-gray-100">
                     📦 My Orders
                 </button>
-                <button @click="activeTab = 'addresses'" :class="activeTab === 'addresses' ? 'bg-blue-50 text-[#0c0d12] border-l-4 border-[#0c0d12] font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'" class="px-6 py-4 text-left text-sm uppercase tracking-wider transition duration-200 border-t border-gray-100">
+                <button @click="activeTab = 'addresses'; window.location.hash = 'addresses'" :class="activeTab === 'addresses' ? 'bg-blue-50 text-[#0c0d12] border-l-4 border-[#0c0d12] font-bold' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'" class="px-6 py-4 text-left text-sm uppercase tracking-wider transition duration-200 border-t border-gray-100">
                     📍 Manage Addresses
                 </button>
-                <a href="{% url 'password_change' %}" class="px-6 py-4 text-left text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900 uppercase tracking-wider transition duration-200 border-t border-gray-100">
-                    🔐 Change Password
+                <a href="{% url 'forgot_password' %}" class="px-6 py-4 text-left text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-900 uppercase tracking-wider transition duration-200 border-t border-gray-100">
+                    🔐 Reset / Change Password
                 </a>
                 <a href="{% url 'logout' %}" class="px-6 py-4 text-left text-sm text-red-500 hover:bg-red-50 hover:text-red-700 font-bold uppercase tracking-wider transition duration-200 border-t border-gray-100">
                     🚪 Logout
@@ -152,9 +152,15 @@
                                 <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">TOTAL</span><br>
                                 <strong class="text-gray-900 text-sm">₹{{ order.total_amount }}</strong>
                             </div>
+                            {% if order.delivery_otp and order.status != 'Completed' and order.status != 'Cancelled' %}
+                            <div>
+                                <span class="text-xs text-blue-600 font-bold uppercase tracking-wider">DELIVERY OTP</span><br>
+                                <strong class="text-blue-900 text-sm tracking-widest">{{ order.delivery_otp }}</strong>
+                            </div>
+                            {% endif %}
                             <div class="text-right">
                                 <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">ORDER ID</span><br>
-                                <strong class="text-[#0c0d12] text-sm">#{{ order.order_id }}</strong>
+                                <strong class="text-[#0c0d12] text-sm">#{{ order.id }} {% if order.order_id %}({{ order.order_id }}){% endif %}</strong>
                             </div>
                         </div>
                         
@@ -167,7 +173,7 @@
                                 {% if order.status != 'Cancelled' %}
                                     <!-- Progress Line -->
                                     <div class="absolute top-1/2 left-[10%] h-1 bg-green-500 -translate-y-1/2 rounded-full z-10 transition-all duration-500" 
-                                        style="width: {% if order.status == 'Pending' %}0%{% elif order.status == 'Processing' %}33%{% elif order.status == 'Out for Delivery' %}66%{% elif order.status == 'Completed' %}100%{% endif %};">
+                                        style="width: {% if order.status == 'Pending' %}0%{% elif order.status == 'Processing' %}27%{% elif order.status == 'Out for Delivery' or order.status == 'Dispatched' %}54%{% elif order.status == 'Completed' %}80%{% endif %};">
                                     </div>
                                     
                                     <div class="relative z-20 flex justify-between">
@@ -178,13 +184,13 @@
                                         </div>
                                         <!-- Step 2 -->
                                         <div class="text-center w-1/4">
-                                            <div class="w-8 h-8 mx-auto {% if order.status in 'Processing,Out for Delivery,Completed' %}bg-green-500 text-white ring-green-100{% else %}bg-gray-200 text-gray-400 ring-white{% endif %} rounded-full flex items-center justify-center text-sm font-bold ring-4 mb-2 transition-colors">📦</div>
-                                            <div class="text-xs font-bold {% if order.status in 'Processing,Out for Delivery,Completed' %}text-gray-900{% else %}text-gray-400{% endif %}">Processing</div>
+                                            <div class="w-8 h-8 mx-auto {% if order.status in 'Processing,Out for Delivery,Dispatched,Completed' %}bg-green-500 text-white ring-green-100{% else %}bg-gray-200 text-gray-400 ring-white{% endif %} rounded-full flex items-center justify-center text-sm font-bold ring-4 mb-2 transition-colors">📦</div>
+                                            <div class="text-xs font-bold {% if order.status in 'Processing,Out for Delivery,Dispatched,Completed' %}text-gray-900{% else %}text-gray-400{% endif %}">Processing</div>
                                         </div>
                                         <!-- Step 3 -->
                                         <div class="text-center w-1/4">
-                                            <div class="w-8 h-8 mx-auto {% if order.status in 'Out for Delivery,Completed' %}bg-green-500 text-white ring-green-100{% else %}bg-gray-200 text-gray-400 ring-white{% endif %} rounded-full flex items-center justify-center text-sm font-bold ring-4 mb-2 transition-colors">🚚</div>
-                                            <div class="text-xs font-bold {% if order.status in 'Out for Delivery,Completed' %}text-gray-900{% else %}text-gray-400{% endif %}">Shipped</div>
+                                            <div class="w-8 h-8 mx-auto {% if order.status in 'Out for Delivery,Dispatched,Completed' %}bg-green-500 text-white ring-green-100{% else %}bg-gray-200 text-gray-400 ring-white{% endif %} rounded-full flex items-center justify-center text-sm font-bold ring-4 mb-2 transition-colors">🚚</div>
+                                            <div class="text-xs font-bold {% if order.status in 'Out for Delivery,Dispatched,Completed' %}text-gray-900{% else %}text-gray-400{% endif %}">Shipped</div>
                                         </div>
                                         <!-- Step 4 -->
                                         <div class="text-center w-1/4">
@@ -233,8 +239,8 @@
                             <div class="bg-slate-50 border border-gray-100 p-4 rounded-xl">
                                 {% for item in order.items.all %}
                                 <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-200 last:border-0 last:mb-0 last:pb-0">
-                                    <span class="text-sm text-gray-700"><strong class="text-gray-900">{{ item.quantity }} x</strong> {{ item.product_name }}</span>
-                                    <span class="font-bold text-gray-900 text-sm">₹{{ item.price }}</span>
+                                    <span class="text-sm text-gray-700"><strong class="text-gray-900">{{ item.quantity }} x</strong> {{ item.product_name }} <span class="text-xs text-gray-400">(₹{{ item.price }} each)</span></span>
+                                    <span class="font-bold text-gray-900 text-sm">₹{{ item.total_price|floatformat:2 }}</span>
                                 </div>
                                 {% empty %}
                                     <span class="text-gray-400 text-sm">No items in this order.</span>
@@ -279,7 +285,7 @@
                     <div x-show="openAddAddress" x-collapse class="mb-6">
                         <div class="bg-slate-50 border border-gray-200 rounded-2xl p-6 shadow-inner">
                             <h6 class="font-bold text-xs text-gray-500 uppercase tracking-wider mb-4">ADD A NEW ADDRESS</h6>
-                            <form method="POST" action="{% url 'profile' %}" class="space-y-4">
+                            <form method="POST" action="{% url 'profile' %}#addresses" class="space-y-4">
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="add_address">
                                 

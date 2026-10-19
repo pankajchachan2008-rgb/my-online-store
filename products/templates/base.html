@@ -428,8 +428,9 @@
                         <strong>& Wishlist</strong>
                     </a>
                     
-                    <a href="{% url 'cart_detail' %}" class="nav-action-btn d-flex flex-row align-items-center gap-1">
+                    <a href="{% url 'cart_detail' %}" class="nav-action-btn d-flex flex-row align-items-center gap-1 position-relative">
                         <span style="font-size: 1.8rem; line-height: 1; display: block !important;">🛒</span>
+                        <span id="headerCartBadge" class="badge rounded-pill" style="background-color: var(--accent-gold); color: #0c0d12; font-size: 0.7rem; font-weight: 800; display: none;">0</span>
                         <strong>Cart</strong>
                     </a>
                 </div>
@@ -617,8 +618,8 @@
         <a href="{% url 'view_wishlist' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'view_wishlist' %}active{% endif %}">
             <span class="nav-icon">❤️</span><span>Wishlist</span>
         </a>
-        <a href="{% url 'cart_detail' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}">
-            <span class="nav-icon">🛒</span><span>Cart</span>
+        <a href="{% url 'cart_detail' %}" class="nav-item-bottom position-relative {% if request.resolver_match.url_name == 'cart_detail' %}active{% endif %}">
+            <span class="nav-icon position-relative">🛒<span id="mobileCartBadge" class="badge rounded-pill position-absolute top-0 start-100 translate-middle" style="background-color: var(--accent-gold); color: #0c0d12; font-size: 0.6rem; font-weight: 800; display: none;">0</span></span><span>Cart</span>
         </a>
         <a href="{% url 'profile' %}" class="nav-item-bottom {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
             <span class="nav-icon">👤</span><span>Profile</span>
@@ -967,12 +968,23 @@
                     const cartBar = document.getElementById("stickyCart");
                     const cartBadge = document.getElementById("cartBadge");
                     const cartSummary = document.getElementById("cartSummary");
+                    const headerBadge = document.getElementById("headerCartBadge");
+                    const mobileBadge = document.getElementById("mobileCartBadge");
+
+                    if (headerBadge) {
+                        headerBadge.textContent = items || 0;
+                        headerBadge.style.display = items > 0 ? "inline-block" : "none";
+                    }
+                    if (mobileBadge) {
+                        mobileBadge.textContent = items || 0;
+                        mobileBadge.style.display = items > 0 ? "inline-block" : "none";
+                    }
 
                     if (cartBar && cartBadge && cartSummary) {
                         if (items > 0) {
                             cartBar.style.display = "flex";
                             cartBadge.textContent = items;
-                            cartSummary.textContent = `${items} Items | ₹${parseFloat(total).toFixed(2)}`;
+                            cartSummary.textContent = `${items} Items | ₹${parseFloat(total || 0).toFixed(2)}`;
                         } else {
                             cartBar.style.display = "none";
                         }
@@ -987,6 +999,12 @@
                 }
 
                 refreshCartBar();
+
+                window.addEventListener("cart-updated", function (e) {
+                    if (e.detail) {
+                        updateCartBar(e.detail.items, e.detail.total);
+                    }
+                });
 
                 document.querySelectorAll(".add-to-cart-form").forEach((form) => {
                     if (form.dataset.bound) return;
