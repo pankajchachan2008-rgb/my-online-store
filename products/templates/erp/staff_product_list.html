@@ -10,7 +10,7 @@
     <div class="max-w-7xl mx-auto">
         
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+        <div class="flex flex-wrap justify-between items-center gap-4 mb-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
             <div>
                 <h2 class="text-2xl font-black text-slate-900">Data Entry Operator Panel</h2>
                 <p class="text-slate-500 text-sm mt-1">Yahan se aap products ke Rates, MRP, Stock aur Photos update kar sakte hain.</p>
@@ -36,6 +36,9 @@
             <form method="GET" class="flex gap-3">
                 <input type="text" name="search" value="{{ search_query }}" placeholder="Product ka naam search karein..." class="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                 <button type="submit" class="bg-slate-900 text-white font-bold px-6 py-2.5 rounded-xl text-sm hover:bg-slate-800 transition">Search</button>
+                {% if search_query %}
+                    <a href="{% url 'staff_product_list' %}" class="bg-slate-100 text-slate-600 border border-slate-200 font-bold px-5 py-2.5 rounded-xl text-sm hover:bg-slate-200 transition">Clear</a>
+                {% endif %}
             </form>
         </div>
 
@@ -80,8 +83,7 @@
                             {% endif %}
                         </td>
                         <td class="p-4 text-center">
-                            <!-- 🌟 NAYA LINK: Isme search_query judi hui hai -->
-                            <a href="{% url 'staff_product_edit' product.id %}{% if search_query %}?search={{ search_query }}{% endif %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">Edit</a>
+                            <a href="{% url 'staff_product_edit' product.id %}{% if search_query %}?search={{ search_query|urlencode }}{% endif %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition">Edit</a>
                         </td>
                     </tr>
                     {% empty %}

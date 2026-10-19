@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <title>Supplier Khata - CGSMART ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>@media print { .no-print { display: none !important; } .main-content { margin-left: 0 !important; padding: 0 !important; } }</style>
 </head>
-<body class="bg-slate-50 font-['Inter'] text-slate-800 antialiased h-screen overflow-hidden flex">
+<body class="bg-slate-50 font-['Inter'] text-slate-800 antialiased h-screen overflow-hidden flex" x-data="{ showAddSupplier: false }">
 
     <!-- SIDEBAR -->
     <div class="no-print w-[260px] bg-slate-900 text-white flex-shrink-0 h-screen py-6 shadow-2xl z-[100] overflow-y-auto">
@@ -16,8 +17,11 @@
             <a href="{% url 'erp_dashboard' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📊 Dashboard</a>
             <a href="{% url 'erp_products' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">🛍️ Product Master</a>
             <a href="{% url 'erp_pos' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">🧾 Billing & POS</a>
-            <a href="{% url 'erp_expenses' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📉 Expense Tracker</a>
+            <a href="{% url 'erp_ledger' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📒 Customer Ledger</a>
             <a href="{% url 'erp_supplier_ledger' %}" class="px-6 py-3.5 text-sm font-medium text-white bg-white/10 border-l-4 border-[#D4AF37] transition">🏢 Supplier Khata</a>
+            <a href="{% url 'erp_expenses' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📉 Expense Tracker</a>
+            <a href="{% url 'erp_gst_report' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📑 GST Report</a>
+            <a href="{% url 'erp_settings' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">⚙️ Store Settings</a>
         </nav>
     </div>
 
@@ -43,8 +47,26 @@
                 <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5 flex flex-col h-[calc(100vh-160px)]">
                     <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
                         <h5 class="font-bold text-slate-800">Select Supplier</h5>
-                        <a href="/admin/products/supplier/add/" target="_blank" class="text-xs font-bold bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition">+ Add New</a>
+                        <button type="button" @click="showAddSupplier = !showAddSupplier" class="text-xs font-bold bg-blue-50 text-blue-600 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition">+ Add New</button>
                     </div>
+
+                    <!-- Inline Add Supplier Form -->
+                    <div x-show="showAddSupplier" style="display: none;" class="mb-4 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <h6 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-3">Add New Supplier</h6>
+                        <form method="POST" action="{% url 'erp_supplier_ledger' %}" class="space-y-3">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="add_supplier">
+                            <input type="text" name="name" placeholder="Supplier Name *" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="company_name" placeholder="Company / Firm Name" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="mobile_number" placeholder="Mobile Number" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="address" placeholder="City / Address" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500">
+                            <div class="flex gap-2">
+                                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-xs transition">Save Supplier</button>
+                                <button type="button" @click="showAddSupplier = false" class="px-3 py-2 text-xs font-bold text-slate-500 hover:text-slate-800">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
                     <div class="overflow-y-auto pr-2 space-y-2 flex-1">
                         {% for supp in suppliers %}
                         <a href="?supplier_id={{ supp.id }}" class="block p-3 rounded-xl border {% if selected_supplier.id == supp.id %}bg-blue-50 border-blue-300 shadow-sm{% else %}bg-white border-slate-100 hover:border-slate-300 hover:bg-slate-50{% endif %} transition">
@@ -52,7 +74,7 @@
                             <div class="text-[11px] font-medium mt-1 {% if selected_supplier.id == supp.id %}text-blue-600{% else %}text-slate-500{% endif %}">{{ supp.company_name|default:"Individual" }}</div>
                         </a>
                         {% empty %}
-                        <div class="text-center py-6 text-slate-400 text-sm font-medium">Koi Supplier nahi mila. Naya add karein.</div>
+                        <div class="text-center py-6 text-slate-400 text-sm font-medium">Koi Supplier nahi mila. "+ Add New" par click karein.</div>
                         {% endfor %}
                     </div>
                 </div>
@@ -63,7 +85,7 @@
                 <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 flex flex-col h-auto xl:h-[calc(100vh-160px)]">
                     {% if selected_supplier %}
                         <div class="border-b border-slate-100 pb-4 mb-5">
-                            <h4 class="font-extrabold text-2xl text-slate-900 mb-1">{{ selected_supplier.name }} <span class="text-slate-400 font-medium text-lg">({{ selected_supplier.company_name }})</span></h4>
+                            <h4 class="font-extrabold text-2xl text-slate-900 mb-1">{{ selected_supplier.name }} {% if selected_supplier.company_name %}<span class="text-slate-400 font-medium text-lg">({{ selected_supplier.company_name }})</span>{% endif %}</h4>
                             <div class="text-xs text-slate-500 font-medium flex items-center gap-3">
                                 <span>📞 {{ selected_supplier.mobile_number|default:"N/A" }}</span>
                                 <span>📍 {{ selected_supplier.address|default:"N/A" }}</span>
@@ -90,6 +112,7 @@
                         <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl mb-6 no-print">
                             <form method="POST" action="{% url 'erp_supplier_ledger' %}" class="flex flex-wrap gap-4 items-end">
                                 {% csrf_token %}
+                                <input type="hidden" name="action" value="add_entry">
                                 <input type="hidden" name="supplier_id" value="{{ selected_supplier.id }}">
                                 
                                 <div class="flex-1 min-w-[150px]">

@@ -57,18 +57,19 @@
             <h3 class="font-bold text-lg mb-4 pb-2 border-b">Products Without Photos ({{ no_photo_count }})</h3>
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
-                    <tr><th class="p-3">Product Name</th><th class="p-3">Category</th><th class="p-3">Rate (₹)</th><th class="p-3">Action</th></tr>
+                    <tr><th class="p-3">Product Name</th><th class="p-3">Category</th><th class="p-3">MRP (₹)</th><th class="p-3">Rate (₹)</th><th class="p-3">Action</th></tr>
                 </thead>
                 <tbody class="divide-y">
                     {% for p in products_without_photo %}
                     <tr class="hover:bg-slate-50">
                         <td class="p-3 font-bold">{{ p.name }}</td>
                         <td class="p-3 text-slate-500">{{ p.category.name|default:"General" }}</td>
+                        <td class="p-3 text-slate-500">₹{{ p.mrp|default:"0" }}</td>
                         <td class="p-3 font-bold text-emerald-600">₹{{ p.price }}</td>
                         <td class="p-3"><a href="{% url 'staff_product_edit' p.id %}" class="bg-slate-900 text-white px-3 py-1.5 rounded text-xs font-bold">Upload Photo</a></td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="4" class="p-4 text-center text-slate-400">Sabhi products ki photo upload ho chuki hai! 🎉</td></tr>
+                    <tr><td colspan="5" class="p-4 text-center text-slate-400">Sabhi products ki photo upload ho chuki hai! 🎉</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -79,18 +80,20 @@
             <h3 class="font-bold text-lg mb-4 pb-2 border-b">Duplicate Products Alert</h3>
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 text-slate-500 uppercase text-xs">
-                    <tr><th class="p-3">ID</th><th class="p-3">Product Name</th><th class="p-3">Rate (₹)</th><th class="p-3">Action</th></tr>
+                    <tr><th class="p-3">ID</th><th class="p-3">Product Name</th><th class="p-3">MRP (₹)</th><th class="p-3">Rate (₹)</th><th class="p-3">Stock</th><th class="p-3">Action</th></tr>
                 </thead>
                 <tbody class="divide-y">
                     {% for d in duplicate_products %}
                     <tr class="hover:bg-amber-50">
                         <td class="p-3 font-mono text-xs text-slate-500">#{{ d.id }}</td>
                         <td class="p-3 font-bold">{{ d.name }}</td>
+                        <td class="p-3 text-slate-500">₹{{ d.mrp|default:"0" }}</td>
                         <td class="p-3 font-bold text-emerald-600">₹{{ d.price }}</td>
+                        <td class="p-3 font-bold text-blue-600">{{ d.stock }}</td>
                         <td class="p-3"><a href="{% url 'staff_product_edit' d.id %}" class="bg-amber-500 text-white px-3 py-1.5 rounded text-xs font-bold">Review / Edit</a></td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="4" class="p-4 text-center text-slate-400">Koi duplicate product nahi mila. Ekdum saaf database! ✨</td></tr>
+                    <tr><td colspan="6" class="p-4 text-center text-slate-400">Koi duplicate product nahi mila. Ekdum saaf database! ✨</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

@@ -16,6 +16,9 @@
             <a href="{% url 'erp_products' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">🛍️ Product Master</a>
             <a href="{% url 'erp_pos' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">🧾 Billing & POS</a>
             <a href="{% url 'erp_ledger' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📒 Customer Ledger</a>
+            <a href="{% url 'erp_supplier_ledger' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">🏢 Supplier Khata</a>
+            <a href="{% url 'erp_expenses' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📉 Expense Tracker</a>
+            <a href="{% url 'erp_gst_report' %}" class="px-6 py-3.5 text-sm font-medium text-slate-400 hover:bg-white/5 transition">📑 GST Report</a>
             <a href="{% url 'erp_settings' %}" class="px-6 py-3.5 text-sm font-medium text-white bg-white/10 border-l-4 border-[#D4AF37] transition">⚙️ Store Settings</a>
             <a href="{% url 'home' %}" target="_blank" class="block mt-8 px-6 text-sky-400 text-sm font-bold">🌐 Go to Live Store</a>
         </nav>
@@ -25,7 +28,17 @@
     <div class="flex-1 p-6 lg:p-10 h-screen overflow-y-auto flex justify-center">
         
         <div class="w-full max-w-[800px]">
-            <h3 class="font-extrabold text-2xl text-slate-900 mb-8">Store Profile & Invoice Settings</h3>
+            <h3 class="font-extrabold text-2xl text-slate-900 mb-6">Store Profile & Invoice Settings</h3>
+
+            {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for message in messages %}
+                        <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-bold shadow-sm">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
             <div class="bg-white border border-slate-200 shadow-[0_10px_30px_rgba(0,0,0,0.04)] rounded-3xl p-8 md:p-10">
                 <form method="POST" class="space-y-6">
@@ -35,10 +48,15 @@
                             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Store Name</label>
                             <input type="text" name="store_name" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition" value="{{ setting.store_name }}" required>
                         </div>
+
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Store Tagline (Printed on Invoice Header)</label>
+                            <input type="text" name="tagline" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none transition" value="{{ setting.tagline|default:'Premium Corporate Retail & Essentials' }}">
+                        </div>
                         
                         <div>
                             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Proprietor / Owner Name</label>
-                            <input type="text" name="owner_name" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" value="{{ setting.owner_name }}">
+                            <input type="text" name="owner_name" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" value="{{ setting.owner_name|default:'' }}">
                         </div>
                         
                         <div>
@@ -58,7 +76,7 @@
                         
                         <div class="col-span-1 md:col-span-2">
                             <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Receipt Footer Note (Printed on Invoice)</label>
-                            <input type="text" name="receipt_footer" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" value="{{ setting.receipt_footer }}">
+                            <input type="text" name="receipt_footer" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition" value="{{ setting.receipt_footer|default:'' }}">
                         </div>
                     </div>
 

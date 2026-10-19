@@ -12,23 +12,35 @@
         
         <div class="text-center mb-8 border-b border-slate-100 pb-6">
             <span class="text-4xl mb-3 block">📦</span>
-            <h4 class="font-extrabold text-2xl text-slate-900 mb-2">Manage Order #{{ order.id }}</h4>
+            <h4 class="font-extrabold text-2xl text-slate-900 mb-2">Manage Order #{{ order.id }} {% if order.order_id %}<span class="text-slate-400 text-lg">({{ order.order_id }})</span>{% endif %}</h4>
             <p class="text-slate-500 text-sm">Customer: <strong class="text-slate-900">{{ order.customer_name }}</strong> &nbsp;|&nbsp; Total: <strong class="text-emerald-600 text-lg">₹{{ order.total_amount }}</strong></p>
         </div>
         
         <form method="POST" class="space-y-6">
             {% csrf_token %}
             
-            <!-- STATUS UPDATE -->
-            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8">
-                <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-widest mb-3">Update Order Status</label>
-                <select name="status" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm cursor-pointer transition">
-                    <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>⏳ Pending</option>
-                    <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>📦 Processing (Packing)</option>
-                    <option value="Dispatched" {% if order.status == 'Dispatched' %}selected{% endif %}>🚚 Dispatched / Out for Delivery</option>
-                    <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>✅ Completed (Delivered)</option>
-                    <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>❌ Cancelled</option>
-                </select>
+            <!-- STATUS & PAYMENT UPDATE -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-widest mb-2">Update Order Status</label>
+                    <select name="status" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm cursor-pointer transition">
+                        <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>⏳ Pending</option>
+                        <option value="Processing" {% if order.status == 'Processing' %}selected{% endif %}>📦 Processing (Packing)</option>
+                        <option value="Dispatched" {% if order.status == 'Dispatched' %}selected{% endif %}>🚚 Dispatched / Out for Delivery</option>
+                        <option value="Completed" {% if order.status == 'Completed' %}selected{% endif %}>✅ Completed (Delivered)</option>
+                        <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>❌ Cancelled</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-extrabold text-slate-500 uppercase tracking-widest mb-2">Payment Status</label>
+                    <select name="payment_status" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm cursor-pointer transition">
+                        <option value="Pending" {% if order.payment_status == 'Pending' %}selected{% endif %}>⏳ Pending</option>
+                        <option value="Paid" {% if order.payment_status == 'Paid' %}selected{% endif %}>💵 Paid (Cash/COD)</option>
+                        <option value="Pending Admin Approval" {% if order.payment_status == 'Pending Admin Approval' %}selected{% endif %}>🔍 Pending Admin Approval (QR)</option>
+                        <option value="Paid & Confirmed" {% if order.payment_status == 'Paid & Confirmed' %}selected{% endif %}>✅ Paid & Confirmed</option>
+                    </select>
+                </div>
             </div>
 
             <!-- OPTION A: LOCAL DELIVERY -->

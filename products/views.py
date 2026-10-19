@@ -1464,12 +1464,14 @@ def erp_store_settings(request):
     setting, created = StoreSetting.objects.get_or_create(pk=1)
     if request.method == 'POST':
         setting.store_name = request.POST.get('store_name', setting.store_name)
+        setting.tagline = request.POST.get('tagline', setting.tagline)
         setting.owner_name = request.POST.get('owner_name', setting.owner_name)
         setting.phone = request.POST.get('phone', setting.phone)
         setting.address = request.POST.get('address', setting.address)
         setting.gstin = request.POST.get('gstin', setting.gstin)
         setting.receipt_footer = request.POST.get('receipt_footer', setting.receipt_footer)
         setting.save()
+        messages.success(request, "✅ Store Settings successfully save ho gayi hain!")
         return redirect('erp_store_settings')
     return render(request, 'erp/settings.html', {'setting': setting})
 
@@ -1549,15 +1551,26 @@ def erp_supplier_ledger(request):
     total_credit = total_debit = net_balance = 0
 
     if request.method == 'POST':
-        supplier_obj = get_object_or_404(Supplier, id=request.POST.get('supplier_id'))
-        SupplierLedger.objects.create(
-            supplier=supplier_obj,
-            transaction_type=request.POST.get('transaction_type'),
-            amount=request.POST.get('amount'),
-            description=request.POST.get('description')
-        )
-        messages.success(request, f"✅ {supplier_obj.name} ke khate mein entry add ho gayi!")
-        return redirect(f"{reverse('erp_supplier_ledger')}?supplier_id={supplier_obj.id}")
+        action = request.POST.get('action', 'add_entry')
+        if action == 'add_supplier':
+            new_supp = Supplier.objects.create(
+                name=request.POST.get('name', '').strip(),
+                company_name=request.POST.get('company_name', '').strip() or None,
+                mobile_number=request.POST.get('mobile_number', '').strip() or None,
+                address=request.POST.get('address', '').strip() or None,
+            )
+            messages.success(request, f"✅ Naya Supplier '{new_supp.name}' add ho gaya!")
+            return redirect(f"{reverse('erp_supplier_ledger')}?supplier_id={new_supp.id}")
+        else:
+            supplier_obj = get_object_or_404(Supplier, id=request.POST.get('supplier_id'))
+            SupplierLedger.objects.create(
+                supplier=supplier_obj,
+                transaction_type=request.POST.get('transaction_type'),
+                amount=request.POST.get('amount'),
+                description=request.POST.get('description')
+            )
+            messages.success(request, f"✅ {supplier_obj.name} ke khate mein entry add ho gayi!")
+            return redirect(f"{reverse('erp_supplier_ledger')}?supplier_id={supplier_obj.id}")
 
     if suppliers.exists():
         selected_supplier = get_object_or_404(Supplier, id=selected_supplier_id) if selected_supplier_id else suppliers.first()
@@ -1587,12 +1600,11 @@ def erp_update_order(request, order_id):
         else:
             order.delivery_boy = None
 
-        if courier_name := request.POST.get('courier_name'):
-            order.courier_name = courier_name
-        if tracking_id := request.POST.get('tracking_id'):
-            order.tracking_id = tracking_id
-        if tracking_url := request.POST.get('tracking_url'):
-            order.tracking_url = tracking_url
+        order.courier_name = request.POST.get('courier_name', '').strip() or None
+        order.tracking_id = request.POST.get('tracking_id', '').strip() or None
+        order.tracking_url = request.POST.get('tracking_url', '').strip() or None
+        if new_payment_status := request.POST.get('payment_status'):
+            order.payment_status = new_payment_status
         order.save()
 
         update_msg = f"📦 *Order Status Update - CGSmart*\n\nDear {order.customer_name},\nAapke Order *#{order.id}* ka status update ho gaya hai:\n📌 *New Status:* {order.status}\n"
@@ -1774,9 +1786,15 @@ def _auto_assign_missing_brands():
     updated_count = 0
 
     for product in products_no_brand:
+        if not product.name:
+            continue
+        first_word = product.name.strip().split()[0].lower()
         name_prefix = product.name[:5].strip().lower()
         for brand in brands:
-            if brand.name.lower() in name_prefix or name_prefix in brand.name.lower():
+            b_name = brand.name.strip().lower()
+            if not b_name:
+                continue
+            if b_name == first_word or product.name.lower().startswith(b_name) or (len(name_prefix) >= 3 and (b_name in name_prefix or name_prefix in b_name)):
                 product.brand = brand
                 product.save(update_fields=['brand'])
                 updated_count += 1
@@ -1786,8 +1804,8 @@ def _auto_assign_missing_brands():
 
 @permission_required('products.change_product', raise_exception=True)
 def staff_product_update_list(request):
-    products = Product.objects.all().order_by('name')
-    search_query = request.GET.get('search', '')
+    products = Product.objects.select_related('category', 'brand', 'last_updated_by').all().order_by('name')
+    search_query = request.GET.get('search', '').strip()
     if search_query:
         products = products.filter(name__icontains=search_query)
 
@@ -1805,10 +1823,14 @@ def staff_product_edit(request, product_id):
 
     if request.method == 'POST':
         try:
-            name = request.POST.get('name', product.name)
-            price = float(request.POST.get('price', product.price))
-            mrp = float(request.POST.get('mrp', product.mrp or 0))
-            stock = int(request.POST.get('stock', product.stock))
+            name = request.POST.get('name', product.name).strip()
+            raw_price = request.POST.get('price', '').strip()
+            raw_mrp = request.POST.get('mrp', '').strip()
+            raw_stock = request.POST.get('stock', '').strip()
+
+            price = float(raw_price) if raw_price != '' else float(product.price)
+            mrp = float(raw_mrp) if raw_mrp != '' else 0.0
+            stock = int(float(raw_stock)) if raw_stock != '' else int(product.stock)
             post_search_query = request.POST.get('search', '')
 
             if mrp > 0 and price > mrp:
