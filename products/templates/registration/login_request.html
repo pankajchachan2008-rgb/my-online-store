@@ -1,29 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Secure Staff Login - CGS MART</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-50 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 class="text-2xl font-black text-center mb-6">Staff / Operator Login</h2>
-        
-        {% if messages %}
-            {% for message in messages %}
-                <div class="mb-4 p-3 rounded text-sm {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
+{% extends 'base.html' %}
+{% block title %}OTP Login | CGSMART{% endblock %}
 
-        <form method="POST">
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center py-12 px-4 font-['Inter']">
+    <div class="bg-white/80 backdrop-blur-xl border border-white/90 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.06)] p-8 md:p-12 w-full max-w-[450px]">
+        <div class="text-center mb-8">
+            <div class="text-5xl mb-3">🔑</div>
+            <h3 class="font-['Jost'] text-2xl font-extrabold text-gray-900 mb-2">Instant OTP Login</h3>
+            <p class="text-gray-500 text-sm font-medium">Bina password ke apne registered Email OTP se login karein.</p>
+        </div>
+        
+        <form method="POST" class="space-y-6">
             {% csrf_token %}
-            <label class="block text-sm font-bold text-slate-700 mb-2">Enter Registered Email ID</label>
-            <input type="email" name="email" class="w-full border rounded-xl p-3 mb-6 outline-none focus:ring-2 focus:ring-[#D4AF37]" placeholder="e.g. operator@cgsmart.in" required>
-            
-            <button type="submit" class="w-full bg-[#0c0d12] hover:bg-[#1a1c24] text-white font-bold py-3 rounded-xl transition">Get 6-Digit OTP</button>
+            <div>
+                <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">Registered Email Address</label>
+                <input type="email" name="email" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 focus:ring-2 focus:ring-[#D4AF37] focus:bg-white outline-none transition" required placeholder="Enter your email ID">
+            </div>
+            <button type="submit" class="w-full bg-gradient-to-br from-[#0c0d12] to-[#1f2430] text-[#D4AF37] font-bold uppercase tracking-widest py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition duration-300 border border-[#D4AF37]/30">
+                Get 6-Digit OTP
+            </button>
         </form>
+
+        <div class="text-center mt-8 pt-6 border-t border-slate-100">
+            <a href="{% url 'login' %}" class="text-gray-600 font-bold hover:text-gray-900 transition text-sm flex items-center justify-center gap-2">
+                <span>🔙</span> Login with Username & Password
+            </a>
+        </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

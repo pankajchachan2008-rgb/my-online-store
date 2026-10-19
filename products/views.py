@@ -670,13 +670,25 @@ def forgot_password(request):
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         user = User.objects.filter(email__iexact=email).first()
-        success_msg = "Agar aapka account is email se bana hai, toh OTP bhej diya gaya hai."
+        success_msg = "Agar aapka account is email se bana hai, toh OTP aur Username bhej diya gaya hai."
 
         if user:
             otp = str(random.randint(100000, 999999))
             OTPVerification.objects.filter(user=user).delete()
             OTPVerification.objects.create(user=user, otp=otp, is_verified=False)
-            send_brevo_api_email('Password Reset', f'OTP: {otp}', user.email)
+            email_html = f"""
+            <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
+                <h2 style="color: #0c0d12; margin-top: 0;">CGSMART Password Reset</h2>
+                <p>Namaste <strong>{user.first_name or user.username}</strong>,</p>
+                <p>Aapka Login Username: <strong style="color: #002D62;">{user.username}</strong></p>
+                <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #D4AF37;">
+                    <p style="margin: 0; font-size: 12px; color: #64748B;">YOUR 6-DIGIT RESET OTP</p>
+                    <h1 style="margin: 5px 0 0 0; color: #0c0d12; letter-spacing: 6px;">{otp}</h1>
+                </div>
+                <p style="font-size: 12px; color: #64748B;">Yeh OTP kisi ke saath share na karein.</p>
+            </div>
+            """
+            send_brevo_api_email('CGSmart - Password Reset OTP & Username', email_html, user.email)
             request.session['reset_user_email'] = user.email
 
         messages.success(request, success_msg)
@@ -698,29 +710,29 @@ def reset_verify_otp(request):
             request.session['can_reset_password'] = True
             return redirect('set_new_password')
         else:
-            messages.error(request, 'Galat OTP!')
-    return render(request, 'registration/reset_verify_otp.html', {'email': email})
+            messages.error(request, 'Galat OTP! Kripya dobara check karein.')
+    return render(request, 'registration/verify_otp.html', {'email': email})
 
 
 def set_new_password(request):
     if not request.session.get('can_reset_password'):
         return redirect('forgot_password')
+    email = request.session.get('reset_user_email')
+    user = User.objects.filter(email__iexact=email).first()
     if request.method == 'POST':
         pwd = request.POST.get('password')
         if pwd != request.POST.get('confirm_password'):
-            messages.error(request, 'Passwords mismatch')
+            messages.error(request, 'Dono passwords match nahi kar rahe hain!')
         else:
-            email = request.session.get('reset_user_email')
-            user = User.objects.filter(email__iexact=email).first()
             if user:
                 user.set_password(pwd)
                 user.save()
                 OTPVerification.objects.filter(user=user).delete()
             request.session.pop('reset_user_email', None)
             request.session.pop('can_reset_password', None)
-            messages.success(request, 'Password changed!')
+            messages.success(request, '✅ Password successfully badal diya gaya hai! Ab aap login kar sakte hain.')
             return redirect('login')
-    return render(request, 'registration/set_new_password.html')
+    return render(request, 'registration/reset_password.html', {'username': user.username if user else ''})
 
 
 @never_cache

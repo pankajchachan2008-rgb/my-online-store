@@ -43,9 +43,10 @@
                     Secure Login
                 </button>
                 
-                <!-- FORGOT PASSWORD LINK -->
-                <div class="mt-4 text-center">
-                    <a href="{% url 'forgot_password' %}" class="text-sm font-bold text-gray-600 hover:text-[#0c0d12] transition">Forgot Password / Username?</a>
+                <!-- OTP LOGIN & FORGOT PASSWORD LINKS -->
+                <div class="mt-4 flex flex-wrap justify-between items-center gap-2 text-sm font-bold">
+                    <a href="{% url 'login_request' %}" class="text-blue-700 hover:text-[#0c0d12] transition">🔑 Login with Email OTP</a>
+                    <a href="{% url 'forgot_password' %}" class="text-gray-600 hover:text-[#0c0d12] transition">Forgot Password / Username?</a>
                 </div>
             </form>
             
