@@ -18,9 +18,9 @@ DEBUG = False
 
 # Allowed hosts and trusted corporate endpoints
 ALLOWED_HOSTS = [
-        'cgsmart.in', 
-        'www.cgsmart.in', 
-        'my-online-store-ggbj.onrender.com', 
+    'cgsmart.in', 
+    'www.cgsmart.in', 
+    'my-online-store-ggbj.onrender.com', 
 ]
 
 # CSRF Trusted Origins
@@ -221,8 +221,6 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 # =====================================================================
 #                 CELERY & REDIS SETTINGS (WITH AIVEN SSL FIX)
 # =====================================================================
-import os
-
 # 1. Render से URL लें
 RAW_REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 
@@ -240,3 +238,14 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Kolkata'
+
+# 👇 4. Aiven Redis Connection Drop Fix (Har 30 sec me connection alive rakhega) 👇
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'health_check_interval': 30,
+    'socket_keepalive': True,
+}
+CELERY_RESULT_BACKEND_TRANSPORT_OPTIONS = {
+    'health_check_interval': 30,
+    'socket_keepalive': True,
+}

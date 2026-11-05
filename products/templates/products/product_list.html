@@ -7,10 +7,10 @@
 
 <!-- 🌟 1. ALPINE.JS DYNAMIC CAROUSEL -->
 {% if banners %}
-<div x-data="{ activeSlide: 0, slides: {{ banners|length }}, init() { if (this.slides > 1) { setInterval(() => this.activeSlide = (this.activeSlide + 1) % this.slides, 5000) } } }" class="relative w-full h-[350px] md:h-[45vh] mb-8 rounded-2xl overflow-hidden shadow-2xl">
+<div x-data="{ activeSlide: 0, slides: {{ banners|length }}, init() { if (this.slides > 1) { setInterval(() => this.activeSlide = (this.activeSlide + 1) % this.slides, 5000) } } }" class="relative w-full h-[320px] md:h-[45vh] mb-8 rounded-2xl overflow-hidden shadow-2xl">
     <div class="relative w-full h-full">
         {% for banner in banners %}
-        <div x-show="activeSlide === {{ forloop.counter0 }}" x-transition.opacity.duration.700ms class="absolute inset-0">
+        <div x-show="activeSlide === {{ forloop.counter0 }}" x-cloak x-transition.opacity.duration.700ms class="absolute inset-0">
             <a href="{% if banner.category %}{% url 'home' %}?category={{ banner.category.id }}#full-collection{% else %}#full-collection{% endif %}" class="block w-full h-full relative group">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10 pointer-events-none"></div>
                 {% if banner.animated_file %}
@@ -22,7 +22,7 @@
                 {% endif %}
                 {% if banner.title %}
                 <div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none px-4">
-                    <h2 class="text-4xl md:text-6xl font-extrabold text-white uppercase tracking-widest drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)] font-['Jost']">{{ banner.title }}</h2>
+                    <h2 class="text-3xl md:text-6xl font-extrabold text-white uppercase tracking-widest text-center drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)] font-['Jost']">{{ banner.title }}</h2>
                 </div>
                 {% endif %}
             </a>
@@ -31,7 +31,7 @@
     </div>
     <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-30">
         {% for banner in banners %}
-        <button @click="activeSlide = {{ forloop.counter0 }}" :class="{'w-8 bg-[#D4AF37]': activeSlide === {{ forloop.counter0 }}, 'w-3 bg-white/50': activeSlide !== {{ forloop.counter0 }}}" class="h-3 rounded-full transition-all duration-300"></button>
+        <button type="button" @click="activeSlide = {{ forloop.counter0 }}" :class="{'w-8 bg-[#D4AF37]': activeSlide === {{ forloop.counter0 }}, 'w-3 bg-white/50': activeSlide !== {{ forloop.counter0 }}}" class="h-3 rounded-full transition-all duration-300" aria-label="Slide {{ forloop.counter }}"></button>
         {% endfor %}
     </div>
 </div>
@@ -40,37 +40,37 @@
 <!-- 🌟 2. MAIN LAYOUT -->
 <div class="max-w-[1600px] mx-auto px-4 lg:px-8 mb-12 scroll-mt-[120px]" id="full-collection" x-data="{ filtersOpen: false }">
     <div class="lg:hidden mb-6">
-        <button @click="filtersOpen = !filtersOpen" class="w-full bg-white/70 backdrop-blur-md border border-white/80 rounded-xl py-3 font-bold text-gray-900 shadow-sm transition">
+        <button type="button" @click="filtersOpen = !filtersOpen" class="w-full bg-white/85 border border-white/90 rounded-xl py-3 font-bold text-gray-900 shadow-sm transition">
             <span x-show="!filtersOpen">Filters & Sort ▾</span>
-            <span x-show="filtersOpen">Close Filters ▴</span>
+            <span x-show="filtersOpen" x-cloak>Close Filters ▴</span>
         </button>
     </div>
 
     <div class="flex flex-col lg:flex-row gap-8">
         <!-- SIDEBAR FILTERS -->
         <aside :class="filtersOpen ? 'block mb-6' : 'hidden'" class="lg:block w-full lg:w-1/4 xl:w-1/5">
-            <div class="bg-white/45 backdrop-blur-xl border border-white/60 p-6 rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.05)] lg:sticky lg:top-32">
+            <div class="bg-white/80 lg:bg-white/55 lg:backdrop-blur-xl border border-white/70 p-6 rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.05)] lg:sticky lg:top-32">
                 <h5 class="font-bold text-lg text-gray-900 mb-6 uppercase tracking-wider">Filters</h5>
                 <form id="filterForm" method="GET" action="{% url 'home' %}#full-collection" onsubmit="if(!window._keepPage){document.getElementById('pageInput').value=1;}" class="space-y-6">
                     {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
                     <input type="hidden" name="page" id="pageInput" value="{{ products.number|default:1 }}">
                     <div>
                         <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Category</label>
-                        <select name="category" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition cursor-pointer">
+                        <select name="category" class="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition cursor-pointer">
                             <option value="">All Categories</option>
                             {% for cat in categories %}<option value="{{ cat.id }}" {% if active_category|stringformat:"s" == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>{% endfor %}
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Brand</label>
-                        <select name="brand" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition cursor-pointer">
+                        <select name="brand" class="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition cursor-pointer">
                             <option value="">Any Brand</option>
                             {% for brand in brands %}<option value="{{ brand.id }}" {% if active_brand|stringformat:"s" == brand.id|stringformat:"s" %}selected{% endif %}>{{ brand.name }}</option>{% endfor %}
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Sort By</label>
-                        <select name="sort" class="w-full bg-white/60 backdrop-blur-md border border-white/80 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition cursor-pointer">
+                        <select name="sort" class="w-full bg-white/80 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-[#D4AF37] outline-none transition cursor-pointer">
                             <option value="">Featured</option>
                             <option value="low_to_high" {% if current_sort == 'low_to_high' %}selected{% endif %}>Price: Low to High</option>
                             <option value="high_to_low" {% if current_sort == 'high_to_low' %}selected{% endif %}>Price: High to Low</option>
@@ -79,8 +79,8 @@
                     <div>
                         <label class="block text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">Price (₹)</label>
                         <div class="flex gap-2 mb-4">
-                            <input type="number" name="min_price" class="w-1/2 bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm outline-none" placeholder="Min" value="{{ min_price|default:'' }}">
-                            <input type="number" name="max_price" class="w-1/2 bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm outline-none" placeholder="Max" value="{{ max_price|default:'' }}">
+                            <input type="number" name="min_price" class="w-1/2 bg-white/80 border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none" placeholder="Min" value="{{ min_price|default:'' }}">
+                            <input type="number" name="max_price" class="w-1/2 bg-white/80 border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none" placeholder="Max" value="{{ max_price|default:'' }}">
                         </div>
                         <button type="submit" class="w-full bg-gradient-to-r from-gray-900 to-slate-800 text-[#D4AF37] font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition border border-[#D4AF37]/30">Apply Filters</button>
                         <a href="{% url 'home' %}#full-collection" class="block text-center text-sm text-slate-500 hover:text-slate-800 font-medium mt-3 transition">Clear All</a>
@@ -100,16 +100,26 @@
 
             <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-8">
                 {% for product in products %}
-                <div class="relative flex flex-col bg-white/40 backdrop-blur-2xl border border-white/70 rounded-2xl p-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:bg-white/75 hover:border-[#D4AF37]/50 hover:shadow-[0_25px_50px_rgba(0,0,0,0.12)] hover:-translate-y-2 transition-all duration-400"
+                {% with variants=product.variants.all %}
+                <div class="relative flex flex-col bg-white/85 lg:bg-white/45 lg:backdrop-blur-xl border border-white/80 rounded-2xl p-4 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:bg-white/85 hover:border-[#D4AF37]/50 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] lg:hover:-translate-y-1.5 transition-all duration-300"
                      x-data="{
-                         hasVariants: {% if product.variants.exists %}true{% else %}false{% endif %},
-                         variant: '{% if product.variants.exists %}{{ product.variants.first.id }}{% endif %}',
-                         displayPrice: '{% if product.variants.exists %}{{ product.variants.first.price }}{% else %}{{ product.price }}{% endif %}',
+                         hasVariants: {{ variants|length|yesno:'true,false' }},
+                         variant: '{% for v in variants %}{% if v.stock > 0 %}{{ v.id }},{% endif %}{% endfor %}'.split(',')[0] || '',
+                         displayPrice: '{% if variants %}{{ variants.0.price }}{% else %}{{ product.price }}{% endif %}',
                          qty: 1,
                          loading: false,
+                         added: false,
+                         init() {
+                             if (this.hasVariants && this.variant) {
+                                 const sel = this.$el.querySelector('select[x-model=variant]');
+                                 if (sel && sel.selectedIndex >= 0) {
+                                     this.displayPrice = sel.options[sel.selectedIndex].dataset.price || this.displayPrice;
+                                 }
+                             }
+                         },
                          async submitCart(buyNow = false) {
                              if (this.hasVariants && !this.variant) {
-                                 alert('Kripya pehle Size select karein!');
+                                 alert('Kripya pehle available Size select karein!');
                                  return;
                              }
                              this.loading = true;
@@ -127,8 +137,11 @@
                                          variant_id: this.variant || null
                                      })
                                  });
+                                 if (!res.ok) throw new Error('Network error');
                                  const d = await res.json();
                                  this.loading = false;
+                                 this.added = true;
+                                 setTimeout(() => { this.added = false; }, 1600);
                                  window.dispatchEvent(new CustomEvent('cart-updated', {
                                      detail: { items: d.items || 1, total: d.total || this.displayPrice }
                                  }));
@@ -142,13 +155,16 @@
                          }
                      }">
                     
-                    {% if product.stock and product.stock < 5 %}
+                    <!-- Stock & Discount Badges -->
+                    {% if not variants and product.stock == 0 %}
+                        <span class="absolute top-3 left-3 bg-gray-700 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">Out of Stock</span>
+                    {% elif product.stock and product.stock < 5 %}
                         <span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">Only {{ product.stock }} left</span>
                     {% elif product.discount_percentage > 0 %}
                         <span class="absolute top-3 left-3 bg-gray-900 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm z-10">{{ product.discount_percentage }}% OFF</span>
                     {% endif %}
 
-                    <a href="{% url 'add_to_wishlist' product.id %}" class="absolute top-3 right-3 bg-white/85 backdrop-blur-md rounded-full w-8 h-8 flex items-center justify-center text-gray-400 hover:text-rose-500 shadow-sm transition z-10">❤️</a>
+                    <a href="{% url 'add_to_wishlist' product.id %}" class="absolute top-3 right-3 bg-white/90 rounded-full w-8 h-8 flex items-center justify-center text-gray-400 hover:text-rose-500 shadow-sm transition z-10" aria-label="Add to Wishlist">❤️</a>
 
                     <a href="{% url 'product_detail' product.id %}" class="block h-[150px] mb-4 overflow-hidden relative group">
                         {% if product.image %}
@@ -158,38 +174,48 @@
                         {% endif %}
                     </a>
 
-                    <!-- FIXED ADD TO CART & BUY NOW CONTROLS -->
+                    <!-- ADD TO CART & BUY NOW CONTROLS -->
                     <div>
-                        {% if product.variants.exists %}
-                            <select x-model="variant" @change="displayPrice = $event.target.options[$event.target.selectedIndex].dataset.price" class="w-full bg-white/70 border border-gray-200 rounded-lg text-xs py-1.5 px-2 mb-2 focus:ring-[#D4AF37] outline-none cursor-pointer">
-                                {% for v in product.variants.all %}
-                                    <option value="{{ v.id }}" data-price="{{ v.price }}" {% if v.stock == 0 %}disabled{% endif %}>{{ v.size_name }} (₹{{ v.price }})</option>
+                        {% if variants %}
+                            <select x-model="variant" @change="displayPrice = $event.target.options[$event.target.selectedIndex].dataset.price" class="w-full bg-white/80 border border-gray-200 rounded-lg text-xs py-1.5 px-2 mb-2 focus:ring-[#D4AF37] outline-none cursor-pointer">
+                                {% for v in variants %}
+                                    <option value="{{ v.id }}" data-price="{{ v.price }}" {% if v.stock == 0 %}disabled{% endif %}>
+                                        {{ v.size_name }} (₹{{ v.price }}){% if v.stock == 0 %} - Out of Stock{% endif %}
+                                    </option>
                                 {% endfor %}
                             </select>
                         {% else %}
-                            <div class="text-center w-full bg-white/50 text-gray-500 text-[11px] font-medium py-1 rounded-md mb-3">
+                            <div class="text-center w-full bg-white/60 text-gray-500 text-[11px] font-medium py-1 rounded-md mb-2">
                                 1 Unit
                             </div>
                         {% endif %}
                         
-                        <div class="flex gap-2">
-                            <!-- ADD TO CART BUTTON -->
-                            <button type="button" 
-                                @click="submitCart(false)"
-                                :disabled="loading" 
-                                class="flex-1 bg-white/60 border border-blue-600/40 text-blue-700 font-bold text-xs py-2 rounded-lg hover:bg-blue-50 transition backdrop-blur-sm">
-                                <span x-show="!loading">Add</span>
-                                <span x-show="loading">⏳</span>
+                        {% if not variants and product.stock == 0 %}
+                            <button type="button" disabled class="w-full bg-gray-200 text-gray-500 font-bold text-xs py-2 rounded-lg cursor-not-allowed">
+                                Out of Stock
                             </button>
+                        {% else %}
+                            <div class="flex gap-2">
+                                <!-- ADD TO CART BUTTON -->
+                                <button type="button" 
+                                    @click="submitCart(false)"
+                                    :disabled="loading || (hasVariants && !variant)"
+                                    :class="added ? 'bg-green-600 text-white border-green-600' : 'bg-white/80 border-blue-600/40 text-blue-700 hover:bg-blue-50'"
+                                    class="flex-1 border font-bold text-xs py-2 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span x-show="!loading && !added">Add</span>
+                                    <span x-show="loading" x-cloak>⏳</span>
+                                    <span x-show="added" x-cloak>✔ Added</span>
+                                </button>
 
-                            <!-- BUY NOW BUTTON -->
-                            <button type="button" 
-                                @click="submitCart(true)"
-                                :disabled="loading"
-                                class="flex-1 bg-orange-400 text-gray-900 font-bold text-xs py-2 rounded-lg hover:bg-orange-500 transition shadow-sm">
-                                ⚡ Buy
-                            </button>
-                        </div>
+                                <!-- BUY NOW BUTTON -->
+                                <button type="button" 
+                                    @click="submitCart(true)"
+                                    :disabled="loading || (hasVariants && !variant)"
+                                    class="flex-1 bg-orange-400 text-gray-900 font-bold text-xs py-2 rounded-lg hover:bg-orange-500 transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                                    ⚡ Buy
+                                </button>
+                            </div>
+                        {% endif %}
                     </div>
 
                     <a href="{% url 'product_detail' product.id %}" class="block mt-3">
@@ -204,6 +230,7 @@
                         <div class="text-[10px] text-gray-500 uppercase tracking-wider">{{ product.brand.name|default:"Premium" }}</div>
                     </a>
                 </div>
+                {% endwith %}
                 {% empty %}
                 <div class="col-span-full text-center py-20">
                     <span class="text-6xl opacity-50">🛒</span>
@@ -217,11 +244,11 @@
             {% if products.has_other_pages %}
             <div class="flex justify-center items-center gap-3 my-8">
                 {% if products.has_previous %}
-                <button type="button" onclick="goToPage({{ products.previous_page_number }})" class="bg-white/80 border border-gray-200 text-gray-800 hover:bg-[#D4AF37] hover:text-white font-bold px-5 py-2.5 rounded-xl transition text-sm">&larr; Previous</button>
+                <button type="button" onclick="goToPage({{ products.previous_page_number }})" class="bg-white/90 border border-gray-200 text-gray-800 hover:bg-[#D4AF37] hover:text-white font-bold px-5 py-2.5 rounded-xl transition text-sm">&larr; Previous</button>
                 {% endif %}
-                <span class="bg-white/60 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 border border-gray-200">Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
+                <span class="bg-white/80 px-4 py-2 rounded-xl text-sm font-bold text-gray-700 border border-gray-200">Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
                 {% if products.has_next %}
-                <button type="button" onclick="goToPage({{ products.next_page_number }})" class="bg-white/80 border border-gray-200 text-gray-800 hover:bg-[#D4AF37] hover:text-white font-bold px-5 py-2.5 rounded-xl transition text-sm">Next &rarr;</button>
+                <button type="button" onclick="goToPage({{ products.next_page_number }})" class="bg-white/90 border border-gray-200 text-gray-800 hover:bg-[#D4AF37] hover:text-white font-bold px-5 py-2.5 rounded-xl transition text-sm">Next &rarr;</button>
                 {% endif %}
             </div>
             <script>
@@ -239,28 +266,28 @@
 
 <!-- WHY CHOOSE US SECTION -->
 <div class="max-w-[1600px] mx-auto px-4 lg:px-8 mb-16">
-    <div class="bg-gradient-to-r from-emerald-50/80 via-teal-50/50 to-emerald-50/80 backdrop-blur-xl border border-emerald-100 rounded-[2.5rem] p-8 md:p-12 shadow-sm">
+    <div class="bg-gradient-to-r from-emerald-50/90 via-teal-50/70 to-emerald-50/90 border border-emerald-100 rounded-[2.5rem] p-8 md:p-12 shadow-sm">
         <div class="text-center max-w-2xl mx-auto mb-10">
             <h3 class="font-['Jost'] text-3xl font-black text-gray-900 mb-2">Why Chachan General Store ?</h3>
             <p class="text-gray-500 text-sm font-medium">Aapka apna vishwasniya local store, ab digital convenience ke sath.</p>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div class="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-white shadow-sm flex flex-col items-center">
+            <div class="bg-white/85 p-6 rounded-2xl border border-white shadow-sm flex flex-col items-center">
                 <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-2xl mb-4">🛡️</div>
                 <h5 class="font-bold text-gray-900 text-sm mb-1">100% Genuine</h5>
                 <p class="text-gray-500 text-xs">Direct brand & trusted quality</p>
             </div>
-            <div class="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-white shadow-sm flex flex-col items-center">
+            <div class="bg-white/85 p-6 rounded-2xl border border-white shadow-sm flex flex-col items-center">
                 <div class="w-14 h-14 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-2xl mb-4">⚡</div>
                 <h5 class="font-bold text-gray-900 text-sm mb-1">Fast Local Delivery</h5>
                 <p class="text-gray-500 text-xs">Quick delivery right at your door</p>
             </div>
-            <div class="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-white shadow-sm flex flex-col items-center">
+            <div class="bg-white/85 p-6 rounded-2xl border border-white shadow-sm flex flex-col items-center">
                 <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center text-2xl mb-4">🤝</div>
                 <h5 class="font-bold text-gray-900 text-sm mb-1">Trusted Service</h5>
                 <p class="text-gray-500 text-xs">Serving Nohar with pride</p>
             </div>
-            <div class="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-white shadow-sm flex flex-col items-center">
+            <div class="bg-white/85 p-6 rounded-2xl border border-white shadow-sm flex flex-col items-center">
                 <div class="w-14 h-14 bg-rose-100 text-rose-700 rounded-full flex items-center justify-center text-2xl mb-4">💎</div>
                 <h5 class="font-bold text-gray-900 text-sm mb-1">Best Local Prices</h5>
                 <p class="text-gray-500 text-xs">Affordable everyday essentials</p>
@@ -269,26 +296,15 @@
     </div>
 </div>
 
-<!-- 🌟 FIXED STICKY CART BAR (Auto-syncs on load & on Add to Cart) -->
+<!-- 🌟 STICKY CART BAR (Listens to unified cart-updated event from base.html & Add to Cart) -->
 <div x-data="{
          items: 0,
-         total: 0,
-         show: false,
-         init() {
-             fetch('{% url 'cart_summary_ajax' %}')
-                 .then(r => r.json())
-                 .then(d => {
-                     if (d.items && d.items > 0) {
-                         this.items = d.items;
-                         this.total = Number(d.total).toFixed(2);
-                         this.show = true;
-                     }
-                 }).catch(() => {});
-         }
+         total: '0.00',
+         show: false
      }"
-     @cart-updated.window="items = $event.detail.items; total = Number($event.detail.total).toFixed(2); show = items > 0"
+     @cart-updated.window="items = parseInt($event.detail.items) || 0; total = Number($event.detail.total || 0).toFixed(2); show = items > 0"
      x-show="show" x-cloak x-transition
-     class="fixed bottom-[80px] lg:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-[350px] bg-slate-900/95 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl z-50 flex justify-between items-center text-white">
+     class="fixed bottom-[80px] lg:bottom-6 left-4 right-4 md:left-auto md:right-24 md:w-[360px] bg-slate-900/95 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl z-50 flex justify-between items-center text-white">
     <div class="flex items-center gap-3">
         <div class="relative text-2xl">🛒 <span x-text="items" class="absolute -top-2 -right-2 bg-orange-500 text-gray-900 text-[10px] font-extrabold w-5 h-5 flex items-center justify-center rounded-full"></span></div>
         <div class="font-semibold text-sm"><span x-text="items"></span> Items added <br><span class="text-orange-400">₹<span x-text="total"></span></span></div>

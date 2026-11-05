@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}
-    {{ product.name }} - Buy Online at Best Price | Chachan General Store Nohar
-{% endblock %}
+{% block title %}{{ product.name }} - Buy Online at Best Price | Chachan General Store Nohar{% endblock %}
 
 {% block extra_meta %}
     <meta name="description" content="Buy {{ product.name }} at ₹{{ product.price }} from Chachan General Store in Nohar. Best quality guaranteed with fast local delivery.">
@@ -12,25 +10,60 @@
     {% if product.image %}
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}">
     {% endif %}
+
+    <!-- 🌟 Product Rich Snippet Schema for Google Search -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "{{ product.name|escapejs }}",
+      {% if product.image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}",{% endif %}
+      "description": "{{ product.description|default:product.name|striptags|escapejs }}",
+      "brand": {
+        "@type": "Brand",
+        "name": "{{ product.brand.name|default:'CGS MART'|escapejs }}"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "{{ request.build_absolute_uri }}",
+        "priceCurrency": "INR",
+        "price": "{{ product.price }}",
+        "availability": "{% if product.stock > 0 %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}",
+        "seller": {
+          "@type": "Organization",
+          "name": "Chachan General Store (CGS Mart)"
+        }
+      }
+    }
+    </script>
 {% endblock %}
 
 {% block content %}
+{% with variants=product.variants.all %}
 <div class="max-w-[1200px] mx-auto px-4 py-10" 
      x-data="{ 
          zoom: false, 
          x: 0, 
          y: 0, 
-         hasVariants: {% if product.variants.exists %}true{% else %}false{% endif %},
-         variantId: '{% if product.variants.exists %}{{ product.variants.first.id }}{% endif %}', 
-         price: '{% if product.variants.exists %}{{ product.variants.first.price }}{% else %}{{ product.price }}{% endif %}',
+         hasVariants: {{ variants|length|yesno:'true,false' }},
+         variantId: '{% for v in variants %}{% if v.stock > 0 %}{{ v.id }},{% endif %}{% endfor %}'.split(',')[0] || '', 
+         price: '{% if variants %}{{ variants.0.price }}{% else %}{{ product.price }}{% endif %}',
          mainImage: '{% if product.image %}{{ product.image.url }}{% endif %}',
          lightbox: false,
          qty: 1,
          loading: false,
          addedToast: false,
+         init() {
+             if (this.hasVariants && this.variantId) {
+                 const sel = this.$el.querySelector('select[x-model=variantId]');
+                 if (sel && sel.selectedIndex >= 0) {
+                     this.price = sel.options[sel.selectedIndex].dataset.price || this.price;
+                 }
+             }
+         },
          async addToCart(goToCheckout = false) {
              if (this.hasVariants && !this.variantId) {
-                 alert('Kripya pehle Size / Weight select karein!');
+                 alert('Kripya pehle available Size / Weight select karein!');
                  return;
              }
              this.loading = true;
@@ -48,6 +81,7 @@
                          variant_id: this.variantId || null
                      })
                  });
+                 if (!res.ok) throw new Error('Network error');
                  const data = await res.json();
                  this.loading = false;
                  window.dispatchEvent(new CustomEvent('cart-updated', { detail: data }));
@@ -77,10 +111,10 @@
         
         <!-- 📸 Product Image Gallery & Lightbox -->
         <div class="w-full lg:w-5/12">
-            <div class="bg-white/65 backdrop-blur-2xl border border-white/90 p-4 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.06)]">
+            <div class="bg-white/85 lg:bg-white/65 lg:backdrop-blur-2xl border border-white/90 p-4 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.06)]">
                 {% if product.image %}
                     <!-- Main Image (Hover Zoom & Click Lightbox) -->
-                    <div class="relative h-[450px] rounded-2xl bg-white/40 border border-white/70 overflow-hidden cursor-crosshair flex items-center justify-center group" 
+                    <div class="relative h-[380px] md:h-[450px] rounded-2xl bg-white/60 border border-white/70 overflow-hidden cursor-crosshair flex items-center justify-center group" 
                          @click="lightbox = true"
                          @mousemove="zoom = true; x = ($event.offsetX / $el.offsetWidth) * 100; y = ($event.offsetY / $el.offsetHeight) * 100" 
                          @mouseleave="zoom = false">
@@ -90,30 +124,30 @@
                              :style="zoom ? `transform-origin: ${x}% ${y}%; transform: scale(2.5);` : 'transform: scale(1);'">
                              
                         <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center pointer-events-none">
-                            <span class="bg-white/80 backdrop-blur text-gray-900 font-bold px-4 py-2 rounded-full text-xs shadow-lg transform translate-y-4 group-hover:translate-y-0 transition">
+                            <span class="bg-white/90 text-gray-900 font-bold px-4 py-2 rounded-full text-xs shadow-lg transform translate-y-4 group-hover:translate-y-0 transition">
                                 🔍 Click to view Full Screen
                             </span>
                         </div>
                     </div>
 
                     <!-- 🌟 Thumbnail Gallery (Swipeable) -->
-                    <div class="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
-                        <div @click="mainImage = '{% if product.image %}{{ product.image.url }}{% endif %}'" 
-                             :class="mainImage === '{% if product.image %}{{ product.image.url }}{% endif %}' ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]/40 shadow-md' : 'border-gray-200 hover:border-[#D4AF37]'"
+                    <div class="flex gap-3 mt-4 overflow-x-auto pb-2">
+                        <div @click="mainImage = '{{ product.image.url }}'" 
+                             :class="mainImage === '{{ product.image.url }}' ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]/40 shadow-md' : 'border-gray-200 hover:border-[#D4AF37]'"
                              class="w-20 h-20 flex-shrink-0 border-2 rounded-xl overflow-hidden cursor-pointer transition p-1 bg-white">
-                            <img src="{% if product.image %}{{ product.image.url }}{% endif %}" class="w-full h-full object-contain mix-blend-multiply">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }} thumbnail" class="w-full h-full object-contain mix-blend-multiply">
                         </div>
                         
                         {% for gal_img in product.gallery_images.all %}
                         <div @click="mainImage = '{{ gal_img.image.url }}'" 
                              :class="mainImage === '{{ gal_img.image.url }}' ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]/40 shadow-md' : 'border-gray-200 hover:border-[#D4AF37]'"
                              class="w-20 h-20 flex-shrink-0 border-2 rounded-xl overflow-hidden cursor-pointer transition p-1 bg-white">
-                            <img src="{{ gal_img.image.url }}" class="w-full h-full object-contain mix-blend-multiply">
+                            <img src="{{ gal_img.image.url }}" alt="{{ product.name }} gallery image" class="w-full h-full object-contain mix-blend-multiply">
                         </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="h-[450px] bg-slate-100 rounded-2xl flex items-center justify-center">No Image</div>
+                    <div class="h-[380px] md:h-[450px] bg-slate-100 rounded-2xl flex items-center justify-center text-gray-400 font-medium">No Image Available</div>
                 {% endif %}
             </div>
         </div>
@@ -128,13 +162,13 @@
             <div class="flex items-center gap-2 mb-6">
                 <span class="text-yellow-500 text-xl tracking-widest">★</span>
                 <span class="font-bold text-gray-900 text-lg">{{ avg_rating|default:"0.0" }}</span>
-                <span class="text-gray-500 text-sm">({{ review_count }} Reviews)</span>
+                <span class="text-gray-500 text-sm">({{ review_count|default:0 }} Reviews)</span>
             </div>
             
             <p class="text-gray-600 text-base leading-relaxed mb-6">{{ product.description|default:"No description available." }}</p>
 
             <!-- ⚡ Superfast Local Delivery Highlight -->
-            <div class="bg-green-50/80 border border-green-200 p-4 rounded-2xl flex items-center gap-4 mb-6 shadow-sm">
+            <div class="bg-green-50/90 border border-green-200 p-4 rounded-2xl flex items-center gap-4 mb-6 shadow-sm">
                 <span class="text-3xl">⚡</span>
                 <div>
                     <div class="font-bold text-green-700 text-sm">Superfast Local Delivery</div>
@@ -145,12 +179,12 @@
             <hr class="border-gray-200 my-8">
 
             <!-- 🛒 Options & Add to Cart Box -->
-            <div class="bg-white/75 backdrop-blur-2xl border border-white/90 p-6 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
+            <div class="bg-white/85 lg:bg-white/75 lg:backdrop-blur-2xl border border-white/90 p-6 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
                 
-                {% if product.variants.exists %}
+                {% if variants %}
                     <h5 class="font-bold text-gray-900 mb-3">Select Variety:</h5>
-                    <select x-model="variantId" @change="price = $event.target.options[$event.target.selectedIndex].dataset.price" class="w-full bg-white/80 border-2 border-gray-200 rounded-xl px-4 py-3 mb-6 focus:ring-4 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] outline-none transition cursor-pointer">
-                        {% for variant in product.variants.all %}
+                    <select x-model="variantId" @change="price = $event.target.options[$event.target.selectedIndex].dataset.price" class="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 mb-6 focus:ring-4 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] outline-none transition cursor-pointer">
+                        {% for variant in variants %}
                             <option value="{{ variant.id }}" data-price="{{ variant.price }}" {% if variant.stock == 0 %}disabled{% endif %}>
                                 {{ variant.size_name }} - ₹{{ variant.price }} {% if variant.stock == 0 %}(Out of Stock){% endif %}
                             </option>
@@ -158,46 +192,60 @@
                     </select>
                 {% endif %}
 
-                <div class="flex items-baseline gap-3 mb-6">
+                <div class="flex items-baseline gap-3 mb-6 flex-wrap">
                     <span class="text-gray-500 text-lg">Price:</span>
-                    <span class="text-4xl font-extrabold text-gray-900" x-text="'₹' + price"></span>
+                    <span class="text-4xl font-extrabold text-gray-900" x-text="'₹' + price">₹{{ product.price }}</span>
                     {% if product.mrp and product.mrp > product.price %}
                         <span class="text-lg text-gray-400 line-through ml-2">₹{{ product.mrp }}</span>
                         <span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded ml-2">{{ product.discount_percentage }}% OFF</span>
                     {% endif %}
                 </div>
 
+                <!-- Touch-Friendly Quantity Steppers -->
                 <div class="flex items-center gap-4 mb-6">
-                    <label class="font-semibold text-gray-500 text-sm">Quantity:</label>
-                    <input type="number" x-model.number="qty" min="1" max="10" class="w-24 bg-white/80 border border-gray-300 rounded-xl px-4 py-2 text-center font-bold focus:outline-none focus:border-[#D4AF37]">
+                    <label class="font-semibold text-gray-600 text-sm">Quantity:</label>
+                    <div class="inline-flex items-center border-2 border-gray-200 rounded-xl bg-white overflow-hidden shadow-sm">
+                        <button type="button" @click="if(qty > 1) qty--" class="px-4 py-2 text-lg font-bold text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition" aria-label="Decrease quantity">−</button>
+                        <span class="px-5 py-2 font-extrabold text-gray-900 min-w-[48px] text-center select-none" x-text="qty">1</span>
+                        <button type="button" @click="if(qty < 10) qty++" class="px-4 py-2 text-lg font-bold text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition" aria-label="Increase quantity">+</button>
+                    </div>
                 </div>
 
-                <!-- 🌟 Fixed AJAX Action Buttons -->
-                <div class="flex flex-wrap gap-3">
-                    <!-- ADD TO CART BUTTON -->
-                    <button type="button"
-                            @click="addToCart(false)" 
-                            :disabled="loading" 
-                            class="flex-1 bg-gradient-to-br from-gray-900 to-slate-800 text-white font-bold uppercase tracking-wide py-4 rounded-xl shadow-lg border border-[#D4AF37]/30 hover:-translate-y-1 transition duration-300">
-                        <span x-show="!loading">🛒 Add To Cart</span>
-                        <span x-show="loading">⏳ Adding...</span>
-                    </button>
-                    
-                    <!-- BUY NOW BUTTON -->
-                    <button type="button"
-                            @click="addToCart(true)" 
-                            :disabled="loading"
-                            class="flex-1 bg-orange-500 text-gray-900 font-bold uppercase tracking-wide py-4 rounded-xl shadow-lg border border-orange-600 hover:bg-orange-400 hover:-translate-y-1 transition duration-300">
-                        ⚡ Buy Now
-                    </button>
-                    
-                    <!-- WISHLIST BUTTON -->
-                    <a href="{% url 'add_to_wishlist' product.id %}" class="w-14 flex items-center justify-center bg-white border border-rose-200 text-rose-500 rounded-xl shadow-sm hover:bg-rose-50 hover:scale-105 transition text-xl">❤️</a>
-                </div>
+                <!-- 🌟 AJAX Action Buttons -->
+                {% if not variants and product.stock == 0 %}
+                    <div class="flex gap-3">
+                        <button type="button" disabled class="flex-1 bg-gray-200 text-gray-500 font-bold uppercase tracking-wide py-4 rounded-xl cursor-not-allowed">
+                            Out of Stock
+                        </button>
+                        <a href="{% url 'add_to_wishlist' product.id %}" class="w-14 flex items-center justify-center bg-white border border-rose-200 text-rose-500 rounded-xl shadow-sm hover:bg-rose-50 transition text-xl" aria-label="Add to Wishlist">❤️</a>
+                    </div>
+                {% else %}
+                    <div class="flex flex-wrap gap-3">
+                        <!-- ADD TO CART BUTTON -->
+                        <button type="button"
+                                @click="addToCart(false)" 
+                                :disabled="loading || (hasVariants && !variantId)" 
+                                class="flex-1 bg-gradient-to-br from-gray-900 to-slate-800 text-white font-bold uppercase tracking-wide py-4 rounded-xl shadow-lg border border-[#D4AF37]/30 hover:-translate-y-0.5 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span x-show="!loading">🛒 Add To Cart</span>
+                            <span x-show="loading" x-cloak>⏳ Adding...</span>
+                        </button>
+                        
+                        <!-- BUY NOW BUTTON -->
+                        <button type="button"
+                                @click="addToCart(true)" 
+                                :disabled="loading || (hasVariants && !variantId)"
+                                class="flex-1 bg-orange-500 text-gray-900 font-bold uppercase tracking-wide py-4 rounded-xl shadow-lg border border-orange-600 hover:bg-orange-400 hover:-translate-y-0.5 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                            ⚡ Buy Now
+                        </button>
+                        
+                        <!-- WISHLIST BUTTON -->
+                        <a href="{% url 'add_to_wishlist' product.id %}" class="w-14 flex items-center justify-center bg-white border border-rose-200 text-rose-500 rounded-xl shadow-sm hover:bg-rose-50 hover:scale-105 transition text-xl" aria-label="Add to Wishlist">❤️</a>
+                    </div>
+                {% endif %}
             </div>
 
             <!-- Trust Badges -->
-            <div class="mt-8 border border-gray-200 rounded-2xl p-4 text-center">
+            <div class="mt-8 border border-gray-200 rounded-2xl p-4 text-center bg-white/50">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Guaranteed Safe Checkout</p>
                 <div class="flex justify-center gap-3 flex-wrap">
                     <span class="bg-white border px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm">🔒 256-bit SSL</span>
@@ -209,14 +257,15 @@
     </div>
 
     <!-- 🔍 FULL SCREEN LIGHTBOX POPUP -->
-    <div x-show="lightbox" x-cloak class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
-        <button @click="lightbox = false" class="absolute top-6 right-6 text-white bg-white/20 hover:bg-rose-500 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold backdrop-blur-md transition z-50">
+    <div x-show="lightbox" x-cloak @keydown.escape.window="lightbox = false" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4">
+        <button type="button" @click="lightbox = false" class="absolute top-6 right-6 text-white bg-white/20 hover:bg-rose-500 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold backdrop-blur-md transition z-50" aria-label="Close Full Screen">
             ✕
         </button>
         <div class="relative w-full h-full flex items-center justify-center" @click.self="lightbox = false">
-            <img :src="mainImage" class="max-w-full max-h-[90vh] object-contain shadow-2xl rounded-xl">
+            <img :src="mainImage" alt="{{ product.name }}" class="max-w-full max-h-[90vh] object-contain shadow-2xl rounded-xl">
         </div>
     </div>
 
 </div>
+{% endwith %}
 {% endblock %}

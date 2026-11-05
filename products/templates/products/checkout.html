@@ -1,36 +1,46 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Secure Checkout | CGS MART Nohar{% endblock %}
+
 {% block content %}
-<div class="max-w-[1200px] mx-auto px-4 py-8 mb-20" 
+<div class="max-w-[1200px] mx-auto px-4 py-8 mb-24" 
      x-data="{ 
-         total: Number('{{ final_total|default:0 }}'), 
+         total: parseFloat('{{ final_total|default:0 }}') || 0, 
          discount: 0, 
          promo: '', 
-         walletBal: Number('{{ profile.wallet_balance|default:0 }}'), 
-         useWallet: false 
+         walletBal: parseFloat('{{ profile.wallet_balance|default:0 }}') || 0, 
+         useWallet: false,
+         submitting: false,
+         get walletDeduction() {
+             if (!this.useWallet || this.walletBal <= 0) return 0;
+             return Math.min(this.walletBal, Math.max(0, this.total - this.discount));
+         },
+         get netPayable() {
+             return Math.max(0, this.total - this.discount - this.walletDeduction).toFixed(2);
+         }
      }">
-    <form method="POST" action="{% url 'checkout' %}" class="flex flex-col lg:flex-row gap-6">
+    <form method="POST" action="{% url 'checkout' %}" @submit="submitting = true" class="flex flex-col lg:flex-row gap-6">
         {% csrf_token %}
         
         <!-- Left Side: Steps -->
         <div class="w-full lg:w-2/3 space-y-5">
             
-            <!-- Step 1 -->
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <!-- Step 1: Login Status -->
+            <div class="bg-white/95 rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div class="bg-gray-50 px-6 py-4 flex items-center font-['Jost'] font-bold text-gray-600">
-                    <span class="bg-gray-200 text-gray-500 w-7 h-7 flex items-center justify-center rounded-lg text-sm mr-4">1</span> LOGIN 
-                    <span class="ml-4 text-gray-900">{% if user.is_authenticated %}{{ user.first_name|default:user.username }}{% else %}Guest{% endif %}</span>
-                    <span class="ml-auto text-green-600">✔</span>
+                    <span class="bg-gray-200 text-gray-600 w-7 h-7 flex items-center justify-center rounded-lg text-sm mr-4">1</span> LOGIN 
+                    <span class="ml-4 text-gray-900">{% if user.is_authenticated %}{{ user.first_name|default:user.username }}{% else %}Guest Checkout{% endif %}</span>
+                    <span class="ml-auto text-green-600 font-extrabold">✔</span>
                 </div>
             </div>
 
-            <!-- Step 2: Address -->
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden" x-data="{ addressType: '{% if saved_addresses %}saved{% else %}new{% endif %}' }">
+            <!-- Step 2: Delivery Address -->
+            <div class="bg-white/95 rounded-2xl border border-gray-200 shadow-sm overflow-hidden" x-data="{ addressType: '{% if saved_addresses %}saved{% else %}new{% endif %}' }">
                 <div class="bg-white px-6 py-4 flex items-center font-['Jost'] font-bold text-gray-900 border-b border-gray-100">
                     <span class="bg-blue-900 text-white w-7 h-7 flex items-center justify-center rounded-lg text-sm mr-4 shadow-md">2</span> DELIVERY ADDRESS
                 </div>
-                <div class="p-6 bg-slate-50">
+                <div class="p-6 bg-slate-50/70">
                     {% if saved_addresses %}
                         <div class="space-y-3">
                             {% for addr in saved_addresses %}
@@ -38,85 +48,120 @@
                                 <div class="flex items-start">
                                     <input type="radio" name="address_id" value="{{ addr.id }}" @change="addressType = 'saved'" class="mt-1 text-blue-900 focus:ring-blue-900" {% if forloop.first %}checked{% endif %}>
                                     <div class="ml-3">
-                                        <span class="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">{{ addr.address_type }}</span>
+                                        <span class="bg-gray-200 text-gray-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">{{ addr.address_type }}</span>
                                         <div class="mt-2 text-gray-900 font-semibold text-base">{{ addr.name }} <span class="ml-2 text-gray-500 font-bold">{{ addr.mobile_number }}</span></div>
-                                        <p class="text-sm text-gray-500 mt-1 leading-relaxed">{{ addr.full_address }}, {{ addr.locality }}, <br>{{ addr.city }}, {{ addr.state }} - <strong class="text-gray-900">{{ addr.pincode }}</strong></p>
+                                        <p class="text-sm text-gray-500 mt-1 mb-0 leading-relaxed">{{ addr.full_address }}, {{ addr.locality }}, <br>{{ addr.city }}, {{ addr.state }} - <strong class="text-gray-900">{{ addr.pincode }}</strong></p>
                                     </div>
                                 </div>
                             </label>
                             {% endfor %}
                             
-                            <label class="block bg-white border border-gray-200 p-4 rounded-xl cursor-pointer hover:bg-gray-50">
+                            <label class="block bg-white border border-gray-200 p-4 rounded-xl cursor-pointer hover:bg-gray-50 transition">
                                 <input type="radio" name="address_id" value="" @change="addressType = 'new'" class="text-blue-900 focus:ring-blue-900">
-                                <span class="ml-2 font-bold text-blue-900">+ Add a New Address</span>
+                                <span class="ml-2 font-bold text-blue-900">+ Add a New Delivery Address</span>
                             </label>
                         </div>
                     {% endif %}
 
                     <!-- Manual Address Form -->
-                    <div x-show="addressType === 'new'" x-collapse class="mt-4 bg-white p-5 border border-gray-200 rounded-xl shadow-sm">
-                        <h6 class="font-bold text-xs text-gray-900 tracking-wider mb-4">NEW DELIVERY DETAILS</h6>
+                    <div x-show="addressType === 'new'" x-transition x-cloak class="mt-4 bg-white p-5 border border-gray-200 rounded-xl shadow-sm">
+                        <h6 class="font-bold text-xs text-gray-900 uppercase tracking-wider mb-4">New Delivery Details</h6>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="text-xs font-semibold text-gray-500 mb-1 block">Full Name</label>
-                                <input type="text" name="name" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 focus:border-blue-900 outline-none" :required="addressType === 'new'">
+                                <label class="text-xs font-semibold text-gray-600 mb-1 block">Full Name *</label>
+                                <input type="text" name="name" autocomplete="name" placeholder="Enter your full name" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 focus:border-blue-900 outline-none" :required="addressType === 'new'">
                             </div>
                             <div>
-                                <label class="text-xs font-semibold text-gray-500 mb-1 block">Mobile Number (WhatsApp)</label>
-                                <input type="tel" name="mobile_number" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 outline-none" :required="addressType === 'new'">
+                                <label class="text-xs font-semibold text-gray-600 mb-1 block">Mobile Number (WhatsApp) *</label>
+                                <input type="tel" name="mobile_number" inputmode="numeric" autocomplete="tel" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 outline-none" :required="addressType === 'new'">
                             </div>
                             {% if not user.is_authenticated %}
                             <div class="col-span-full">
-                                <label class="text-xs font-semibold text-gray-500 mb-1 block">Email Address (Optional - for Invoice & OTP)</label>
-                                <input type="email" name="email" placeholder="example@gmail.com" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 outline-none">
+                                <label class="text-xs font-semibold text-gray-600 mb-1 block">Email Address (Optional - for Invoice & OTP)</label>
+                                <input type="email" name="email" autocomplete="email" placeholder="example@gmail.com" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 outline-none">
                             </div>
                             {% endif %}
                             <div class="col-span-full">
-                                <label class="text-xs font-semibold text-gray-500 mb-1 block">Complete Address (House No, Street, Landmark, Nohar)</label>
-                                <textarea name="address" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 outline-none" :required="addressType === 'new'"></textarea>
+                                <label class="text-xs font-semibold text-gray-600 mb-1 block">Complete Address (House No, Street, Landmark, Nohar) *</label>
+                                <textarea name="address" rows="3" placeholder="House/Shop No., Street, Landmark in Nohar..." class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-900 outline-none" :required="addressType === 'new'"></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Promo Code (Alpine logic) -->
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6" x-data="{ code: '', msg: '', type: '' }">
-                <label class="font-bold text-xs text-gray-500 tracking-wider mb-2 block">HAVE A PROMO CODE?</label>
+            <!-- Promo Code (Alpine logic with Enter-key protection & loading state) -->
+            <div class="bg-white/95 rounded-2xl border border-gray-200 shadow-sm p-6" 
+                 x-data="{ 
+                     code: '', 
+                     msg: '', 
+                     type: '', 
+                     checking: false,
+                     applyCoupon() {
+                         const cleanCode = this.code.trim().toUpperCase();
+                         if (!cleanCode) return;
+                         this.checking = true;
+                         fetch(`/check-coupon-ajax/?code=${encodeURIComponent(cleanCode)}&cart_total={{ final_total }}`)
+                             .then(r => r.json())
+                             .then(d => {
+                                 this.checking = false;
+                                 if (d.status === 'found') {
+                                     this.msg = '✅ ' + d.message;
+                                     this.type = 'success';
+                                     discount = parseFloat(d.discount_amount) || 0;
+                                     promo = cleanCode;
+                                 } else {
+                                     this.msg = '❌ ' + (d.message || 'Invalid coupon code.');
+                                     this.type = 'error';
+                                     discount = 0;
+                                     promo = '';
+                                 }
+                             })
+                             .catch(() => {
+                                 this.checking = false;
+                                 this.msg = '❌ Unable to verify coupon right now.';
+                                 this.type = 'error';
+                             });
+                     }
+                 }">
+                <label class="font-bold text-xs text-gray-500 tracking-wider mb-2 block uppercase">Have a Promo Code?</label>
                 <div class="flex border border-gray-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-900">
-                    <input type="text" x-model="code" class="flex-1 px-4 py-3 text-sm font-bold uppercase outline-none" placeholder="ENTER CODE">
-                    <button type="button" @click="fetch(`/check-coupon-ajax/?code=${encodeURIComponent(code)}&cart_total={{ final_total }}`).then(r=>r.json()).then(d => { if(d.status==='found'){ msg = '✅ ' + d.message; type = 'success'; discount = parseFloat(d.discount_amount); promo = code; } else { msg = '❌ ' + d.message; type = 'error'; discount = 0; promo = ''; } })" class="bg-blue-900 text-white font-bold px-6 text-sm tracking-wide hover:bg-blue-800 transition">APPLY</button>
+                    <input type="text" x-model="code" @keydown.enter.prevent="applyCoupon()" class="flex-1 px-4 py-3 text-sm font-bold uppercase outline-none" placeholder="ENTER CODE (e.g. CGSMART10)">
+                    <button type="button" @click="applyCoupon()" :disabled="checking" class="bg-blue-900 text-white font-bold px-6 text-sm tracking-wide hover:bg-blue-800 transition disabled:opacity-50">
+                        <span x-show="!checking">APPLY</span>
+                        <span x-show="checking" x-cloak>⏳</span>
+                    </button>
                 </div>
-                <div x-text="msg" :class="type === 'success' ? 'text-green-600' : 'text-red-600'" class="text-sm font-bold mt-2"></div>
+                <div x-show="msg" x-text="msg" :class="type === 'success' ? 'text-green-600' : 'text-red-600'" class="text-sm font-bold mt-2" x-cloak></div>
                 <input type="hidden" name="promo_code" :value="promo">
             </div>
 
-            <!-- Wallet -->
+            <!-- Store Wallet -->
             {% if user.is_authenticated and profile.wallet_balance > 0 %}
-            <div class="bg-yellow-50/50 rounded-2xl border-2 border-[#D4AF37] p-6 shadow-sm flex items-center">
+            <label class="bg-yellow-50/80 rounded-2xl border-2 border-[#D4AF37] p-5 shadow-sm flex items-center cursor-pointer">
                 <input type="checkbox" x-model="useWallet" name="use_wallet" class="w-5 h-5 text-blue-900 focus:ring-blue-900 rounded cursor-pointer">
-                <label class="ml-3 font-bold text-gray-900 cursor-pointer">Use Store Wallet Balance <span class="text-green-600 ml-1">(Available: ₹{{ profile.wallet_balance }})</span></label>
-            </div>
+                <span class="ml-3 font-bold text-gray-900">Use Store Wallet Balance <span class="text-green-700 ml-1">(Available: ₹{{ profile.wallet_balance }})</span></span>
+            </label>
             {% endif %}
             
-            <!-- Step 3: Payment -->
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <!-- Step 3: Payment Options -->
+            <div class="bg-white/95 rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div class="bg-white px-6 py-4 flex items-center font-['Jost'] font-bold text-gray-900 border-b border-gray-100">
                     <span class="bg-blue-900 text-white w-7 h-7 flex items-center justify-center rounded-lg text-sm mr-4 shadow-md">3</span> PAYMENT OPTIONS
                 </div>
                 <div class="p-6">
                     <label class="flex items-center cursor-pointer mb-2">
-                        <input type="radio" name="payment_mode" value="whatsapp" checked class="w-5 h-5 text-green-500 focus:ring-green-500">
-                        <span class="ml-3 font-bold text-gray-900 flex items-center"><span class="text-2xl mr-2 text-[#25D366]">💬</span> Pay via WhatsApp / UPI / COD</span>
+                        <input type="radio" name="payment_mode" value="whatsapp" checked class="w-5 h-5 text-green-600 focus:ring-green-500">
+                        <span class="ml-3 font-bold text-gray-900 flex items-center"><span class="text-2xl mr-2 text-[#25D366]">💬</span> Pay via WhatsApp / UPI / Cash on Delivery (COD)</span>
                     </label>
-                    <p class="text-xs text-gray-500 ml-8 pl-1 leading-relaxed">Securely generate your invoice and verify delivery via 4-digit OTP.</p>
+                    <p class="text-xs text-gray-500 ml-8 pl-1 mb-0 leading-relaxed">Securely generate your invoice and verify delivery via 4-digit OTP.</p>
                 </div>
             </div>
         </div>
 
         <!-- Right Side: Price Details -->
         <div class="w-full lg:w-1/3">
-            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm sticky top-32">
+            <div class="bg-white/95 rounded-2xl border border-gray-200 shadow-sm sticky top-32">
                 <div class="p-5 border-b border-gray-100 font-['Jost'] font-bold text-blue-900 tracking-wide text-sm">PRICE DETAILS</div>
                 <div class="p-5 space-y-4 text-sm text-gray-600">
                     <div class="flex justify-between">
@@ -125,19 +170,19 @@
                     </div>
                     {% if total_savings > 0 %}
                     <div class="flex justify-between text-green-600">
-                        <span>Discount</span>
+                        <span>Product Discount</span>
                         <span class="font-bold">− ₹{{ total_savings|floatformat:2 }}</span>
                     </div>
                     {% endif %}
                     
                     <div class="flex justify-between text-green-600" x-show="discount > 0" x-cloak>
-                        <span>Coupon Applied</span>
+                        <span>Coupon Applied (<span x-text="promo"></span>)</span>
                         <span class="font-bold">− ₹<span x-text="discount.toFixed(2)"></span></span>
                     </div>
 
                     <div class="flex justify-between text-green-600" x-show="useWallet && walletBal > 0" x-cloak>
                         <span>Wallet Used</span>
-                        <span class="font-bold">− ₹<span x-text="Math.min(walletBal, Math.max(0, total - discount)).toFixed(2)"></span></span>
+                        <span class="font-bold">− ₹<span x-text="walletDeduction.toFixed(2)"></span></span>
                     </div>
 
                     <div class="flex justify-between border-b border-dashed border-gray-300 pb-4">
@@ -152,14 +197,17 @@
                     <!-- Alpine Total Calculation -->
                     <div class="flex justify-between text-lg font-extrabold text-gray-900 pt-2">
                         <span>Total Payable</span>
-                        <span class="text-blue-900">₹<span x-text="Math.max(0, total - discount - (useWallet ? walletBal : 0)).toFixed(2)"></span></span>
+                        <span class="text-blue-900">₹<span x-text="netPayable"></span></span>
                     </div>
                 </div>
+
+                <div class="px-5 pb-5">
+                    <button type="submit" :disabled="submitting" class="w-full bg-blue-900 text-white font-bold tracking-widest uppercase py-4 rounded-xl shadow-[0_10px_20px_rgba(0,45,98,0.2)] hover:bg-[#D4AF37] hover:text-blue-900 transition duration-300 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                        <span x-show="!submitting">CONFIRM ORDER ➔</span>
+                        <span x-show="submitting" x-cloak>⏳ PROCESSING ORDER...</span>
+                    </button>
+                </div>
             </div>
-            
-            <button type="submit" class="w-full mt-6 bg-blue-900 text-white font-bold tracking-widest uppercase py-4 rounded-xl shadow-[0_10px_20px_rgba(0,45,98,0.2)] hover:bg-[#D4AF37] hover:text-blue-900 hover:-translate-y-1 transition duration-300 flex items-center justify-center gap-2">
-                CONFIRM ORDER <span>➔</span>
-            </button>
         </div>
     </form>
 </div>
